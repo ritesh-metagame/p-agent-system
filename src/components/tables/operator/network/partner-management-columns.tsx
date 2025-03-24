@@ -37,7 +37,7 @@ export const networkStatsColumns: ColumnDef<NetworkStatsData>[] = [
 // Define the shape of the data for Network Commission
 export type NetworkCommissionData = {
   platinumPartner: string;
-  pendingCommission: number | string;
+  pendingCommissionAsOfAvailable: number | string;
   status: string;
   allTime: number | string;
   total: number | string;
@@ -49,7 +49,7 @@ export const networkCommissionColumns: ColumnDef<NetworkCommissionData>[] = [
     header: "PLATINUM PARTNER",
   },
   {
-    accessorKey: "pendingCommission",
+    accessorKey: "pendingCommissionAsOfAvailable",
     header: "PENDING COMMISSION AS OF AVAILABLE CUTOFF PERIOD",
   },
   {

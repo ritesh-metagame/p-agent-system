@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 // TODO : gotta add the default values for the column Network
 
 // Define the shape of the data for the table.
-export type CommissionPerCutoffData = {
+export type PlatinumCommissionPerCutoffData = {
   network: string;
   name: string;
   totalNetworkBets: number | string;
@@ -16,11 +16,12 @@ export type CommissionPerCutoffData = {
   totalNetCommissions: number | string;
 };
 
-export const commissionPerCutoffColumns: ColumnDef<CommissionPerCutoffData>[] =
+export const platinumcommissionPerCutoffColumns: ColumnDef<PlatinumCommissionPerCutoffData>[] =
   [
     {
       accessorKey: "network",
       header: "Network",
+      cell: ({ row }) => row.original.network || "Platinum",
     },
     {
       accessorKey: "name",
@@ -53,7 +54,7 @@ export const commissionPerCutoffColumns: ColumnDef<CommissionPerCutoffData>[] =
     },
   ];
 
-export type PartnerCommissionData = {
+export type PlatinumPartnerCommissionData = {
   network: string;
   name: string;
   totalBets: number | string;
@@ -64,10 +65,11 @@ export type PartnerCommissionData = {
   totalNetCommissions: number | string;
 };
 
-export const partnerCommissionColumns: ColumnDef<PartnerCommissionData>[] = [
+export const platinumpartnerCommissionColumns: ColumnDef<PlatinumPartnerCommissionData>[] = [
   {
     accessorKey: "network",
     header: "Network",
+    cell: ({ row }) => row.original.network || "Golden",
   },
   {
     accessorKey: "name",

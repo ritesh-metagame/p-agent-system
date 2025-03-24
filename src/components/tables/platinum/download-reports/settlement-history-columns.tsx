@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 // Define the shape of the data for the table.
-export type platsettlehistoryReportData = {
+export type PlatsettlehistoryReportData = {
   id: number;
   start: string;
   end: string;
@@ -12,7 +12,7 @@ export type platsettlehistoryReportData = {
 };
 
 // Column definitions for the Reports List table
-export const platsettlehistoryreportsListColumns: ColumnDef<platsettlehistoryReportData>[] =
+export const platsettlehistoryreportsListColumns: ColumnDef<PlatsettlehistoryReportData>[] =
   [
     {
       accessorKey: "id",
@@ -45,6 +45,6 @@ export const platsettlehistoryreportsListColumns: ColumnDef<platsettlehistoryRep
   ];
 
 // Function to handle download action
-const handleDownload = (report: platsettlehistoryReportData) => {
+const handleDownload = (report: PlatsettlehistoryReportData) => {
   console.log("Downloading report:", report);
 };

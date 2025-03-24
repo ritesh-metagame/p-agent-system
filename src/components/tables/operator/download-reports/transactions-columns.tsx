@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 // Define the data structure for the Reports List table
-export type ReportsListData = {
+export type OperatorTransactionsReportsListData = {
   id: number;
   fromDate: string;
   toDate: string;
@@ -12,7 +12,7 @@ export type ReportsListData = {
 };
 
 // Reports List Table Columns
-export const reportsListColumns: ColumnDef<ReportsListData>[] = [
+export const operatorTransactionsReportsListColumns: ColumnDef<OperatorTransactionsReportsListData>[] = [
   {
     accessorKey: "id",
     header: "ID",

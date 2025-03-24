@@ -3,12 +3,12 @@ import { ColumnDef } from "@tanstack/react-table";
 /**
  * Cutoff Period Table
  */
-export type CutoffPeriodData = {
+export type PlatinumCutoffPeriodData = {
   networkCommissionPendingSettlement: string;
   allTimeNetworkCommissionSettled: string;
 };
 
-export const cutoffPeriodColumns: ColumnDef<CutoffPeriodData>[] = [
+export const platinumcutoffPeriodColumns: ColumnDef<PlatinumCutoffPeriodData>[] = [
   {
     accessorKey: "networkCommissionPendingSettlement",
     header: "NETWORK COMMISSION PENDING SETTLEMENT",
@@ -22,7 +22,7 @@ export const cutoffPeriodColumns: ColumnDef<CutoffPeriodData>[] = [
 /**
  * Network Overview Table
  */
-export type NetworkOverviewData = {
+export type PlatinumNetworkOverviewData = {
   network: string;
   approved: number | string;
   pending: number | string;
@@ -30,7 +30,7 @@ export type NetworkOverviewData = {
   total: number | string;
 };
 
-export const networkOverviewColumns: ColumnDef<NetworkOverviewData>[] = [
+export const platinumnetworkOverviewColumns: ColumnDef<PlatinumNetworkOverviewData>[] = [
   { accessorKey: "network", header: "Network" },
   { accessorKey: "approved", header: "Approved" },
   { accessorKey: "pending", header: "Pending" },
@@ -41,14 +41,14 @@ export const networkOverviewColumns: ColumnDef<NetworkOverviewData>[] = [
 /**
  * Overall Summary (E-Games & Sportsbetting) Table
  */
-export type OverallSummaryData = {
+export type PlatinumOverallSummaryData = {
   item: string;
   pendingSettlement: number | string;
   previousSettled: number | string;
   totalSummary: number | string;
 };
 
-export const overallSummaryColumns: ColumnDef<OverallSummaryData>[] = [
+export const platinumoverallSummaryColumns: ColumnDef<PlatinumOverallSummaryData>[] = [
   { accessorKey: "item", header: "ITEM" },
   { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
   { accessorKey: "previousSettled", header: "PREVIOUS SETTLED (Cumulative)" },
@@ -58,7 +58,7 @@ export const overallSummaryColumns: ColumnDef<OverallSummaryData>[] = [
 /**
  * E-Games Table
  */
-export type EGamesData = {
+export type PlatinumEGamesData = {
   item: string;
   dailyOverview: number | string;
   pendingSettlement: number | string;
@@ -66,7 +66,7 @@ export type EGamesData = {
   totalSummary: number | string;
 };
 
-export const eGamesColumns: ColumnDef<EGamesData>[] = [
+export const platinumeGamesColumns: ColumnDef<PlatinumEGamesData>[] = [
   { accessorKey: "item", header: "ITEM" },
   { accessorKey: "dailyOverview", header: "DAILY OVERVIEW" },
   { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
@@ -77,7 +77,7 @@ export const eGamesColumns: ColumnDef<EGamesData>[] = [
 /**
  * Sportsbetting Table
  */
-export type SportsbettingData = {
+export type PlatinumSportsbettingData = {
   item: string;
   dailyOverview: number | string;
   pendingSettlement: number | string;
@@ -85,7 +85,7 @@ export type SportsbettingData = {
   totalSummary: number | string;
 };
 
-export const sportsbettingColumns: ColumnDef<SportsbettingData>[] = [
+export const platinumsportsbettingColumns: ColumnDef<PlatinumSportsbettingData>[] = [
   { accessorKey: "item", header: "ITEM" },
   { accessorKey: "dailyOverview", header: "DAILY OVERVIEW" },
   { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
@@ -96,13 +96,13 @@ export const sportsbettingColumns: ColumnDef<SportsbettingData>[] = [
 /**
  * Top Performers (All Time) Table
  */
-export type TopPerformersAllTimeData = {
+export type PlatinumTopPerformersAllTimeData = {
   goldenName: string;
   pendingCommission: number | string;
   releasedAllTime: number | string;
 };
 
-export const topPerformersAllTimeColumns: ColumnDef<TopPerformersAllTimeData>[] =
+export const platinumtopPerformersAllTimeColumns: ColumnDef<PlatinumTopPerformersAllTimeData>[] =
   [
     { accessorKey: "goldenName", header: "GOLDEN NAME" },
     {
@@ -115,13 +115,13 @@ export const topPerformersAllTimeColumns: ColumnDef<TopPerformersAllTimeData>[] 
 /**
  * Top Performers (Per Cutoff) Table
  */
-export type TopPerformersPerCutoffData = {
+export type PlatinumTopPerformersPerCutoffData = {
   goldenName: string;
   pendingCommission: number | string;
   releasedAllTime: number | string;
 };
 
-export const topPerformersPerCutoffColumns: ColumnDef<TopPerformersPerCutoffData>[] =
+export const platinumtopPerformersPerCutoffColumns: ColumnDef<PlatinumTopPerformersPerCutoffData>[] =
   [
     { accessorKey: "goldenName", header: "GOLDEN NAME" },
     {
@@ -135,11 +135,11 @@ export const topPerformersPerCutoffColumns: ColumnDef<TopPerformersPerCutoffData
  * Export all table column definitions
  */
 export const tableColumns = {
-  cutoffPeriodColumns,
-  networkOverviewColumns,
-  overallSummaryColumns,
-  eGamesColumns,
-  sportsbettingColumns,
-  topPerformersAllTimeColumns,
-  topPerformersPerCutoffColumns,
+  platinumcutoffPeriodColumns,
+  platinumnetworkOverviewColumns,
+  platinumoverallSummaryColumns,
+  platinumeGamesColumns,
+  platinumsportsbettingColumns,
+  platinumtopPerformersAllTimeColumns,
+  platinumtopPerformersPerCutoffColumns,
 };

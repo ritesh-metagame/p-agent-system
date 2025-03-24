@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 // Define the shape of the data for the table.
-export type ReportData = {
+export type OperatorReportData = {
   id: number;
   fromDate: string;
   toDate: string;
@@ -12,7 +12,7 @@ export type ReportData = {
 };
 
 // Column definitions for the Reports List table
-export const reportsListColumns: ColumnDef<ReportData>[] = [
+export const operatorReportsListColumns: ColumnDef<OperatorReportData>[] = [
   {
     accessorKey: "id",
     header: "ID",
@@ -44,6 +44,6 @@ export const reportsListColumns: ColumnDef<ReportData>[] = [
 ];
 
 // Function to handle download action
-const handleDownload = (report: ReportData) => {
+const handleDownload = (report: OperatorReportData) => {
   console.log("Downloading report:", report);
 };

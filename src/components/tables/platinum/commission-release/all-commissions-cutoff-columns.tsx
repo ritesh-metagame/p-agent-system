@@ -2,14 +2,14 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-export type IDStatusActionData = {
+export type PlatinumIDStatusActionData = {
   id: string;
   cutoffPeriod?: string;
   status: string;
   action?: string;
 };
 
-export const idStatusActionColumns: ColumnDef<IDStatusActionData>[] = [
+export const platinumIdStatusActionColumns: ColumnDef<PlatinumIDStatusActionData>[] = [
   {
     accessorKey: "id",
     header: "ID",

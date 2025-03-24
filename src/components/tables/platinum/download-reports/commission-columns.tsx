@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 // Define the shape of the data for the table.
-export type platReportData = {
+export type PlatCommissionReportData = {
   id: number;
   fromDate: string;
   toDate: string;
@@ -12,7 +12,7 @@ export type platReportData = {
 };
 
 // Column definitions for the Reports List table
-export const platreportsListColumns: ColumnDef<platReportData>[] = [
+export const platCommissionreportsListColumns: ColumnDef<PlatCommissionReportData>[] = [
   {
     accessorKey: "id",
     header: "ID",
@@ -44,6 +44,6 @@ export const platreportsListColumns: ColumnDef<platReportData>[] = [
 ];
 
 // Function to handle download action
-const handleDownload = (report: platReportData) => {
+const handleDownload = (report: PlatCommissionReportData) => {
   console.log("Downloading report:", report);
 };

@@ -3,13 +3,13 @@ import { ColumnDef } from "@tanstack/react-table";
 /**
  * Network Stats Table
  */
-export type NetworkStatsData = {
+export type PlatinumNetworkStatsData = {
   gpApproved: number | string;
   gpPending: number | string;
   players: number | string;
 };
 
-export const networkStatsColumns: ColumnDef<NetworkStatsData>[] = [
+export const platinumnetworkStatsColumns: ColumnDef<PlatinumNetworkStatsData>[] = [
   { accessorKey: "gpApproved", header: "GP APPROVED" },
   { accessorKey: "gpPending", header: "GP PENDING" },
   { accessorKey: "players", header: "PLAYERS" },
@@ -18,7 +18,7 @@ export const networkStatsColumns: ColumnDef<NetworkStatsData>[] = [
 /**
  * Network Commission Table
  */
-export type NetworkCommissionData = {
+export type PlatinumNetworkCommissionData = {
   partner: string;
   pendingCommission: number | string;
   status: string;
@@ -26,7 +26,7 @@ export type NetworkCommissionData = {
   total: number | string;
 };
 
-export const networkCommissionColumns: ColumnDef<NetworkCommissionData>[] = [
+export const platinumnetworkCommissionColumns: ColumnDef<PlatinumNetworkCommissionData>[] = [
   { accessorKey: "partner", header: "PARTNER" },
   {
     accessorKey: "pendingCommission",
@@ -41,6 +41,6 @@ export const networkCommissionColumns: ColumnDef<NetworkCommissionData>[] = [
  * Export tables
  */
 export const tableColumns = {
-  networkStatsColumns,
-  networkCommissionColumns,
+  platinumnetworkStatsColumns,
+  platinumnetworkCommissionColumns,
 };

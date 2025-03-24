@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 // Define the data structure for the Reports List table
-export type platReportsListData = {
+export type PlatTransactionReportsListData = {
   id: number;
   fromDate: string;
   toDate: string;
@@ -12,7 +12,7 @@ export type platReportsListData = {
 };
 
 // Reports List Table Columns
-export const platreportsListColumns: ColumnDef<platReportsListData>[] = [
+export const platTransactionreportsListColumns: ColumnDef<PlatTransactionReportsListData>[] = [
   {
     accessorKey: "id",
     header: "ID",
