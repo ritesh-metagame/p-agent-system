@@ -2,13 +2,18 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-export type IDStatusData = {
+export enum Status {
+  Released = "RELEASED",
+  Pending = "PENDING",
+}
+
+export type GoldAllCommissionCutoffIDStatusData = {
   id: string;
   cutoffPeriod?: string;
-  status: string;
+  status: Status;
 };
 
-export const idStatusColumns: ColumnDef<IDStatusData>[] = [
+export const goldAllCommissionCutoffidStatusColumns: ColumnDef<GoldAllCommissionCutoffIDStatusData>[] = [
   {
     accessorKey: "id",
     header: "ID",
@@ -20,5 +25,6 @@ export const idStatusColumns: ColumnDef<IDStatusData>[] = [
   {
     accessorKey: "status",
     header: "STATUS",
+    cell: ({ row }) => <span>{row.original.status}</span>,
   },
 ];

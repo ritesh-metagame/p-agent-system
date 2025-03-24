@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 //!need to check with the excel sheet
 
 // Define the shape of the data for the table.
-export type CommissionRecentCutoffData = {
+export type GoldCommissionRecentCutoffData = {
   platinumPartner: string;
   totalNetworkBets: number | string;
   totalNetworkWinnings: number | string;
@@ -16,7 +16,7 @@ export type CommissionRecentCutoffData = {
 };
 
 // Define the columns for the table.
-export const commissionRecentCutoffColumns: ColumnDef<CommissionRecentCutoffData>[] =
+export const goldcommissionRecentCutoffColumns: ColumnDef<GoldCommissionRecentCutoffData>[] =
   [
     {
       accessorKey: "platinumPartner",

@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 // Define the data structure for the Reports List table
-export type goldReportsListData = {
+export type GoldTransactionReportsListData = {
   id: number;
   fromDate: string;
   toDate: string;
@@ -12,7 +12,7 @@ export type goldReportsListData = {
 };
 
 // Reports List Table Columns
-export const goldreportsListColumns: ColumnDef<goldReportsListData>[] = [
+export const goldTransactionReportsListColumns: ColumnDef<GoldTransactionReportsListData>[] = [
   {
     accessorKey: "id",
     header: "ID",

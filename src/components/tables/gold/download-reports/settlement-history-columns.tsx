@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 // Define the shape of the data for the table.
-export type goldsettlehistoryReportData = {
+export type GoldsettlehistoryReportData = {
   id: number;
   start: string;
   end: string;
@@ -12,7 +12,7 @@ export type goldsettlehistoryReportData = {
 };
 
 // Column definitions for the Reports List table
-export const goldsettlehistoryreportsListColumns: ColumnDef<goldsettlehistoryReportData>[] =
+export const goldsettlehistoryreportsListColumns: ColumnDef<GoldsettlehistoryReportData>[] =
   [
     {
       accessorKey: "id",
@@ -45,6 +45,6 @@ export const goldsettlehistoryreportsListColumns: ColumnDef<goldsettlehistoryRep
   ];
 
 // Function to handle download action
-const handleDownload = (report: goldsettlehistoryReportData) => {
+const handleDownload = (report: GoldsettlehistoryReportData) => {
   console.log("Downloading report:", report);
 };

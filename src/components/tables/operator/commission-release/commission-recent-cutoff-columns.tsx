@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 // Define the shape of the data for Partners
-export type PartnersData = {
+export type OperatorPartnersData = {
   platinumPartner: string;
   totalNetworkBets: number | string;
   totalNetworkWinnings: number | string;
@@ -15,7 +15,7 @@ export type PartnersData = {
   releaseCommissions: string;
 };
 
-export const partnersColumns: ColumnDef<PartnersData>[] = [
+export const operatorpartnersColumns: ColumnDef<OperatorPartnersData>[] = [
   {
     accessorKey: "platinumPartner",
     header: "PLATINUM PARTNER",

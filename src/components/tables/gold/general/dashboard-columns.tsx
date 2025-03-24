@@ -1,8 +1,9 @@
 // tableColumns.ts
+"use client;gold"
 import { ColumnDef } from "@tanstack/react-table";
 //TODO: Define TypeScript types instead of interfaces for each table
 // Define TypeScript interfaces for each table
-interface NetworkOverview {
+export type GoldNetworkOverview = {
   network: string;
   approved: number;
   pending: number;
@@ -10,22 +11,14 @@ interface NetworkOverview {
   total: number;
 }
 
-interface OverallSummary {
+export type GoldOverallSummary = {
   item: string;
   pendingSettlement: string;
   previousSettled: string;
   totalSummary: string;
 }
 
-interface EGames {
-  item: string;
-  dailyOverview: string;
-  pendingSettlement: string;
-  previousSettled: string;
-  totalSummary: string;
-}
-
-interface SportsBetting {
+export type GoldEGames = {
   item: string;
   dailyOverview: string;
   pendingSettlement: string;
@@ -33,26 +26,34 @@ interface SportsBetting {
   totalSummary: string;
 }
 
-interface TopPerformersDeposits {
+export type GoldSportsBetting = {
+  item: string;
+  dailyOverview: string;
+  pendingSettlement: string;
+  previousSettled: string;
+  totalSummary: string;
+}
+
+export type GoldTopPerformersDeposits = {
   playerName: string;
   depositsCutoffPeriod: string;
   totalDepositsToDate: number;
 }
 
-interface TopPerformersGGR {
+export type GoldTopPerformersGGR = {
   playerName: string;
   ggrCutoffPeriod: string;
   totalGgrToDate: number;
 }
 
 // Define TypeScript interface for the table
-interface NetworkCommissionSettlement {
+export type GoldNetworkCommissionSettlement = {
   pendingSettlement: string;
   allTimeSettled: string;
 }
 
 // Define column structure for the table
-export const networkCommissionSettlementColumns: ColumnDef<NetworkCommissionSettlement>[] =
+export const goldnetworkCommissionSettlementColumns: ColumnDef<GoldNetworkCommissionSettlement>[] =
   [
     {
       accessorKey: "pendingSettlement",
@@ -65,7 +66,7 @@ export const networkCommissionSettlementColumns: ColumnDef<NetworkCommissionSett
   ];
 
 // NETWORK OVERVIEW TABLE
-export const networkOverviewColumns: ColumnDef<NetworkOverview>[] = [
+export const goldnetworkOverviewColumns: ColumnDef<GoldNetworkOverview>[] = [
   { accessorKey: "network", header: "Network" },
   { accessorKey: "approved", header: "Approved" },
   { accessorKey: "pending", header: "Pending" },
@@ -74,7 +75,7 @@ export const networkOverviewColumns: ColumnDef<NetworkOverview>[] = [
 ];
 
 // OVERALL SUMMARY TABLE
-export const overallSummaryColumns: ColumnDef<OverallSummary>[] = [
+export const goldoverallSummaryColumns: ColumnDef<GoldOverallSummary>[] = [
   { accessorKey: "item", header: "ITEM" },
   { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
   { accessorKey: "previousSettled", header: "PREVIOUS SETTLED" },
@@ -82,7 +83,7 @@ export const overallSummaryColumns: ColumnDef<OverallSummary>[] = [
 ];
 
 // E-GAMES TABLE
-export const eGamesColumns: ColumnDef<EGames>[] = [
+export const goldeGamesColumns: ColumnDef<GoldEGames>[] = [
   { accessorKey: "item", header: "ITEM" },
   { accessorKey: "dailyOverview", header: "DAILY OVERVIEW" },
   { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
@@ -91,7 +92,7 @@ export const eGamesColumns: ColumnDef<EGames>[] = [
 ];
 
 // SPORTS BETTING TABLE
-export const sportsBettingColumns: ColumnDef<SportsBetting>[] = [
+export const goldsportsBettingColumns: ColumnDef<GoldSportsBetting>[] = [
   { accessorKey: "item", header: "ITEM" },
   { accessorKey: "dailyOverview", header: "DAILY OVERVIEW" },
   { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
@@ -100,7 +101,7 @@ export const sportsBettingColumns: ColumnDef<SportsBetting>[] = [
 ];
 
 // TOP PERFORMERS - DEPOSITS TABLE
-export const topPerformersDepositsColumns: ColumnDef<TopPerformersDeposits>[] =
+export const goldtopPerformersDepositsColumns: ColumnDef<GoldTopPerformersDeposits>[] =
   [
     { accessorKey: "playerName", header: "PLAYER NAME" },
     {
@@ -111,7 +112,7 @@ export const topPerformersDepositsColumns: ColumnDef<TopPerformersDeposits>[] =
   ];
 
 // TOP PERFORMERS - GGR TABLE
-export const topPerformersGgrColumns: ColumnDef<TopPerformersGGR>[] = [
+export const goldtopPerformersGgrColumns: ColumnDef<GoldTopPerformersGGR>[] = [
   { accessorKey: "playerName", header: "PLAYER NAME" },
   {
     accessorKey: "ggrCutoffPeriod",

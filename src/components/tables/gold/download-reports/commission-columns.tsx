@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 // Define the shape of the data for the table.
-export type goldReportData = {
+export type GoldCommissionReportData = {
   id: number;
   fromDate: string;
   toDate: string;
@@ -12,7 +12,7 @@ export type goldReportData = {
 };
 
 // Column definitions for the Reports List table
-export const goldreportsListColumns: ColumnDef<goldReportData>[] = [
+export const goldCommissionreportsListColumns: ColumnDef<GoldCommissionReportData>[] = [
   {
     accessorKey: "id",
     header: "ID",
@@ -44,6 +44,6 @@ export const goldreportsListColumns: ColumnDef<goldReportData>[] = [
 ];
 
 // Function to handle download action
-const handleDownload = (report: goldReportData) => {
+const handleDownload = (report: GoldCommissionReportData) => {
   console.log("Downloading report:", report);
 };

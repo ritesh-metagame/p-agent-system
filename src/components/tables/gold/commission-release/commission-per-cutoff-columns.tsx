@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 // Define the shape of the data for the table.
-export type CommissionPerCutoffData = {
+export type GoldCommissionPerCutoffData = {
   network: string;
   name: string;
   totalNetworkBets: number | string;
@@ -14,7 +14,7 @@ export type CommissionPerCutoffData = {
   totalNetCommissions: number | string;
 };
 
-export const commissionPerCutoffColumns: ColumnDef<CommissionPerCutoffData>[] =
+export const goldcommissionPerCutoffColumns: ColumnDef<GoldCommissionPerCutoffData>[] =
   [
     {
       accessorKey: "network",
@@ -51,7 +51,7 @@ export const commissionPerCutoffColumns: ColumnDef<CommissionPerCutoffData>[] =
     },
   ];
 
-export type PartnerCommissionData = {
+export type GoldPartnerCommissionData = {
   network: string;
   name: string;
   totalBets: number | string;
@@ -62,7 +62,7 @@ export type PartnerCommissionData = {
   totalNetCommissions: number | string;
 };
 
-export const partnerCommissionColumns: ColumnDef<PartnerCommissionData>[] = [
+export const goldpartnerCommissionColumns: ColumnDef<GoldPartnerCommissionData>[] = [
   {
     accessorKey: "network",
     header: "Network",

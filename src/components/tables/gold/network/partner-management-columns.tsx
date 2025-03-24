@@ -11,7 +11,7 @@ export enum CommissionStatus {
 }
 
 // Define TypeScript type for the table
-export type NetworkCommissionData = {
+export type GoldNetworkCommissionData = {
   partner: string;
   pendingCommission: number | string;
   status: CommissionStatus; // Use enum for strict typing
@@ -20,7 +20,7 @@ export type NetworkCommissionData = {
 };
 
 // Define column structure for the table
-export const networkCommissionColumns: ColumnDef<NetworkCommissionData>[] = [
+export const goldnetworkCommissionColumns: ColumnDef<GoldNetworkCommissionData>[] = [
   {
     accessorKey: "partner",
     header: "Partner",

@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 // Define the shape of the data for Network Stats
-export type NetworkStatsData = {
+export type OperatorNetworkStatsData = {
   ppApproved: number | string;
   ppPending: number | string;
   gpApproved: number | string;
@@ -11,7 +11,7 @@ export type NetworkStatsData = {
   players: number | string;
 };
 
-export const networkStatsColumns: ColumnDef<NetworkStatsData>[] = [
+export const operatornetworkStatsColumns: ColumnDef<OperatorNetworkStatsData>[] = [
   {
     accessorKey: "ppApproved",
     header: "PP APPROVED",
@@ -35,7 +35,7 @@ export const networkStatsColumns: ColumnDef<NetworkStatsData>[] = [
 ];
 
 // Define the shape of the data for Network Commission
-export type NetworkCommissionData = {
+export type OperatorNetworkCommissionData = {
   platinumPartner: string;
   pendingCommissionAsOfAvailable: number | string;
   status: string;
@@ -43,7 +43,7 @@ export type NetworkCommissionData = {
   total: number | string;
 };
 
-export const networkCommissionColumns: ColumnDef<NetworkCommissionData>[] = [
+export const operatornetworkCommissionColumns: ColumnDef<OperatorNetworkCommissionData>[] = [
   {
     accessorKey: "platinumPartner",
     header: "PLATINUM PARTNER",

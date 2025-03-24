@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 // Define the data structure for the Settlement table
-export type SettlementData = {
+export type OperatorSettlementData = {
   id: string;
   cutoffPeriod: string;
   amount: number | string;
@@ -15,7 +15,7 @@ export type SettlementData = {
 };
 
 // Settlement Table Columns
-export const settlementColumns: ColumnDef<SettlementData>[] = [
+export const operatorsettlementColumns: ColumnDef<OperatorSettlementData>[] = [
   {
     accessorKey: "id",
     header: "ID",
