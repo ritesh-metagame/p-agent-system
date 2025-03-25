@@ -1,4 +1,5 @@
 import { SuperAdminDashboard } from "@/components/pages";
+import { OperatorDashboard } from "@/components/pages";
 import { JSX } from "react";
 
 export enum UserRole {
@@ -112,7 +113,7 @@ export const RolePageComponentMap: RolePageMap = {
     [Pages.SETTLEMENT_HISTORY]: () => <></>,
   },
   [UserRole.OPERATOR]: {
-    [Pages.DASHBOARD]: () => <></>,
+    [Pages.DASHBOARD]: () => <OperatorDashboard />,
     [Pages.CREATE_OPERATOR_ACCOUNT]: () => <></>,
     [Pages.PARTNER_MANAGEMENT]: () => <></>,
     [Pages.COMMISSION_RECENT_CUTOFF]: () => <></>,

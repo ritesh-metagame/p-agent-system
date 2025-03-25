@@ -1,5 +1,5 @@
 // tableColumns.ts
-"use client;"
+"use client;";
 import { ColumnDef } from "@tanstack/react-table";
 //TODO: Define TypeScript types instead of interfaces for each table
 // Define TypeScript interfaces for each table
@@ -9,14 +9,14 @@ export type OperatorNetworkOverview = {
   pending: number;
   suspended: number;
   total: number;
-}
+};
 
-export type OperatorOverallSummary=  {
+export type OperatorOverallSummary = {
   item: string;
   pendingSettlement: string;
   previousSettled: string;
   totalSummary: string;
-}
+};
 
 export type OperatorEGames = {
   item: string;
@@ -24,7 +24,7 @@ export type OperatorEGames = {
   pendingSettlement: string;
   previousSettled: string;
   totalSummary: string;
-}
+};
 
 export type OperatorSportsBetting = {
   item: string;
@@ -32,25 +32,25 @@ export type OperatorSportsBetting = {
   pendingSettlement: string;
   previousSettled: string;
   totalSummary: string;
-}
+};
 
-export type OperatorTopPerformersAllTime=  {
+export type OperatorTopPerformersAllTime = {
   platinumName: string;
   depositsCutoffPeriod: string;
   totalDepositsToDate: number;
-}
+};
 
-export type OperatorTopPerformersPerCutoff=  {
+export type OperatorTopPerformersPerCutoff = {
   platinumName: string;
   ggrCutoffPeriod: string;
   totalGgrToDate: number;
-}
+};
 
 // Define TypeScript interface for the table
 export type OperatorNetworkCommissionSettlement = {
   pendingSettlement: string;
   allTimeSettled: string;
-}
+};
 
 // Define column structure for the table
 export const operatornetworkCommissionSettlementColumns: ColumnDef<OperatorNetworkCommissionSettlement>[] =
@@ -66,21 +66,23 @@ export const operatornetworkCommissionSettlementColumns: ColumnDef<OperatorNetwo
   ];
 
 // NETWORK OVERVIEW TABLE
-export const operatornetworkOverviewColumns: ColumnDef<OperatorNetworkOverview>[] = [
-  { accessorKey: "network", header: "Network" },
-  { accessorKey: "approved", header: "Approved" },
-  { accessorKey: "pending", header: "Pending" },
-  { accessorKey: "suspended", header: "Suspended" },
-  { accessorKey: "total", header: "Total" },
-];
+export const operatornetworkOverviewColumns: ColumnDef<OperatorNetworkOverview>[] =
+  [
+    { accessorKey: "network", header: "Network" },
+    { accessorKey: "approved", header: "Approved" },
+    { accessorKey: "pending", header: "Pending" },
+    { accessorKey: "suspended", header: "Suspended" },
+    { accessorKey: "total", header: "Total" },
+  ];
 
 // OVERALL SUMMARY TABLE
-export const operatoroverallSummaryColumns: ColumnDef<OperatorOverallSummary>[] = [
-  { accessorKey: "item", header: "ITEM" },
-  { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
-  { accessorKey: "previousSettled", header: "PREVIOUS SETTLED" },
-  { accessorKey: "totalSummary", header: "TOTAL SUMMARY" },
-];
+export const operatoroverallSummaryColumns: ColumnDef<OperatorOverallSummary>[] =
+  [
+    { accessorKey: "item", header: "ITEM" },
+    { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
+    { accessorKey: "previousSettled", header: "PREVIOUS SETTLED" },
+    { accessorKey: "totalSummary", header: "TOTAL SUMMARY" },
+  ];
 
 // E-GAMES TABLE
 export const operatoreGamesColumns: ColumnDef<OperatorEGames>[] = [
@@ -92,13 +94,14 @@ export const operatoreGamesColumns: ColumnDef<OperatorEGames>[] = [
 ];
 
 // SPORTS BETTING TABLE
-export const operatorsportsBettingColumns: ColumnDef<OperatorSportsBetting>[] = [
-  { accessorKey: "item", header: "ITEM" },
-  { accessorKey: "dailyOverview", header: "DAILY OVERVIEW" },
-  { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
-  { accessorKey: "previousSettled", header: "PREVIOUS SETTLED" },
-  { accessorKey: "totalSummary", header: "TOTAL SUMMARY" },
-];
+export const operatorsportsBettingColumns: ColumnDef<OperatorSportsBetting>[] =
+  [
+    { accessorKey: "item", header: "ITEM" },
+    { accessorKey: "dailyOverview", header: "DAILY OVERVIEW" },
+    { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
+    { accessorKey: "previousSettled", header: "PREVIOUS SETTLED" },
+    { accessorKey: "totalSummary", header: "TOTAL SUMMARY" },
+  ];
 
 // TOP PERFORMERS - DEPOSITS TABLE
 export const operatorTopPerformersAllTime: ColumnDef<OperatorTopPerformersAllTime>[] =
@@ -112,11 +115,12 @@ export const operatorTopPerformersAllTime: ColumnDef<OperatorTopPerformersAllTim
   ];
 
 // TOP PERFORMERS - GGR TABLE
-export const operatortopPerformersPerCutoff: ColumnDef<OperatorTopPerformersPerCutoff>[] = [
-  { accessorKey: "platinumName", header: "PLATINUM NAME"  },
-  {
-    accessorKey: "pendingCommissionAsOfAvailableCutoffPeriod",
-    header: "PENDING COMMISSION AS OF AVAILABLE CUTOFF PERIOD",
-  },
-  { accessorKey: "releasedAllTime", header: "RELEASED ALL TIME" },
-];
+export const operatortopPerformersPerCutoff: ColumnDef<OperatorTopPerformersPerCutoff>[] =
+  [
+    { accessorKey: "platinumName", header: "PLATINUM NAME" },
+    {
+      accessorKey: "pendingCommissionAsOfAvailableCutoffPeriod",
+      header: "PENDING COMMISSION AS OF AVAILABLE CUTOFF PERIOD",
+    },
+    { accessorKey: "releasedAllTime", header: "RELEASED ALL TIME" },
+  ];
