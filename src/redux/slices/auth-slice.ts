@@ -11,7 +11,7 @@ interface AuthState {
 
 // Initial state
 const initialState: AuthState = {
-  role: UserRole.SUPER_ADMIN,
+  role: UserRole.OPERATOR,
   username: null,
 };
 
