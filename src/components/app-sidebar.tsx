@@ -134,7 +134,7 @@ export async function AppSidebar({
                         <SidebarMenuButton
                           className={`text-green `}
                           asChild
-                          isActive={item.isActive}
+                          isActive={item.url === pathname}
                         >
                           <a href={item.url}>{item.title}</a>
                         </SidebarMenuButton>

@@ -53,26 +53,26 @@ export type OperatorNetworkCommissionSettlement = {
 };
 
 // Define column structure for the table
-export const operatornetworkCommissionSettlementColumns: ColumnDef<OperatorNetworkCommissionSettlement>[] =
+export const operatorNetworkCommissionSettlementColumns: ColumnDef<OperatorNetworkCommissionSettlement>[] =
   [
     {
       accessorKey: "pendingSettlement",
-      header: "NETWORK COMMISSION PENDING SETTLEMENT",
+      header: "COMMISSION PENDING SETTLEMENT",
     },
     {
       accessorKey: "allTimeSettled",
-      header: "ALL TIME NETWORK COMMISSION SETTLED",
+      header: "COMMISSION SETTLED",
     },
   ];
 
 // NETWORK OVERVIEW TABLE
-export const operatornetworkOverviewColumns: ColumnDef<OperatorNetworkOverview>[] =
+export const operatorNetworkOverviewColumns: ColumnDef<OperatorNetworkOverview>[] =
   [
-    { accessorKey: "network", header: "Network" },
-    { accessorKey: "approved", header: "Approved" },
-    { accessorKey: "pending", header: "Pending" },
-    { accessorKey: "suspended", header: "Suspended" },
-    { accessorKey: "total", header: "Total" },
+    { accessorKey: "network", header: "NETWORK" },
+    { accessorKey: "approved", header: "APPROVED" },
+    { accessorKey: "pending", header: "PENDING" },
+    { accessorKey: "suspended", header: "SUSPENDED" },
+    { accessorKey: "total", header: "TOTAL" },
   ];
 
 // OVERALL SUMMARY TABLE

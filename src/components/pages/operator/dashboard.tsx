@@ -13,18 +13,164 @@ import { Separator } from "@/components/ui/separator";
 import { QRCodeSVG } from "qrcode.react";
 import { DataTable } from "@/components/tables/data-table";
 import {
+  OperatorEGames,
   operatoreGamesColumns,
-  operatornetworkCommissionSettlementColumns,
-  operatornetworkOverviewColumns,
+  OperatorNetworkCommissionSettlement,
+  operatorNetworkCommissionSettlementColumns,
+  OperatorNetworkOverview,
+  operatorNetworkOverviewColumns,
+  OperatorOverallSummary,
   operatoroverallSummaryColumns,
+  OperatorSportsBetting,
   operatorsportsBettingColumns,
+  OperatorTopPerformersAllTime,
   operatorTopPerformersAllTime,
+  OperatorTopPerformersPerCutoff,
   operatortopPerformersPerCutoff,
 } from "@/components/tables/operator/general/dashboard-columns";
 
 type Props = {};
 
 export default function Dashboard({}: Props) {
+  const data: OperatorNetworkCommissionSettlement[] = [
+    {
+      pendingSettlement: "100,000",
+      allTimeSettled: "200,000",
+    },
+    {
+      pendingSettlement: "300,000",
+      allTimeSettled: "500,000",
+    },
+  ];
+
+  const operatorData: OperatorNetworkOverview[] = [
+    {
+      network: "PLATINUM PARTNER",
+      approved: 125,
+      pending: 14,
+      suspended: 3,
+      total: 142,
+    },
+    {
+      network: "GOLDEN PARTNER",
+      approved: 87,
+      pending: 9,
+      suspended: 2,
+      total: 98,
+    },
+    {
+      network: "PLAYERS ",
+      approved: 45,
+      pending: 7,
+      suspended: 1,
+      total: 53,
+    },
+  ];
+
+  const summaryEGamesData: OperatorOverallSummary[] = [
+    {
+      item: "TOTAL BETS",
+      pendingSettlement: "",
+      previousSettled: "",
+      totalSummary: "",
+    },
+    {
+      item: "TOTAL WINNINGS",
+      pendingSettlement: "",
+      previousSettled: "",
+      totalSummary: "",
+    },
+    {
+      item: "GGR",
+      pendingSettlement: "",
+      previousSettled: "",
+      totalSummary: "",
+    },
+    {
+      item: "GROSS COMMISSION",
+      pendingSettlement: "",
+      previousSettled: "",
+      totalSummary: "",
+    },
+    {
+      item: "TOTAL DEDUCTIONS",
+      pendingSettlement: "",
+      previousSettled: "",
+      totalSummary: "",
+    },
+    {
+      item: "NET COMMISSION",
+      pendingSettlement: "100",
+      previousSettled: "",
+      totalSummary: "",
+    },
+  ];
+
+  const eGamesData: OperatorEGames[] = [
+    {
+      item: "TOTAL BETS",
+      dailyOverview: "",
+      pendingSettlement: "",
+      previousSettled: "",
+      totalSummary: "",
+    },
+    {
+      item: "TOTAL WINNINGS",
+      dailyOverview: "",
+      pendingSettlement: "",
+      previousSettled: "",
+      totalSummary: "",
+    },
+    {
+      item: "GGR",
+      dailyOverview: "",
+      pendingSettlement: "",
+      previousSettled: "",
+      totalSummary: "",
+    },
+    {
+      item: "GROSS COMMISSION",
+      dailyOverview: "N / A",
+      pendingSettlement: "",
+      previousSettled: "",
+      totalSummary: "",
+    },
+  ];
+
+  const sportsBettingData: OperatorSportsBetting[] = [
+    {
+      item: "TOTAL BETS",
+      dailyOverview: "",
+      pendingSettlement: "",
+      previousSettled: "",
+      totalSummary: "",
+    },
+
+    {
+      item: "GROSS COMMISSION",
+      dailyOverview: "N / A",
+      pendingSettlement: "",
+      previousSettled: "",
+      totalSummary: "",
+    },
+  ];
+
+  const performerAllTimeData: OperatorTopPerformersAllTime[] = [
+    {
+      platinumName: "PLAT-001",
+      depositsCutoffPeriod: "Feb 1 - Feb 15, 2025",
+      totalDepositsToDate: 100000,
+    },
+  ];
+
+  const performerOneTimeData: OperatorTopPerformersPerCutoff[] = [
+    {
+      platinumName: "PLAT-001",
+      ggrCutoffPeriod: "Feb 1 - Feb 15, 2025",
+      totalGgrToDate: 100000,
+    },
+  ];
+
   return (
     <div className="container mx-auto p-4 space-y-6">
       {/* QR Code and Referral Link */}
@@ -60,8 +206,8 @@ export default function Dashboard({}: Props) {
       </CardContent>
 
       <DataTable
-        columns={operatornetworkCommissionSettlementColumns}
-        data={[]}
+        columns={operatorNetworkCommissionSettlementColumns}
+        data={data}
       />
 
       {/* Network Overview */}
@@ -70,7 +216,7 @@ export default function Dashboard({}: Props) {
         <h2 className="text-lg font-semibold">Network Overview</h2>
       </CardContent>
 
-      <DataTable columns={operatornetworkOverviewColumns} data={[]} />
+      <DataTable columns={operatorNetworkOverviewColumns} data={operatorData} />
 
       {/* Summary */}
       <CardContent className="p-1 flex items-center ">
@@ -83,7 +229,10 @@ export default function Dashboard({}: Props) {
         </p>
       </CardContent>
 
-      <DataTable columns={operatoroverallSummaryColumns} data={[]} />
+      <DataTable
+        columns={operatoroverallSummaryColumns}
+        data={summaryEGamesData}
+      />
 
       {/* E- Games */}
       <CardContent className="p-1  ">
@@ -91,7 +240,7 @@ export default function Dashboard({}: Props) {
         <h2 className="text-lg font-semibold">E-Games</h2>
       </CardContent>
 
-      <DataTable columns={operatoreGamesColumns} data={[]} />
+      <DataTable columns={operatoreGamesColumns} data={eGamesData} />
 
       {/* Sports Betting */}
       <CardContent className="p-1  ">
@@ -99,7 +248,10 @@ export default function Dashboard({}: Props) {
         <h2 className="text-lg font-semibold">SportsBetting</h2>
       </CardContent>
 
-      <DataTable columns={operatorsportsBettingColumns} data={[]} />
+      <DataTable
+        columns={operatorsportsBettingColumns}
+        data={sportsBettingData}
+      />
 
       {/* Top Performers All Time */}
       <CardContent className="p-1  ">
@@ -107,7 +259,10 @@ export default function Dashboard({}: Props) {
         <h2 className="text-lg font-semibold">Top Performers All Time</h2>
       </CardContent>
 
-      <DataTable columns={operatorTopPerformersAllTime} data={[]} />
+      <DataTable
+        columns={operatorTopPerformersAllTime}
+        data={performerAllTimeData}
+      />
 
       {/* Per Cut Off */}
       <CardContent className="p-1  ">
@@ -115,7 +270,10 @@ export default function Dashboard({}: Props) {
         <h2 className="text-lg font-semibold">Per Cut Off</h2>
       </CardContent>
 
-      <DataTable columns={operatortopPerformersPerCutoff} data={[]} />
+      <DataTable
+        columns={operatortopPerformersPerCutoff}
+        data={performerOneTimeData}
+      />
     </div>
   );
 }
