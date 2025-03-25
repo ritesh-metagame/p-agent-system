@@ -70,88 +70,88 @@ export default function Dashboard({}: Props) {
   const summaryEGamesData: OperatorOverallSummary[] = [
     {
       item: "TOTAL BETS",
-      pendingSettlement: "",
-      previousSettled: "",
-      totalSummary: "",
+      pendingSettlement: "20",
+      previousSettled: "40",
+      totalSummary: "120",
     },
     {
       item: "TOTAL WINNINGS",
-      pendingSettlement: "",
-      previousSettled: "",
-      totalSummary: "",
+      pendingSettlement: "10",
+      previousSettled: "5",
+      totalSummary: "15",
     },
     {
       item: "GGR",
-      pendingSettlement: "",
-      previousSettled: "",
-      totalSummary: "",
+      pendingSettlement: "23000",
+      previousSettled: "2000",
+      totalSummary: "25000",
     },
     {
       item: "GROSS COMMISSION",
-      pendingSettlement: "",
-      previousSettled: "",
-      totalSummary: "",
+      pendingSettlement: "5000",
+      previousSettled: "2000",
+      totalSummary: "7000",
     },
     {
       item: "TOTAL DEDUCTIONS",
-      pendingSettlement: "",
-      previousSettled: "",
-      totalSummary: "",
+      pendingSettlement: "4000",
+      previousSettled: "3000",
+      totalSummary: "1000",
     },
     {
       item: "NET COMMISSION",
       pendingSettlement: "100",
-      previousSettled: "",
-      totalSummary: "",
+      previousSettled: "70",
+      totalSummary: "30",
     },
   ];
 
   const eGamesData: OperatorEGames[] = [
     {
       item: "TOTAL BETS",
-      dailyOverview: "",
-      pendingSettlement: "",
-      previousSettled: "",
-      totalSummary: "",
+      dailyOverview: "100",
+      pendingSettlement: "200",
+      previousSettled: "250",
+      totalSummary: "500",
     },
     {
       item: "TOTAL WINNINGS",
-      dailyOverview: "",
-      pendingSettlement: "",
-      previousSettled: "",
-      totalSummary: "",
+      dailyOverview: "200",
+      pendingSettlement: "150",
+      previousSettled: "200",
+      totalSummary: "400",
     },
     {
       item: "GGR",
-      dailyOverview: "",
-      pendingSettlement: "",
-      previousSettled: "",
-      totalSummary: "",
+      dailyOverview: "350",
+      pendingSettlement: "200",
+      previousSettled: "250",
+      totalSummary: "200",
     },
     {
       item: "GROSS COMMISSION",
       dailyOverview: "N / A",
-      pendingSettlement: "",
-      previousSettled: "",
-      totalSummary: "",
+      pendingSettlement: "200",
+      previousSettled: "300",
+      totalSummary: "400",
     },
   ];
 
   const sportsBettingData: OperatorSportsBetting[] = [
     {
       item: "TOTAL BETS",
-      dailyOverview: "",
-      pendingSettlement: "",
-      previousSettled: "",
-      totalSummary: "",
+      dailyOverview: "150",
+      pendingSettlement: "20",
+      previousSettled: "130",
+      totalSummary: "300",
     },
 
     {
       item: "GROSS COMMISSION",
-      dailyOverview: "N / A",
-      pendingSettlement: "",
-      previousSettled: "",
-      totalSummary: "",
+      dailyOverview: "500",
+      pendingSettlement: "50",
+      previousSettled: "450",
+      totalSummary: "1000",
     },
   ];
 
@@ -161,6 +161,16 @@ export default function Dashboard({}: Props) {
       depositsCutoffPeriod: "Feb 1 - Feb 15, 2025",
       totalDepositsToDate: 100000,
     },
+    {
+      platinumName: "PLAT-002",
+      depositsCutoffPeriod: "Feb 16 - Feb 28, 2025",
+      totalDepositsToDate: 85000,
+    },
+    {
+      platinumName: "PLAT-003",
+      depositsCutoffPeriod: "Mar 1 - Mar 15, 2025",
+      totalDepositsToDate: 120000,
+    },
   ];
 
   const performerOneTimeData: OperatorTopPerformersPerCutoff[] = [
@@ -168,6 +178,16 @@ export default function Dashboard({}: Props) {
       platinumName: "PLAT-001",
       ggrCutoffPeriod: "Feb 1 - Feb 15, 2025",
       totalGgrToDate: 100000,
+    },
+    {
+      platinumName: "PLAT-002",
+      ggrCutoffPeriod: "Feb 16 - Feb 28, 2025",
+      totalGgrToDate: 75000,
+    },
+    {
+      platinumName: "PLAT-003",
+      ggrCutoffPeriod: "Mar 1 - Mar 15, 2025",
+      totalGgrToDate: 110000,
     },
   ];
 
