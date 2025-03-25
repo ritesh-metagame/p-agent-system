@@ -1,3 +1,4 @@
+import { SuperAdminDashboard } from "@/components/pages";
 import { JSX } from "react";
 
 export enum UserRole {
@@ -81,7 +82,7 @@ export type RolePageMap = {
 
 export const RolePageComponentMap: RolePageMap = {
   [UserRole.SUPER_ADMIN]: {
-    [Pages.DASHBOARD]: () => <></>,
+    [Pages.DASHBOARD]: () => <SuperAdminDashboard />,
     [Pages.CREATE_OPERATOR_ACCOUNT]: () => <></>,
     [Pages.PARTNER_MANAGEMENT]: () => <></>,
     [Pages.COMMISSION_RECENT_CUTOFF]: () => <></>,
