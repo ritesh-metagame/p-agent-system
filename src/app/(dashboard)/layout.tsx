@@ -14,7 +14,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <AppSidebar />
       <SidebarInset>
         <PageHeader />
-        {children}
+        <div className="pl-10 pt-10 pr-10">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );
