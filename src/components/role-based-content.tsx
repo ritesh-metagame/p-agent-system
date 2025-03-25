@@ -1,30 +1,7 @@
-import { UserRole, Page } from "@/lib/constants";
+import { UserRole, Pages, RolePageComponentMap } from "@/lib/constants";
 import { RootState, useSelector } from "@/redux/store";
-import { JSX } from "react";
-
-type RolePageMap = {
-  [key in UserRole]: {
-    [key in Page]?: () => JSX.Element;
-  };
-};
-
-const RolePageComponentMap: RolePageMap = {
-  [UserRole.SUPER_ADMIN]: {
-    [Page.DASHBOARD]: () => <></>,
-  },
-  [UserRole.PLATINUM_USER]: {
-    [Page.DASHBOARD]: () => <></>,
-  },
-  [UserRole.GOLD_USER]: {
-    [Page.DASHBOARD]: () => <></>,
-  },
-  [UserRole.DEFAULT]: {
-    [Page.DASHBOARD]: () => <></>,
-  },
-};
-
 interface RoleBasedContentProps {
-  page: Page;
+  page: Pages;
 }
 
 const RoleBasedContent = ({ page }: RoleBasedContentProps) => {

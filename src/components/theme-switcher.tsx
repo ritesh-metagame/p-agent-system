@@ -15,6 +15,10 @@ import {
 export function ThemeSwitcher() {
   const { setTheme } = useTheme();
 
+  React.useEffect(() => {
+    setTheme("light");
+  }, []);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
