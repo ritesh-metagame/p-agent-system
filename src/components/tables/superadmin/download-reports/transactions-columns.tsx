@@ -12,39 +12,40 @@ export type SuperAdminTransactionsReportsListData = {
 };
 
 // Reports List Table Columns
-export const superAdminTransactionsReportsListColumns: ColumnDef<SuperAdminTransactionsReportsListData>[] = [
-  {
-    accessorKey: "id",
-    header: "ID",
-  },
-  {
-    accessorKey: "fromDate",
-    header: "FROM DATE",
-  },
-  {
-    accessorKey: "toDate",
-    header: "TO DATE",
-  },
-  {
-    accessorKey: "status",
-    header: "STATUS",
-  },
-  {
-    accessorKey: "action",
-    header: "ACTION",
-    cell: ({ row }) => (
-      <button
-        style={{
-          backgroundColor: "#E87524",
-          color: "white",
-          padding: "6px 12px",
-          border: "none",
-          fontWeight: "bold",
-          cursor: "pointer",
-        }}
-      >
-        DOWNLOAD
-      </button>
-    ),
-  },
-];
+export const superAdminTransactionsReportsListColumns: ColumnDef<SuperAdminTransactionsReportsListData>[] =
+  [
+    {
+      accessorKey: "id",
+      header: "ID",
+    },
+    {
+      accessorKey: "fromDate",
+      header: "FROM DATE",
+    },
+    {
+      accessorKey: "toDate",
+      header: "TO DATE",
+    },
+    {
+      accessorKey: "status",
+      header: "STATUS",
+    },
+    {
+      accessorKey: "action",
+      header: "ACTION",
+      cell: () => (
+        <button
+          style={{
+            backgroundColor: "#E87524",
+            color: "white",
+            padding: "6px 12px",
+            border: "none",
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
+        >
+          DOWNLOAD
+        </button>
+      ),
+    },
+  ];

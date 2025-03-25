@@ -1,6 +1,5 @@
-import { Draft, PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-import axios from "axios";
 import { store } from "../store";
 import { UserRole, users } from "@/lib/constants";
 

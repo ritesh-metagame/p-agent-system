@@ -1,6 +1,4 @@
 "use client";
-
-import { store } from "@/redux/store";
 import { ThemeProvider } from "./theme-provider";
 import ReduxProvider from "@/redux/redux-provider";
 

@@ -1,7 +1,5 @@
 import * as React from "react";
 
-import { SearchForm } from "@/components/search-form";
-import { VersionSwitcher } from "@/components/version-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -17,7 +15,6 @@ import {
 } from "@/components/ui/sidebar";
 import { NavUser } from "./nav-user";
 import { headers } from "next/headers";
-import path from "path";
 import {
   Collapsible,
   CollapsibleContent,
