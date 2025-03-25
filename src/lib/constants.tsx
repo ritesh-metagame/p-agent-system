@@ -1,4 +1,4 @@
-import { SuperAdminDashboard } from "@/components/pages";
+import { PlatinumDashboard, SuperAdminDashboard } from "@/components/pages";
 import { OperatorDashboard } from "@/components/pages";
 import { JSX } from "react";
 
@@ -93,7 +93,7 @@ export const RolePageComponentMap: RolePageMap = {
     [Pages.SETTLEMENT_HISTORY]: () => <></>,
   },
   [UserRole.PLATINUM]: {
-    [Pages.DASHBOARD]: () => <></>,
+    [Pages.DASHBOARD]: () => <PlatinumDashboard />,
     [Pages.CREATE_OPERATOR_ACCOUNT]: () => <></>,
     [Pages.PARTNER_MANAGEMENT]: () => <></>,
     [Pages.COMMISSION_RECENT_CUTOFF]: () => <></>,

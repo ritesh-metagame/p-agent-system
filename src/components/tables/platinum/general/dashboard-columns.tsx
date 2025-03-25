@@ -4,20 +4,21 @@ import { ColumnDef } from "@tanstack/react-table";
  * Cutoff Period Table
  */
 export type PlatinumCutoffPeriodData = {
-  networkCommissionPendingSettlement: string;
-  allTimeNetworkCommissionSettled: string;
+  commissionPendingSettlement: string;
+  commissionSettled: string;
 };
 
-export const platinumcutoffPeriodColumns: ColumnDef<PlatinumCutoffPeriodData>[] = [
-  {
-    accessorKey: "networkCommissionPendingSettlement",
-    header: "NETWORK COMMISSION PENDING SETTLEMENT",
-  },
-  {
-    accessorKey: "allTimeNetworkCommissionSettled",
-    header: "ALL TIME NETWORK COMMISSION SETTLED",
-  },
-];
+export const platinumcutoffPeriodColumns: ColumnDef<PlatinumCutoffPeriodData>[] =
+  [
+    {
+      accessorKey: "commissionPendingSettlement",
+      header: "COMMISSION PENDING SETTLEMENT",
+    },
+    {
+      accessorKey: "commissionSettled",
+      header: "COMMISSION SETTLED",
+    },
+  ];
 
 /**
  * Network Overview Table
@@ -27,16 +28,25 @@ export type PlatinumNetworkOverviewData = {
   approved: number | string;
   pending: number | string;
   suspended: number | string;
-  total: number | string;
+  summary: number | string;
 };
 
-export const platinumnetworkOverviewColumns: ColumnDef<PlatinumNetworkOverviewData>[] = [
-  { accessorKey: "network", header: "Network" },
-  { accessorKey: "approved", header: "Approved" },
-  { accessorKey: "pending", header: "Pending" },
-  { accessorKey: "suspended", header: "Suspended" },
-  { accessorKey: "total", header: "TOTAL" },
-];
+export const platinumnetworkOverviewColumns: ColumnDef<PlatinumNetworkOverviewData>[] =
+  [
+    {
+      accessorKey: "network",
+      header: "NETWORK",
+      cell: ({ row }) => (
+        <>
+          <h1 className="font-bold">{row.getValue("network")}</h1>
+        </>
+      ),
+    },
+    { accessorKey: "approved", header: "APPROVED" },
+    { accessorKey: "pending", header: "PENDING" },
+    { accessorKey: "suspended", header: "SUSPENDED" },
+    { accessorKey: "summary", header: "SUMMARY" },
+  ];
 
 /**
  * Overall Summary (E-Games & Sportsbetting) Table
@@ -45,15 +55,24 @@ export type PlatinumOverallSummaryData = {
   item: string;
   pendingSettlement: number | string;
   previousSettled: number | string;
-  totalSummary: number | string;
+  summary: number | string;
 };
 
-export const platinumoverallSummaryColumns: ColumnDef<PlatinumOverallSummaryData>[] = [
-  { accessorKey: "item", header: "ITEM" },
-  { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
-  { accessorKey: "previousSettled", header: "PREVIOUS SETTLED (Cumulative)" },
-  { accessorKey: "totalSummary", header: "TOTAL SUMMARY" },
-];
+export const platinumoverallSummaryColumns: ColumnDef<PlatinumOverallSummaryData>[] =
+  [
+    {
+      accessorKey: "item",
+      header: "ITEM",
+      cell: ({ row }) => (
+        <>
+          <h1 className="font-bold">{row.getValue("item")}</h1>
+        </>
+      ),
+    },
+    { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
+    { accessorKey: "previousSettled", header: "PREVIOUS SETTLED (Cumulative)" },
+    { accessorKey: "summary", header: "SUMMARY" },
+  ];
 
 /**
  * E-Games Table
@@ -63,15 +82,23 @@ export type PlatinumEGamesData = {
   dailyOverview: number | string;
   pendingSettlement: number | string;
   previousSettled: number | string;
-  totalSummary: number | string;
+  summary: number | string;
 };
 
 export const platinumeGamesColumns: ColumnDef<PlatinumEGamesData>[] = [
-  { accessorKey: "item", header: "ITEM" },
+  {
+    accessorKey: "item",
+    header: "ITEM",
+    cell: ({ row }) => (
+      <>
+        <h1 className="font-bold">{row.getValue("item")}</h1>
+      </>
+    ),
+  },
   { accessorKey: "dailyOverview", header: "DAILY OVERVIEW" },
   { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
-  { accessorKey: "previousSettled", header: "PREVIOUS SETTLED (Cumulative)" },
-  { accessorKey: "totalSummary", header: "TOTAL SUMMARY" },
+  { accessorKey: "previousSettled", header: "PREVIOUS SETTLED " },
+  { accessorKey: "summary", header: "SUMMARY" },
 ];
 
 /**
@@ -82,16 +109,25 @@ export type PlatinumSportsbettingData = {
   dailyOverview: number | string;
   pendingSettlement: number | string;
   previousSettled: number | string;
-  totalSummary: number | string;
+  summary: number | string;
 };
 
-export const platinumsportsbettingColumns: ColumnDef<PlatinumSportsbettingData>[] = [
-  { accessorKey: "item", header: "ITEM" },
-  { accessorKey: "dailyOverview", header: "DAILY OVERVIEW" },
-  { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
-  { accessorKey: "previousSettled", header: "PREVIOUS SETTLED (Cumulative)" },
-  { accessorKey: "totalSummary", header: "TOTAL SUMMARY" },
-];
+export const platinumsportsbettingColumns: ColumnDef<PlatinumSportsbettingData>[] =
+  [
+    {
+      accessorKey: "item",
+      header: "ITEM",
+      cell: ({ row }) => (
+        <>
+          <h1 className="font-bold">{row.getValue("item")}</h1>
+        </>
+      ),
+    },
+    { accessorKey: "dailyOverview", header: "DAILY OVERVIEW" },
+    { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
+    { accessorKey: "previousSettled", header: "PREVIOUS SETTLED " },
+    { accessorKey: "summary", header: "SUMMARY" },
+  ];
 
 /**
  * Top Performers (All Time) Table
@@ -99,17 +135,25 @@ export const platinumsportsbettingColumns: ColumnDef<PlatinumSportsbettingData>[
 export type PlatinumTopPerformersAllTimeData = {
   goldenName: string;
   pendingCommission: number | string;
-  releasedAllTime: number | string;
+  released: number | string;
 };
 
 export const platinumtopPerformersAllTimeColumns: ColumnDef<PlatinumTopPerformersAllTimeData>[] =
   [
-    { accessorKey: "goldenName", header: "GOLDEN NAME" },
+    {
+      accessorKey: "goldenName",
+      header: "GOLDEN NAME",
+      cell: ({ row }) => (
+        <>
+          <h1 className="font-bold">{row.getValue("goldenName")}</h1>
+        </>
+      ),
+    },
     {
       accessorKey: "pendingCommission",
-      header: "PENDING COMMISSION AS OF AVAILABLE CUTOFF PERIOD",
+      header: "PENDING COMMISSION ",
     },
-    { accessorKey: "releasedAllTime", header: "RELEASED ALL TIME" },
+    { accessorKey: "released", header: "RELEASED " },
   ];
 
 /**
@@ -118,17 +162,25 @@ export const platinumtopPerformersAllTimeColumns: ColumnDef<PlatinumTopPerformer
 export type PlatinumTopPerformersPerCutoffData = {
   goldenName: string;
   pendingCommission: number | string;
-  releasedAllTime: number | string;
+  released: number | string;
 };
 
 export const platinumtopPerformersPerCutoffColumns: ColumnDef<PlatinumTopPerformersPerCutoffData>[] =
   [
-    { accessorKey: "goldenName", header: "GOLDEN NAME" },
+    {
+      accessorKey: "goldenName",
+      header: "GOLDEN NAME",
+      cell: ({ row }) => (
+        <>
+          <h1 className="font-bold">{row.getValue("goldenName")}</h1>
+        </>
+      ),
+    },
     {
       accessorKey: "pendingCommission",
-      header: "PENDING COMMISSION AS OF AVAILABLE CUTOFF PERIOD",
+      header: "PENDING COMMISSION ",
     },
-    { accessorKey: "releasedAllTime", header: "RELEASED ALL TIME" },
+    { accessorKey: "released", header: "RELEASED " },
   ];
 
 /**
