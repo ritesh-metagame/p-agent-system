@@ -1,3 +1,5 @@
+"use client";
+
 import { UserRole, Pages, RolePageComponentMap } from "@/lib/constants";
 import { RootState, store, useSelector } from "@/redux/store";
 interface RoleBasedContentProps {
