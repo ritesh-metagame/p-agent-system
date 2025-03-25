@@ -1,44 +1,20 @@
-import { UserRole, Page } from "@/lib/constants";
-import { RootState, useSelector } from "@/redux/store";
-import { JSX } from "react";
+"use client";
 
-type RolePageMap = {
-  [key in UserRole]: {
-    [key in Page]?: () => JSX.Element;
-  };
-};
-
-const RolePageComponentMap: RolePageMap = {
-  [UserRole.SUPER_ADMIN]: {
-    [Page.DASHBOARD]: () => <></>,
-  },
-  [UserRole.PLATINUM_USER]: {
-    [Page.DASHBOARD]: () => <></>,
-  },
-  [UserRole.GOLD_USER]: {
-    [Page.DASHBOARD]: () => <></>,
-  },
-  [UserRole.DEFAULT]: {
-    [Page.DASHBOARD]: () => <></>,
-  },
-};
-
+import { UserRole, Pages, RolePageComponentMap } from "@/lib/constants";
+import { store } from "@/redux/store";
 interface RoleBasedContentProps {
-  page: Page;
+  page: Pages;
 }
 
 const RoleBasedContent = ({ page }: RoleBasedContentProps) => {
-  const role = useSelector(
-    (state: RootState) => state.authReducer.role as UserRole
-  );
-
+  const role = store.getState().authReducer.role as UserRole;
   if (!role) return <>Loading...</>;
 
-  const ComponentToRender =
+  const Component =
     RolePageComponentMap[role]?.[page] ||
     RolePageComponentMap[UserRole.DEFAULT]?.[page];
 
-  return ComponentToRender ? <ComponentToRender /> : <p>Unauthorized Access</p>;
+  return Component ? <Component /> : <p>Unauthorized Access</p>;
 };
 
 export default RoleBasedContent;
