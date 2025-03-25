@@ -27,12 +27,12 @@ type Props = {};
 // Dummy data for PlatinumCutoffPeriodData
 const platinumCutoffPeriodData: PlatinumCutoffPeriodData[] = [
   {
-    networkCommissionPendingSettlement: "$50,000",
-    allTimeNetworkCommissionSettled: "$200,000",
+    commissionPendingSettlement: "$50,000",
+    commissionSettled: "$200,000",
   },
   {
-    networkCommissionPendingSettlement: "$30,000",
-    allTimeNetworkCommissionSettled: "$150,000",
+    commissionPendingSettlement: "$30,000",
+    commissionSettled: "$150,000",
   },
 ];
 
@@ -43,14 +43,14 @@ const platinumNetworkOverviewData: PlatinumNetworkOverviewData[] = [
     approved: 120,
     pending: 15,
     suspended: 5,
-    total: 140,
+    summary: 140,
   },
   {
     network: "PLAYERS",
     approved: 300,
     pending: 25,
     suspended: 10,
-    total: 335,
+    summary: 335,
   },
 ];
 
@@ -60,37 +60,37 @@ const platinumOverallSummaryData: PlatinumOverallSummaryData[] = [
     item: "TOTAL BETS",
     pendingSettlement: "$100,000",
     previousSettled: "$500,000",
-    totalSummary: "$600,000",
+    summary: "$600,000",
   },
   {
     item: "TOTAL WINS",
     pendingSettlement: "$90,000",
     previousSettled: "$300,000",
-    totalSummary: "$360,000",
+    summary: "$360,000",
   },
   {
     item: "GGR",
     pendingSettlement: "$40,000",
     previousSettled: "$200,000",
-    totalSummary: "$240,000",
+    summary: "$240,000",
   },
   {
     item: "GROSS COMMISSIONS",
     pendingSettlement: "$10,000",
     previousSettled: "$50,000",
-    totalSummary: "$60,000",
+    summary: "$60,000",
   },
   {
     item: "TOTAL DEDUCTIONS",
     pendingSettlement: "$10,000",
     previousSettled: "$50,000",
-    totalSummary: "$60,000",
+    summary: "$60,000",
   },
   {
     item: "NET COMMISSIONS",
     pendingSettlement: "$10,000",
     previousSettled: "$50,000",
-    totalSummary: "$60,000",
+    summary: "$60,000",
   },
 ];
 
@@ -101,28 +101,28 @@ const platinumEGamesData: PlatinumEGamesData[] = [
     dailyOverview: "$5,000",
     pendingSettlement: "$2,000",
     previousSettled: "$20,000",
-    totalSummary: "$22,000",
+    summary: "$22,000",
   },
   {
     item: "TOTAL WINNINGS",
     dailyOverview: "$7,000",
     pendingSettlement: "$3,000",
     previousSettled: "$25,000",
-    totalSummary: "$28,000",
+    summary: "$28,000",
   },
   {
     item: "GGR",
     dailyOverview: "$7,000",
     pendingSettlement: "$3,000",
     previousSettled: "$25,000",
-    totalSummary: "$28,000",
+    summary: "$28,000",
   },
   {
     item: "GROSS COMMISSIONS",
     dailyOverview: "$7,000",
     pendingSettlement: "$3,000",
     previousSettled: "$25,000",
-    totalSummary: "$28,000",
+    summary: "$28,000",
   },
 ];
 
@@ -133,14 +133,14 @@ const platinumSportsbettingData: PlatinumSportsbettingData[] = [
     dailyOverview: "$8,000",
     pendingSettlement: "$4,000",
     previousSettled: "$30,000",
-    totalSummary: "$34,000",
+    summary: "$34,000",
   },
   {
     item: "GROSS COMMISSIONS",
     dailyOverview: "$6,000",
     pendingSettlement: "$2,500",
     previousSettled: "$22,000",
-    totalSummary: "$24,500",
+    summary: "$24,500",
   },
 ];
 
@@ -149,12 +149,12 @@ const platinumTopPerformersAllTimeData: PlatinumTopPerformersAllTimeData[] = [
   {
     goldenName: "GP-001",
     pendingCommission: "$12,000",
-    releasedAllTime: "$50,000",
+    released: "$50,000",
   },
   {
     goldenName: "GP-002",
     pendingCommission: "$15,000",
-    releasedAllTime: "$60,000",
+    released: "$60,000",
   },
 ];
 
@@ -164,12 +164,12 @@ const platinumTopPerformersPerCutoffData: PlatinumTopPerformersPerCutoffData[] =
     {
       goldenName: "GP-001",
       pendingCommission: "$3,000",
-      releasedAllTime: "$10,000",
+      released: "$10,000",
     },
     {
       goldenName: "GP-002",
       pendingCommission: "$4,000",
-      releasedAllTime: "$12,000",
+      released: "$12,000",
     },
   ];
 
@@ -243,7 +243,7 @@ export default function Dashboard({}: Props) {
       {/* SportsBetting */}
 
       <CardContent className="p-1 flex items-center ">
-        <h2 className="text-lg font-semibold">SportsBetting</h2>
+        <h2 className="text-lg font-semibold">Sports Betting</h2>
       </CardContent>
       <DataTable
         columns={platinumsportsbettingColumns}
