@@ -8,16 +8,17 @@ export type PlatinumCutoffPeriodData = {
   allTimeNetworkCommissionSettled: string;
 };
 
-export const platinumcutoffPeriodColumns: ColumnDef<PlatinumCutoffPeriodData>[] = [
-  {
-    accessorKey: "networkCommissionPendingSettlement",
-    header: "NETWORK COMMISSION PENDING SETTLEMENT",
-  },
-  {
-    accessorKey: "allTimeNetworkCommissionSettled",
-    header: "ALL TIME NETWORK COMMISSION SETTLED",
-  },
-];
+export const platinumcutoffPeriodColumns: ColumnDef<PlatinumCutoffPeriodData>[] =
+  [
+    {
+      accessorKey: "networkCommissionPendingSettlement",
+      header: "NETWORK COMMISSION PENDING SETTLEMENT",
+    },
+    {
+      accessorKey: "allTimeNetworkCommissionSettled",
+      header: "ALL TIME NETWORK COMMISSION SETTLED",
+    },
+  ];
 
 /**
  * Network Overview Table
@@ -30,13 +31,22 @@ export type PlatinumNetworkOverviewData = {
   total: number | string;
 };
 
-export const platinumnetworkOverviewColumns: ColumnDef<PlatinumNetworkOverviewData>[] = [
-  { accessorKey: "network", header: "Network" },
-  { accessorKey: "approved", header: "Approved" },
-  { accessorKey: "pending", header: "Pending" },
-  { accessorKey: "suspended", header: "Suspended" },
-  { accessorKey: "total", header: "TOTAL" },
-];
+export const platinumnetworkOverviewColumns: ColumnDef<PlatinumNetworkOverviewData>[] =
+  [
+    {
+      accessorKey: "network",
+      header: "Network",
+      cell: ({ row }) => (
+        <>
+          <h1 className="font-bold">{row.getValue("network")}</h1>
+        </>
+      ),
+    },
+    { accessorKey: "approved", header: "Approved" },
+    { accessorKey: "pending", header: "Pending" },
+    { accessorKey: "suspended", header: "Suspended" },
+    { accessorKey: "total", header: "TOTAL" },
+  ];
 
 /**
  * Overall Summary (E-Games & Sportsbetting) Table
@@ -48,12 +58,21 @@ export type PlatinumOverallSummaryData = {
   totalSummary: number | string;
 };
 
-export const platinumoverallSummaryColumns: ColumnDef<PlatinumOverallSummaryData>[] = [
-  { accessorKey: "item", header: "ITEM" },
-  { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
-  { accessorKey: "previousSettled", header: "PREVIOUS SETTLED (Cumulative)" },
-  { accessorKey: "totalSummary", header: "TOTAL SUMMARY" },
-];
+export const platinumoverallSummaryColumns: ColumnDef<PlatinumOverallSummaryData>[] =
+  [
+    {
+      accessorKey: "item",
+      header: "ITEM",
+      cell: ({ row }) => (
+        <>
+          <h1 className="font-bold">{row.getValue("item")}</h1>
+        </>
+      ),
+    },
+    { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
+    { accessorKey: "previousSettled", header: "PREVIOUS SETTLED (Cumulative)" },
+    { accessorKey: "totalSummary", header: "TOTAL SUMMARY" },
+  ];
 
 /**
  * E-Games Table
@@ -67,7 +86,15 @@ export type PlatinumEGamesData = {
 };
 
 export const platinumeGamesColumns: ColumnDef<PlatinumEGamesData>[] = [
-  { accessorKey: "item", header: "ITEM" },
+  {
+    accessorKey: "item",
+    header: "ITEM",
+    cell: ({ row }) => (
+      <>
+        <h1 className="font-bold">{row.getValue("item")}</h1>
+      </>
+    ),
+  },
   { accessorKey: "dailyOverview", header: "DAILY OVERVIEW" },
   { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
   { accessorKey: "previousSettled", header: "PREVIOUS SETTLED (Cumulative)" },
@@ -85,13 +112,22 @@ export type PlatinumSportsbettingData = {
   totalSummary: number | string;
 };
 
-export const platinumsportsbettingColumns: ColumnDef<PlatinumSportsbettingData>[] = [
-  { accessorKey: "item", header: "ITEM" },
-  { accessorKey: "dailyOverview", header: "DAILY OVERVIEW" },
-  { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
-  { accessorKey: "previousSettled", header: "PREVIOUS SETTLED (Cumulative)" },
-  { accessorKey: "totalSummary", header: "TOTAL SUMMARY" },
-];
+export const platinumsportsbettingColumns: ColumnDef<PlatinumSportsbettingData>[] =
+  [
+    {
+      accessorKey: "item",
+      header: "ITEM",
+      cell: ({ row }) => (
+        <>
+          <h1 className="font-bold">{row.getValue("item")}</h1>
+        </>
+      ),
+    },
+    { accessorKey: "dailyOverview", header: "DAILY OVERVIEW" },
+    { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
+    { accessorKey: "previousSettled", header: "PREVIOUS SETTLED (Cumulative)" },
+    { accessorKey: "totalSummary", header: "TOTAL SUMMARY" },
+  ];
 
 /**
  * Top Performers (All Time) Table
@@ -104,7 +140,15 @@ export type PlatinumTopPerformersAllTimeData = {
 
 export const platinumtopPerformersAllTimeColumns: ColumnDef<PlatinumTopPerformersAllTimeData>[] =
   [
-    { accessorKey: "goldenName", header: "GOLDEN NAME" },
+    {
+      accessorKey: "goldenName",
+      header: "GOLDEN NAME",
+      cell: ({ row }) => (
+        <>
+          <h1 className="font-bold">{row.getValue("goldenName")}</h1>
+        </>
+      ),
+    },
     {
       accessorKey: "pendingCommission",
       header: "PENDING COMMISSION AS OF AVAILABLE CUTOFF PERIOD",
@@ -123,7 +167,15 @@ export type PlatinumTopPerformersPerCutoffData = {
 
 export const platinumtopPerformersPerCutoffColumns: ColumnDef<PlatinumTopPerformersPerCutoffData>[] =
   [
-    { accessorKey: "goldenName", header: "GOLDEN NAME" },
+    {
+      accessorKey: "goldenName",
+      header: "GOLDEN NAME",
+      cell: ({ row }) => (
+        <>
+          <h1 className="font-bold">{row.getValue("goldenName")}</h1>
+        </>
+      ),
+    },
     {
       accessorKey: "pendingCommission",
       header: "PENDING COMMISSION AS OF AVAILABLE CUTOFF PERIOD",
