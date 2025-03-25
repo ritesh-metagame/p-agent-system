@@ -2,7 +2,7 @@ import { Draft, PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import axios from "axios";
 import { store } from "../store";
-import { users } from "@/lib/constants";
+import { UserRole, users } from "@/lib/constants";
 
 // Define the state type
 interface AuthState {
@@ -12,7 +12,7 @@ interface AuthState {
 
 // Initial state
 const initialState: AuthState = {
-  role: null,
+  role: UserRole.PLATINUM,
   username: null,
 };
 
