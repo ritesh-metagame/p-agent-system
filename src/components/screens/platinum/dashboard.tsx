@@ -16,13 +16,15 @@ import {
   PlatinumTopPerformersPerCutoffData,
 } from "../../tables/platinum/general/dashboard-columns";
 import { QRCodeSVG } from "qrcode.react";
-import { Card, CardContent } from "@/components/ui/card";
+// import { Card, CardContent } from "@/components/ui/card";
+import { TypographyH2 } from "@/components/ui/typographyh2";
+// import { TypographyH4 } from "@/components/ui/typographyh4";
 
 import { DataTable } from "@/components/tables/data-table";
 
 type Props = {};
 
-// dummy data
+// dummy data starts
 
 // Dummy data for PlatinumCutoffPeriodData
 const platinumCutoffPeriodData: PlatinumCutoffPeriodData[] = [
@@ -177,96 +179,118 @@ const platinumTopPerformersPerCutoffData: PlatinumTopPerformersPerCutoffData[] =
 
 export default function Dashboard({}: Props) {
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      <CardContent className="p-4  flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <QRCodeSVG value="https://www.arionplay-referallink.ph" size={80} />
-          <p className="text-sm text-black-900">Download QR Code</p>
+    <div>
+      <div className="container mb-10">
+        <div className="mb-5  flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <QRCodeSVG value="https://www.arionplay-referallink.ph" size={80} />
+            <p className="text-sm text-black-900">Download QR Code</p>
+          </div>
         </div>
-      </CardContent>
 
-      <div className="p-4 text-start">
-        <p className="text-sm  font-bold">
-          Referral Link:{" "}
-          <a href="#" className="text-blue-500">
-            https://www.arionplay-referallink.ph
-          </a>
-        </p>
-        <p className="text-md  text-black-900">
-          Share this QR code and copy to onboard platinum
-        </p>
+        <div className="mb-5 text-start">
+          <p className="text-md  ">
+            Referral Link:{" "}
+            <a href="#" className="text-blue-500">
+              https://www.arionplay-referallink.ph
+            </a>
+          </p>
+          <p className="text-md  text-black-900">
+            Share this QR code or copy the link to onboard Platinum Partners
+          </p>
+        </div>
+
+        <div className="mb-10">
+          <div className="flex items-center gap-4">
+            <TypographyH2 className="mb-4">
+              Cutoff Period Available For Settlement :
+            </TypographyH2>
+            <p className="text-md font-medium text-gray-700">
+              Feb 1 - Feb 15, 2025
+            </p>
+          </div>
+
+          <DataTable
+            columns={platinumcutoffPeriodColumns}
+            data={platinumCutoffPeriodData}
+            columnWidths={["250px", "250px"]}
+          />
+        </div>
+
+        <div className="mb-10">
+          <TypographyH2 className="mb-4">Network Overview</TypographyH2>
+
+          <DataTable
+            columns={platinumnetworkOverviewColumns}
+            data={platinumNetworkOverviewData}
+            columnWidths={["250px", "250px", "250px", "250px", "250px"]}
+          />
+        </div>
+
+        {/* summary */}
+        <div className="mb-10">
+          <div className="flex items-center gap-4">
+            <TypographyH2 className="mb-4">
+              Summary: E-Games & sportsBetting
+            </TypographyH2>
+            <p className="text-md font-medium text-gray-700">
+              Cutoff Period: Feb 1 - Feb 15, 2025
+            </p>
+          </div>
+
+          <DataTable
+            columns={platinumoverallSummaryColumns}
+            data={platinumOverallSummaryData}
+            columnWidths={["250px", "250px", "250px", "250px"]}
+          />
+        </div>
+
+        {/* egames */}
+
+        <div className="mb-10">
+          <TypographyH2 className="mb-4">E-GAMES</TypographyH2>
+
+          <DataTable
+            columns={platinumeGamesColumns}
+            data={platinumEGamesData}
+            columnWidths={["250px", "250px", "250px", "250px", "250px"]}
+          />
+        </div>
+
+        {/* SportsBetting */}
+
+        <div className="mb-10">
+          <TypographyH2 className="mb-4">SportsBetting</TypographyH2>
+
+          <DataTable
+            columns={platinumsportsbettingColumns}
+            data={platinumSportsbettingData}
+            columnWidths={["250px", "250px", "250px", "250px", "250px"]}
+          />
+        </div>
+
+        {/* Top Performers All Time */}
+        <div className="mb-10">
+          <TypographyH2 className="mb-4">Top Performers All Time</TypographyH2>
+
+          <DataTable
+            columns={platinumtopPerformersAllTimeColumns}
+            data={platinumTopPerformersAllTimeData}
+            columnWidths={["250px", "250px", "250px"]}
+          />
+        </div>
+
+        {/* Per Cut Off */}
+        <div className="mb-10">
+          <TypographyH2 className="mb-4">Per Cut Off</TypographyH2>
+
+          <DataTable
+            columns={platinumtopPerformersPerCutoffColumns}
+            data={platinumTopPerformersPerCutoffData}
+            columnWidths={["250px", "250px", "250px"]}
+          />
+        </div>
       </div>
-
-      <CardContent className="p-1 flex items-center ">
-        <h2 className="text-lg font-semibold">
-          Cutoff Period Available For Settlement:
-        </h2>
-        <p className="text-md font-medium text-gray-700 ml-1">
-          Feb 1 - Feb 15, 2025
-        </p>
-      </CardContent>
-
-      <DataTable
-        columns={platinumcutoffPeriodColumns}
-        data={platinumCutoffPeriodData}
-      />
-
-      <CardContent className="p-1 flex items-center ">
-        <h2 className="text-lg font-semibold">Network Overview</h2>
-      </CardContent>
-      <DataTable
-        columns={platinumnetworkOverviewColumns}
-        data={platinumNetworkOverviewData}
-      />
-
-      {/* summary */}
-      <CardContent className="p-1 flex items-center ">
-        <h2 className="text-lg font-semibold">
-          Summary:E-Games & sportsBetting Cutoff Period :
-        </h2>
-        <p className="text-md font-medium text-gray-700 ml-1">
-          Feb1 - Feb 15, 2025
-        </p>
-      </CardContent>
-      <DataTable
-        columns={platinumoverallSummaryColumns}
-        data={platinumOverallSummaryData}
-      />
-
-      {/* egames */}
-
-      <CardContent className="p-1 flex items-center ">
-        <h2 className="text-lg font-semibold">E-Games</h2>
-      </CardContent>
-      <DataTable columns={platinumeGamesColumns} data={platinumEGamesData} />
-
-      {/* SportsBetting */}
-
-      <CardContent className="p-1 flex items-center ">
-        <h2 className="text-lg font-semibold">Sports Betting</h2>
-      </CardContent>
-      <DataTable
-        columns={platinumsportsbettingColumns}
-        data={platinumSportsbettingData}
-      />
-
-      {/* Top Performers All Time */}
-      <CardContent className="p-1 flex items-center ">
-        <h2 className="text-lg font-semibold">Top Performers All Time</h2>
-      </CardContent>
-      <DataTable
-        columns={platinumtopPerformersAllTimeColumns}
-        data={platinumTopPerformersAllTimeData}
-      />
-
-      {/* Per Cut Off */}
-      <CardContent className="p-1 flex items-center ">
-        <h2 className="text-lg font-semibold">Per Cut Off</h2>
-      </CardContent>
-      <DataTable
-        columns={platinumtopPerformersPerCutoffColumns}
-        data={platinumTopPerformersPerCutoffData}
-      />
     </div>
   );
 }

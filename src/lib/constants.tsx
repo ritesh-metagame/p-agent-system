@@ -7,8 +7,15 @@ import {
   SuperAdminCreateOperatorAccount,
   SuperAdminDashboard,
   SuperAdminPartnerManagement,
+  PlatinumPartnerManagement,
+  PlatinumCommissionRecentCutoff,
+  PlatinumHistoricalCutoff,
+  PlatinumCommissions,
+  PlatinumTransactions,
+  PlatinumSettlementHistory,
 } from "@/components/screens";
 import CommissionRecentCutsOff from "@/components/screens/operator/commission-recent-cutoff";
+// import { OperatorDashboard } from "@/components/screens";
 import { JSX } from "react";
 
 export enum UserRole {
@@ -106,12 +113,12 @@ export const RolePageComponentMap: RolePageMap = {
   [UserRole.PLATINUM]: {
     [Pages.DASHBOARD]: () => <PlatinumDashboard />,
     [Pages.CREATE_OPERATOR_ACCOUNT]: () => <></>,
-    [Pages.PARTNER_MANAGEMENT]: () => <></>,
-    [Pages.COMMISSION_RECENT_CUTOFF]: () => <></>,
-    [Pages.HISTORICAL_CUTOFFS]: () => <></>,
-    [Pages.TRANSACTIONS]: () => <></>,
-    [Pages.COMMISSIONS]: () => <></>,
-    [Pages.SETTLEMENT_HISTORY]: () => <></>,
+    [Pages.PARTNER_MANAGEMENT]: () => <PlatinumPartnerManagement />,
+    [Pages.COMMISSION_RECENT_CUTOFF]: () => <PlatinumCommissionRecentCutoff />,
+    [Pages.HISTORICAL_CUTOFFS]: () => <PlatinumHistoricalCutoff />,
+    [Pages.TRANSACTIONS]: () => <PlatinumTransactions />,
+    [Pages.COMMISSIONS]: () => <PlatinumCommissions />,
+    [Pages.SETTLEMENT_HISTORY]: () => <PlatinumSettlementHistory />,
   },
   [UserRole.GOLD]: {
     [Pages.DASHBOARD]: () => <></>,
