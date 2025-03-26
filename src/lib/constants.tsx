@@ -1,4 +1,3 @@
-import CreateAccountForm from "@/components/create-account-form";
 import {
   OperatorDashboard,
   PartnerManagement,
@@ -9,6 +8,7 @@ import {
   SuperAdminPartnerManagement,
 } from "@/components/screens";
 import CommissionRecentCutsOff from "@/components/screens/operator/commission-recent-cutoff";
+import CreatePlatinumAccount from "@/components/screens/operator/create-platinum-account";
 import { JSX } from "react";
 
 export enum UserRole {
@@ -125,7 +125,7 @@ export const RolePageComponentMap: RolePageMap = {
   },
   [UserRole.OPERATOR]: {
     [Pages.DASHBOARD]: () => <OperatorDashboard />,
-    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <CreateAccountForm />,
+    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <CreatePlatinumAccount />,
     [Pages.PARTNER_MANAGEMENT]: () => <PartnerManagement />,
     [Pages.COMMISSION_RECENT_CUTOFF]: () => <CommissionRecentCutsOff />,
     [Pages.HISTORICAL_CUTOFFS]: () => <></>,
