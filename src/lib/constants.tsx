@@ -1,5 +1,11 @@
-import { PlatinumDashboard, SuperAdminDashboard } from "@/components/pages";
-import { OperatorDashboard } from "@/components/pages";
+import {
+  PlatinumDashboard,
+  SuperAdminCommissionRecentCutoff,
+  SuperAdminCreateOperatorAccount,
+  SuperAdminDashboard,
+  SuperAdminPartnerManagement,
+} from "@/components/screens";
+import { OperatorDashboard } from "@/components/screens";
 import { JSX } from "react";
 
 export enum UserRole {
@@ -84,9 +90,11 @@ export type RolePageMap = {
 export const RolePageComponentMap: RolePageMap = {
   [UserRole.SUPER_ADMIN]: {
     [Pages.DASHBOARD]: () => <SuperAdminDashboard />,
-    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <></>,
-    [Pages.PARTNER_MANAGEMENT]: () => <></>,
-    [Pages.COMMISSION_RECENT_CUTOFF]: () => <></>,
+    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <SuperAdminCreateOperatorAccount />,
+    [Pages.PARTNER_MANAGEMENT]: () => <SuperAdminPartnerManagement />,
+    [Pages.COMMISSION_RECENT_CUTOFF]: () => (
+      <SuperAdminCommissionRecentCutoff />
+    ),
     [Pages.HISTORICAL_CUTOFFS]: () => <></>,
     [Pages.TRANSACTIONS]: () => <></>,
     [Pages.COMMISSIONS]: () => <></>,

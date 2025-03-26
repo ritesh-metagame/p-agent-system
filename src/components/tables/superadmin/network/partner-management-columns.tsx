@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 
 // Define the shape of the data for the table.
@@ -17,7 +18,11 @@ export const partnerManagementColumns: ColumnDef<PartnerManagementData>[] = [
   {
     accessorKey: "operatorName",
     header: "OPERATOR NAME",
-    cell: ({ row }) => row.original.operatorName || "ALL OPERATORS",
+    cell: ({ row }) => (
+      <p className="font-medium">
+        {row.original.operatorName || "ALL OPERATORS"}
+      </p>
+    ),
   },
   {
     accessorKey: "ppApproved",
@@ -43,7 +48,12 @@ export const partnerManagementColumns: ColumnDef<PartnerManagementData>[] = [
     accessorKey: "exportFile",
     header: "EXPORT FILE",
     cell: ({ row }) => (
-      <button onClick={() => handleExport(row.original)}>Export</button>
+      <Button
+        className="bg-green-800"
+        onClick={() => handleExport(row.original)}
+      >
+        Export
+      </Button>
     ),
   },
 ];
@@ -52,6 +62,41 @@ const handleExport = (record: PartnerManagementData) => {
   // Implement the export functionality here
   console.log("Exporting record:", record);
 };
+
+// Dummy data for NETWORK STATS
+export const allNetworkStatsData: PartnerManagementData[] = [
+  {
+    operatorName: "ALL OPERATORS",
+    ppApproved: "",
+    ppPending: "",
+    gpApproved: "",
+    gpPending: "",
+    players: "",
+    exportFile: "",
+  },
+];
+
+export const operatorWiseNetworkStatsData: PartnerManagementData[] = [
+  {
+    operatorName: "ETA-001",
+    ppApproved: "",
+    ppPending: "",
+    gpApproved: "",
+    gpPending: "",
+    players: "",
+    exportFile: "",
+  },
+
+  {
+    operatorName: "ETA-002",
+    ppApproved: "",
+    ppPending: "",
+    gpApproved: "",
+    gpPending: "",
+    players: "",
+    exportFile: "",
+  },
+];
 
 export type NetworkCommissionData = {
   operatorName: string;
@@ -68,7 +113,7 @@ export const networkCommissionColumns: ColumnDef<NetworkCommissionData>[] = [
   },
   {
     accessorKey: "pendingCommission",
-    header: "PENDING COMMISSION AS OF AVAILABLE CUTOFF PERIOD",
+    header: "PENDING COMMISSION",
   },
   {
     accessorKey: "status",
@@ -81,5 +126,23 @@ export const networkCommissionColumns: ColumnDef<NetworkCommissionData>[] = [
   {
     accessorKey: "total",
     header: "TOTAL",
+  },
+];
+
+// Dummy data for NETWORK COMMISSION
+export const networkCommissionData: NetworkCommissionData[] = [
+  {
+    operatorName: "ETA-001",
+    pendingCommission: "10,000",
+    status: "RELEASED",
+    allTime: "1,00,000",
+    total: "1,10,000",
+  },
+  {
+    operatorName: "ETA-002",
+    pendingCommission: "5,000",
+    status: "PENDING",
+    allTime: "10,000",
+    total: "15,000",
   },
 ];

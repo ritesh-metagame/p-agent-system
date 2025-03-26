@@ -14,7 +14,7 @@ import {
   PlatinumSportsbettingData,
   PlatinumTopPerformersAllTimeData,
   PlatinumTopPerformersPerCutoffData,
-} from "../../../components/tables/platinum/general/dashboard-columns";
+} from "../../tables/platinum/general/dashboard-columns";
 import { QRCodeSVG } from "qrcode.react";
 import { Card, CardContent } from "@/components/ui/card";
 
