@@ -31,7 +31,8 @@ export const platsettlehistoryreportsListColumns: ColumnDef<PlatsettlehistoryRep
       header: "STATUS",
     },
     {
-      accessorKey: "action",
+      //below line was also replaced by id from accessorKey
+      id: "action",
       header: "ACTION",
       cell: ({ row }) => (
         <button

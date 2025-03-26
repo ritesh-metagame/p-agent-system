@@ -31,21 +31,20 @@ export const platTransactionreportsListColumns: ColumnDef<PlatTransactionReports
       header: "STATUS",
     },
     {
-      accessorKey: "action",
+      //below accessorKey is replaced by id
+      id: "action",
       header: "ACTION",
       cell: ({ row }) => (
         <button
-          style={{
-            backgroundColor: "#E87524",
-            color: "white",
-            padding: "6px 12px",
-            border: "none",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
+          onClick={() => handleDownload(row.original)}
+          className="btn-download"
         >
           DOWNLOAD
         </button>
       ),
     },
   ];
+// Function to handle download action
+const handleDownload = (report: PlatTransactionReportsListData) => {
+  console.log("Downloading report:", report);
+};

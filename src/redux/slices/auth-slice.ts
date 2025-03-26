@@ -11,7 +11,7 @@ interface AuthState {
 
 // Initial state
 const initialState: AuthState = {
-  role: UserRole.OPERATOR,
+  role: UserRole.PLATINUM,
   username: null,
 };
 
