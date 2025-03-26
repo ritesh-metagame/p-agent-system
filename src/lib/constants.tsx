@@ -1,7 +1,14 @@
-import { SuperAdminDashboard } from "@/components/pages";
-import { OperatorDashboard } from "@/components/pages";
-import CommissionRecentCutsOff from "@/components/pages/operator/commission-recent-cutoff";
-import PartnerManagement from "@/components/pages/operator/partner-management";
+import CreateAccountForm from "@/components/create-account-form";
+import {
+  OperatorDashboard,
+  PartnerManagement,
+  PlatinumDashboard,
+  SuperAdminCommissionRecentCutoff,
+  SuperAdminCreateOperatorAccount,
+  SuperAdminDashboard,
+  SuperAdminPartnerManagement,
+} from "@/components/screens";
+import CommissionRecentCutsOff from "@/components/screens/operator/commission-recent-cutoff";
 import { JSX } from "react";
 
 export enum UserRole {
@@ -86,16 +93,18 @@ export type RolePageMap = {
 export const RolePageComponentMap: RolePageMap = {
   [UserRole.SUPER_ADMIN]: {
     [Pages.DASHBOARD]: () => <SuperAdminDashboard />,
-    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <></>,
-    [Pages.PARTNER_MANAGEMENT]: () => <></>,
-    [Pages.COMMISSION_RECENT_CUTOFF]: () => <></>,
+    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <SuperAdminCreateOperatorAccount />,
+    [Pages.PARTNER_MANAGEMENT]: () => <SuperAdminPartnerManagement />,
+    [Pages.COMMISSION_RECENT_CUTOFF]: () => (
+      <SuperAdminCommissionRecentCutoff />
+    ),
     [Pages.HISTORICAL_CUTOFFS]: () => <></>,
     [Pages.TRANSACTIONS]: () => <></>,
     [Pages.COMMISSIONS]: () => <></>,
     [Pages.SETTLEMENT_HISTORY]: () => <></>,
   },
   [UserRole.PLATINUM]: {
-    [Pages.DASHBOARD]: () => <></>,
+    [Pages.DASHBOARD]: () => <PlatinumDashboard />,
     [Pages.CREATE_OPERATOR_ACCOUNT]: () => <></>,
     [Pages.PARTNER_MANAGEMENT]: () => <></>,
     [Pages.COMMISSION_RECENT_CUTOFF]: () => <></>,
@@ -116,7 +125,7 @@ export const RolePageComponentMap: RolePageMap = {
   },
   [UserRole.OPERATOR]: {
     [Pages.DASHBOARD]: () => <OperatorDashboard />,
-    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <></>,
+    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <CreateAccountForm />,
     [Pages.PARTNER_MANAGEMENT]: () => <PartnerManagement />,
     [Pages.COMMISSION_RECENT_CUTOFF]: () => <CommissionRecentCutsOff />,
     [Pages.HISTORICAL_CUTOFFS]: () => <></>,

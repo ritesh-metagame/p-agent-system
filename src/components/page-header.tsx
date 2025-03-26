@@ -5,7 +5,7 @@ import { Separator } from "./ui/separator";
 
 type Props = {};
 
-export default function PageHeader({}: Props) {
+export default function PageHeader({}) {
   return (
     <header className="flex bg-orange h-16 shrink-0 items-center gap-2 border-b px-4">
       <SidebarTrigger className="-ml-1 text-white" />
