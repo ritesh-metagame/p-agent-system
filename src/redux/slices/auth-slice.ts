@@ -5,13 +5,15 @@ import { UserRole, users } from "@/lib/constants";
 
 // Define the state type
 interface AuthState {
+  authLoading: boolean;
   role: string | null;
   username: string | null;
 }
 
 // Initial state
 const initialState: AuthState = {
-  role: UserRole.OPERATOR,
+  authLoading: true,
+  role: UserRole?.OPERATOR ?? "defaultOperator",
   username: null,
 };
 
@@ -23,6 +25,10 @@ const authSlice = createSlice({
     setRole: (state, action: PayloadAction<string>) => {
       state.role = action.payload;
     },
+
+    setAuthLoading: (state, action: PayloadAction<boolean>) => {
+      state.authLoading = action.payload;
+    },
     setUsername: (state, action: PayloadAction<string>) => {
       state.username = action.payload;
     },
@@ -32,11 +38,20 @@ const authSlice = createSlice({
     clearRole: (state) => {
       state.role = null;
     },
+    clearAuthLoading: (state) => {
+      state.authLoading = false;
+    },
   },
 });
 
-export const { setRole, clearRole, setUsername, clearUsername } =
-  authSlice.actions;
+export const {
+  setRole,
+  clearRole,
+  setUsername,
+  clearUsername,
+  setAuthLoading,
+  clearAuthLoading,
+} = authSlice.actions;
 
 // Thunk
 export const login =
@@ -57,12 +72,15 @@ export const login =
           } else {
             resolve(null);
           }
-        }, 2000);
+        }, 500);
       });
 
       if (user) {
         dispatch(setUsername(user.username));
         dispatch(setRole(user.role));
+
+        localStorage.setItem("role", user.role);
+        localStorage.setItem("username", user.username);
         return true;
       } else {
         return false;

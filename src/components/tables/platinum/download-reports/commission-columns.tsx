@@ -12,36 +12,37 @@ export type PlatCommissionReportData = {
 };
 
 // Column definitions for the Reports List table
-export const platCommissionreportsListColumns: ColumnDef<PlatCommissionReportData>[] = [
-  {
-    accessorKey: "id",
-    header: "ID",
-  },
-  {
-    accessorKey: "fromDate",
-    header: "FROM DATE",
-  },
-  {
-    accessorKey: "toDate",
-    header: "TO DATE",
-  },
-  {
-    accessorKey: "status",
-    header: "STATUS",
-  },
-  {
-    accessorKey: "action",
-    header: "ACTION",
-    cell: ({ row }) => (
-      <button
-        onClick={() => handleDownload(row.original)}
-        className="btn-download"
-      >
-        DOWNLOAD
-      </button>
-    ),
-  },
-];
+export const platCommissionreportsListColumns: ColumnDef<PlatCommissionReportData>[] =
+  [
+    {
+      accessorKey: "id",
+      header: "ID",
+    },
+    {
+      accessorKey: "fromDate",
+      header: "FROM DATE",
+    },
+    {
+      accessorKey: "toDate",
+      header: "TO DATE",
+    },
+    {
+      accessorKey: "status",
+      header: "STATUS",
+    },
+    {
+      id: "action",
+      header: "ACTION",
+      cell: ({ row }) => (
+        <button
+          onClick={() => handleDownload(row.original)}
+          className="btn-download"
+        >
+          DOWNLOAD
+        </button>
+      ),
+    },
+  ];
 
 // Function to handle download action
 const handleDownload = (report: PlatCommissionReportData) => {

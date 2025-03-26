@@ -154,7 +154,7 @@ function SidebarProvider({
 function Sidebar({
   side = "left",
   variant = "sidebar",
-  collapsible = "none",
+  collapsible = "offcanvas",
   className,
   children,
   ...props

@@ -18,21 +18,37 @@ export type PlatinumPartnerData = {
 
 export const platinumPartnerColumns: ColumnDef<PlatinumPartnerData>[] = [
   { accessorKey: "platinumPartner", header: "PLATINUM PARTNER" },
-  { accessorKey: "totalNetworkBets", header: "TOTAL NETWORK BETS" },
-  { accessorKey: "totalNetworkWinnings", header: "TOTAL NETWORK WINNINGS" },
-  { accessorKey: "totalNetworkGGR", header: "TOTAL NETWORK GGR" },
+  { accessorKey: "totalBets", header: "TOTAL  BETS" },
+  { accessorKey: "totalWinnings", header: "TOTAL  WINNINGS" },
+  { accessorKey: "ggr", header: "GGR" },
   {
-    accessorKey: "totalNetworkGrossCommissions",
-    header: "TOTAL NETWORK GROSS COMMISSIONS",
+    accessorKey: "grossCommissions",
+    header: "GROSS COMMISSIONS",
   },
   {
-    accessorKey: "totalNetworkDeductions",
-    header:
-      "TOTAL NETWORK DEDUCTIONS (Payment Gateway Fee Deductions from GP Commissions)",
+    accessorKey: "totalDeductions",
+    header: "TOTAL  DEDUCTIONS ",
   },
-  { accessorKey: "totalNetCommissions", header: "TOTAL NET COMMISSIONS" },
-  { accessorKey: "partnerBreakdown", header: "PARTNER BREAKDOWN" },
-  { accessorKey: "releaseCommissions", header: "RELEASE COMMISSIONS" },
+  { accessorKey: "netCommissions", header: "NET COMMISSIONS" },
+  {
+    //below accessor key is not required as it is just a button we are not rendering any data - source deepseek
+    id: "partnerBreakdown",
+    header: "PARTNER BREAKDOWN",
+    cell: () => (
+      <button className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-1 px-3 rounded-md">
+        VIEW
+      </button>
+    ),
+  },
+  {
+    id: "releaseCommissions",
+    header: "RELEASE COMMISSIONS",
+    cell: () => (
+      <button className="bg-green-500 hover:bg-green-600 text-white font-medium py-1 px-3 rounded-md">
+        RELEASE COMMISSION
+      </button>
+    ),
+  },
 ];
 
 /**
