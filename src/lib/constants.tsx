@@ -1,5 +1,7 @@
 import { SuperAdminDashboard } from "@/components/pages";
 import { OperatorDashboard } from "@/components/pages";
+import CommissionRecentCutsOff from "@/components/pages/operator/commission-recent-cutoff";
+import PartnerManagement from "@/components/pages/operator/partner-management";
 import { JSX } from "react";
 
 export enum UserRole {
@@ -115,8 +117,8 @@ export const RolePageComponentMap: RolePageMap = {
   [UserRole.OPERATOR]: {
     [Pages.DASHBOARD]: () => <OperatorDashboard />,
     [Pages.CREATE_OPERATOR_ACCOUNT]: () => <></>,
-    [Pages.PARTNER_MANAGEMENT]: () => <></>,
-    [Pages.COMMISSION_RECENT_CUTOFF]: () => <></>,
+    [Pages.PARTNER_MANAGEMENT]: () => <PartnerManagement />,
+    [Pages.COMMISSION_RECENT_CUTOFF]: () => <CommissionRecentCutsOff />,
     [Pages.HISTORICAL_CUTOFFS]: () => <></>,
     [Pages.TRANSACTIONS]: () => <></>,
     [Pages.COMMISSIONS]: () => <></>,

@@ -1,5 +1,6 @@
 // tableColumns.ts
 "use client;";
+import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 //TODO: Define TypeScript types instead of interfaces for each table
 // Define TypeScript interfaces for each table
@@ -46,10 +47,39 @@ export type OperatorTopPerformersPerCutoff = {
   totalGgrToDate: number;
 };
 
+export type NetworkStats = {
+  ppApproved: number;
+  ppPending: number;
+  gpApproved: number;
+  gpPending: number;
+  players: number;
+};
+
+// Partner Network commission
+export type PartnerNetworkCommission = {
+  platinumPartner: string;
+  pendingCommission: number;
+  status: string;
+  allTime: number;
+  summary: number;
+};
+
 // Define TypeScript interface for the table
 export type OperatorNetworkCommissionSettlement = {
   pendingSettlement: string;
   allTimeSettled: string;
+};
+
+export type CommissionRecentCutOff = {
+  platinumPartner: string;
+  totalBets: number;
+  totalWinnings: number;
+  ggr: number;
+  grossCommission: number;
+  totalDeduction: number;
+  netCommission: number;
+  partnerBreakDown: { label: string }[]; // Array of objects for buttons
+  releaseCommissions: { label: string }[];
 };
 
 // Define column structure for the table
@@ -124,3 +154,70 @@ export const operatortopPerformersPerCutoff: ColumnDef<OperatorTopPerformersPerC
     },
     { accessorKey: "releasedAllTime", header: "RELEASED ALL TIME" },
   ];
+
+// NETWORK STATS
+export const networkStats: ColumnDef<NetworkStats>[] = [
+  { accessorKey: "ppApproved", header: "PP APPROVED" },
+  {
+    accessorKey: "ppPending",
+    header: "PP PENDING",
+  },
+  { accessorKey: "gpApproved", header: "GP APPROVED" },
+  { accessorKey: "gpPending", header: "GP PENDING" },
+  { accessorKey: "players", header: "PLAYERS" },
+];
+
+// NETWORK COMMISSION
+
+export const partnerNetworkCommission: ColumnDef<PartnerNetworkCommission>[] = [
+  { accessorKey: "platinumPartner", header: "PLATINUM PARTNER" },
+  {
+    accessorKey: "pendingCommission",
+    header: "PENDING COMMISSION",
+  },
+  { accessorKey: "status", header: "STATUS" },
+  { accessorKey: "allTime", header: "ALL TIME" },
+  { accessorKey: "summary", header: "SUMMARY" },
+];
+
+export const commissionRecentCutsOff: ColumnDef<CommissionRecentCutOff>[] = [
+  { accessorKey: "platinumPartner", header: "PLATINUM PARTNER" },
+  {
+    accessorKey: "totalBets",
+    header: "TOTAL BETES",
+  },
+  { accessorKey: "totalWinnings", header: "TOTAL WINNINGS" },
+  { accessorKey: "ggr", header: "GGR" },
+  { accessorKey: "grossCommission", header: "GROSS COMMISSION" },
+  { accessorKey: "totalDeduction", header: "TOTAL DEDUCTION" },
+  { accessorKey: "netCommission", header: "NET COMMISSION" },
+  {
+    accessorKey: "partnerBreakDown",
+    header: "PARTNER BREAK DOWN",
+    cell: ({ row }) =>
+      row.original.partnerBreakDown?.map((item, index) => (
+        <Button
+          key={index}
+          className="w-full p-2 mr-2 flex justify-center items-center text-center"
+          style={{ backgroundColor: "rgb(93,148,180)" }}
+        >
+          {item.label}
+        </Button>
+      )),
+  },
+  // Render buttons for releaseCommissions
+  {
+    accessorKey: "releaseCommissions",
+    header: "RELEASE COMMISSIONS",
+    cell: ({ row }) =>
+      row.original.releaseCommissions?.map((item, index) => (
+        <Button
+          key={index}
+          className="w-full p-2 mr-2 flex justify-center items-center text-center text-white"
+          style={{ backgroundColor: "rgb(93,148,180)" }}
+        >
+          {item.label}
+        </Button>
+      )),
+  },
+];
