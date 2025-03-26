@@ -1,7 +1,9 @@
 import CreateAccountForm from "@/components/create-account-form";
 import {
-  SuperAdminCommissionRecentCutoff,
+  OperatorDashboard,
+  PartnerManagement,
   PlatinumDashboard,
+  SuperAdminCommissionRecentCutoff,
   SuperAdminCreateOperatorAccount,
   SuperAdminDashboard,
   SuperAdminPartnerManagement,
@@ -11,13 +13,13 @@ import {
   PlatinumCommissions,
   PlatinumTransactions,
   PlatinumSettlementHistory,
-  OperatorDashboard,
   CreateGoldenAccount,
 } from "@/components/screens";
+import CommissionRecentCutsOff from "@/components/screens/operator/commission-recent-cutoff";
 // import { OperatorDashboard } from "@/components/screens";
 import { JSX } from "react";
 
-export enum UserRole {
+export enum UserRole {CreateGoldenAccount
   SUPER_ADMIN = "super-admin",
   OPERATOR = "operator",
   PLATINUM = "platinum",
@@ -131,9 +133,9 @@ export const RolePageComponentMap: RolePageMap = {
   },
   [UserRole.OPERATOR]: {
     [Pages.DASHBOARD]: () => <OperatorDashboard />,
-    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <></>,
-    [Pages.PARTNER_MANAGEMENT]: () => <></>,
-    [Pages.COMMISSION_RECENT_CUTOFF]: () => <></>,
+    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <CreateAccountForm />,
+    [Pages.PARTNER_MANAGEMENT]: () => <PartnerManagement />,
+    [Pages.COMMISSION_RECENT_CUTOFF]: () => <CommissionRecentCutsOff />,
     [Pages.HISTORICAL_CUTOFFS]: () => <></>,
     [Pages.TRANSACTIONS]: () => <></>,
     [Pages.COMMISSIONS]: () => <></>,
