@@ -11,3 +11,4 @@ export { default as PlatinumHistoricalCutoff } from "./platinum/historical-cutof
 export { default as PlatinumCommissions } from "./platinum/commissions";
 export { default as PlatinumTransactions } from "./platinum/transactions";
 export { default as PlatinumSettlementHistory } from "./platinum/settlement-history";
+export { default as CreateGoldenAccount } from "./platinum/create-golden-account";

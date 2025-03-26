@@ -64,7 +64,9 @@ export default function PlatinumSettlementHistory({}: Props) {
               </label>
               <DatePicker placeholder="DD/MM/YY" />
             </div>
-            <Input placeholder="SEARCH" className=" w-64 mt-6 text-gray-500" />
+            <Button className="mt-6 bg-[#29467C] text-white hover:bg-[#1f355f]">
+              Search
+            </Button>
           </div>
 
           <DataTable

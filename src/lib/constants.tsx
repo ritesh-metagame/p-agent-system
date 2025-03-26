@@ -1,3 +1,4 @@
+import CreateAccountForm from "@/components/create-account-form";
 import {
   SuperAdminCommissionRecentCutoff,
   PlatinumDashboard,
@@ -11,6 +12,7 @@ import {
   PlatinumTransactions,
   PlatinumSettlementHistory,
   OperatorDashboard,
+  CreateGoldenAccount,
 } from "@/components/screens";
 // import { OperatorDashboard } from "@/components/screens";
 import { JSX } from "react";
@@ -109,7 +111,7 @@ export const RolePageComponentMap: RolePageMap = {
   },
   [UserRole.PLATINUM]: {
     [Pages.DASHBOARD]: () => <PlatinumDashboard />,
-    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <></>,
+    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <CreateGoldenAccount />,
     [Pages.PARTNER_MANAGEMENT]: () => <PlatinumPartnerManagement />,
     [Pages.COMMISSION_RECENT_CUTOFF]: () => <PlatinumCommissionRecentCutoff />,
     [Pages.HISTORICAL_CUTOFFS]: () => <PlatinumHistoricalCutoff />,
