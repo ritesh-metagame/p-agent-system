@@ -6,12 +6,12 @@ import { ColumnDef } from "@tanstack/react-table";
  */
 export type PlatinumPartnerData = {
   platinumPartner: string;
-  totalNetworkBets?: string;
-  totalNetworkWinnings?: string;
-  totalNetworkGGR?: string;
-  totalNetworkGrossCommissions?: string;
-  totalNetworkDeductions?: string;
-  totalNetCommissions?: string;
+  totalBets?: string;
+  totalWinnings?: string;
+  ggr?: string;
+  grossCommissions?: string;
+  totalDeductions?: string;
+  netCommissions?: string;
   partnerBreakdown?: string;
   releaseCommissions?: string;
 };

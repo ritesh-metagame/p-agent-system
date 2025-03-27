@@ -1,5 +1,5 @@
 import React from "react";
-import { Input } from "@/components/ui/input";
+// import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -10,14 +10,45 @@ import {
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 
-import {
-  settlementListColumns,
-  SettlementReportData,
-} from "../common-column-defs/common-settlement-history-columns";
+import { settlementListColumns } from "../common-column-defs/common-settlement-history-columns";
+
+import type { SettlementReportData } from "../common-column-defs/common-settlement-history-columns";
 
 import { TypographyH2 } from "@/components/ui/typographyh2";
+// import { Button } from "@/components/ui/button";
 
 import { DataTable } from "@/components/tables/data-table";
+// Dummy data for SettlementReportData
+const SettlementReportData: SettlementReportData[] = [
+  {
+    id: 1,
+    start: "2025-03-01",
+    end: "2025-03-07",
+    status: "Completed",
+    action: "Download",
+  },
+  {
+    id: 2,
+    start: "2025-03-08",
+    end: "2025-03-14",
+    status: "Pending",
+    action: "Download",
+  },
+  {
+    id: 3,
+    start: "2025-03-15",
+    end: "2025-03-21",
+    status: "Failed",
+    action: "Retry",
+  },
+  {
+    id: 4,
+    start: "2025-03-22",
+    end: "2025-03-28",
+    status: "Completed",
+    action: "Download",
+  },
+];
 
 function DatePicker({ placeholder }: { placeholder: string }) {
   const [date, setDate] = React.useState<Date | undefined>();
@@ -71,7 +102,7 @@ export default function SettlementHistory({}: Props) {
 
           <DataTable
             columns={settlementListColumns}
-            data={[]}
+            data={SettlementReportData}
             columnWidths={["250px", "250px", "250px", "250px", "250px"]}
           />
         </div>
