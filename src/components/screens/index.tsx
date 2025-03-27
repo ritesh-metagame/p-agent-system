@@ -1,15 +1,10 @@
 export { default as SuperAdminDashboard } from "./superadmin/dashboard";
 export { default as PlatinumDashboard } from "./platinum/dashboard";
 export { default as OperatorDashboard } from "./operator/dashboard";
-<<<<<<< HEAD
 export { default as GoldenDashboard } from "./gold/dashboard";
 
-export { default as SuperAdminCreateOperatorAccount } from "./superadmin/create-operator-account";
-export { default as SuperAdminPartnerManagement } from "./superadmin/partner-management";
-=======
 export { default as PartnerManagement } from "./operator/partner-management";
 export { default as CommissionRecentCutoff } from "./operator/commission-recent-cutoff";
->>>>>>> b84d61bc4a0c6bb5aee5ab18a038d444380634c8
 export { default as SuperAdminCommissionRecentCutoff } from "./superadmin/commission-recent-cutoff";
 export { default as SuperAdminPartnerManagement } from "./superadmin/partner-management";
 export { default as SuperAdminCreateOperatorAccount } from "./superadmin/create-operator-account";
