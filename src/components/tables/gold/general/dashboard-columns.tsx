@@ -8,22 +8,14 @@ export type GoldNetworkOverview = {
   approved: number;
   pending: number;
   suspended: number;
-<<<<<<< HEAD
   summary: number;
-=======
-  total: number;
->>>>>>> b84d61bc4a0c6bb5aee5ab18a038d444380634c8
 };
 
 export type GoldOverallSummary = {
   item: string;
   pendingSettlement: string;
   previousSettled: string;
-<<<<<<< HEAD
   summary: string;
-=======
-  totalSummary: string;
->>>>>>> b84d61bc4a0c6bb5aee5ab18a038d444380634c8
 };
 
 export type GoldEGames = {
@@ -31,11 +23,7 @@ export type GoldEGames = {
   dailyOverview: string;
   pendingSettlement: string;
   previousSettled: string;
-<<<<<<< HEAD
   summary: string;
-=======
-  totalSummary: string;
->>>>>>> b84d61bc4a0c6bb5aee5ab18a038d444380634c8
 };
 
 export type GoldSportsBetting = {
@@ -43,44 +31,25 @@ export type GoldSportsBetting = {
   dailyOverview: string;
   pendingSettlement: string;
   previousSettled: string;
-<<<<<<< HEAD
   summary: string;
-=======
-  totalSummary: string;
->>>>>>> b84d61bc4a0c6bb5aee5ab18a038d444380634c8
 };
 
 export type GoldTopPerformersDeposits = {
   playerName: string;
-<<<<<<< HEAD
   deposits: string;
   depositsToDate: string;
-=======
-  depositsCutoffPeriod: string;
-  totalDepositsToDate: number;
->>>>>>> b84d61bc4a0c6bb5aee5ab18a038d444380634c8
 };
 
 export type GoldTopPerformersGGR = {
   playerName: string;
-<<<<<<< HEAD
   ggr: string;
   ggrToDate: string;
-=======
-  ggrCutoffPeriod: string;
-  totalGgrToDate: number;
->>>>>>> b84d61bc4a0c6bb5aee5ab18a038d444380634c8
 };
 
 // Define TypeScript interface for the table
 export type GoldNetworkCommissionSettlement = {
-<<<<<<< HEAD
   commissionPendingSettlement: string;
   commissionSettled: string;
-=======
-  pendingSettlement: string;
-  allTimeSettled: string;
->>>>>>> b84d61bc4a0c6bb5aee5ab18a038d444380634c8
 };
 
 // Define column structure for the table
@@ -110,11 +79,7 @@ export const goldoverallSummaryColumns: ColumnDef<GoldOverallSummary>[] = [
   { accessorKey: "item", header: "ITEM" },
   { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
   { accessorKey: "previousSettled", header: "PREVIOUS SETTLED" },
-<<<<<<< HEAD
   { accessorKey: "summary", header: " SUMMARY" },
-=======
-  { accessorKey: "totalSummary", header: "SUMMARY" },
->>>>>>> b84d61bc4a0c6bb5aee5ab18a038d444380634c8
 ];
 
 // E-GAMES TABLE
@@ -123,11 +88,7 @@ export const goldeGamesColumns: ColumnDef<GoldEGames>[] = [
   { accessorKey: "dailyOverview", header: "DAILY OVERVIEW" },
   { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
   { accessorKey: "previousSettled", header: "PREVIOUS SETTLED" },
-<<<<<<< HEAD
   { accessorKey: "summary", header: "SUMMARY" },
-=======
-  { accessorKey: "totalSummary", header: "SUMMARY" },
->>>>>>> b84d61bc4a0c6bb5aee5ab18a038d444380634c8
 ];
 
 // SPORTS BETTING TABLE
@@ -136,11 +97,7 @@ export const goldsportsBettingColumns: ColumnDef<GoldSportsBetting>[] = [
   { accessorKey: "dailyOverview", header: "DAILY OVERVIEW" },
   { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
   { accessorKey: "previousSettled", header: "PREVIOUS SETTLED" },
-<<<<<<< HEAD
   { accessorKey: "summary", header: "SUMMARY" },
-=======
-  { accessorKey: "totalSummary", header: "SUMMARY" },
->>>>>>> b84d61bc4a0c6bb5aee5ab18a038d444380634c8
 ];
 
 // TOP PERFORMERS - DEPOSITS TABLE

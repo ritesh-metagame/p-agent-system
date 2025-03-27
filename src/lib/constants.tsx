@@ -1,7 +1,6 @@
 import CreateAccountForm from "@/components/create-account-form";
 import {
   OperatorDashboard,
-  PartnerManagement,
   PlatinumDashboard,
   SuperAdminCommissionRecentCutoff,
   SuperAdminCreateOperatorAccount,
@@ -13,8 +12,6 @@ import {
   PlatinumCommissions,
   PlatinumTransactions,
   PlatinumSettlementHistory,
-<<<<<<< HEAD
-  OperatorDashboard,
   CreateGoldenAccount,
   GoldenCommissions,
   GoldenTransactions,
@@ -29,11 +26,10 @@ import {
   GoldenCommissionRecentCutoff,
   GoldenCreateOperatorAccount,
   GoldenPartnerManagement,
-=======
   SuperAdminAllCommissionCutoffs,
->>>>>>> b84d61bc4a0c6bb5aee5ab18a038d444380634c8
 } from "@/components/screens";
 import CommissionRecentCutsOff from "@/components/screens/operator/commission-recent-cutoff";
+import PartnerManagement from "@/components/screens/operator/partner-management";
 // import { OperatorDashboard } from "@/components/screens";
 import { JSX } from "react";
 
@@ -124,18 +120,11 @@ export const RolePageComponentMap: RolePageMap = {
     [Pages.COMMISSION_RECENT_CUTOFF]: () => (
       <SuperAdminCommissionRecentCutoff />
     ),
-<<<<<<< HEAD
 
     [Pages.HISTORICAL_CUTOFFS]: () => <></>,
     [Pages.TRANSACTIONS]: () => <SuperAdminTransactions />,
     [Pages.COMMISSIONS]: () => <SuperAdminCommissions />,
     [Pages.SETTLEMENT_HISTORY]: () => <SuperAdminSettlementHistory />,
-=======
-    [Pages.HISTORICAL_CUTOFFS]: () => <SuperAdminAllCommissionCutoffs />,
-    [Pages.TRANSACTIONS]: () => <></>,
-    [Pages.COMMISSIONS]: () => <></>,
-    [Pages.SETTLEMENT_HISTORY]: () => <></>,
->>>>>>> b84d61bc4a0c6bb5aee5ab18a038d444380634c8
   },
   [UserRole.PLATINUM]: {
     [Pages.DASHBOARD]: () => <PlatinumDashboard />,
@@ -149,14 +138,14 @@ export const RolePageComponentMap: RolePageMap = {
   },
 
   [UserRole.GOLD]: {
+    [Pages.HISTORICAL_CUTOFFS]: () => <SuperAdminAllCommissionCutoffs />,
+    [Pages.TRANSACTIONS]: () => <></>,
+    [Pages.COMMISSIONS]: () => <></>,
+    [Pages.SETTLEMENT_HISTORY]: () => <></>,
     [Pages.DASHBOARD]: () => <GoldenDashboard />,
     [Pages.CREATE_OPERATOR_ACCOUNT]: () => <GoldenCreateOperatorAccount />,
     [Pages.PARTNER_MANAGEMENT]: () => <GoldenPartnerManagement />,
     [Pages.COMMISSION_RECENT_CUTOFF]: () => <GoldenCommissionRecentCutoff />,
-    [Pages.HISTORICAL_CUTOFFS]: () => <></>,
-    [Pages.TRANSACTIONS]: () => <GoldenTransactions />,
-    [Pages.COMMISSIONS]: () => <GoldenCommissions />,
-    [Pages.SETTLEMENT_HISTORY]: () => <GoldenSettlementHistory />,
   },
   [UserRole.OPERATOR]: {
     [Pages.DASHBOARD]: () => <OperatorDashboard />,
