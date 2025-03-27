@@ -3,7 +3,7 @@ import React from "react";
 
 type Props = {};
 
-export default function PlatinumTransactions({}: Props) {
+export default function SuperAdminTransactions({}: Props) {
   return (
     <div>
       <Transactions />

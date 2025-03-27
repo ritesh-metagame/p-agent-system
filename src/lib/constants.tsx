@@ -13,6 +13,15 @@ import {
   PlatinumSettlementHistory,
   OperatorDashboard,
   CreateGoldenAccount,
+  GoldenCommissions,
+  GoldenTransactions,
+  GoldenSettlementHistory,
+  SuperAdminSettlementHistory,
+  SuperAdminCommissions,
+  SuperAdminTransactions,
+  OperatorCommissions,
+  OperatorSettlementHistory,
+  OperatorTransactions,
 } from "@/components/screens";
 // import { OperatorDashboard } from "@/components/screens";
 import { JSX } from "react";
@@ -104,10 +113,11 @@ export const RolePageComponentMap: RolePageMap = {
     [Pages.COMMISSION_RECENT_CUTOFF]: () => (
       <SuperAdminCommissionRecentCutoff />
     ),
+
     [Pages.HISTORICAL_CUTOFFS]: () => <></>,
-    [Pages.TRANSACTIONS]: () => <></>,
-    [Pages.COMMISSIONS]: () => <></>,
-    [Pages.SETTLEMENT_HISTORY]: () => <></>,
+    [Pages.TRANSACTIONS]: () => <SuperAdminTransactions />,
+    [Pages.COMMISSIONS]: () => <SuperAdminCommissions />,
+    [Pages.SETTLEMENT_HISTORY]: () => <SuperAdminSettlementHistory />,
   },
   [UserRole.PLATINUM]: {
     [Pages.DASHBOARD]: () => <PlatinumDashboard />,
@@ -119,15 +129,16 @@ export const RolePageComponentMap: RolePageMap = {
     [Pages.COMMISSIONS]: () => <PlatinumCommissions />,
     [Pages.SETTLEMENT_HISTORY]: () => <PlatinumSettlementHistory />,
   },
+
   [UserRole.GOLD]: {
     [Pages.DASHBOARD]: () => <></>,
     [Pages.CREATE_OPERATOR_ACCOUNT]: () => <></>,
     [Pages.PARTNER_MANAGEMENT]: () => <></>,
     [Pages.COMMISSION_RECENT_CUTOFF]: () => <></>,
     [Pages.HISTORICAL_CUTOFFS]: () => <></>,
-    [Pages.TRANSACTIONS]: () => <></>,
-    [Pages.COMMISSIONS]: () => <></>,
-    [Pages.SETTLEMENT_HISTORY]: () => <></>,
+    [Pages.TRANSACTIONS]: () => <GoldenTransactions />,
+    [Pages.COMMISSIONS]: () => <GoldenCommissions />,
+    [Pages.SETTLEMENT_HISTORY]: () => <GoldenSettlementHistory />,
   },
   [UserRole.OPERATOR]: {
     [Pages.DASHBOARD]: () => <OperatorDashboard />,
@@ -135,9 +146,10 @@ export const RolePageComponentMap: RolePageMap = {
     [Pages.PARTNER_MANAGEMENT]: () => <></>,
     [Pages.COMMISSION_RECENT_CUTOFF]: () => <></>,
     [Pages.HISTORICAL_CUTOFFS]: () => <></>,
-    [Pages.TRANSACTIONS]: () => <></>,
-    [Pages.COMMISSIONS]: () => <></>,
-    [Pages.SETTLEMENT_HISTORY]: () => <></>,
+
+    [Pages.TRANSACTIONS]: () => <OperatorTransactions />,
+    [Pages.COMMISSIONS]: () => <OperatorCommissions />,
+    [Pages.SETTLEMENT_HISTORY]: () => <OperatorSettlementHistory />,
   },
   [UserRole.DEFAULT]: {
     [Pages.DASHBOARD]: () => <></>,
