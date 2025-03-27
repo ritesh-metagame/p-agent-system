@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { UserRole } from "./constants";
+import { Pages, Paths, UserRole } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -20,8 +20,8 @@ export function generateSidebarMenusBasedOnRole(role: UserRole) {
         url: "#",
         items: [
           {
-            title: "Dashboard",
-            url: "/dashboard",
+            title: Pages.DASHBOARD,
+            url: Paths.DASHBOARD,
           },
         ],
       },
@@ -40,11 +40,11 @@ export function generateSidebarMenusBasedOnRole(role: UserRole) {
                 : role == UserRole.GOLD
                 ? "Create Player"
                 : "Create Account",
-            url: "/create-account",
+            url: Paths.CREATE_OPERATOR_ACCOUNT,
           },
           {
-            title: "Partner Management",
-            url: "/partner-management",
+            title: Pages.PARTNER_MANAGEMENT,
+            url: Paths.PARTNER_MANAGEMENT,
             isActive: true,
           },
         ],
@@ -54,12 +54,12 @@ export function generateSidebarMenusBasedOnRole(role: UserRole) {
         url: "#",
         items: [
           {
-            title: "Commission Recent Cutoff",
-            url: "/commission-recent-cutoff",
+            title: Pages.COMMISSION_RECENT_CUTOFF,
+            url: Paths.COMMISSION_RECENT_CUTOFF,
           },
           {
-            title: "Historical Cutoffs",
-            url: "/historical-cutoffs",
+            title: Pages.HISTORICAL_CUTOFFS,
+            url: Paths.HISTORICAL_CUTOFFS,
           },
         ],
       },
@@ -68,16 +68,16 @@ export function generateSidebarMenusBasedOnRole(role: UserRole) {
         url: "#",
         items: [
           {
-            title: "Transactions",
-            url: "/transactions",
+            title: Pages.TRANSACTIONS,
+            url: Paths.TRANSACTIONS,
           },
           {
-            title: "Commissions",
-            url: "/commissions",
+            title: Pages.COMMISSIONS,
+            url: Paths.COMMISSIONS,
           },
           {
-            title: "Settlement History",
-            url: "/settlement-history",
+            title: Pages.SETTLEMENT_HISTORY,
+            url: Paths.SETTLEMENT_HISTORY,
           },
         ],
       },
