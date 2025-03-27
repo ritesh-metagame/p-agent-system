@@ -6,6 +6,7 @@ export { default as CommissionRecentCutoff } from "./operator/commission-recent-
 export { default as SuperAdminCommissionRecentCutoff } from "./superadmin/commission-recent-cutoff";
 export { default as SuperAdminPartnerManagement } from "./superadmin/partner-management";
 export { default as SuperAdminCreateOperatorAccount } from "./superadmin/create-operator-account";
+export { default as SuperAdminAllCommissionCutoffs } from "./superadmin/all-commission-cutoffs";
 
 export { default as PlatinumPartnerManagement } from "./platinum/partner-management";
 export { default as PlatinumCommissionRecentCutoff } from "./platinum/commission-recent-cutoff";

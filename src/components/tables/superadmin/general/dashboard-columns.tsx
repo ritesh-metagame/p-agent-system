@@ -70,7 +70,7 @@ export type FinancialOverview = {
   item: string; // TOTAL BETS, TOTAL WINNINGS, etc.
   pendingCommission: number | string; // Pending commission values
   releasedAllTime: number | string; // Released all time values
-  totalSummary: number | string; // Total summary values
+  totalSummary: number | string; // SUMMARY values
 };
 
 export const financialOverviewColumns: ColumnDef<FinancialOverview>[] = [
@@ -99,7 +99,7 @@ export const financialOverviewColumns: ColumnDef<FinancialOverview>[] = [
   },
   {
     accessorKey: "totalSummary",
-    header: "TOTAL SUMMARY",
+    header: "SUMMARY",
     cell: ({ row }) => {
       const value = row.getValue("totalSummary");
       return typeof value === "number" ? value.toLocaleString() : value;
@@ -112,7 +112,7 @@ export type CategoryFinancialOverview = {
   dailyOverview: number | string | "N/A"; // Daily overview values
   pendingCommission: number | string; // Pending commission values
   releasedAllTime: number | string; // Released all time values
-  totalSummary: number | string; // Total summary values
+  totalSummary: number | string; // SUMMARY values
 };
 
 export const categoryFinancialOverviewColumns: ColumnDef<CategoryFinancialOverview>[] =
@@ -151,7 +151,7 @@ export const categoryFinancialOverviewColumns: ColumnDef<CategoryFinancialOvervi
     },
     {
       accessorKey: "totalSummary",
-      header: "TOTAL SUMMARY",
+      header: "SUMMARY",
       cell: ({ row }) => {
         const value = row.getValue("totalSummary");
         return typeof value === "number" ? value.toLocaleString() : value;
@@ -164,7 +164,7 @@ export type SportsBettingOverview = {
   dailyOverview: number | string | "N/A"; // Daily overview values
   pendingCommission: number | string; // Pending commission values
   releasedAllTime: number | string; // Released all time values
-  totalSummary: number | string; // Total summary values
+  totalSummary: number | string; // SUMMARY values
 };
 
 export const sportsBettingOverviewColumns: ColumnDef<SportsBettingOverview>[] =
@@ -203,7 +203,7 @@ export const sportsBettingOverviewColumns: ColumnDef<SportsBettingOverview>[] =
     },
     {
       accessorKey: "totalSummary",
-      header: "TOTAL SUMMARY",
+      header: "SUMMARY",
       cell: ({ row }) => {
         const value = row.getValue("totalSummary");
         return typeof value === "number" ? value.toLocaleString() : value;

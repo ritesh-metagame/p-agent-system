@@ -27,15 +27,15 @@ export const commissionRecentCutoffColumns: ColumnDef<CommissionRecentCutoffData
   [
     {
       accessorKey: "network",
-      header: "Network",
+      header: "NETWORK",
     },
     {
       accessorKey: "totalNetworkBets",
-      header: "Total Bets",
+      header: "TOTAL BETS",
     },
     {
       accessorKey: "totalNetworkWinnings",
-      header: "Total Winnings",
+      header: "TOTAL WINNINGS",
     },
     {
       accessorKey: "totalNetworkGGR",
@@ -43,29 +43,41 @@ export const commissionRecentCutoffColumns: ColumnDef<CommissionRecentCutoffData
     },
     {
       accessorKey: "totalNetworkGrossCommissions",
-      header: "Gross Commissions",
+      header: "GROSS COMMISSIONS",
     },
     {
       accessorKey: "totalNetworkDeductions",
-      header: "Total Deductions",
+      header: "TOTAL DEDUCTIONS",
     },
     {
       accessorKey: "totalNetCommissions",
-      header: "Net Commissions",
+      header: "NET COMMISSIONS",
     },
     {
       accessorKey: "partnerBreakdown",
-      header: "Partner Breakdown",
-      cell: () => <button className="view-button">View</button>,
+      header: "PARTNER BREAKDOWN",
+      cell: () => (
+        <Dialog>
+          <DialogTrigger>
+            <Button variant="orange">View</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Partner Breakdown</DialogTitle>
+              <DialogDescription>Example</DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+      ),
     },
     {
       accessorKey: "releaseCommissions",
-      header: "Release Commissions",
+      header: "RELEASE COMMISSIONS",
       cell: () => {
         return (
           <Dialog>
             <DialogTrigger>
-              <Button>Release Commission</Button>
+              <Button variant="green">Release Commission</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>

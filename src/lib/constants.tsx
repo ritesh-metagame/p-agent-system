@@ -13,6 +13,7 @@ import {
   PlatinumCommissions,
   PlatinumTransactions,
   PlatinumSettlementHistory,
+  SuperAdminAllCommissionCutoffs,
 } from "@/components/screens";
 import CommissionRecentCutsOff from "@/components/screens/operator/commission-recent-cutoff";
 // import { OperatorDashboard } from "@/components/screens";
@@ -28,10 +29,10 @@ export enum UserRole {
 
 export enum Pages {
   DASHBOARD = "Dashboard",
-  CREATE_OPERATOR_ACCOUNT = "Create Operator Account",
+  CREATE_OPERATOR_ACCOUNT = "Create Account",
   PARTNER_MANAGEMENT = "Partner Management",
   COMMISSION_RECENT_CUTOFF = "Commission Recent Cutoff",
-  HISTORICAL_CUTOFFS = "Historical Cutoffs",
+  HISTORICAL_CUTOFFS = "All Commission Cutoffs",
   TRANSACTIONS = "Transactions",
   COMMISSIONS = "Commissions",
   SETTLEMENT_HISTORY = "Settlement History",
@@ -39,10 +40,10 @@ export enum Pages {
 
 export enum Paths {
   DASHBOARD = "/dashboard",
-  CREATE_OPERATOR_ACCOUNT = "/create-operator-account",
+  CREATE_OPERATOR_ACCOUNT = "/create-account",
   PARTNER_MANAGEMENT = "/partner-management",
   COMMISSION_RECENT_CUTOFF = "/commission-recent-cutoff",
-  HISTORICAL_CUTOFFS = "/historical-cutoffs",
+  HISTORICAL_CUTOFFS = "/all-commission-cutoffs",
   TRANSACTIONS = "/transactions",
   COMMISSIONS = "/commissions",
   SETTLEMENT_HISTORY = "/settlement-history",
@@ -105,7 +106,7 @@ export const RolePageComponentMap: RolePageMap = {
     [Pages.COMMISSION_RECENT_CUTOFF]: () => (
       <SuperAdminCommissionRecentCutoff />
     ),
-    [Pages.HISTORICAL_CUTOFFS]: () => <></>,
+    [Pages.HISTORICAL_CUTOFFS]: () => <SuperAdminAllCommissionCutoffs />,
     [Pages.TRANSACTIONS]: () => <></>,
     [Pages.COMMISSIONS]: () => <></>,
     [Pages.SETTLEMENT_HISTORY]: () => <></>,
