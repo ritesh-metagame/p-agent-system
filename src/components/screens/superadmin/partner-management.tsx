@@ -56,8 +56,7 @@ export default function PartnerManagement({}: Props) {
             data={networkCommissionData}
             columnWidths={["300px", "250px", "150px", "150px", "150px"]}
             tooltips={{
-              pendingCommission:
-                "Pending commission as of available cutoff period",
+              pendingCommission: "As of available cutoff period",
             }}
           />
         </div>

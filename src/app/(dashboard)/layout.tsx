@@ -69,7 +69,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className="">
         {authLoading ? (
           <div className="flex items-center justify-center h-screen">
             <Loader2 className="animate-spin" />

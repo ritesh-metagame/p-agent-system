@@ -244,7 +244,7 @@ export default function Dashboard({}) {
             data={dummyCommissionData}
             columnWidths={["250px", "250px"]}
             tooltips={{
-              pendingCommission: "The total amount of pending commissions",
+              pendingCommission: "As of Available cutoff period",
             }}
           />
         </div>
@@ -253,7 +253,7 @@ export default function Dashboard({}) {
           data={financialOverviewData}
           columnWidths={["250px", "250px", "250px", "250px"]}
           tooltips={{
-            pendingCommission: "The total amount of pending commissions",
+            pendingCommission: "As of Available cutoff period",
           }}
         />
       </div>
@@ -265,7 +265,7 @@ export default function Dashboard({}) {
           data={categoryFinancialOverviewData}
           columnWidths={["250px", "250px", "250px", "250px", "150px"]}
           tooltips={{
-            pendingCommission: "The total amount of pending commissions",
+            pendingCommission: "As of Available cutoff period",
           }}
         />
       </div>
@@ -276,7 +276,7 @@ export default function Dashboard({}) {
           data={sportsBettingOverviewData}
           columnWidths={["250px", "250px", "250px", "250px", "150px"]}
           tooltips={{
-            pendingCommission: "The total amount of pending commissions",
+            pendingCommission: "As of Available cutoff period",
           }}
         />
       </div>
@@ -288,7 +288,7 @@ export default function Dashboard({}) {
           data={topPerformersData}
           columnWidths={["250px", "250px", "250px"]}
           tooltips={{
-            pendingCommission: "The total amount of pending commissions",
+            pendingCommission: "As of Available cutoff period",
           }}
         />
         <div className="mt-4">
@@ -298,7 +298,7 @@ export default function Dashboard({}) {
             data={topPerformersDataPerCutoff}
             columnWidths={["250px", "250px", "250px"]}
             tooltips={{
-              pendingCommission: "The total amount of pending commissions",
+              pendingCommission: "As of Available cutoff period",
             }}
           />
         </div>
@@ -318,7 +318,7 @@ export default function Dashboard({}) {
             data={topPlayersGGRData}
             columnWidths={["250px", "250px", "250px", "250px"]}
             tooltips={{
-              pendingCommission: "The total amount of pending commissions",
+              pendingCommission: "As of Available cutoff period",
             }}
           />
         </div>
