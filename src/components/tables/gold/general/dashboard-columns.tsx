@@ -1,5 +1,5 @@
 // tableColumns.ts
-"use client;gold"
+"use client;gold";
 import { ColumnDef } from "@tanstack/react-table";
 //TODO: Define TypeScript types instead of interfaces for each table
 // Define TypeScript interfaces for each table
@@ -9,14 +9,14 @@ export type GoldNetworkOverview = {
   pending: number;
   suspended: number;
   total: number;
-}
+};
 
 export type GoldOverallSummary = {
   item: string;
   pendingSettlement: string;
   previousSettled: string;
   totalSummary: string;
-}
+};
 
 export type GoldEGames = {
   item: string;
@@ -24,7 +24,7 @@ export type GoldEGames = {
   pendingSettlement: string;
   previousSettled: string;
   totalSummary: string;
-}
+};
 
 export type GoldSportsBetting = {
   item: string;
@@ -32,25 +32,25 @@ export type GoldSportsBetting = {
   pendingSettlement: string;
   previousSettled: string;
   totalSummary: string;
-}
+};
 
 export type GoldTopPerformersDeposits = {
   playerName: string;
   depositsCutoffPeriod: string;
-  totalDepositsToDate: number;
-}
+  totalDepositsToDate: string;
+};
 
 export type GoldTopPerformersGGR = {
   playerName: string;
   ggrCutoffPeriod: string;
-  totalGgrToDate: number;
-}
+  totalGgrToDate: string;
+};
 
 // Define TypeScript interface for the table
 export type GoldNetworkCommissionSettlement = {
   pendingSettlement: string;
   allTimeSettled: string;
-}
+};
 
 // Define column structure for the table
 export const goldnetworkCommissionSettlementColumns: ColumnDef<GoldNetworkCommissionSettlement>[] =

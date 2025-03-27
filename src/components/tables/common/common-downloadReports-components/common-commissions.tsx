@@ -53,18 +53,18 @@ export default function Commissions({}: Props) {
 
           <div className="flex flex-wrap items-center gap-4 mb-6">
             <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-600 mb-1 mx-1">
-                CUTOFF PERIOD START
-              </label>
+              {/* <label className="text-sm font-medium text-gray-600 mb-1 mx-1">
+                CUTOFF PERIOD START ()
+              </label> */}
               <DatePicker placeholder="DD/MM/YY" />
             </div>
             <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-600 mb-1 mx-1">
-                CUTOFF PERIOD START
-              </label>
+              {/* <label className="text-sm font-medium text-gray-600 mb-1 mx-1">
+                CUTOFF PERIOD END
+              </label> */}
               <DatePicker placeholder="DD/MM/YY" />
             </div>
-            <Button className="mt-6 bg-[#29467C] text-white hover:bg-[#1f355f]">
+            <Button className=" bg-[#29467C] text-white hover:bg-[#1f355f]">
               Search
             </Button>
           </div>

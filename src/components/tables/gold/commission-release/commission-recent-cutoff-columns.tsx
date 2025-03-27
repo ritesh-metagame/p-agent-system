@@ -46,14 +46,4 @@ export const goldcommissionRecentCutoffColumns: ColumnDef<GoldCommissionRecentCu
       accessorKey: "totalNetCommissions",
       header: "Total Net Commissions",
     },
-    {
-      accessorKey: "partnerBreakdown",
-      header: "Partner Breakdown",
-      cell: () => <button className="view-button">View</button>,
-    },
-    {
-      accessorKey: "releaseCommissions",
-      header: "Release Commissions",
-      cell: () => <button className="release-button">Release Comms</button>,
-    },
   ];

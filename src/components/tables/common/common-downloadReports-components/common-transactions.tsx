@@ -52,14 +52,14 @@ export default function Transactions({}: Props) {
 
           <div className="flex flex-wrap items-center gap-4 mb-6">
             <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-600 mb-1 mx-1">
-                CUTOFF PERIOD START
+              <label className="text-sm font-medium text-gray-600 mb-1 ml-2">
+                START DATE
               </label>
               <DatePicker placeholder="DD/MM/YY" />
             </div>
             <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-600 mb-1 mx-1">
-                CUTOFF PERIOD START
+              <label className="text-sm font-medium text-gray-600 mb-1 ml-2">
+                END DATE
               </label>
               <DatePicker placeholder="DD/MM/YY" />
             </div>

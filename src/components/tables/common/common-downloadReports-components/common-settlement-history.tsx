@@ -53,14 +53,14 @@ export default function SettlementHistory({}: Props) {
 
           <div className="flex flex-wrap items-center gap-4 mb-6">
             <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-600 mb-1 mx-1">
+              <label className="text-sm font-medium text-gray-600 mb-1 ml-2">
                 CUTOFF PERIOD START
               </label>
               <DatePicker placeholder="DD/MM/YY" />
             </div>
             <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-600 mb-1 mx-1">
-                CUTOFF PERIOD START
+              <label className="text-sm font-medium text-gray-600 mb-1 ml-2">
+                CUTOFF PERIOD END
               </label>
               <DatePicker placeholder="DD/MM/YY" />
             </div>

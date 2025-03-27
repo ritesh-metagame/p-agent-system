@@ -22,6 +22,10 @@ import {
   OperatorCommissions,
   OperatorSettlementHistory,
   OperatorTransactions,
+  GoldenDashboard,
+  GoldenCommissionRecentCutoff,
+  GoldenCreateOperatorAccount,
+  GoldenPartnerManagement,
 } from "@/components/screens";
 // import { OperatorDashboard } from "@/components/screens";
 import { JSX } from "react";
@@ -131,10 +135,10 @@ export const RolePageComponentMap: RolePageMap = {
   },
 
   [UserRole.GOLD]: {
-    [Pages.DASHBOARD]: () => <></>,
-    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <></>,
-    [Pages.PARTNER_MANAGEMENT]: () => <></>,
-    [Pages.COMMISSION_RECENT_CUTOFF]: () => <></>,
+    [Pages.DASHBOARD]: () => <GoldenDashboard />,
+    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <GoldenCreateOperatorAccount />,
+    [Pages.PARTNER_MANAGEMENT]: () => <GoldenPartnerManagement />,
+    [Pages.COMMISSION_RECENT_CUTOFF]: () => <GoldenCommissionRecentCutoff />,
     [Pages.HISTORICAL_CUTOFFS]: () => <></>,
     [Pages.TRANSACTIONS]: () => <GoldenTransactions />,
     [Pages.COMMISSIONS]: () => <GoldenCommissions />,
