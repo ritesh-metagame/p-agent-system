@@ -39,21 +39,21 @@ const PlatinumNetworkCommissionData: PlatinumNetworkCommissionData[] = [
     pendingCommission: "$12,000",
     status: "Active",
     allTime: "$150,000",
-    total: "$162,000",
+    summary: "$162,000",
   },
   {
     partner: "Partner B",
     pendingCommission: "$8,500",
     status: "Pending",
     allTime: "$120,000",
-    total: "$128,500",
+    summary: "$128,500",
   },
   {
     partner: "Partner C",
     pendingCommission: "$15,000",
     status: "Suspended",
     allTime: "$180,000",
-    total: "$195,000",
+    summary: "$195,000",
   },
 ];
 
@@ -68,6 +68,9 @@ export default function PlatinumPartnerManagement({}: Props) {
             data={PlatinumNetworkStatsData}
             // data={[]}
             columnWidths={["250px", "250px", "250px"]}
+            tooltips={{
+              gpPending: "As of available cutoff period",
+            }}
           />
         </div>
 
@@ -79,6 +82,9 @@ export default function PlatinumPartnerManagement({}: Props) {
             // data={platinumNetworkOverviewData}
             data={PlatinumNetworkCommissionData}
             columnWidths={["250px", "250px", "250px", "250px", "250px"]}
+            tooltips={{
+              pendingCommission: "As of available cutoff period",
+            }}
           />
         </div>
 

@@ -17,7 +17,7 @@ export type GoldNetworkStats = {
 export const goldNetworkStatsColumns: ColumnDef<GoldNetworkStats>[] = [
   {
     accessorKey: "players",
-    header: "Players",
+    header: "PLAYERS",
   },
 ];
 
@@ -27,7 +27,7 @@ export type GoldNetworkCommissionData = {
   pendingCommission: number | string;
   status: CommissionStatus; // Use enum for strict typing
   allTime: number | string;
-  total: number | string;
+  summary: number | string;
 };
 
 // Define column structure for the table
@@ -35,11 +35,11 @@ export const goldnetworkCommissionColumns: ColumnDef<GoldNetworkCommissionData>[
   [
     {
       accessorKey: "partner",
-      header: "Partner",
+      header: "PARTNER",
     },
     {
       accessorKey: "pendingCommission",
-      header: "PENDING COMMISSION AS OF AVAILABLE CUTOFF PERIOD",
+      header: "PENDING COMMISSION ",
     },
     {
       accessorKey: "status",
@@ -51,7 +51,7 @@ export const goldnetworkCommissionColumns: ColumnDef<GoldNetworkCommissionData>[
       header: "ALL TIME",
     },
     {
-      accessorKey: "total",
-      header: "TOTAL",
+      accessorKey: "summary",
+      header: "SUMMARY",
     },
   ];

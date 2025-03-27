@@ -2,17 +2,15 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-//!need to check with the excel sheet
-
 // Define the shape of the data for the table.
 export type GoldCommissionRecentCutoffData = {
   platinumPartner: string;
-  totalNetworkBets: number | string;
-  totalNetworkWinnings: number | string;
-  totalNetworkGGR: number | string;
-  totalNetworkGrossCommissions: number | string;
-  totalNetworkDeductions: number | string;
-  totalNetCommissions: number | string;
+  totalBets: number | string;
+  totalWinnings: number | string;
+  gGR: number | string;
+  grossCommissions: number | string;
+  totalDeductions: number | string;
+  netCommissions: number | string;
 };
 
 // Define the columns for the table.
@@ -20,30 +18,30 @@ export const goldcommissionRecentCutoffColumns: ColumnDef<GoldCommissionRecentCu
   [
     {
       accessorKey: "platinumPartner",
-      header: "Platinum Partner",
+      header: "PLATINUM PARTNER",
     },
     {
-      accessorKey: "totalNetworkBets",
-      header: "Total Network Bets",
+      accessorKey: "totalBets",
+      header: "TOTAL BETS",
     },
     {
-      accessorKey: "totalNetworkWinnings",
-      header: "Total Network Winnings",
+      accessorKey: "totalWinnings",
+      header: "TOTAL WINNINGS",
     },
     {
-      accessorKey: "totalNetworkGGR",
-      header: "Total Network GGR",
+      accessorKey: "gGR",
+      header: "GGR",
     },
     {
-      accessorKey: "totalNetworkGrossCommissions",
-      header: "Total Network Gross Commissions",
+      accessorKey: "grossCommissions",
+      header: "GROSS COMMISSIONS",
     },
     {
-      accessorKey: "totalNetworkDeductions",
-      header: "Total Network Deductions",
+      accessorKey: "totalDeductions",
+      header: "TOTAL DEDUCTIONS",
     },
     {
-      accessorKey: "totalNetCommissions",
-      header: "Total Net Commissions",
+      accessorKey: "netCommissions",
+      header: "NET COMMISSIONS",
     },
   ];

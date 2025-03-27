@@ -78,6 +78,9 @@ export default function Dashboard({}: Props) {
             columns={platinumtopPerformersAllTimeColumns}
             data={platinumTopPerformersAllTimeData}
             columnWidths={["250px", "250px", "250px"]}
+            tooltips={{
+              pendingCommission: "As of available cutoff period",
+            }}
           />
         </div>
 
@@ -89,6 +92,9 @@ export default function Dashboard({}: Props) {
             columns={platinumtopPerformersPerCutoffColumns}
             data={platinumTopPerformersPerCutoffData}
             columnWidths={["250px", "250px", "250px"]}
+            tooltips={{
+              pendingCommission: "As of available cutoff period",
+            }}
           />
         </div>
       </div>

@@ -37,21 +37,21 @@ const goldNetworkCommissionData: GoldNetworkCommissionData[] = [
     pendingCommission: "$20,000",
     status: CommissionStatus.Pending,
     allTime: "$150,000",
-    total: "$170,000",
+    summary: "$170,000",
   },
   {
     partner: "Partner Beta",
     pendingCommission: "$15,000",
     status: CommissionStatus.Released,
     allTime: "$120,000",
-    total: "$135,000",
+    summary: "$135,000",
   },
   {
     partner: "Partner Gamma",
     pendingCommission: "$25,000",
     status: CommissionStatus.Pending,
     allTime: "$200,000",
-    total: "$225,000",
+    summary: "$225,000",
   },
 ];
 
@@ -75,6 +75,9 @@ export default function PlatinumPartnerManagement({}: Props) {
             columns={goldnetworkCommissionColumns}
             data={goldNetworkCommissionData}
             columnWidths={["250px", "250px", "250px", "250px", "250px"]}
+            tooltips={{
+              pendingCommission: "As of available cutoff period",
+            }}
           />
         </div>
 

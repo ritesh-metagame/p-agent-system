@@ -9,11 +9,12 @@ export type PlatinumNetworkStatsData = {
   players: number | string;
 };
 
-export const platinumnetworkStatsColumns: ColumnDef<PlatinumNetworkStatsData>[] = [
-  { accessorKey: "gpApproved", header: "GP APPROVED" },
-  { accessorKey: "gpPending", header: "GP PENDING" },
-  { accessorKey: "players", header: "PLAYERS" },
-];
+export const platinumnetworkStatsColumns: ColumnDef<PlatinumNetworkStatsData>[] =
+  [
+    { accessorKey: "gpApproved", header: "GP APPROVED" },
+    { accessorKey: "gpPending", header: "GP PENDING" },
+    { accessorKey: "players", header: "PLAYERS" },
+  ];
 
 /**
  * Network Commission Table
@@ -23,19 +24,20 @@ export type PlatinumNetworkCommissionData = {
   pendingCommission: number | string;
   status: string;
   allTime: number | string;
-  total: number | string;
+  summary: number | string;
 };
 
-export const platinumnetworkCommissionColumns: ColumnDef<PlatinumNetworkCommissionData>[] = [
-  { accessorKey: "partner", header: "PARTNER" },
-  {
-    accessorKey: "pendingCommission",
-    header: "PENDING COMMISSION AS OF AVAILABLE CUTOFF PERIOD",
-  },
-  { accessorKey: "status", header: "STATUS" },
-  { accessorKey: "allTime", header: "ALL TIME" },
-  { accessorKey: "total", header: "TOTAL" },
-];
+export const platinumnetworkCommissionColumns: ColumnDef<PlatinumNetworkCommissionData>[] =
+  [
+    { accessorKey: "partner", header: "PARTNER" },
+    {
+      accessorKey: "pendingCommission",
+      header: "PENDING COMMISSION",
+    },
+    { accessorKey: "status", header: "STATUS" },
+    { accessorKey: "allTime", header: "ALL TIME" },
+    { accessorKey: "summary", header: "SUMMARY" },
+  ];
 
 /**
  * Export tables

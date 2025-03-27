@@ -19,13 +19,13 @@ type Props = {};
 const goldTopPerformersDepositsdata: GoldTopPerformersDeposits[] = [
   {
     playerName: "GP-001",
-    depositsCutoffPeriod: "$12,000",
-    totalDepositsToDate: "$50,000",
+    deposits: "$12,000",
+    depositsToDate: "$50,000",
   },
   {
     playerName: "GP-002",
-    depositsCutoffPeriod: "$15,000",
-    totalDepositsToDate: "$60,000",
+    deposits: "$15,000",
+    depositsToDate: "$60,000",
   },
 ];
 
@@ -33,13 +33,13 @@ const goldTopPerformersDepositsdata: GoldTopPerformersDeposits[] = [
 const goldTopPerformersGGRdata: GoldTopPerformersGGR[] = [
   {
     playerName: "GP-001",
-    ggrCutoffPeriod: "$3,000",
-    totalGgrToDate: "$10,000",
+    ggr: "$3,000",
+    ggrToDate: "$10,000",
   },
   {
     playerName: "GP-002",
-    ggrCutoffPeriod: "$4,000",
-    totalGgrToDate: "$12,000",
+    ggr: "$4,000",
+    ggrToDate: "$12,000",
   },
 ];
 
@@ -78,6 +78,9 @@ export default function Dashboard({}: Props) {
             columns={goldtopPerformersDepositsColumns}
             data={goldTopPerformersDepositsdata}
             columnWidths={["250px", "250px", "250px"]}
+            tooltips={{
+              deposits: "As of available cutoff period",
+            }}
           />
         </div>
 
@@ -89,6 +92,9 @@ export default function Dashboard({}: Props) {
             columns={goldtopPerformersGgrColumns}
             data={goldTopPerformersGGRdata}
             columnWidths={["250px", "250px", "250px"]}
+            tooltips={{
+              ggr: "As of available cutoff period",
+            }}
           />
         </div>
       </div>
