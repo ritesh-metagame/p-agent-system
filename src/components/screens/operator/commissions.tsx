@@ -3,7 +3,7 @@ import React from "react";
 
 type Props = {};
 
-export default function PlatinumCommissions({}: Props) {
+export default function OperatorCommissions({}: Props) {
   return (
     <div>
       <Commissions />

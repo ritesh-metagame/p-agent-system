@@ -33,7 +33,7 @@ export default function CommissionRecentCutoff({}: Props) {
               "150px",
               "150px",
               "150px",
-              "150px",
+              "250px",
             ]}
           />
         </div>

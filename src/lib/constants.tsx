@@ -1,7 +1,6 @@
 import CreateAccountForm from "@/components/create-account-form";
 import {
   OperatorDashboard,
-  PartnerManagement,
   PlatinumDashboard,
   SuperAdminCommissionRecentCutoff,
   SuperAdminCreateOperatorAccount,
@@ -13,8 +12,24 @@ import {
   PlatinumCommissions,
   PlatinumTransactions,
   PlatinumSettlementHistory,
+  CreateGoldenAccount,
+  GoldenCommissions,
+  GoldenTransactions,
+  GoldenSettlementHistory,
+  SuperAdminSettlementHistory,
+  SuperAdminCommissions,
+  SuperAdminTransactions,
+  OperatorCommissions,
+  OperatorSettlementHistory,
+  OperatorTransactions,
+  GoldenDashboard,
+  GoldenCommissionRecentCutoff,
+  GoldenCreateOperatorAccount,
+  GoldenPartnerManagement,
+  SuperAdminAllCommissionCutoffs,
 } from "@/components/screens";
 import CommissionRecentCutsOff from "@/components/screens/operator/commission-recent-cutoff";
+import PartnerManagement from "@/components/screens/operator/partner-management";
 // import { OperatorDashboard } from "@/components/screens";
 import { JSX } from "react";
 
@@ -28,10 +43,10 @@ export enum UserRole {
 
 export enum Pages {
   DASHBOARD = "Dashboard",
-  CREATE_OPERATOR_ACCOUNT = "Create Operator Account",
+  CREATE_OPERATOR_ACCOUNT = "Create Account",
   PARTNER_MANAGEMENT = "Partner Management",
   COMMISSION_RECENT_CUTOFF = "Commission Recent Cutoff",
-  HISTORICAL_CUTOFFS = "Historical Cutoffs",
+  HISTORICAL_CUTOFFS = "All Commission Cutoffs",
   TRANSACTIONS = "Transactions",
   COMMISSIONS = "Commissions",
   SETTLEMENT_HISTORY = "Settlement History",
@@ -39,10 +54,10 @@ export enum Pages {
 
 export enum Paths {
   DASHBOARD = "/dashboard",
-  CREATE_OPERATOR_ACCOUNT = "/create-operator-account",
+  CREATE_OPERATOR_ACCOUNT = "/create-account",
   PARTNER_MANAGEMENT = "/partner-management",
   COMMISSION_RECENT_CUTOFF = "/commission-recent-cutoff",
-  HISTORICAL_CUTOFFS = "/historical-cutoffs",
+  HISTORICAL_CUTOFFS = "/all-commission-cutoffs",
   TRANSACTIONS = "/transactions",
   COMMISSIONS = "/commissions",
   SETTLEMENT_HISTORY = "/settlement-history",
@@ -105,14 +120,15 @@ export const RolePageComponentMap: RolePageMap = {
     [Pages.COMMISSION_RECENT_CUTOFF]: () => (
       <SuperAdminCommissionRecentCutoff />
     ),
+
     [Pages.HISTORICAL_CUTOFFS]: () => <></>,
-    [Pages.TRANSACTIONS]: () => <></>,
-    [Pages.COMMISSIONS]: () => <></>,
-    [Pages.SETTLEMENT_HISTORY]: () => <></>,
+    [Pages.TRANSACTIONS]: () => <SuperAdminTransactions />,
+    [Pages.COMMISSIONS]: () => <SuperAdminCommissions />,
+    [Pages.SETTLEMENT_HISTORY]: () => <SuperAdminSettlementHistory />,
   },
   [UserRole.PLATINUM]: {
     [Pages.DASHBOARD]: () => <PlatinumDashboard />,
-    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <></>,
+    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <CreateGoldenAccount />,
     [Pages.PARTNER_MANAGEMENT]: () => <PlatinumPartnerManagement />,
     [Pages.COMMISSION_RECENT_CUTOFF]: () => <PlatinumCommissionRecentCutoff />,
     [Pages.HISTORICAL_CUTOFFS]: () => <PlatinumHistoricalCutoff />,
@@ -120,15 +136,16 @@ export const RolePageComponentMap: RolePageMap = {
     [Pages.COMMISSIONS]: () => <PlatinumCommissions />,
     [Pages.SETTLEMENT_HISTORY]: () => <PlatinumSettlementHistory />,
   },
+
   [UserRole.GOLD]: {
-    [Pages.DASHBOARD]: () => <></>,
-    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <></>,
-    [Pages.PARTNER_MANAGEMENT]: () => <></>,
-    [Pages.COMMISSION_RECENT_CUTOFF]: () => <></>,
-    [Pages.HISTORICAL_CUTOFFS]: () => <></>,
+    [Pages.HISTORICAL_CUTOFFS]: () => <SuperAdminAllCommissionCutoffs />,
     [Pages.TRANSACTIONS]: () => <></>,
     [Pages.COMMISSIONS]: () => <></>,
     [Pages.SETTLEMENT_HISTORY]: () => <></>,
+    [Pages.DASHBOARD]: () => <GoldenDashboard />,
+    [Pages.CREATE_OPERATOR_ACCOUNT]: () => <GoldenCreateOperatorAccount />,
+    [Pages.PARTNER_MANAGEMENT]: () => <GoldenPartnerManagement />,
+    [Pages.COMMISSION_RECENT_CUTOFF]: () => <GoldenCommissionRecentCutoff />,
   },
   [UserRole.OPERATOR]: {
     [Pages.DASHBOARD]: () => <OperatorDashboard />,
@@ -136,9 +153,10 @@ export const RolePageComponentMap: RolePageMap = {
     [Pages.PARTNER_MANAGEMENT]: () => <PartnerManagement />,
     [Pages.COMMISSION_RECENT_CUTOFF]: () => <CommissionRecentCutsOff />,
     [Pages.HISTORICAL_CUTOFFS]: () => <></>,
-    [Pages.TRANSACTIONS]: () => <></>,
-    [Pages.COMMISSIONS]: () => <></>,
-    [Pages.SETTLEMENT_HISTORY]: () => <></>,
+
+    [Pages.TRANSACTIONS]: () => <OperatorTransactions />,
+    [Pages.COMMISSIONS]: () => <OperatorCommissions />,
+    [Pages.SETTLEMENT_HISTORY]: () => <OperatorSettlementHistory />,
   },
   [UserRole.DEFAULT]: {
     [Pages.DASHBOARD]: () => <></>,

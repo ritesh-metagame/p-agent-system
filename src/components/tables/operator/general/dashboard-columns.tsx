@@ -111,7 +111,7 @@ export const operatoroverallSummaryColumns: ColumnDef<OperatorOverallSummary>[] 
     { accessorKey: "item", header: "ITEM" },
     { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
     { accessorKey: "previousSettled", header: "PREVIOUS SETTLED" },
-    { accessorKey: "totalSummary", header: "TOTAL SUMMARY" },
+    { accessorKey: "totalSummary", header: "SUMMARY" },
   ];
 
 // E-GAMES TABLE
@@ -120,7 +120,7 @@ export const operatoreGamesColumns: ColumnDef<OperatorEGames>[] = [
   { accessorKey: "dailyOverview", header: "DAILY OVERVIEW" },
   { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
   { accessorKey: "previousSettled", header: "PREVIOUS SETTLED" },
-  { accessorKey: "totalSummary", header: "TOTAL SUMMARY" },
+  { accessorKey: "totalSummary", header: "SUMMARY" },
 ];
 
 // SPORTS BETTING TABLE
@@ -130,7 +130,7 @@ export const operatorsportsBettingColumns: ColumnDef<OperatorSportsBetting>[] =
     { accessorKey: "dailyOverview", header: "DAILY OVERVIEW" },
     { accessorKey: "pendingSettlement", header: "PENDING SETTLEMENT" },
     { accessorKey: "previousSettled", header: "PREVIOUS SETTLED" },
-    { accessorKey: "totalSummary", header: "TOTAL SUMMARY" },
+    { accessorKey: "totalSummary", header: "SUMMARY" },
   ];
 
 // TOP PERFORMERS - DEPOSITS TABLE

@@ -3,7 +3,7 @@ import React from "react";
 
 type Props = {};
 
-export default function PlatinumSettlementHistory({}: Props) {
+export default function OperatorSettlementHistory({}: Props) {
   return (
     <div>
       <SettlementHistory />

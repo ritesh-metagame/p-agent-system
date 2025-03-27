@@ -51,7 +51,9 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="rounded-md">
-      <ScrollArea className={`w-screen md-[${accumulativeWidths.total}px]`}>
+      <ScrollArea
+        className={`w-screen md-[${accumulativeWidths.total + 80}px]`}
+      >
         <Table className="w-max border rounded-md">
           <TableHeader className="bg-table-header">
             {table.getHeaderGroups().map((headerGroup) => (
