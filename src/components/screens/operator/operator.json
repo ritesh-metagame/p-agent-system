@@ -333,5 +333,131 @@
       "refId": "REF-004",
       "dateSettled": "N/A"
     }
+  ],
+  "operatorNetworkData": [
+    {
+      "network": "PLATINUM PARTNERS",
+      "name": "PLAT-001",
+      "totalBets": 150000,
+      "totalWinnings": 90000,
+      "totalGGR": 60000,
+      "totalGrossCommissions": 15000,
+      "totalDeductions": 5000,
+      "totalNetCommissions": 10000
+    },
+    {
+      "network": "PLATINUM PARTNERS",
+      "name": "PLAT-002",
+      "totalBets": "180,000",
+      "totalWinnings": "120,000",
+      "totalGGR": "60,000",
+      "totalGrossCommissions": "18,000",
+      "totalDeductions": "6,000",
+      "totalNetCommissions": "12,000"
+    },
+    {
+      "network": "GOLD PARTNERS",
+      "name": "GOLD-001",
+      "totalBets": 130000,
+      "totalWinnings": 85000,
+      "totalGGR": 45000,
+      "totalGrossCommissions": 12000,
+      "totalDeductions": 4000,
+      "totalNetCommissions": 8000
+    },
+    {
+      "network": "GOLD PARTNERS",
+      "name": "GOLD-002",
+      "totalBets": "140,000",
+      "totalWinnings": "95,000",
+      "totalGGR": "45,000",
+      "totalGrossCommissions": "14,000",
+      "totalDeductions": "5,000",
+      "totalNetCommissions": "9,000"
+    }
+  ],
+  "platinumPartnerData": [
+    {
+      "network": "PLATINUM PARTNERS",
+      "name": "PLAT-001",
+      "totalBets": 200000,
+      "totalWinnings": 120000,
+      "totalGGR": 80000,
+      "totalGrossCommissions": 20000,
+      "totalDeductions": 7000,
+      "totalNetCommissions": 13000
+    },
+    {
+      "network": "PLATINUM PARTNERS",
+      "name": "PLAT-002",
+      "totalBets": "250,000",
+      "totalWinnings": "150,000",
+      "totalGGR": "100,000",
+      "totalGrossCommissions": "25,000",
+      "totalDeductions": "8,000",
+      "totalNetCommissions": "17,000"
+    },
+    {
+      "network": "PLATINUM PARTNERS",
+      "name": "PLAT-003",
+      "totalBets": 180000,
+      "totalWinnings": 100000,
+      "totalGGR": 80000,
+      "totalGrossCommissions": 18000,
+      "totalDeductions": 6000,
+      "totalNetCommissions": 12000
+    },
+    {
+      "network": "PLATINUM PARTNERS",
+      "name": "PLAT-004",
+      "totalBets": "220,000",
+      "totalWinnings": "130,000",
+      "totalGGR": "90,000",
+      "totalGrossCommissions": "22,000",
+      "totalDeductions": "7,500",
+      "totalNetCommissions": "14,500"
+    }
+  ],
+  "goldenPartnerData": [
+    {
+      "network": "PLATINUM PARTNERS",
+      "name": "PLAT-001",
+      "totalBets": 200000,
+      "totalWinnings": 120000,
+      "totalGGR": 80000,
+      "totalGrossCommissions": 20000,
+      "totalDeductions": 7000,
+      "totalNetCommissions": 13000
+    },
+    {
+      "network": "PLATINUM PARTNERS",
+      "name": "PLAT-002",
+      "totalBets": "250,000",
+      "totalWinnings": "150,000",
+      "totalGGR": "100,000",
+      "totalGrossCommissions": "25,000",
+      "totalDeductions": "8,000",
+      "totalNetCommissions": "17,000"
+    },
+    {
+      "network": "PLATINUM PARTNERS",
+      "name": "PLAT-003",
+      "totalBets": 180000,
+      "totalWinnings": 100000,
+      "totalGGR": 80000,
+      "totalGrossCommissions": 18000,
+      "totalDeductions": 6000,
+      "totalNetCommissions": 12000
+    },
+    {
+      "network": "PLATINUM PARTNERS",
+      "name": "PLAT-004",
+      "totalBets": "220,000",
+      "totalWinnings": "130,000",
+      "totalGGR": "90,000",
+      "totalGrossCommissions": "22,000",
+      "totalDeductions": "7,500",
+      "totalNetCommissions": "14,500"
+    }
   ]
 }

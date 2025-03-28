@@ -292,5 +292,50 @@
       "allTime": "$180,000",
       "summary": "$195,000"
     }
+  ],
+  "platinumCommissionPerCutoffData": [
+    {
+      "network": "PLATINUM PARTNERS",
+      "name": "PLAT-001",
+      "totalNetworkBets": 500000,
+      "totalNetworkWinnings": 300000,
+      "totalNetworkGGR": 200000,
+      "totalNetworkGrossCommissions": 50000,
+      "paymentGatewayFeeDeductions": 10000,
+      "totalNetCommissions": 40000
+    },
+    {
+      "network": "PLATINUM PARTNERS",
+      "name": "PLAT-002",
+      "totalNetworkBets": "450,000",
+      "totalNetworkWinnings": "270,000",
+      "totalNetworkGGR": "180,000",
+      "totalNetworkGrossCommissions": "45,000",
+      "paymentGatewayFeeDeductions": "9,000",
+      "totalNetCommissions": "36,000"
+    }
+  ],
+
+  "platinumPartnerCommissionData": [
+    {
+      "network": "PLATINUM PARTNERS",
+      "name": "PLAT-001",
+      "totalBets": 250000,
+      "totalWinnings": 150000,
+      "totalGGR": 100000,
+      "totalGrossCommissions": 25000,
+      "paymentGatewayFeeDeductions": 5000,
+      "totalNetCommissions": 20000
+    },
+    {
+      "network": "PLATINUM PARTNERS",
+      "name": "PLAT-002",
+      "totalBets": "300,000",
+      "totalWinnings": "180,000",
+      "totalGGR": "120,000",
+      "totalGrossCommissions": "30,000",
+      "paymentGatewayFeeDeductions": "6,000",
+      "totalNetCommissions": "24,000"
+    }
   ]
 }

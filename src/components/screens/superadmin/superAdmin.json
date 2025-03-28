@@ -388,5 +388,50 @@
       "players": "",
       "exportFile": ""
     }
+  ],
+  "commissionPerCutoffData": [
+    {
+      "network": "GOLDEN PARTNER",
+      "name": "GP-001",
+      "totalNetworkBets": 600000,
+      "totalNetworkWinnings": 350000,
+      "totalNetworkGGR": 250000,
+      "totalNetworkGrossCommissions": 60000,
+      "paymentGatewayFeeDeductions": 12000,
+      "totalNetCommissions": 48000
+    },
+    {
+      "network": "GOLDEN PARTNER",
+      "name": "GP-002",
+      "totalNetworkBets": "550,000",
+      "totalNetworkWinnings": "330,000",
+      "totalNetworkGGR": "220,000",
+      "totalNetworkGrossCommissions": "55,000",
+      "paymentGatewayFeeDeductions": "11,000",
+      "totalNetCommissions": "44,000"
+    }
+  ],
+
+  "partnerCommissionData": [
+    {
+      "network": "GOLDEN PARTNER",
+      "name": "GP-001",
+      "totalBets": 300000,
+      "totalWinnings": 180000,
+      "totalGGR": 120000,
+      "totalGrossCommissions": 30000,
+      "paymentGatewayFeeDeductions": 6000,
+      "totalNetCommissions": 24000
+    },
+    {
+      "network": "GOLDEN PARTNER",
+      "name": "GP-002",
+      "totalBets": "280,000",
+      "totalWinnings": "165,000",
+      "totalGGR": "115,000",
+      "totalGrossCommissions": "28,000",
+      "paymentGatewayFeeDeductions": "5,500",
+      "totalNetCommissions": "22,500"
+    }
   ]
 }
