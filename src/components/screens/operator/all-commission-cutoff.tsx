@@ -17,7 +17,7 @@ type Props = {};
 const operatorAllCommissionCutoffData: OperatorAllCommissionCutoffData[] =
   Data.operatorAllCommissionCutoffData || [];
 
-export default function GoldenAllCommissionCutoff({}: Props) {
+export default function OperatorAllCommissionCutoff({}: Props) {
   return (
     <div>
       <div className="container mb-10">
