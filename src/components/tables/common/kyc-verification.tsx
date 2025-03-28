@@ -116,7 +116,7 @@ const KYCVerification = () => {
             rows={3}
           ></Textarea>
         </div>
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="flex flex-col sm:flex-row gap-4 mb-4">
           <div>
             <Label className="block text-gray-700 font-medium mb-2">
               Contact Number
