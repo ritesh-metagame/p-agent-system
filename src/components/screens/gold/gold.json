@@ -228,5 +228,27 @@
       "allTime": "$200,000",
       "summary": "$225,000"
     }
+  ],
+  "goldAllCommissionCutoffIDStatusData": [
+    {
+      "id": "CUT-001",
+      "cutoffPeriod": "Feb 1 - Feb 15, 2025",
+      "status": "Pending"
+    },
+    {
+      "id": "CUT-002",
+      "cutoffPeriod": "Feb 16 - Feb 28, 2025",
+      "status": "Completed"
+    },
+    {
+      "id": "CUT-003",
+      "cutoffPeriod": "Mar 1 - Mar 15, 2025",
+      "status": "Failed"
+    },
+    {
+      "id": "CUT-004",
+      "cutoffPeriod": "Mar 16 - Mar 31, 2025",
+      "status": "Pending"
+    }
   ]
 }

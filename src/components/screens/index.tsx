@@ -27,10 +27,14 @@ export { default as SuperAdminSettlementHistory } from "./superadmin/settlement-
 export { default as OperatorCommissions } from "./operator/commissions";
 export { default as OperatorTransactions } from "./operator/transactions";
 export { default as OperatorSettlementHistory } from "./operator/settlement-history";
+
+export { default as OperatorAllCommissionCutoff } from "./operator/all-commission-cutoff";
+
 //below golden
 export { default as GoldenCommissions } from "./gold/commissions";
 export { default as GoldenTransactions } from "./gold/transactions";
 export { default as GoldenSettlementHistory } from "./gold/settlement-history";
+export { default as GoldenAllCommissionCutoff } from "./gold/all-commission-cutoff";
 
 //another
 export { default as GoldenCommissionRecentCutoff } from "./gold/commission-recent-cutoff";

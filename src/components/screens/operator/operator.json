@@ -291,5 +291,47 @@
       "pendingCommission": "Mar 1 - Mar 15, 2025",
       "released": "120000"
     }
+  ],
+  "operatorAllCommissionCutoffData": [
+    {
+      "id": "CUT-001",
+      "cutoffPeriod": "Feb 1 - Feb 15, 2025",
+      "amount": 50000,
+      "status": "Pending",
+      "action": "Approve",
+      "bank": "Bank of America",
+      "refId": "REF-001",
+      "dateSettled": "N/A"
+    },
+    {
+      "id": "CUT-002",
+      "cutoffPeriod": "Feb 16 - Feb 28, 2025",
+      "amount": "75,000",
+      "status": "Completed",
+      "action": "View",
+      "bank": "Chase Bank",
+      "refId": "REF-002",
+      "dateSettled": "March 1, 2025"
+    },
+    {
+      "id": "CUT-003",
+      "cutoffPeriod": "Mar 1 - Mar 15, 2025",
+      "amount": 60000,
+      "status": "Failed",
+      "action": "Retry",
+      "bank": "Wells Fargo",
+      "refId": "REF-003",
+      "dateSettled": "N/A"
+    },
+    {
+      "id": "CUT-004",
+      "cutoffPeriod": "Mar 16 - Mar 31, 2025",
+      "amount": "80,000",
+      "status": "Pending",
+      "action": "Approve",
+      "bank": "Citibank",
+      "refId": "REF-004",
+      "dateSettled": "N/A"
+    }
   ]
 }

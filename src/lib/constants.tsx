@@ -27,6 +27,8 @@ import {
   GoldenCreateOperatorAccount,
   GoldenPartnerManagement,
   SuperAdminAllCommissionCutoffs,
+  GoldenAllCommissionCutoff,
+  OperatorAllCommissionCutoff,
 } from "@/components/screens";
 import CommissionRecentCutsOff from "@/components/screens/operator/commission-recent-cutoff";
 import PartnerManagement from "@/components/screens/operator/partner-management";
@@ -138,7 +140,7 @@ export const RolePageComponentMap: RolePageMap = {
   },
 
   [UserRole.GOLD]: {
-    [Pages.HISTORICAL_CUTOFFS]: () => <SuperAdminAllCommissionCutoffs />,
+    [Pages.HISTORICAL_CUTOFFS]: () => <GoldenAllCommissionCutoff />,
     [Pages.TRANSACTIONS]: () => <GoldenTransactions />,
     [Pages.COMMISSIONS]: () => <GoldenCommissions />,
     [Pages.SETTLEMENT_HISTORY]: () => <GoldenSettlementHistory />,
@@ -152,7 +154,7 @@ export const RolePageComponentMap: RolePageMap = {
     [Pages.CREATE_OPERATOR_ACCOUNT]: () => <CreateAccountForm />,
     [Pages.PARTNER_MANAGEMENT]: () => <PartnerManagement />,
     [Pages.COMMISSION_RECENT_CUTOFF]: () => <CommissionRecentCutsOff />,
-    [Pages.HISTORICAL_CUTOFFS]: () => <></>,
+    [Pages.HISTORICAL_CUTOFFS]: () => <OperatorAllCommissionCutoff />,
 
     [Pages.TRANSACTIONS]: () => <OperatorTransactions />,
     [Pages.COMMISSIONS]: () => <OperatorCommissions />,
