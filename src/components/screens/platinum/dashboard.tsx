@@ -11,37 +11,17 @@ import { TypographyH2 } from "@/components/ui/typographyh2";
 
 import { DataTable } from "@/components/tables/data-table";
 import CommonDashboard from "@/components/tables/common/common-downloadReports-components/common-dashboard-part";
+import Data from "./platinum.json";
 
 type Props = {};
 
 // Dummy data for PlatinumTopPerformersAllTimeData
-const platinumTopPerformersAllTimeData: PlatinumTopPerformersAllTimeData[] = [
-  {
-    goldenName: "GP-001",
-    pendingCommission: "$12,000",
-    released: "$50,000",
-  },
-  {
-    goldenName: "GP-002",
-    pendingCommission: "$15,000",
-    released: "$60,000",
-  },
-];
+const platinumTopPerformersAllTimeData: PlatinumTopPerformersAllTimeData[] =
+  Data.PlatinumTopPerformersAllTimeData || [];
 
 // Dummy data for PlatinumTopPerformersPerCutoffData
 const platinumTopPerformersPerCutoffData: PlatinumTopPerformersPerCutoffData[] =
-  [
-    {
-      goldenName: "GP-001",
-      pendingCommission: "$3,000",
-      released: "$10,000",
-    },
-    {
-      goldenName: "GP-002",
-      pendingCommission: "$4,000",
-      released: "$12,000",
-    },
-  ];
+  Data.PlatinumTopPerformersPerCutoffData || [];
 
 //dummy data ends
 

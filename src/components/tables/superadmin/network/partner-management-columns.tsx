@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 
 // Define the shape of the data for the table.
+
 export type PartnerManagementData = {
   operatorName: string;
   ppApproved: number | string;

@@ -1,8 +1,6 @@
 import { DataTable } from "@/components/tables/data-table";
-import {
-  superAdminAllCommissionCutoffsColumns,
-  superAdminSettlementDummyData,
-} from "@/components/tables/superadmin/commission-release/all-commissions-cutoff-columns";
+import { superAdminAllCommissionCutoffsColumns } from "@/components/tables/superadmin/commission-release/all-commissions-cutoff-columns";
+import type { SuperAdiminAllCommissionCutoffsData } from "@/components/tables/superadmin/commission-release/all-commissions-cutoff-columns";
 import { superAdminReportsListColumns } from "@/components/tables/superadmin/download-reports/commission-columns";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +14,10 @@ import {
 } from "@/components/ui/select";
 import { TypographyH2 } from "@/components/ui/typographyh2";
 import React from "react";
+import Data from "./superAdmin.json";
+import { SuperAdminSettlementReportData } from "@/components/tables/superadmin/download-reports/settlement-history-columns";
+const superAdminSettlementDummyData: SuperAdiminAllCommissionCutoffsData[] =
+  Data.SuperAdminSettlementDummyData || [];
 
 type Props = {};
 

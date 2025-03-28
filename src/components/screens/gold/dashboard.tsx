@@ -12,36 +12,17 @@ import { TypographyH4 } from "@/components/ui/typographyh4";
 
 import { DataTable } from "@/components/tables/data-table";
 import CommonDashboard from "@/components/tables/common/common-downloadReports-components/common-dashboard-part";
+import Data from "./gold.json";
 
 //below ends
 type Props = {};
 // Dummy data for PlatinumTopPerformersAllTimeData
-const goldTopPerformersDepositsdata: GoldTopPerformersDeposits[] = [
-  {
-    playerName: "GP-001",
-    deposits: "$12,000",
-    depositsToDate: "$50,000",
-  },
-  {
-    playerName: "GP-002",
-    deposits: "$15,000",
-    depositsToDate: "$60,000",
-  },
-];
+const goldTopPerformersDepositsdata: GoldTopPerformersDeposits[] =
+  Data.GoldTopPerformersDepositsData || [];
 
 // Dummy data for PlatinumTopPerformersPerCutoffData
-const goldTopPerformersGGRdata: GoldTopPerformersGGR[] = [
-  {
-    playerName: "GP-001",
-    ggr: "$3,000",
-    ggrToDate: "$10,000",
-  },
-  {
-    playerName: "GP-002",
-    ggr: "$4,000",
-    ggrToDate: "$12,000",
-  },
-];
+const goldTopPerformersGGRdata: GoldTopPerformersGGR[] =
+  Data.GoldTopPerformersGGRData || [];
 
 //dummy data ends
 

@@ -27,9 +27,12 @@ import {
   GoldenCreateOperatorAccount,
   GoldenPartnerManagement,
   SuperAdminAllCommissionCutoffs,
+  GoldenAllCommissionCutoff,
+  OperatorAllCommissionCutoff,
 } from "@/components/screens";
 import CommissionRecentCutsOff from "@/components/screens/operator/commission-recent-cutoff";
 import PartnerManagement from "@/components/screens/operator/partner-management";
+import AllCommissionCutoffs from "@/components/screens/superadmin/all-commission-cutoffs";
 // import { OperatorDashboard } from "@/components/screens";
 import { JSX } from "react";
 
@@ -50,6 +53,7 @@ export enum Pages {
   TRANSACTIONS = "Transactions",
   COMMISSIONS = "Commissions",
   SETTLEMENT_HISTORY = "Settlement History",
+  KYC_VERIFICATION = "Verify KYC",
 }
 
 export enum Paths {
@@ -61,6 +65,7 @@ export enum Paths {
   TRANSACTIONS = "/transactions",
   COMMISSIONS = "/commissions",
   SETTLEMENT_HISTORY = "/settlement-history",
+  KYC_VERIFICATION = "/verify-kyc",
 }
 
 export const pagePaths = new Map<Paths, Pages>([
@@ -121,7 +126,7 @@ export const RolePageComponentMap: RolePageMap = {
       <SuperAdminCommissionRecentCutoff />
     ),
 
-    [Pages.HISTORICAL_CUTOFFS]: () => <></>,
+    [Pages.HISTORICAL_CUTOFFS]: () => <SuperAdminAllCommissionCutoffs />,
     [Pages.TRANSACTIONS]: () => <SuperAdminTransactions />,
     [Pages.COMMISSIONS]: () => <SuperAdminCommissions />,
     [Pages.SETTLEMENT_HISTORY]: () => <SuperAdminSettlementHistory />,
@@ -138,10 +143,10 @@ export const RolePageComponentMap: RolePageMap = {
   },
 
   [UserRole.GOLD]: {
-    [Pages.HISTORICAL_CUTOFFS]: () => <SuperAdminAllCommissionCutoffs />,
-    [Pages.TRANSACTIONS]: () => <></>,
-    [Pages.COMMISSIONS]: () => <></>,
-    [Pages.SETTLEMENT_HISTORY]: () => <></>,
+    [Pages.HISTORICAL_CUTOFFS]: () => <GoldenAllCommissionCutoff />,
+    [Pages.TRANSACTIONS]: () => <GoldenTransactions />,
+    [Pages.COMMISSIONS]: () => <GoldenCommissions />,
+    [Pages.SETTLEMENT_HISTORY]: () => <GoldenSettlementHistory />,
     [Pages.DASHBOARD]: () => <GoldenDashboard />,
     [Pages.CREATE_OPERATOR_ACCOUNT]: () => <GoldenCreateOperatorAccount />,
     [Pages.PARTNER_MANAGEMENT]: () => <GoldenPartnerManagement />,
@@ -152,7 +157,7 @@ export const RolePageComponentMap: RolePageMap = {
     [Pages.CREATE_OPERATOR_ACCOUNT]: () => <CreateAccountForm />,
     [Pages.PARTNER_MANAGEMENT]: () => <PartnerManagement />,
     [Pages.COMMISSION_RECENT_CUTOFF]: () => <CommissionRecentCutsOff />,
-    [Pages.HISTORICAL_CUTOFFS]: () => <></>,
+    [Pages.HISTORICAL_CUTOFFS]: () => <OperatorAllCommissionCutoff />,
 
     [Pages.TRANSACTIONS]: () => <OperatorTransactions />,
     [Pages.COMMISSIONS]: () => <OperatorCommissions />,

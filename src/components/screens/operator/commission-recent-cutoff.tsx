@@ -17,22 +17,26 @@ import {
   commissionRecentCutsOff,
 } from "@/components/tables/operator/general/dashboard-columns";
 
+import Data from "./operator.json";
+
 type Props = {};
 
 export default function CommissionRecentCutsOff({}: Props) {
-  const commissionCutOffData: CommissionRecentCutOff[] = [
-    {
-      platinumPartner: "PLAT_001",
-      totalBets: 1000,
-      totalWinnings: 500,
-      ggr: 500,
-      grossCommission: 100,
-      totalDeduction: 50,
-      netCommission: 50,
-      partnerBreakDown: [{ label: "VIEW" }],
-      releaseCommissions: [{ label: "RELEASE" }],
-    },
-  ];
+  const commissionCutOffData: CommissionRecentCutOff[] =
+    Data.commissionCutOffData || [];
+  // const commissionCutOffData: CommissionRecentCutOff[] = [
+  //   {
+  //     platinumPartner: "PLAT_001",
+  //     totalBets: 1000,
+  //     totalWinnings: 500,
+  //     ggr: 500,
+  //     grossCommission: 100,
+  //     totalDeduction: 50,
+  //     netCommission: 50,
+  //     partnerBreakDown: [{ label: "VIEW" }],
+  //     releaseCommissions: [{ label: "RELEASE" }],
+  //   },
+  // ];
 
   return (
     <div className="container mx-auto p-4 space-y-6">

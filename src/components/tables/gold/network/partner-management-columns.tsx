@@ -5,10 +5,6 @@ import { ColumnDef } from "@tanstack/react-table";
 //!enum needs approval
 
 // Define enum for Status
-export enum CommissionStatus {
-  Released = "RELEASED",
-  Pending = "PENDING",
-}
 
 export type GoldNetworkStats = {
   players: string;
@@ -25,7 +21,7 @@ export const goldNetworkStatsColumns: ColumnDef<GoldNetworkStats>[] = [
 export type GoldNetworkCommissionData = {
   partner: string;
   pendingCommission: number | string;
-  status: CommissionStatus; // Use enum for strict typing
+  status: string; // Use enum for strict typing
   allTime: number | string;
   summary: number | string;
 };

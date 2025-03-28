@@ -6,36 +6,10 @@ import type { PlatinumPartnerData } from "../../../components/tables/platinum/co
 import { TypographyH2 } from "@/components/ui/typographyh2";
 
 import { DataTable } from "@/components/tables/data-table";
+import Data from "./platinum.json";
 
-const PlatinumPartnerData: PlatinumPartnerData[] = [
-  {
-    platinumPartner: "Partner Alpha",
-    totalBets: "$500,000",
-    totalWinnings: "$350,000",
-    ggr: "$150,000",
-    grossCommissions: "$30,000",
-    totalDeductions: "$5,000",
-    netCommissions: "$25,000",
-  },
-  {
-    platinumPartner: "Partner Beta",
-    totalBets: "$750,000",
-    totalWinnings: "$500,000",
-    ggr: "$250,000",
-    grossCommissions: "$50,000",
-    totalDeductions: "$10,000",
-    netCommissions: "$40,000",
-  },
-  {
-    platinumPartner: "Partner Gamma",
-    totalBets: "$600,000",
-    totalWinnings: "$400,000",
-    ggr: "$200,000",
-    grossCommissions: "$40,000",
-    totalDeductions: "$7,000",
-    netCommissions: "$33,000",
-  },
-];
+const PlatinumPartnerData: PlatinumPartnerData[] =
+  Data.PlatinumPartnerData || [];
 
 type Props = {};
 
