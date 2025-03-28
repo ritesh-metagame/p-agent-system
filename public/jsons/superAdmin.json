@@ -1,0 +1,360 @@
+{
+  "ReportData": [
+    {
+      "id": 1,
+      "fromDate": "2025-03-01",
+      "toDate": "2025-03-07",
+      "status": "Completed",
+      "action": "Download"
+    },
+    {
+      "id": 2,
+      "fromDate": "2025-03-08",
+      "toDate": "2025-03-14",
+      "status": "Pending",
+      "action": "Download"
+    },
+    {
+      "id": 3,
+      "fromDate": "2025-03-15",
+      "toDate": "2025-03-21",
+      "status": "Failed",
+      "action": "Retry"
+    },
+    {
+      "id": 4,
+      "fromDate": "2025-03-22",
+      "toDate": "2025-03-28",
+      "status": "Completed",
+      "action": "Download"
+    }
+  ],
+
+  "SettlementReportData": [
+    {
+      "id": 1,
+      "start": "2025-03-01",
+      "end": "2025-03-07",
+      "status": "Completed",
+      "action": "Download"
+    },
+    {
+      "id": 2,
+      "start": "2025-03-08",
+      "end": "2025-03-14",
+      "status": "Pending",
+      "action": "Download"
+    },
+    {
+      "id": 3,
+      "start": "2025-03-15",
+      "end": "2025-03-21",
+      "status": "Failed",
+      "action": "Retry"
+    },
+    {
+      "id": 4,
+      "start": "2025-03-22",
+      "end": "2025-03-28",
+      "status": "Completed",
+      "action": "Download"
+    }
+  ],
+
+  "TransactionsReportsListData": [
+    {
+      "id": 1,
+      "fromDate": "2025-03-01",
+      "toDate": "2025-03-07",
+      "status": "Completed",
+      "action": "Download"
+    },
+    {
+      "id": 2,
+      "fromDate": "2025-03-08",
+      "toDate": "2025-03-14",
+      "status": "Pending",
+      "action": "Download"
+    },
+    {
+      "id": 3,
+      "fromDate": "2025-03-15",
+      "toDate": "2025-03-21",
+      "status": "Failed",
+      "action": "Retry"
+    },
+    {
+      "id": 4,
+      "fromDate": "2025-03-22",
+      "toDate": "2025-03-28",
+      "status": "Completed",
+      "action": "Download"
+    }
+  ],
+
+  "SuperAdminSettlementDummyData": [
+    {
+      "id": "1",
+      "cutoffPeriod": "2023-09-01 to 2023-09-15",
+      "amount": "5000",
+      "status": "PENDING",
+      "bank": "Bank of America",
+      "refId": "REF12345",
+      "dateSettled": "-"
+    },
+    {
+      "id": "2",
+      "cutoffPeriod": "2023-08-16 to 2023-08-31",
+      "amount": "7500",
+      "status": "SETTLED",
+      "bank": "Chase Bank",
+      "refId": "REF67890",
+      "dateSettled": "2023-09-05"
+    },
+    {
+      "id": "3",
+      "cutoffPeriod": "2023-08-01 to 2023-08-15",
+      "amount": "6000",
+      "status": "PENDING",
+      "bank": "Wells Fargo",
+      "refId": "REF11223",
+      "dateSettled": "-"
+    }
+  ],
+
+  "CommissionRecentCutoffData": [
+    {
+      "network": "Network A",
+      "totalNetworkBets": 10000,
+      "totalNetworkWinnings": 8000,
+      "totalNetworkGGR": 2000,
+      "totalNetworkGrossCommissions": 500,
+      "totalNetworkDeductions": 100,
+      "totalNetCommissions": 400
+    },
+    {
+      "network": "Network B",
+      "totalNetworkBets": 20000,
+      "totalNetworkWinnings": 15000,
+      "totalNetworkGGR": 5000,
+      "totalNetworkGrossCommissions": 1200,
+      "totalNetworkDeductions": 300,
+      "totalNetCommissions": 900
+    },
+    {
+      "network": "Network C",
+      "totalNetworkBets": 15000,
+      "totalNetworkWinnings": 12000,
+      "totalNetworkGGR": 3000,
+      "totalNetworkGrossCommissions": 800,
+      "totalNetworkDeductions": 200,
+      "totalNetCommissions": 600
+    }
+  ],
+
+  "NetworkCommissionData": [
+    {
+      "operatorName": "ETA-001",
+      "pendingCommission": "10,000",
+      "status": "RELEASED",
+      "allTime": "1,00,000",
+      "total": "1,10,000"
+    },
+    {
+      "operatorName": "ETA-002",
+      "pendingCommission": "5,000",
+      "status": "PENDING",
+      "allTime": "10,000",
+      "total": "15,000"
+    }
+  ],
+
+  "networkStatistics": [
+    {
+      "id": "OPERATOR",
+      "approved": 125,
+      "pending": 14,
+      "declined": 3
+    },
+    {
+      "id": "PLATINUM",
+      "approved": 87,
+      "pending": 9,
+      "declined": 2
+    },
+    {
+      "id": "GOLDEN",
+      "approved": 45,
+      "pending": 7,
+      "declined": 1
+    },
+    {
+      "id": "PLAYERS",
+      "approved": 350,
+      "pending": 42,
+      "declined": 8
+    }
+  ],
+  "commissionOverview": [
+    {
+      "id": "OPERATOR",
+      "pendingCommission": 40000,
+      "releasedAllTime": 10000
+    },
+    {
+      "id": "PLATINUM",
+      "pendingCommission": 60000,
+      "releasedAllTime": 2000
+    },
+    {
+      "id": "GOLDEN",
+      "pendingCommission": 70000,
+      "releasedAllTime": 1500
+    }
+  ],
+  "financialOverview": [
+    {
+      "item": "TOTAL BETS",
+      "pendingCommission": 1256789.45,
+      "releasedAllTime": 5847623.78,
+      "totalSummary": 7104413.23
+    },
+    {
+      "item": "TOTAL WINNINGS",
+      "pendingCommission": 876543.21,
+      "releasedAllTime": 3254789.9,
+      "totalSummary": 4131333.11
+    },
+    {
+      "item": "TOTAL GGR",
+      "pendingCommission": 380246.24,
+      "releasedAllTime": 2592833.88,
+      "totalSummary": 2973080.12
+    },
+    {
+      "item": "TOTAL GROSS COMMISSIONS",
+      "pendingCommission": 76049.25,
+      "releasedAllTime": 518566.78,
+      "totalSummary": 594616.03
+    },
+    {
+      "item": "TOTAL DEDUCTIONS (Payment Gateway Fee Deductions from GP Commissions)",
+      "pendingCommission": 7604.93,
+      "releasedAllTime": 51856.68,
+      "totalSummary": 59461.61
+    },
+    {
+      "item": "NET COMMISSIONS FOR OPERATORS",
+      "pendingCommission": 68444.32,
+      "releasedAllTime": 466710.1,
+      "totalSummary": 535154.42
+    }
+  ],
+  "topPlayersDepositsOverview": [
+    {
+      "playerName": "Juan dela Cruz",
+      "depositsMade": 1000,
+      "totalDeposits": 5000,
+      "operatorName": "Operator A"
+    }
+  ],
+  "topPlayersGGROverview": [
+    {
+      "playerName": "Juan dela Cruz",
+      "ggrMade": 2000,
+      "totalGGR": 10000,
+      "operatorName": "Operator B"
+    }
+  ],
+  "categoryFinancialOverview": [
+    {
+      "item": "TOTAL BETS",
+      "dailyOverview": 245890,
+      "pendingCommission": 12450,
+      "releasedAllTime": 567800,
+      "totalSummary": 580250
+    },
+    {
+      "item": "TOTAL WINNINGS",
+      "dailyOverview": 98760,
+      "pendingCommission": 4930,
+      "releasedAllTime": 287600,
+      "totalSummary": 292530
+    },
+    {
+      "item": "TOTAL LOSSES",
+      "dailyOverview": 147130,
+      "pendingCommission": 7520,
+      "releasedAllTime": 280200,
+      "totalSummary": 287720
+    },
+    {
+      "item": "CASINO GAMES",
+      "dailyOverview": 78450,
+      "pendingCommission": 3922.5,
+      "releasedAllTime": 178900,
+      "totalSummary": 182822.5
+    },
+    {
+      "item": "SPORTS BETTING",
+      "dailyOverview": 167440,
+      "pendingCommission": 8372,
+      "releasedAllTime": 388900,
+      "totalSummary": 397272
+    },
+    {
+      "item": "PROMOTIONAL BONUSES",
+      "dailyOverview": "N/A",
+      "pendingCommission": 1500,
+      "releasedAllTime": 35000,
+      "totalSummary": 36500
+    },
+    {
+      "item": "PLATFORM FEES",
+      "dailyOverview": 3200,
+      "pendingCommission": 0,
+      "releasedAllTime": 48500,
+      "totalSummary": 48500
+    }
+  ],
+  "sportsBettingOverview": [
+    {
+      "item": "TOTAL BETS",
+      "dailyOverview": 5000,
+      "pendingCommission": 2000,
+      "releasedAllTime": 15000,
+      "totalSummary": 17000
+    },
+    {
+      "item": "TOTAL GROSS COMMISSIONS % of Total Bets",
+      "dailyOverview": "N/A",
+      "pendingCommission": 500,
+      "releasedAllTime": 3000,
+      "totalSummary": 3500
+    }
+  ],
+  "topPerformersOverview": [
+    {
+      "operatorName": "ETA-001",
+      "pendingCommission": 1000,
+      "releasedAllTime": 5000
+    },
+    {
+      "operatorName": "ETA-002",
+      "pendingCommission": 2000,
+      "releasedAllTime": 7000
+    },
+    {
+      "operatorName": "ETA-003",
+      "pendingCommission": 1500,
+      "releasedAllTime": 6000
+    }
+  ],
+  "topPerformersOverviewPerCutoff": [
+    {
+      "operatorName": "ETA-001",
+      "pendingCommission": 1000,
+      "releasedAllTime": 5000
+    }
+  ]
+}

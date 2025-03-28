@@ -17,39 +17,12 @@ import {
 
 import { TypographyH2 } from "@/components/ui/typographyh2";
 import { DataTable } from "@/components/tables/data-table";
+import Data from "./common-transactions.json";
 
 type Props = {};
 
-const transactionsReportsListData: TransactionsReportsListData[] = [
-  {
-    id: 1,
-    fromDate: "2025-03-01",
-    toDate: "2025-03-07",
-    status: "Completed",
-    action: "Download",
-  },
-  {
-    id: 2,
-    fromDate: "2025-03-08",
-    toDate: "2025-03-14",
-    status: "Pending",
-    action: "Download",
-  },
-  {
-    id: 3,
-    fromDate: "2025-03-15",
-    toDate: "2025-03-21",
-    status: "Failed",
-    action: "Retry",
-  },
-  {
-    id: 4,
-    fromDate: "2025-03-22",
-    toDate: "2025-03-28",
-    status: "Completed",
-    action: "Download",
-  },
-];
+const transactionsReportsListData: TransactionsReportsListData[] =
+  Data.TransactionsReportsListData || [];
 
 function DatePicker({ placeholder }: { placeholder: string }) {
   const [date, setDate] = React.useState<Date | undefined>();

@@ -1,14 +1,27 @@
 import { DataTable } from "@/components/tables/data-table";
 import {
-  allNetworkStatsData,
   networkCommissionColumns,
-  networkCommissionData,
-  operatorWiseNetworkStatsData,
   partnerManagementColumns,
+} from "@/components/tables/superadmin/network/partner-management-columns";
+
+import type {
+  NetworkCommissionData,
+  PartnerManagementData,
 } from "@/components/tables/superadmin/network/partner-management-columns";
 import { TypographyH2 } from "@/components/ui/typographyh2";
 import { TypographyH4 } from "@/components/ui/typographyh4";
 import React from "react";
+import Data from "./superAdmin.json";
+
+const networkCommissionData: NetworkCommissionData[] =
+  Data.NetworkCommissionData || [];
+
+// Dummy data for NETWORK STATS
+export const allNetworkStatsData: PartnerManagementData[] =
+  Data.allNetworkStatsData || [];
+
+export const operatorWiseNetworkStatsData: PartnerManagementData[] =
+  Data.operatorWiseNetworkStatsData || [];
 
 type Props = {};
 

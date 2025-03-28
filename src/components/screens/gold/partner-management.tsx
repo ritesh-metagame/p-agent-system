@@ -3,7 +3,6 @@ import React from "react";
 import {
   goldNetworkStatsColumns,
   goldnetworkCommissionColumns,
-  CommissionStatus,
 } from "../../../components/tables/gold/network/partner-management-columns";
 
 import type {
@@ -14,46 +13,17 @@ import type {
 import { TypographyH2 } from "@/components/ui/typographyh2";
 
 import { DataTable } from "@/components/tables/data-table";
+import Data from "./gold.json";
 
 type Props = {};
 
 // Dummy data for GoldNetworkStats
-const goldNetworkStatsData: GoldNetworkStats[] = [
-  {
-    players: "1,500",
-  },
-  {
-    players: "2,000",
-  },
-  {
-    players: "1,750",
-  },
-];
+const goldNetworkStatsData: GoldNetworkStats[] =
+  Data.GoldNetworkStatsData || [];
 
 // Dummy data for GoldNetworkCommissionData
-const goldNetworkCommissionData: GoldNetworkCommissionData[] = [
-  {
-    partner: "Partner Alpha",
-    pendingCommission: "$20,000",
-    status: CommissionStatus.Pending,
-    allTime: "$150,000",
-    summary: "$170,000",
-  },
-  {
-    partner: "Partner Beta",
-    pendingCommission: "$15,000",
-    status: CommissionStatus.Released,
-    allTime: "$120,000",
-    summary: "$135,000",
-  },
-  {
-    partner: "Partner Gamma",
-    pendingCommission: "$25,000",
-    status: CommissionStatus.Pending,
-    allTime: "$200,000",
-    summary: "$225,000",
-  },
-];
+const goldNetworkCommissionData: GoldNetworkCommissionData[] =
+  Data.GoldNetworkCommissionData || [];
 
 export default function PlatinumPartnerManagement({}: Props) {
   return (

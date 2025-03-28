@@ -7,39 +7,15 @@ import type { GoldCommissionRecentCutoffData } from "../../../components/tables/
 import { TypographyH2 } from "@/components/ui/typographyh2";
 
 import { DataTable } from "@/components/tables/data-table";
+import Data from "./gold.json";
+
+//
 
 type Props = {};
 
 // Dummy data for GoldCommissionRecentCutoffData
-const goldCommissionRecentCutoffData: GoldCommissionRecentCutoffData[] = [
-  {
-    platinumPartner: "Partner Alpha",
-    totalBets: "$1,000,000",
-    totalWinnings: "$750,000",
-    gGR: "$250,000",
-    grossCommissions: "$50,000",
-    totalDeductions: "$10,000",
-    netCommissions: "$40,000",
-  },
-  {
-    platinumPartner: "Partner Beta",
-    totalBets: "$800,000",
-    totalWinnings: "$600,000",
-    gGR: "$200,000",
-    grossCommissions: "$40,000",
-    totalDeductions: "$8,000",
-    netCommissions: "$32,000",
-  },
-  {
-    platinumPartner: "Partner Gamma",
-    totalBets: "$1,200,000",
-    totalWinnings: "$900,000",
-    gGR: "$300,000",
-    grossCommissions: "$60,000",
-    totalDeductions: "$12,000",
-    netCommissions: "$48,000",
-  },
-];
+const goldCommissionRecentCutoffData: GoldCommissionRecentCutoffData[] =
+  Data.GoldCommissionRecentCutoffData || [];
 
 export default function PlatinumRecentCutoff({}: Props) {
   return (

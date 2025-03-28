@@ -121,7 +121,7 @@ export const RolePageComponentMap: RolePageMap = {
       <SuperAdminCommissionRecentCutoff />
     ),
 
-    [Pages.HISTORICAL_CUTOFFS]: () => <></>,
+    [Pages.HISTORICAL_CUTOFFS]: () => <SuperAdminAllCommissionCutoffs />,
     [Pages.TRANSACTIONS]: () => <SuperAdminTransactions />,
     [Pages.COMMISSIONS]: () => <SuperAdminCommissions />,
     [Pages.SETTLEMENT_HISTORY]: () => <SuperAdminSettlementHistory />,
@@ -139,9 +139,9 @@ export const RolePageComponentMap: RolePageMap = {
 
   [UserRole.GOLD]: {
     [Pages.HISTORICAL_CUTOFFS]: () => <SuperAdminAllCommissionCutoffs />,
-    [Pages.TRANSACTIONS]: () => <></>,
-    [Pages.COMMISSIONS]: () => <></>,
-    [Pages.SETTLEMENT_HISTORY]: () => <></>,
+    [Pages.TRANSACTIONS]: () => <GoldenTransactions />,
+    [Pages.COMMISSIONS]: () => <GoldenCommissions />,
+    [Pages.SETTLEMENT_HISTORY]: () => <GoldenSettlementHistory />,
     [Pages.DASHBOARD]: () => <GoldenDashboard />,
     [Pages.CREATE_OPERATOR_ACCOUNT]: () => <GoldenCreateOperatorAccount />,
     [Pages.PARTNER_MANAGEMENT]: () => <GoldenPartnerManagement />,

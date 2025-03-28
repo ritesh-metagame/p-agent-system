@@ -1,0 +1,296 @@
+{
+  "CutoffPeriodData": [
+    {
+      "commissionPendingSettlement": "$50,000",
+      "commissionSettled": "$200,000"
+    },
+    {
+      "commissionPendingSettlement": "$30,000",
+      "commissionSettled": "$150,000"
+    }
+  ],
+  "NetworkOverviewData": [
+    {
+      "network": "GOLDEN PARTNER",
+      "approved": 120,
+      "pending": 15,
+      "suspended": 5,
+      "summary": 140
+    },
+    {
+      "network": "PLAYERS",
+      "approved": 300,
+      "pending": 25,
+      "suspended": 10,
+      "summary": 335
+    }
+  ],
+  "OverallSummaryData": [
+    {
+      "item": "TOTAL BETS",
+      "pendingSettlement": "$100,000",
+      "previousSettled": "$500,000",
+      "summary": "$600,000"
+    },
+    {
+      "item": "TOTAL WINS",
+      "pendingSettlement": "$90,000",
+      "previousSettled": "$300,000",
+      "summary": "$360,000"
+    },
+    {
+      "item": "GGR",
+      "pendingSettlement": "$40,000",
+      "previousSettled": "$200,000",
+      "summary": "$240,000"
+    },
+    {
+      "item": "GROSS COMMISSIONS",
+      "pendingSettlement": "$10,000",
+      "previousSettled": "$50,000",
+      "summary": "$60,000"
+    },
+    {
+      "item": "TOTAL DEDUCTIONS",
+      "pendingSettlement": "$10,000",
+      "previousSettled": "$50,000",
+      "summary": "$60,000"
+    },
+    {
+      "item": "NET COMMISSIONS",
+      "pendingSettlement": "$10,000",
+      "previousSettled": "$50,000",
+      "summary": "$60,000"
+    }
+  ],
+  "EGamesData": [
+    {
+      "item": "TOTAL BETS",
+      "dailyOverview": "$5,000",
+      "pendingSettlement": "$2,000",
+      "previousSettled": "$20,000",
+      "summary": "$22,000"
+    },
+    {
+      "item": "TOTAL WINNINGS",
+      "dailyOverview": "$7,000",
+      "pendingSettlement": "$3,000",
+      "previousSettled": "$25,000",
+      "summary": "$28,000"
+    },
+    {
+      "item": "GGR",
+      "dailyOverview": "$7,000",
+      "pendingSettlement": "$3,000",
+      "previousSettled": "$25,000",
+      "summary": "$28,000"
+    },
+    {
+      "item": "GROSS COMMISSIONS",
+      "dailyOverview": "$7,000",
+      "pendingSettlement": "$3,000",
+      "previousSettled": "$25,000",
+      "summary": "$28,000"
+    }
+  ],
+  "SportsbettingData": [
+    {
+      "item": "TOTAL BETS",
+      "dailyOverview": "$8,000",
+      "pendingSettlement": "$4,000",
+      "previousSettled": "$30,000",
+      "summary": "$34,000"
+    },
+    {
+      "item": "GROSS COMMISSIONS",
+      "dailyOverview": "$6,000",
+      "pendingSettlement": "$2,500",
+      "previousSettled": "$22,000",
+      "summary": "$24,500"
+    }
+  ],
+
+  "ReportData": [
+    {
+      "id": 1,
+      "fromDate": "2025-03-01",
+      "toDate": "2025-03-07",
+      "status": "Completed",
+      "action": "Download"
+    },
+    {
+      "id": 2,
+      "fromDate": "2025-03-08",
+      "toDate": "2025-03-14",
+      "status": "Pending",
+      "action": "Download"
+    },
+    {
+      "id": 3,
+      "fromDate": "2025-03-15",
+      "toDate": "2025-03-21",
+      "status": "Failed",
+      "action": "Retry"
+    },
+    {
+      "id": 4,
+      "fromDate": "2025-03-22",
+      "toDate": "2025-03-28",
+      "status": "Completed",
+      "action": "Download"
+    }
+  ],
+
+  "SettlementReportData": [
+    {
+      "id": 1,
+      "start": "2025-03-01",
+      "end": "2025-03-07",
+      "status": "Completed",
+      "action": "Download"
+    },
+    {
+      "id": 2,
+      "start": "2025-03-08",
+      "end": "2025-03-14",
+      "status": "Pending",
+      "action": "Download"
+    },
+    {
+      "id": 3,
+      "start": "2025-03-15",
+      "end": "2025-03-21",
+      "status": "Failed",
+      "action": "Retry"
+    },
+    {
+      "id": 4,
+      "start": "2025-03-22",
+      "end": "2025-03-28",
+      "status": "Completed",
+      "action": "Download"
+    }
+  ],
+
+  "TransactionsReportsListData": [
+    {
+      "id": 1,
+      "fromDate": "2025-03-01",
+      "toDate": "2025-03-07",
+      "status": "Completed",
+      "action": "Download"
+    },
+    {
+      "id": 2,
+      "fromDate": "2025-03-08",
+      "toDate": "2025-03-14",
+      "status": "Pending",
+      "action": "Download"
+    },
+    {
+      "id": 3,
+      "fromDate": "2025-03-15",
+      "toDate": "2025-03-21",
+      "status": "Failed",
+      "action": "Retry"
+    },
+    {
+      "id": 4,
+      "fromDate": "2025-03-22",
+      "toDate": "2025-03-28",
+      "status": "Completed",
+      "action": "Download"
+    }
+  ],
+
+  "PlatinumPartnerData": [
+    {
+      "platinumPartner": "Partner Alpha",
+      "totalBets": "$500,000",
+      "totalWinnings": "$350,000",
+      "ggr": "$150,000",
+      "grossCommissions": "$30,000",
+      "totalDeductions": "$5,000",
+      "netCommissions": "$25,000"
+    },
+    {
+      "platinumPartner": "Partner Beta",
+      "totalBets": "$750,000",
+      "totalWinnings": "$500,000",
+      "ggr": "$250,000",
+      "grossCommissions": "$50,000",
+      "totalDeductions": "$10,000",
+      "netCommissions": "$40,000"
+    },
+    {
+      "platinumPartner": "Partner Gamma",
+      "totalBets": "$600,000",
+      "totalWinnings": "$400,000",
+      "ggr": "$200,000",
+      "grossCommissions": "$40,000",
+      "totalDeductions": "$7,000",
+      "netCommissions": "$33,000"
+    }
+  ],
+
+  "PlatinumTopPerformersAllTimeData": [
+    {
+      "goldenName": "GP-001",
+      "pendingCommission": "$12,000",
+      "released": "$50,000"
+    },
+    {
+      "goldenName": "GP-002",
+      "pendingCommission": "$15,000",
+      "released": "$60,000"
+    }
+  ],
+  "PlatinumTopPerformersPerCutoffData": [
+    {
+      "goldenName": "GP-001",
+      "pendingCommission": "$3,000",
+      "released": "$10,000"
+    },
+    {
+      "goldenName": "GP-002",
+      "pendingCommission": "$4,000",
+      "released": "$12,000"
+    }
+  ],
+
+  "PlatinumNetworkStatsData": [
+    {
+      "gpApproved": 120,
+      "gpPending": 30,
+      "players": 500
+    },
+    {
+      "gpApproved": 95,
+      "gpPending": 20,
+      "players": 450
+    }
+  ],
+  "PlatinumNetworkCommissionData": [
+    {
+      "partner": "Partner A",
+      "pendingCommission": "$12,000",
+      "status": "Active",
+      "allTime": "$150,000",
+      "summary": "$162,000"
+    },
+    {
+      "partner": "Partner B",
+      "pendingCommission": "$8,500",
+      "status": "Pending",
+      "allTime": "$120,000",
+      "summary": "$128,500"
+    },
+    {
+      "partner": "Partner C",
+      "pendingCommission": "$15,000",
+      "status": "Suspended",
+      "allTime": "$180,000",
+      "summary": "$195,000"
+    }
+  ]
+}

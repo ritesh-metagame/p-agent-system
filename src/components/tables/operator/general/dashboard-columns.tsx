@@ -37,14 +37,14 @@ export type OperatorSportsBetting = {
 
 export type OperatorTopPerformersAllTime = {
   platinumName: string;
-  depositsCutoffPeriod: string;
-  totalDepositsToDate: number;
+  pendingCommission: string;
+  released: string;
 };
 
 export type OperatorTopPerformersPerCutoff = {
   platinumName: string;
-  ggrCutoffPeriod: string;
-  totalGgrToDate: number;
+  pendingCommission: string;
+  released: string;
 };
 
 export type NetworkStats = {
@@ -138,10 +138,10 @@ export const operatorTopPerformersAllTime: ColumnDef<OperatorTopPerformersAllTim
   [
     { accessorKey: "platinumName", header: "PLATINUM NAME" },
     {
-      accessorKey: "pendingCommissionAsOfAvailableCutoffPeriod",
-      header: "PENDING COMMISSION AS OF AVAILABLE CUTOFF PERIOD",
+      accessorKey: "pendingCommission",
+      header: "PENDING COMMISSION ",
     },
-    { accessorKey: "releasedAllTime", header: "RELEASED ALL TIME" },
+    { accessorKey: "released", header: "RELEASED " },
   ];
 
 // TOP PERFORMERS - GGR TABLE
@@ -149,10 +149,10 @@ export const operatortopPerformersPerCutoff: ColumnDef<OperatorTopPerformersPerC
   [
     { accessorKey: "platinumName", header: "PLATINUM NAME" },
     {
-      accessorKey: "pendingCommissionAsOfAvailableCutoffPeriod",
-      header: "PENDING COMMISSION AS OF AVAILABLE CUTOFF PERIOD",
+      accessorKey: "pendingCommission",
+      header: "PENDING COMMISSION ",
     },
-    { accessorKey: "releasedAllTime", header: "RELEASED ALL TIME" },
+    { accessorKey: "released", header: "RELEASED " },
   ];
 
 // NETWORK STATS
