@@ -19,45 +19,51 @@ import {
   operatortopPerformersPerCutoff,
 } from "@/components/tables/operator/general/dashboard-columns";
 import CommonDashboard from "@/components/tables/common/common-downloadReports-components/common-dashboard-part";
+import Data from "./operator.json";
 
 type Props = {};
 
 export default function Dashboard({}: Props) {
-  const performerAllTimeData: OperatorTopPerformersAllTime[] = [
-    {
-      platinumName: "PLAT-001",
-      depositsCutoffPeriod: "Feb 1 - Feb 15, 2025",
-      totalDepositsToDate: 100000,
-    },
-    {
-      platinumName: "PLAT-002",
-      depositsCutoffPeriod: "Feb 16 - Feb 28, 2025",
-      totalDepositsToDate: 85000,
-    },
-    {
-      platinumName: "PLAT-003",
-      depositsCutoffPeriod: "Mar 1 - Mar 15, 2025",
-      totalDepositsToDate: 120000,
-    },
-  ];
+  const performerAllTimeData: OperatorTopPerformersAllTime[] =
+    Data.performerAllTimeData || [];
+  const performerOneTimeData: OperatorTopPerformersPerCutoff[] =
+    Data.performerOneTimeData || [];
 
-  const performerOneTimeData: OperatorTopPerformersPerCutoff[] = [
-    {
-      platinumName: "PLAT-001",
-      ggrCutoffPeriod: "Feb 1 - Feb 15, 2025",
-      totalGgrToDate: 100000,
-    },
-    {
-      platinumName: "PLAT-002",
-      ggrCutoffPeriod: "Feb 16 - Feb 28, 2025",
-      totalGgrToDate: 75000,
-    },
-    {
-      platinumName: "PLAT-003",
-      ggrCutoffPeriod: "Mar 1 - Mar 15, 2025",
-      totalGgrToDate: 110000,
-    },
-  ];
+  // const performerAllTimeData: OperatorTopPerformersAllTime[] = [
+  //   {
+  //     platinumName: "PLAT-001",
+  //     depositsCutoffPeriod: "Feb 1 - Feb 15, 2025",
+  //     totalDepositsToDate: 100000,
+  //   },
+  //   {
+  //     platinumName: "PLAT-002",
+  //     depositsCutoffPeriod: "Feb 16 - Feb 28, 2025",
+  //     totalDepositsToDate: 85000,
+  //   },
+  //   {
+  //     platinumName: "PLAT-003",
+  //     depositsCutoffPeriod: "Mar 1 - Mar 15, 2025",
+  //     totalDepositsToDate: 120000,
+  //   },
+  // ];
+
+  // const performerOneTimeData: OperatorTopPerformersPerCutoff[] = [
+  //   {
+  //     platinumName: "PLAT-001",
+  //     ggrCutoffPeriod: "Feb 1 - Feb 15, 2025",
+  //     totalGgrToDate: 100000,
+  //   },
+  //   {
+  //     platinumName: "PLAT-002",
+  //     ggrCutoffPeriod: "Feb 16 - Feb 28, 2025",
+  //     totalGgrToDate: 75000,
+  //   },
+  //   {
+  //     platinumName: "PLAT-003",
+  //     ggrCutoffPeriod: "Mar 1 - Mar 15, 2025",
+  //     totalGgrToDate: 110000,
+  //   },
+  // ];
 
   return (
     <div className="container mx-auto p-4 space-y-6">
@@ -94,6 +100,9 @@ export default function Dashboard({}: Props) {
       <DataTable
         columns={operatorTopPerformersAllTime}
         data={performerAllTimeData}
+        tooltips={{
+          pendingCommission: "As of available cutoff period",
+        }}
       />
 
       {/* Per Cut Off */}
@@ -105,6 +114,9 @@ export default function Dashboard({}: Props) {
       <DataTable
         columns={operatortopPerformersPerCutoff}
         data={performerOneTimeData}
+        tooltips={{
+          pendingCommission: "As of available cutoff period",
+        }}
       />
     </div>
   );

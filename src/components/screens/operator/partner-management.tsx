@@ -32,43 +32,15 @@ import {
   partnerNetworkCommission,
   PartnerNetworkCommission,
 } from "@/components/tables/operator/general/dashboard-columns";
+import Data from "./operator.json";
 
 type Props = {};
 
 export default function PartnerManagement({}: Props) {
-  const networkStatsData: NetworkStats[] = [
-    {
-      ppApproved: 50,
-      ppPending: 70,
-      gpApproved: 45,
-      gpPending: 65,
-      players: 58,
-    },
-    {
-      ppApproved: 65,
-      ppPending: 45,
-      gpApproved: 70,
-      gpPending: 30,
-      players: 75,
-    },
-  ];
+  const networkStatsData: NetworkStats[] = Data.networkStatsData || [];
 
-  const partnerNetworkCommissionData: PartnerNetworkCommission[] = [
-    {
-      platinumPartner: "PLAT-001",
-      pendingCommission: 100000,
-      status: "PENDING",
-      allTime: 200000,
-      summary: 300000,
-    },
-    {
-      platinumPartner: "PLAT-002",
-      pendingCommission: 200000,
-      status: "PENDING",
-      allTime: 300000,
-      summary: 500000,
-    },
-  ];
+  const partnerNetworkCommissionData: PartnerNetworkCommission[] =
+    Data.partnerNetworkCommissionData || [];
 
   return (
     <div className="container mx-auto p-4 space-y-6">

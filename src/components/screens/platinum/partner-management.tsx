@@ -15,47 +15,16 @@ import { TypographyH2 } from "@/components/ui/typographyh2";
 // import { TypographyH4 } from "@/components/ui/typographyh4";
 
 import { DataTable } from "@/components/tables/data-table";
+import Data from "./platinum.json";
 
 type Props = {};
 
 // Dummy data for PlatinumNetworkStatsData
-const PlatinumNetworkStatsData: PlatinumNetworkStatsData[] = [
-  {
-    gpApproved: 120,
-    gpPending: 30,
-    players: 500,
-  },
-  {
-    gpApproved: 95,
-    gpPending: 20,
-    players: 450,
-  },
-];
-
+const PlatinumNetworkStatsData: PlatinumNetworkStatsData[] =
+  Data.PlatinumNetworkStatsData || [];
 // Dummy data for PlatinumNetworkCommissionData
-const PlatinumNetworkCommissionData: PlatinumNetworkCommissionData[] = [
-  {
-    partner: "Partner A",
-    pendingCommission: "$12,000",
-    status: "Active",
-    allTime: "$150,000",
-    summary: "$162,000",
-  },
-  {
-    partner: "Partner B",
-    pendingCommission: "$8,500",
-    status: "Pending",
-    allTime: "$120,000",
-    summary: "$128,500",
-  },
-  {
-    partner: "Partner C",
-    pendingCommission: "$15,000",
-    status: "Suspended",
-    allTime: "$180,000",
-    summary: "$195,000",
-  },
-];
+const PlatinumNetworkCommissionData: PlatinumNetworkCommissionData[] =
+  Data.PlatinumNetworkCommissionData || [];
 
 export default function PlatinumPartnerManagement({}: Props) {
   return (

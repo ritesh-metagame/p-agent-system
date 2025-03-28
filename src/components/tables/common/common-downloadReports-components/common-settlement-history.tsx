@@ -18,37 +18,10 @@ import { TypographyH2 } from "@/components/ui/typographyh2";
 // import { Button } from "@/components/ui/button";
 
 import { DataTable } from "@/components/tables/data-table";
+import Data from "./common-settlement-history.json";
 // Dummy data for SettlementReportData
-const SettlementReportData: SettlementReportData[] = [
-  {
-    id: 1,
-    start: "2025-03-01",
-    end: "2025-03-07",
-    status: "Completed",
-    action: "Download",
-  },
-  {
-    id: 2,
-    start: "2025-03-08",
-    end: "2025-03-14",
-    status: "Pending",
-    action: "Download",
-  },
-  {
-    id: 3,
-    start: "2025-03-15",
-    end: "2025-03-21",
-    status: "Failed",
-    action: "Retry",
-  },
-  {
-    id: 4,
-    start: "2025-03-22",
-    end: "2025-03-28",
-    status: "Completed",
-    action: "Download",
-  },
-];
+const SettlementReportData: SettlementReportData[] =
+  Data.SettlementReportData || [];
 
 function DatePicker({ placeholder }: { placeholder: string }) {
   const [date, setDate] = React.useState<Date | undefined>();

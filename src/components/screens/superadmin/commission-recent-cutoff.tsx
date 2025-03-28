@@ -1,15 +1,16 @@
 import { DataTable } from "@/components/tables/data-table";
-import { commissionPerCutoffColumns } from "@/components/tables/superadmin/commission-release/commission-per-cutoff-columns";
-import {
-  commissionRecentCutoffColumns,
-  commissionRecentCutoffData,
-} from "@/components/tables/superadmin/commission-release/commission-recent-cutoff-columns";
+// import { commissionPerCutoffColumns } from "@/components/tables/superadmin/commission-release/commission-per-cutoff-columns";
+import { commissionRecentCutoffColumns } from "@/components/tables/superadmin/commission-release/commission-recent-cutoff-columns";
+import type { CommissionRecentCutoffData } from "@/components/tables/superadmin/commission-release/commission-recent-cutoff-columns";
 import { commissionOverviewColumns } from "@/components/tables/superadmin/general/dashboard-columns";
 import { TypographyH2 } from "@/components/ui/typographyh2";
 import { TypographyH4 } from "@/components/ui/typographyh4";
 import React from "react";
+import Data from "./superAdmin.json";
 
 type Props = {};
+const commissionRecentCutoffData: CommissionRecentCutoffData[] =
+  Data.CommissionRecentCutoffData || [];
 
 export default function CommissionRecentCutoff({}: Props) {
   return (
