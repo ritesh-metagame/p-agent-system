@@ -47,6 +47,10 @@ export function generateSidebarMenusBasedOnRole(role: UserRole) {
             url: Paths.PARTNER_MANAGEMENT,
             isActive: true,
           },
+          {
+            title: Pages.KYC_VERIFICATION,
+            url: Paths.KYC_VERIFICATION,
+          },
         ],
       },
       {

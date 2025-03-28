@@ -30,6 +30,7 @@ import {
 } from "@/components/screens";
 import CommissionRecentCutsOff from "@/components/screens/operator/commission-recent-cutoff";
 import PartnerManagement from "@/components/screens/operator/partner-management";
+import AllCommissionCutoffs from "@/components/screens/superadmin/all-commission-cutoffs";
 // import { OperatorDashboard } from "@/components/screens";
 import { JSX } from "react";
 
@@ -50,6 +51,7 @@ export enum Pages {
   TRANSACTIONS = "Transactions",
   COMMISSIONS = "Commissions",
   SETTLEMENT_HISTORY = "Settlement History",
+  KYC_VERIFICATION = "Verify KYC",
 }
 
 export enum Paths {
@@ -61,6 +63,7 @@ export enum Paths {
   TRANSACTIONS = "/transactions",
   COMMISSIONS = "/commissions",
   SETTLEMENT_HISTORY = "/settlement-history",
+  KYC_VERIFICATION = "/verify-kyc",
 }
 
 export const pagePaths = new Map<Paths, Pages>([
@@ -121,7 +124,7 @@ export const RolePageComponentMap: RolePageMap = {
       <SuperAdminCommissionRecentCutoff />
     ),
 
-    [Pages.HISTORICAL_CUTOFFS]: () => <></>,
+    [Pages.HISTORICAL_CUTOFFS]: () => <SuperAdminAllCommissionCutoffs />,
     [Pages.TRANSACTIONS]: () => <SuperAdminTransactions />,
     [Pages.COMMISSIONS]: () => <SuperAdminCommissions />,
     [Pages.SETTLEMENT_HISTORY]: () => <SuperAdminSettlementHistory />,

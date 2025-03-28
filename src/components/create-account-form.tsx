@@ -28,7 +28,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogClose,
+  DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
+import KYCVerification from "./tables/common/kyc-verification";
 
 type Props = {
   onSubmit?: (values: z.infer<typeof createAccountFormSchema>) => void;
@@ -282,6 +285,28 @@ export default function CreateAccountForm({ onSubmit }: Props) {
                 </FormItem>
               )}
             />
+
+            <Dialog>
+              <DialogTrigger>
+                <Button
+                  variant="outline"
+                  type="button"
+                  className="w-full"
+                  onClick={() => console.log("Update KYC clicked")}
+                >
+                  Update KYC
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="">
+                <DialogHeader>
+                  <DialogTitle>Update KYC</DialogTitle>
+                  <DialogDescription>Update KYC for the user</DialogDescription>
+                </DialogHeader>
+                <div className="w-full">
+                  <KYCVerification />
+                </div>
+              </DialogContent>
+            </Dialog>
 
             <Button
               variant="orange"
