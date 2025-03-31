@@ -97,5 +97,3 @@
 //     header: "TOTAL NET COMMISSIONS",
 //   },
 // ];
-
-//this is not needed

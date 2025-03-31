@@ -29,6 +29,8 @@ export default function Dashboard({}: Props) {
   const performerOneTimeData: OperatorTopPerformersPerCutoff[] =
     Data.performerOneTimeData || [];
 
+  const networkOverviewData: any[] = Data.networkOverviewData;
+
   // const performerAllTimeData: OperatorTopPerformersAllTime[] = [
   //   {
   //     platinumName: "PLAT-001",
@@ -67,29 +69,12 @@ export default function Dashboard({}: Props) {
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-      {/* QR Code and Referral Link */}
-      {/* <Card> */}
-      <CardContent className="p-4  flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <QRCodeSVG value="https://www.egames-referral-link.ph" size={80} />
-          <p className="text-sm text-black-900">Download QR Code</p>
-        </div>
-      </CardContent>
-      <div className="p-4 text-start">
-        <p className="text-sm  font-bold">
-          Referral Link:{" "}
-          <a href="#" className="text-blue-500">
-            https://www.egames-referral-link.ph
-          </a>
-        </p>
-        <p className="text-md  text-black-900">
-          Share this QR code and copy to onboard Platinum Partners
-        </p>
-      </div>
-      {/* </Card> */}
-
       {/* below is the common-dashboard-part rendered */}
-      <CommonDashboard />
+      <CommonDashboard
+        welcomeTierName="Platinum Partners"
+        referralLink="https://www.egames-referral-link.ph"
+        networkOverviewData={networkOverviewData}
+      />
 
       {/* Top Performers All Time */}
       <CardContent className="p-1  ">

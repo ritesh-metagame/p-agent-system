@@ -21,7 +21,7 @@ export default function OperatorAllCommissionCutoff({}: Props) {
   return (
     <div>
       <div className="container mb-10">
-        <div className="mb-10">
+        <div>
           <TypographyH2 className="mb-4">All Commission Cutoff</TypographyH2>
 
           <DataTable

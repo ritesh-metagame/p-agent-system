@@ -15,7 +15,9 @@ import type {
   OverallSummaryData,
 } from "../common-column-defs/common-dashboard-part-column";
 import { QRCodeSVG } from "qrcode.react";
-// import { Card, CardContent } from "@/components/ui/card";
+
+import { CommonDashboardProps } from "@/types/dashBoardTypes";
+import { Card, CardContent } from "@/components/ui/card";
 import { TypographyH2 } from "@/components/ui/typographyh2";
 // import { TypographyH4 } from "@/components/ui/typographyh4";
 
@@ -44,9 +46,33 @@ const SportsbettingData: SportsbettingData[] = Data.sportsbettingData || [];
 
 //dummy data ends
 
-export default function CommonDashboard({}: Props) {
+export default function CommonDashboard({
+  welcomeTierName,
+  referralLink,
+  networkOverviewData,
+}: CommonDashboardProps) {
   return (
     <div>
+      {/* QR Code and Referral Link */}
+      {/* <Card> */}
+      <CardContent className="p-4  flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <QRCodeSVG value={referralLink} size={80} />
+          <p className="text-sm text-black-900">Download QR Code</p>
+        </div>
+      </CardContent>
+      <div className="p-4 text-start">
+        <p className="text-sm  font-bold">
+          Referral Link:{" "}
+          <a href="#" className="text-blue-500">
+            {referralLink}
+          </a>
+        </p>
+        <p className="text-md  text-black-900">
+          Share this QR code and copy to onboard {welcomeTierName}
+        </p>
+      </div>
+      {/* </Card> */}
       <div className="container mb-10">
         <div className="mb-10">
           <div className="flex items-center gap-4">
@@ -70,7 +96,7 @@ export default function CommonDashboard({}: Props) {
 
           <DataTable
             columns={networkOverviewColumns}
-            data={NetworkOverviewData}
+            data={networkOverviewData}
             columnWidths={["250px", "250px", "250px", "250px", "250px"]}
           />
         </div>
