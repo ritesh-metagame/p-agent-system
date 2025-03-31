@@ -1,5 +1,5 @@
 {
-  "CutoffPeriodData": [
+  "cutoffPeriodData": [
     {
       "commissionPendingSettlement": "$50,000",
       "commissionSettled": "$200,000"
@@ -9,13 +9,20 @@
       "commissionSettled": "$150,000"
     }
   ],
-  "NetworkOverviewData": [
+  "networkOverviewData": [
     {
-      "network": "GOLDEN PARTNER",
+      "network": "PLATINUM PARTNERS",
       "approved": 120,
       "pending": 15,
       "suspended": 5,
       "summary": 140
+    },
+    {
+      "network": "GOLDEN PARTNER",
+      "approved": 300,
+      "pending": 25,
+      "suspended": 10,
+      "summary": 335
     },
     {
       "network": "PLAYERS",
@@ -25,7 +32,7 @@
       "summary": 335
     }
   ],
-  "OverallSummaryData": [
+  "overallSummaryData": [
     {
       "item": "TOTAL BETS",
       "pendingSettlement": "$100,000",
@@ -63,7 +70,7 @@
       "summary": "$60,000"
     }
   ],
-  "EGamesData": [
+  "eGamesData": [
     {
       "item": "TOTAL BETS",
       "dailyOverview": "$5,000",
@@ -93,7 +100,7 @@
       "summary": "$28,000"
     }
   ],
-  "SportsbettingData": [
+  "sportsbettingData": [
     {
       "item": "TOTAL BETS",
       "dailyOverview": "$8,000",
@@ -110,7 +117,7 @@
     }
   ],
 
-  "ReportData": [
+  "reportData": [
     {
       "id": 1,
       "fromDate": "2025-03-01",
@@ -141,7 +148,7 @@
     }
   ],
 
-  "SettlementReportData": [
+  "settlementReportData": [
     {
       "id": 1,
       "start": "2025-03-01",
@@ -172,7 +179,7 @@
     }
   ],
 
-  "TransactionsReportsListData": [
+  "transactionsReportsListData": [
     {
       "id": 1,
       "fromDate": "2025-03-01",

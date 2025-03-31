@@ -1,5 +1,5 @@
 {
-  "CutoffPeriodData": [
+  "cutoffPeriodData": [
     {
       "commissionPendingSettlement": "$50,000",
       "commissionSettled": "$200,000"
@@ -9,7 +9,7 @@
       "commissionSettled": "$150,000"
     }
   ],
-  "NetworkOverviewData": [
+  "networkOverviewData": [
     {
       "network": "GOLDEN PARTNER",
       "approved": 120,
@@ -25,7 +25,7 @@
       "summary": 335
     }
   ],
-  "OverallSummaryData": [
+  "overallSummaryData": [
     {
       "item": "TOTAL BETS",
       "pendingSettlement": "$100,000",
@@ -63,7 +63,7 @@
       "summary": "$60,000"
     }
   ],
-  "EGamesData": [
+  "eGamesData": [
     {
       "item": "TOTAL BETS",
       "dailyOverview": "$5,000",
@@ -93,7 +93,7 @@
       "summary": "$28,000"
     }
   ],
-  "SportsbettingData": [
+  "sportsbettingData": [
     {
       "item": "TOTAL BETS",
       "dailyOverview": "$8,000",
@@ -110,7 +110,7 @@
     }
   ],
 
-  "ReportData": [
+  "reportData": [
     {
       "id": 1,
       "fromDate": "2025-03-01",
@@ -141,7 +141,7 @@
     }
   ],
 
-  "SettlementReportData": [
+  "settlementReportData": [
     {
       "id": 1,
       "start": "2025-03-01",
@@ -172,7 +172,7 @@
     }
   ],
 
-  "TransactionsReportsListData": [
+  "transactionsReportsListData": [
     {
       "id": 1,
       "fromDate": "2025-03-01",
@@ -203,9 +203,9 @@
     }
   ],
 
-  "PlatinumPartnerData": [
+  "platinumPartnerData": [
     {
-      "platinumPartner": "Partner Alpha",
+      "platinumPartner": "Partner 122121Alpha",
       "totalBets": "$500,000",
       "totalWinnings": "$350,000",
       "ggr": "$150,000",
@@ -233,7 +233,7 @@
     }
   ],
 
-  "PlatinumTopPerformersAllTimeData": [
+  "platinumTopPerformersAllTimeData": [
     {
       "goldenName": "GP-001",
       "pendingCommission": "$12,000",
@@ -245,7 +245,7 @@
       "released": "$60,000"
     }
   ],
-  "PlatinumTopPerformersPerCutoffData": [
+  "platinumTopPerformersPerCutoffData": [
     {
       "goldenName": "GP-001",
       "pendingCommission": "$3,000",
@@ -258,7 +258,7 @@
     }
   ],
 
-  "PlatinumNetworkStatsData": [
+  "platinumNetworkStatsData": [
     {
       "gpApproved": 120,
       "gpPending": 30,
@@ -270,7 +270,7 @@
       "players": 450
     }
   ],
-  "PlatinumNetworkCommissionData": [
+  "platinumNetworkCommissionData": [
     {
       "partner": "Partner A",
       "pendingCommission": "$12,000",

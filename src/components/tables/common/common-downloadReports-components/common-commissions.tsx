@@ -21,7 +21,7 @@ import { DataTable } from "@/components/tables/data-table";
 
 import Data from "./common-commissions.json";
 
-const commissionReportData: ReportData[] = Data.ReportData || [];
+const commissionReportData: ReportData[] = Data.reportData || [];
 
 function DatePicker({ placeholder }: { placeholder: string }) {
   const [date, setDate] = React.useState<Date | undefined>();

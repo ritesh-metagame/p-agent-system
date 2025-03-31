@@ -17,7 +17,7 @@ import React from "react";
 import Data from "./superAdmin.json";
 import { SuperAdminSettlementReportData } from "@/components/tables/superadmin/download-reports/settlement-history-columns";
 const superAdminSettlementDummyData: SuperAdiminAllCommissionCutoffsData[] =
-  Data.SuperAdminSettlementDummyData || [];
+  Data.superAdminSettlementDummyData || [];
 
 type Props = {};
 

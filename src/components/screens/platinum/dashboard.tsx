@@ -17,11 +17,11 @@ type Props = {};
 
 // Dummy data for PlatinumTopPerformersAllTimeData
 const platinumTopPerformersAllTimeData: PlatinumTopPerformersAllTimeData[] =
-  Data.PlatinumTopPerformersAllTimeData || [];
+  Data.platinumTopPerformersAllTimeData || [];
 
 // Dummy data for PlatinumTopPerformersPerCutoffData
 const platinumTopPerformersPerCutoffData: PlatinumTopPerformersPerCutoffData[] =
-  Data.PlatinumTopPerformersPerCutoffData || [];
+  Data.platinumTopPerformersPerCutoffData || [];
 
 //dummy data ends
 

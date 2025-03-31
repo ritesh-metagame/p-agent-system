@@ -18,11 +18,11 @@ import Data from "./gold.json";
 type Props = {};
 // Dummy data for PlatinumTopPerformersAllTimeData
 const goldTopPerformersDepositsdata: GoldTopPerformersDeposits[] =
-  Data.GoldTopPerformersDepositsData || [];
+  Data.goldTopPerformersDepositsData || [];
 
 // Dummy data for PlatinumTopPerformersPerCutoffData
 const goldTopPerformersGGRdata: GoldTopPerformersGGR[] =
-  Data.GoldTopPerformersGGRData || [];
+  Data.goldTopPerformersGGRData || [];
 
 //dummy data ends
 

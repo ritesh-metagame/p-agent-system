@@ -21,7 +21,7 @@ import { DataTable } from "@/components/tables/data-table";
 import Data from "./common-settlement-history.json";
 // Dummy data for SettlementReportData
 const SettlementReportData: SettlementReportData[] =
-  Data.SettlementReportData || [];
+  Data.settlementReportData || [];
 
 function DatePicker({ placeholder }: { placeholder: string }) {
   const [date, setDate] = React.useState<Date | undefined>();

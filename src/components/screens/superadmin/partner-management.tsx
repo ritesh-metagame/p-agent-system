@@ -14,7 +14,7 @@ import React from "react";
 import Data from "./superAdmin.json";
 
 const networkCommissionData: NetworkCommissionData[] =
-  Data.NetworkCommissionData || [];
+  Data.networkCommissionData || [];
 
 // Dummy data for NETWORK STATS
 export const allNetworkStatsData: PartnerManagementData[] =
