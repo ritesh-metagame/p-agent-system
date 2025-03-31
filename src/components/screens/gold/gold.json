@@ -1,5 +1,7 @@
 {
-  "GoldCommissionRecentCutoffData": [
+  "welcome-tier-name": "Platinum Partners",
+  "referal-link": "https://www.arionplay-referallink.ph",
+  "goldCommissionRecentCutoffData": [
     {
       "platinumPartner": "Partner Alpha",
       "totalBets": "$1,000,000",
@@ -28,7 +30,7 @@
       "netCommissions": "$48,000"
     }
   ],
-  "ReportData": [
+  "reportData": [
     {
       "id": 1,
       "fromDate": "2025-03-01",
@@ -59,7 +61,7 @@
     }
   ],
 
-  "CutoffPeriodData": [
+  "cutoffPeriodData": [
     {
       "commissionPendingSettlement": "$50,000",
       "commissionSettled": "$200,000"
@@ -69,14 +71,7 @@
       "commissionSettled": "$150,000"
     }
   ],
-  "NetworkOverviewData": [
-    {
-      "network": "GOLDEN PARTNER",
-      "approved": 120,
-      "pending": 15,
-      "suspended": 5,
-      "summary": 140
-    },
+  "networkOverviewData": [
     {
       "network": "PLAYERS",
       "approved": 300,
@@ -85,7 +80,7 @@
       "summary": 335
     }
   ],
-  "OverallSummaryData": [
+  "overallSummaryData": [
     {
       "item": "TOTAL BETS",
       "pendingSettlement": "$100,000",
@@ -123,7 +118,7 @@
       "summary": "$60,000"
     }
   ],
-  "EGamesData": [
+  "eGamesData": [
     {
       "item": "TOTAL BETS",
       "dailyOverview": "$5,000",
@@ -153,7 +148,7 @@
       "summary": "$28,000"
     }
   ],
-  "SportsbettingData": [
+  "sportsbettingData": [
     {
       "item": "TOTAL BETS",
       "dailyOverview": "$8,000",
@@ -170,7 +165,7 @@
     }
   ],
 
-  "GoldTopPerformersDepositsData": [
+  "goldTopPerformersDepositsData": [
     {
       "playerName": "GP-001",
       "deposits": "$12,000",
@@ -182,7 +177,7 @@
       "depositsToDate": "$60,000"
     }
   ],
-  "GoldTopPerformersGGRData": [
+  "goldTopPerformersGGRData": [
     {
       "playerName": "GP-001",
       "ggr": "$3,000",
@@ -195,7 +190,7 @@
     }
   ],
 
-  "GoldNetworkStatsData": [
+  "goldNetworkStatsData": [
     {
       "players": "1,500"
     },
@@ -206,7 +201,7 @@
       "players": "1,750"
     }
   ],
-  "GoldNetworkCommissionData": [
+  "goldNetworkCommissionData": [
     {
       "partner": "Partner Alpha",
       "pendingCommission": "$20,000",
@@ -249,6 +244,66 @@
       "id": "CUT-004",
       "cutoffPeriod": "Mar 16 - Mar 31, 2025",
       "status": "Pending"
+    }
+  ],
+  "settlementReportData": [
+    {
+      "id": 1,
+      "start": "2025-03-01",
+      "end": "2025-03-07",
+      "status": "Completed",
+      "action": "Download"
+    },
+    {
+      "id": 2,
+      "start": "2025-03-08",
+      "end": "2025-03-14",
+      "status": "Pending",
+      "action": "Download"
+    },
+    {
+      "id": 3,
+      "start": "2025-03-15",
+      "end": "2025-03-21",
+      "status": "Failed",
+      "action": "Retry"
+    },
+    {
+      "id": 4,
+      "start": "2025-03-22",
+      "end": "2025-03-28",
+      "status": "Completed",
+      "action": "Download"
+    }
+  ],
+  "transactionsReportsListData": [
+    {
+      "id": 1,
+      "fromDate": "2025-03-01",
+      "toDate": "2025-03-07",
+      "status": "Completed",
+      "action": "Download"
+    },
+    {
+      "id": 2,
+      "fromDate": "2025-03-08",
+      "toDate": "2025-03-14",
+      "status": "Pending",
+      "action": "Download"
+    },
+    {
+      "id": 3,
+      "fromDate": "2025-03-15",
+      "toDate": "2025-03-21",
+      "status": "Failed",
+      "action": "Retry"
+    },
+    {
+      "id": 4,
+      "fromDate": "2025-03-22",
+      "toDate": "2025-03-28",
+      "status": "Completed",
+      "action": "Download"
     }
   ]
 }

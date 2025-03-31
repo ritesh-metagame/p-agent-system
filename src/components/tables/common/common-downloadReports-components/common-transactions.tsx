@@ -22,7 +22,7 @@ import Data from "./common-transactions.json";
 type Props = {};
 
 const transactionsReportsListData: TransactionsReportsListData[] =
-  Data.TransactionsReportsListData || [];
+  Data.transactionsReportsListData || [];
 
 function DatePicker({ placeholder }: { placeholder: string }) {
   const [date, setDate] = React.useState<Date | undefined>();

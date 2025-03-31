@@ -8,8 +8,8 @@ import { TypographyH2 } from "@/components/ui/typographyh2";
 import { DataTable } from "@/components/tables/data-table";
 import Data from "./platinum.json";
 
-const PlatinumPartnerData: PlatinumPartnerData[] =
-  Data.PlatinumPartnerData || [];
+const platinumPartnerData: PlatinumPartnerData[] =
+  Data.platinumPartnerData || [];
 
 type Props = {};
 
@@ -22,7 +22,7 @@ export default function PlatinumRecentCutoff({}: Props) {
 
           <DataTable
             columns={platinumPartnerColumns}
-            data={PlatinumPartnerData}
+            data={platinumPartnerData}
             columnWidths={[
               "250px",
               "250px",

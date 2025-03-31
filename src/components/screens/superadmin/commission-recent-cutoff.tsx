@@ -10,7 +10,7 @@ import Data from "./superAdmin.json";
 
 type Props = {};
 const commissionRecentCutoffData: CommissionRecentCutoffData[] =
-  Data.CommissionRecentCutoffData || [];
+  Data.commissionRecentCutoffData || [];
 
 export default function CommissionRecentCutoff({}: Props) {
   return (

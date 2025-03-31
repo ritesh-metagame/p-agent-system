@@ -21,10 +21,10 @@ type Props = {};
 
 // Dummy data for PlatinumNetworkStatsData
 const PlatinumNetworkStatsData: PlatinumNetworkStatsData[] =
-  Data.PlatinumNetworkStatsData || [];
+  Data.platinumNetworkStatsData || [];
 // Dummy data for PlatinumNetworkCommissionData
 const PlatinumNetworkCommissionData: PlatinumNetworkCommissionData[] =
-  Data.PlatinumNetworkCommissionData || [];
+  Data.platinumNetworkCommissionData || [];
 
 export default function PlatinumPartnerManagement({}: Props) {
   return (

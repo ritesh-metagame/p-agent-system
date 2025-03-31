@@ -15,7 +15,7 @@ type Props = {};
 
 // Dummy data for GoldCommissionRecentCutoffData
 const goldCommissionRecentCutoffData: GoldCommissionRecentCutoffData[] =
-  Data.GoldCommissionRecentCutoffData || [];
+  Data.goldCommissionRecentCutoffData || [];
 
 export default function PlatinumRecentCutoff({}: Props) {
   return (

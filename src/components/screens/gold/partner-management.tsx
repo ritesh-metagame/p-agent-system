@@ -19,11 +19,11 @@ type Props = {};
 
 // Dummy data for GoldNetworkStats
 const goldNetworkStatsData: GoldNetworkStats[] =
-  Data.GoldNetworkStatsData || [];
+  Data.goldNetworkStatsData || [];
 
 // Dummy data for GoldNetworkCommissionData
 const goldNetworkCommissionData: GoldNetworkCommissionData[] =
-  Data.GoldNetworkCommissionData || [];
+  Data.goldNetworkCommissionData || [];
 
 export default function PlatinumPartnerManagement({}: Props) {
   return (

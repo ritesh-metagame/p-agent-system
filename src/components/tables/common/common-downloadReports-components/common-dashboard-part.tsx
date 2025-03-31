@@ -27,20 +27,20 @@ type Props = {};
 // dummy data starts
 
 // Dummy data for  CutoffPeriodData
-const CutoffPeriodData: CutoffPeriodData[] = Data.CutoffPeriodData || [];
+const CutoffPeriodData: CutoffPeriodData[] = Data.cutoffPeriodData || [];
 
 // Dummy data for  NetworkOverviewData
 const NetworkOverviewData: NetworkOverviewData[] =
-  Data.NetworkOverviewData || [];
+  Data.networkOverviewData || [];
 
 // Dummy data for  OverallSummaryData
-const OverallSummaryData: OverallSummaryData[] = Data.OverallSummaryData || [];
+const OverallSummaryData: OverallSummaryData[] = Data.overallSummaryData || [];
 
 // Dummy data for  EGamesData
-const EGamesData: EGamesData[] = Data.EGamesData || [];
+const EGamesData: EGamesData[] = Data.eGamesData || [];
 
 // Dummy data for  SportsbettingData
-const SportsbettingData: SportsbettingData[] = Data.SportsbettingData || [];
+const SportsbettingData: SportsbettingData[] = Data.sportsbettingData || [];
 
 //dummy data ends
 
