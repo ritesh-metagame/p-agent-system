@@ -81,32 +81,32 @@ export const pagePaths = new Map<Paths, Pages>([
 export const users = [
   {
     id: "1",
-    username: "example1",
+    username: "superadmin",
     role: UserRole.SUPER_ADMIN,
     password: "password",
   },
   {
     id: "2",
-    username: "example2",
-    role: UserRole.PLATINUM,
+    username: "operator",
+    role: UserRole.OPERATOR,
     password: "password",
   },
   {
     id: "3",
-    username: "example3",
-    role: UserRole.GOLD,
+    username: "platinum",
+    role: UserRole.PLATINUM,
     password: "password",
   },
   {
     id: "4",
-    username: "example4",
-    role: UserRole.DEFAULT,
+    username: "gold",
+    role: UserRole.GOLD,
     password: "password",
   },
   {
     id: "5",
-    username: "example5",
-    role: UserRole.OPERATOR,
+    username: "example4",
+    role: UserRole.DEFAULT,
     password: "password",
   },
 ];
