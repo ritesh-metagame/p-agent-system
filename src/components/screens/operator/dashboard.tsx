@@ -83,7 +83,7 @@ export default function Dashboard({}: Props) {
           </a>
         </p>
         <p className="text-md  text-black-900">
-          Share this QR code and copy to onboard platinum
+          Share this QR code and copy to onboard Platinum Partners
         </p>
       </div>
       {/* </Card> */}
