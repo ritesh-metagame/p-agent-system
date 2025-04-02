@@ -33,7 +33,7 @@ import {
 } from "@/components/screens";
 import CommissionRecentCutsOff from "@/components/screens/operator/commission-recent-cutoff";
 import PartnerManagement from "@/components/screens/operator/partner-management";
-import AllCommissionCutoffs from "@/components/screens/superadmin/all-commission-cutoffs";
+// import AllCommissionCutoffs from "@/components/screens/superadmin/all-commission-cutoffs";
 // import { OperatorDashboard } from "@/components/screens";
 import { JSX } from "react";
 
@@ -79,6 +79,7 @@ export const pagePaths = new Map<Paths, Pages>([
   [Paths.HISTORICAL_CUTOFFS, Pages.HISTORICAL_CUTOFFS],
   [Paths.TRANSACTIONS, Pages.TRANSACTIONS],
   [Paths.COMMISSIONS, Pages.COMMISSIONS],
+  [Paths.CREATE_SITE, Pages.CREATE_SITE],
 ]);
 
 export const users = [

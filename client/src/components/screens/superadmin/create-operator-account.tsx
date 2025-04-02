@@ -3,9 +3,7 @@ import React from "react";
 
 type Props = {};
 
-export default async function CreateOperatorAccount({}: Props) {
-  const response = await fetch("");
-  const responseJson = await response.json();
+export default function CreateOperatorAccount({}: Props) {
   return (
     <div>
       <CreateAccountForm />

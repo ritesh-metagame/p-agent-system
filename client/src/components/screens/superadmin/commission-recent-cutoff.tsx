@@ -12,9 +12,7 @@ type Props = {};
 const commissionRecentCutoffData: CommissionRecentCutoffData[] =
   Data.commissionRecentCutoffData || [];
 
-export default async function CommissionRecentCutoff({}: Props) {
-  const response = await fetch("");
-  const responseJson = await response.json();
+export default function CommissionRecentCutoff({}: Props) {
   return (
     <div>
       <div className="mb-10">

@@ -21,9 +21,7 @@ const superAdminSettlementDummyData: SuperAdiminAllCommissionCutoffsData[] =
 
 type Props = {};
 
-export default async function AllCommissionCutoffs({}: Props) {
-  const response = await fetch("");
-  const responseJson = await response.json();
+export default function AllCommissionCutoffs({}: Props) {
   return (
     <div>
       <div className="flex items-center gap-4 mb-10">
