@@ -1,0 +1,68 @@
+info: 2025-04-02T11:13:31.921Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-02T11:13:31.925Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-02T11:13:51.597Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-02T11:13:51.600Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+http: 2025-04-02T11:15:07.729Z [logger\morgan.ts] POST /auth/login 404 150 - 3.437 ms
+
+info: 2025-04-02T11:15:29.364Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-02T11:15:29.361Z [loaders\index.ts] ✌️ Express loaded
+http: 2025-04-02T11:15:34.197Z [logger\morgan.ts] POST /api/v1/auth/login 422 32 - 25.779 ms
+
+http: 2025-04-02T11:17:05.317Z [logger\morgan.ts] POST /api/v1/auth/login 200 2 - 0.874 ms
+
+info: 2025-04-02T11:18:14.369Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-02T11:18:14.366Z [loaders\index.ts] ✌️ Express loaded
+http: 2025-04-02T11:18:19.035Z [logger\morgan.ts] POST /api/v1/auth/login 200 2 - 2.212 ms
+
+info: 2025-04-02T11:32:55.684Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-02T11:32:55.644Z [loaders\index.ts] ✌️ Express loaded
+http: 2025-04-02T11:33:01.684Z [logger\morgan.ts] POST /api/v1/auth/login 200 2 - 3.123 ms
+
+info: 2025-04-02T11:33:15.052Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-02T11:33:15.044Z [loaders\index.ts] ✌️ Express loaded
+http: 2025-04-02T11:33:17.204Z [logger\morgan.ts] POST /api/v1/auth/login 200 2 - 3.745 ms
+
+info: 2025-04-02T11:33:23.932Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-02T11:33:23.938Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-02T11:36:03.022Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-02T11:36:03.015Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-02T11:37:11.716Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-02T11:37:11.709Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-02T11:37:20.591Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-02T11:37:20.584Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-02T11:38:00.716Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-02T11:38:00.723Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+http: 2025-04-02T11:38:01.394Z [logger\morgan.ts] POST /api/v1/auth/login 200 2 - 4.148 ms
+
+info: 2025-04-02T11:38:12.696Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-02T11:38:12.703Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-02T11:38:21.149Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-02T11:38:21.158Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+http: 2025-04-02T11:38:22.557Z [logger\morgan.ts] POST /api/v1/auth/login 200 66 - 17.575 ms
+
