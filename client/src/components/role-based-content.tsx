@@ -1,12 +1,11 @@
 import { UserRole, Pages, RolePageComponentMap } from "@/lib/constants";
-import { cookies } from "next/headers";
 import { getCookie } from "cookies-next/client";
 interface RoleBasedContentProps {
   page: Pages;
 }
 
 const RoleBasedContent = async ({ page }: RoleBasedContentProps) => {
-  const role = getCookie("role") as unknown as UserRole;
+  const role = "super-admin";
 
   const Component =
     RolePageComponentMap[role]?.[page] ||

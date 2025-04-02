@@ -4,6 +4,7 @@ export { default as OperatorDashboard } from "./operator/dashboard";
 export { default as GoldenDashboard } from "./gold/dashboard";
 
 export { default as SuperAdminCreateOperatorAccount } from "./superadmin/create-operator-account";
+export { default as SuperAdminCreateSite } from "./superadmin/create-site";
 export { default as SuperAdminPartnerManagement } from "./superadmin/partner-management";
 export { default as PartnerManagement } from "./operator/partner-management";
 export { default as CommissionRecentCutoff } from "./operator/commission-recent-cutoff";

@@ -15,7 +15,7 @@ interface AuthState {
 // Initial state
 const initialState: AuthState = {
   authLoading: true,
-  role: UserRole?.OPERATOR ?? "defaultOperator",
+  role: UserRole?.SUPER_ADMIN ?? "defaultOperator",
   username: null,
 };
 
@@ -81,8 +81,8 @@ export const login =
         dispatch(setUsername(user.username));
         dispatch(setRole(user.role));
 
-        setCookie("username", user.username, { maxAge: 60 * 60 * 24 });
-        setCookie("role", user.role, { maxAge: 60 * 60 * 24 });
+        localStorage.setItem("username", user.username);
+        localStorage.setItem("role", user.role);
         return true;
       } else {
         return false;
