@@ -5,7 +5,7 @@ import logger from "./common/logger";
 import config from "./common/config";
 import AppLoader from "./common/loaders";
 
-import { PrismaClient } from "../generated/prisma";
+import { PrismaClient } from "./../prisma/generated/prisma";
 
 // import { redisService } from "./core/services/redis.service";
 
