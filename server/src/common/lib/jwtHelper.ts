@@ -1,5 +1,4 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { Types } from "mongoose";
 import { Role } from "../../../prisma/generated/prisma";
 
 export type Payload = {
