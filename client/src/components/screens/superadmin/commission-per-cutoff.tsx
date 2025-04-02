@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { DataTable } from "@/components/tables/data-table";
 // import { commissionPerCutoffColumns } from "@/components/tables/superadmin/commission-release/commission-per-cutoff-columns";
 import {
