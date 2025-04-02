@@ -29,6 +29,7 @@ import {
   SuperAdminAllCommissionCutoffs,
   GoldenAllCommissionCutoff,
   OperatorAllCommissionCutoff,
+  SuperAdminCreateSite,
 } from "@/components/screens";
 import CommissionRecentCutsOff from "@/components/screens/operator/commission-recent-cutoff";
 import PartnerManagement from "@/components/screens/operator/partner-management";
@@ -54,6 +55,7 @@ export enum Pages {
   COMMISSIONS = "Commissions",
   SETTLEMENT_HISTORY = "Settlement History",
   KYC_VERIFICATION = "Verify KYC",
+  CREATE_SITE = "Create Site",
 }
 
 export enum Paths {
@@ -66,6 +68,7 @@ export enum Paths {
   COMMISSIONS = "/commissions",
   SETTLEMENT_HISTORY = "/settlement-history",
   KYC_VERIFICATION = "/verify-kyc",
+  CREATE_SITE = "/create-site",
 }
 
 export const pagePaths = new Map<Paths, Pages>([
@@ -120,6 +123,8 @@ export type RolePageMap = {
 export const RolePageComponentMap: RolePageMap = {
   [UserRole.SUPER_ADMIN]: {
     [Pages.DASHBOARD]: () => <SuperAdminDashboard />,
+    [Pages.CREATE_SITE]: () => <SuperAdminCreateSite />,
+
     [Pages.CREATE_OPERATOR_ACCOUNT]: () => <SuperAdminCreateOperatorAccount />,
     [Pages.PARTNER_MANAGEMENT]: () => <SuperAdminPartnerManagement />,
     [Pages.COMMISSION_RECENT_CUTOFF]: () => (

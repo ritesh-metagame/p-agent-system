@@ -23,6 +23,11 @@ export function generateSidebarMenusBasedOnRole(role: UserRole) {
             title: Pages.DASHBOARD,
             url: Paths.DASHBOARD,
           },
+          {
+            title: Pages.CREATE_SITE,
+            url: Paths.CREATE_SITE,
+            isActive: true,
+          },
         ],
       },
       {

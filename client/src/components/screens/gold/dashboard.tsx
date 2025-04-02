@@ -23,6 +23,7 @@ const goldTopPerformersDepositsdata: GoldTopPerformersDeposits[] =
 // Dummy data for PlatinumTopPerformersPerCutoffData
 const goldTopPerformersGGRdata: GoldTopPerformersGGR[] =
   Data.goldTopPerformersGGRData || [];
+const networkOverviewData: any[] = Data.networkOverviewData;
 
 //dummy data ends
 
@@ -30,26 +31,11 @@ export default function Dashboard({}: Props) {
   return (
     <div>
       <div className="container mb-10">
-        <div className="mb-5  flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <QRCodeSVG value="https://www.arionplay-referallink.ph" size={80} />
-            <p className="text-sm text-black-900">Download QR Code</p>
-          </div>
-        </div>
-
-        <div className="mb-5 text-start">
-          <p className="text-md  ">
-            Referral Link:{" "}
-            <a href="#" className="text-blue-500">
-              https://www.arionplay-referallink.ph
-            </a>
-          </p>
-          <p className="text-md  text-black-900">
-            Share this QR code or copy the link to onboard Platinum Partners
-          </p>
-        </div>
-
-        <CommonDashboard />
+        <CommonDashboard
+          welcomeTierName="Platinum Partners"
+          referralLink="https://www.egames-referral-link.ph"
+          networkOverviewData={networkOverviewData}
+        />
 
         {/* Top Performers All Time */}
         <div className="mb-10">
