@@ -13,6 +13,16 @@ model User {
   commissionSummaries CommissionSummary[]
   agentSummaries      AgentSummary[]
 
+    // Relations with logs as creator
+  categoryLogsCreated CategoryLog[] @relation("CategoryLogCreator")
+  roleLogsCreated     RoleLog[]     @relation("RoleLogCreator")
+  siteLogsCreated     SiteLog[]     @relation("SiteLogCreator")
+  
+  // Relations with logs as updater
+  categoryLogsUpdated CategoryLog[] @relation("CategoryLogUpdater")
+  roleLogsUpdated     RoleLog[]     @relation("RoleLogUpdater")
+  siteLogsUpdated     SiteLog[]     @relation("SiteLogUpdater")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

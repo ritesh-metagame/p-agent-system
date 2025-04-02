@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start:dev": "prisma generate && npx prisma studio && nodemon"
+    "start:dev": "prisma generate && nodemon",
+    "start:studio": "npx prisma studio"
   },
   "devDependencies": {
     "@types/axios": "^0.14.4",
