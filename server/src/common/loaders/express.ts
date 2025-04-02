@@ -11,6 +11,7 @@ import config from "../config";
 // import Container from 'typedi';
 // import "../../authentication/services/index"; // Adds social authentication services to Container(typedi)
 import Route from "./../../routes";
+import checkAuthAndAttachCurrentUser from "../middlewares/checkAuthAndAttachCurrentUser";
 
 const log = getLogger(module);
 
@@ -39,7 +40,7 @@ class ExpressLoader {
 
     // this.app.use("/api/internal", coreRoutes.getRouter());
 
-    // this.app.use(checkAuthAndAttachCurrentUser);
+    this.app.use(checkAuthAndAttachCurrentUser as any);
 
     this.app.use("/api/v1", routes.getRouter());
 

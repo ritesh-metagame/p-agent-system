@@ -20,6 +20,6 @@ export default (app: Router) => {
       const response = await AuthController.login(req, res, next);
 
       res.status(200).json(response);
-    })
+    }) as any
   );
 };
