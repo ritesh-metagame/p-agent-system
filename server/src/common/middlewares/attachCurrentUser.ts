@@ -1,8 +1,8 @@
-import { NextFunction, Response } from 'express';
-import { Request as JWTRequest } from 'express-jwt';
-import { Container } from 'typedi';
-import getLogger from '../logger';
-import Player from '../../core/models/player.model';
+import { NextFunction, Response } from "express";
+import { Request as JWTRequest } from "express-jwt";
+import { Container } from "typedi";
+import getLogger from "../logger";
+import UserDao from "../../daos/user.dao";
 // import getLogger from '../../logger';
 
 const log = getLogger(module);
@@ -14,34 +14,33 @@ const log = getLogger(module);
  * @param {*} next  Express next Function
  */
 // Middleware to attach the current user to the request based on JWT information
-const attachCurrentUser = async (
-	req: JWTRequest,
-	res: Response,
-	next: NextFunction,
+const attachUser = async (
+  req: JWTRequest,
+  res: Response,
+  next: NextFunction
 ) => {
-	try {
-		// Retrieve player information from the database based on JWT's player ID
-		const player = await Player.findById({ _id: req.auth!.playerId }).select(
-			'id email name source metaAddress nonce',
-		);
+  try {
+    const userDao = new UserDao();
+    // Retrieve player information from the database based on JWT's player ID
+    const user = await userDao.getUserByUsername(req.auth!.username);
 
-		// If no player is found, respond with Unauthorized status
-		if (!player) {
-			return res.sendStatus(401).json({ message: 'Unauthorized' });
-		}
+    // If no player is found, respond with Unauthorized status
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
-		// Attach the retrieved player to the request object as currentUser
-		req.currentUser = player;
+    // Attach the retrieved user to the request object as currentUser
+    req.user = user;
 
-		// Continue to the next middleware or route handler
-		return next();
-	} catch (e) {
-		// Log any errors that occur during the execution of the middleware
-		log.error('🔥 Error attaching user to req: ', e?.message);
+    // Continue to the next middleware or route handler
+    return next();
+  } catch (e) {
+    // Log any errors that occur during the execution of the middleware
+    log.error("🔥 Error attaching user to req: ", e?.message);
 
-		// Pass the error to the next middleware or error handler
-		return next(e);
-	}
+    // Pass the error to the next middleware or error handler
+    return next(e);
+  }
 };
 
-export default attachCurrentUser;
+export default attachUser;

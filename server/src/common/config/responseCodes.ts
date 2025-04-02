@@ -13,6 +13,21 @@ class ResponseCodes {
     code: "1003",
     message: "Something went wrong",
   } as const;
+
+  static readonly USER_CREATED_SUCCESSFULLY = {
+    code: "1004",
+    message: "User created successfully",
+  } as const;
+
+  static readonly SITE_CREATED_SUCCESSFULLY = {
+    code: "1005",
+    message: "Site created successfully",
+  } as const;
+
+  static readonly USER_SITE_CREATED_SUCCESSFULLY = {
+    code: "1006",
+    message: "User site created successfully",
+  } as const;
 }
 
 export { ResponseCodes };
