@@ -1,6 +1,6 @@
 import { UserRole, Pages, RolePageComponentMap } from "@/lib/constants";
 import { cookies } from "next/headers";
-import { getCookie } from "cookies-next/server";
+import { getCookie } from "cookies-next/client";
 interface RoleBasedContentProps {
   page: Pages;
 }

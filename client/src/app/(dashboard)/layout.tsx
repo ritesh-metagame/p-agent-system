@@ -34,8 +34,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const role = getCookie("role");
-      const username = getCookie("username");
+      const role = localStorage.getItem("role");
+      const username = localStorage.getItem("username");
 
       console.log({ role, username });
 
@@ -59,8 +59,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const role = getCookie("role");
-      const username = getCookie("username");
+      const role = localStorage.getItem("role");
+      const username = localStorage.getItem("username");
 
       if (!role || !username) {
         dispatch(clearAuthLoading());
