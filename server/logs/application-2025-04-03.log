@@ -530,3 +530,16 @@ info: 2025-04-03T11:17:08.963Z [loaders\index.ts] ✌️ Express loaded
 info: 2025-04-03T11:17:09.012Z [src\server.ts] 
 development Platform is running at http://localhost:8080 🛡️
       
+info: 2025-04-03T11:31:14.469Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T11:31:14.495Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+http: 2025-04-03T11:31:27.474Z [logger\morgan.js] POST /api/v1/auth/login 200 66 - 47.895 ms
+
+http: 2025-04-03T11:32:13.417Z [logger\morgan.js] POST /api/v1/auth/login 200 66 - 5.462 ms
+
+http: 2025-04-03T11:32:24.878Z [logger\morgan.js] POST /api/v1/auth/login 200 766 - 106.365 ms
+
+debug: 2025-04-03T11:40:31.432Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T11:40:31.794Z [logger\morgan.js] POST /api/v1/user/create 200 484 - 379.306 ms
+
