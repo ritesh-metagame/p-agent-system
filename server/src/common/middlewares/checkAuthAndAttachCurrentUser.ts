@@ -12,8 +12,8 @@ import UserDao from "../../daos/user.dao";
 const log = getLogger(module);
 
 const excludedPathsFromMiddleware = [
-  "/api/v1/auth/login",
-  "/api/v1/category",
+  "/v1/auth/login",
+  // "/v1/category",
   "/",
 ];
 
