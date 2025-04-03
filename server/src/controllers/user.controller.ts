@@ -14,14 +14,18 @@ class UserController {
       const userData = {
         username,
         password,
-        roleId,
       };
+
+      const role = req.role;
+      const user = req.user;
+
+      console.log("Role in UserController:", role);
 
       const userService = Container.get(UserService);
 
-      const response = await userService.createUser(userData);
+      const response = await userService.createUser(userData, role, user);
 
-      return res.status(201).json(response);
+      return response;
     } catch (error) {
       next(error);
     }

@@ -42,11 +42,11 @@ class RoleService {
       }
 
       if (currentUserRole.name === UserRole.PLATINUM) {
-        roles = await this.roleDao.getRoleForARole(UserRole.GOLDEN);
+        roles = await this.roleDao.getRoleForARole(UserRole.PLATINUM);
       }
 
       if (currentUserRole.name === UserRole.OPERATOR) {
-        roles = await this.roleDao.getRoleForARole(UserRole.PLATINUM);
+        roles = await this.roleDao.getRoleForARole(UserRole.OPERATOR);
       }
 
       return new Response(

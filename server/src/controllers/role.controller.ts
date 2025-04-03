@@ -15,7 +15,7 @@ class RoleController {
       const role = req.role;
 
       const roles = await roleService.getAllRoles(currentUser, role); // Assuming you have a RoleService to fetch roles from the database
-
+      console.log("Roles in RoleController:", roles);
       return roles;
     } catch (error) {
       next(error);

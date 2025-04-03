@@ -28,36 +28,33 @@ class RoleDao {
   }
 
   public async getRoleForARole(role: string) {
+    console.log("Role:", role); // Debugging line
     try {
-      // Define role hierarchy relationships
       const roleHierarchy: Record<string, string[]> = {
         operator: ["platinum", "gold"],
         platinum: ["gold"],
         gold: [],
       };
 
-      // Get the list of child roles for the given role
       const childRoles = roleHierarchy[role.toLowerCase()] || [];
+
+      console.log("Child Roles:", childRoles); // Debugging line
 
       if (childRoles.length === 0) {
         return [];
       }
 
-      // Find roles that match any of the child roles
       const roles = await prisma.role.findMany({
         where: {
-          OR: childRoles.map((r) => ({
-            name: {
-              contains: r,
-              mode: "insensitive",
-            },
-          })),
+          name: {
+            in: childRoles, // ✅ Use "in" instead of "contains"
+          },
         },
       });
 
       return roles;
     } catch (error) {
-      throw new Error(`Error fetching roles: ${error}`);
+      throw new Error(`Error fetching roles: ${error.message}`);
     }
   }
 
