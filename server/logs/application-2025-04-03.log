@@ -391,3 +391,58 @@ http: 2025-04-03T06:09:53.893Z [logger\morgan.ts] POST /api/v1/auth/login 200 2 
 error: 2025-04-03T06:10:44.865Z [services\auth.service.ts] Error in login:  this.bcryptService.compareHash is not a function
 http: 2025-04-03T06:10:44.867Z [logger\morgan.ts] POST /api/v1/auth/login 200 2 - 6.374 ms
 
+info: 2025-04-03T06:20:54.370Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T06:20:54.389Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T06:20:58.850Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T06:20:58.870Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+debug: 2025-04-03T06:21:03.840Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T06:21:04.094Z [logger\morgan.ts] GET /api/v1/role 200 - - 254.214 ms
+
+info: 2025-04-03T06:21:38.232Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T06:21:38.253Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+debug: 2025-04-03T06:21:40.389Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T06:21:40.511Z [logger\morgan.ts] GET /api/v1/role 200 - - 124.740 ms
+
+info: 2025-04-03T06:23:31.696Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T06:23:31.711Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T06:23:45.427Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T06:23:45.440Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+debug: 2025-04-03T06:23:48.994Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T06:23:49.030Z [logger\morgan.ts] GET /api/v1/role 200 208 - 38.208 ms
+
+http: 2025-04-03T06:24:11.448Z [logger\morgan.ts] POST /api/v1/auth/login 200 332 - 87.154 ms
+
+debug: 2025-04-03T06:24:52.115Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T06:24:52.124Z [logger\morgan.ts] GET /api/v1/role 200 208 - 10.081 ms
+
+info: 2025-04-03T06:25:33.981Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T06:25:33.966Z [loaders\index.ts] ✌️ Express loaded
+debug: 2025-04-03T06:25:40.137Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T06:25:40.173Z [logger\morgan.ts] GET /api/v1/role 200 208 - 35.278 ms
+
+info: 2025-04-03T06:26:08.658Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T06:26:08.674Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+debug: 2025-04-03T06:26:12.871Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T06:26:12.906Z [logger\morgan.ts] GET /api/v1/role 200 208 - 35.794 ms
+
+info: 2025-04-03T06:27:29.431Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T06:27:29.443Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+debug: 2025-04-03T06:27:32.691Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T06:27:32.730Z [logger\morgan.ts] GET /api/v1/role 200 358 - 41.099 ms
+

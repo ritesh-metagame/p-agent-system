@@ -3,6 +3,8 @@ import authRoute from "./auth.route";
 import userRoute from "./user.route";
 import siteRoute from "./site.route";
 import commissionRoute from "./commission.route";
+import categoryRoute from "./category.route";
+import roleRoute from "./role.route";
 
 class Routes {
   private router: Router;
@@ -17,6 +19,8 @@ class Routes {
     userRoute(this.router);
     siteRoute(this.router);
     commissionRoute(this.router);
+    categoryRoute(this.router);
+    roleRoute(this.router);
   }
 
   public getRouter() {

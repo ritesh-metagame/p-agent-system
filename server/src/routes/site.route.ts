@@ -18,4 +18,13 @@ export default (app: Router) => {
       res.status(200).json(response);
     }) as any
   );
+
+  route.get(
+    "/",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await SiteController.getSites(req, res, next);
+
+      res.status(200).json(response);
+    }) as any
+  );
 };

@@ -28,14 +28,48 @@ class ResponseCodes {
     message: "Site created failed",
   } as const;
 
+  static readonly SITES_FETCHED_SUCCESSFULLY = {
+    code: "1006",
+    message: "Sites fetched successfully",
+  } as const;
+
   static readonly USER_SITE_CREATED_SUCCESSFULLY = {
     code: "1006",
     message: "User site created successfully",
   } as const;
 
   static readonly USER_SITE_CREATED_FAILED = {
-    code: "S400",
+    code: "1007",
     message: "User site created failed",
+  } as const;
+
+  static readonly USER_SITES_FETCHED_SUCCESSFULLY = {
+    code: "1008",
+    message: "User sites fetched successfully",
+  } as const;
+
+  static readonly USER_SITES_FETCHED_FAILED = {
+    code: "1009",
+    message: "User sites fetched failed",
+  } as const;
+
+  static readonly CATEGORIES_FETCHED_SUCCESSFULLY = {
+    code: "1010",
+    message: "Categories fetched successfully",
+  } as const;
+  static readonly CATEGORIES_FETCHED_FAILED = {
+    code: "1011",
+    message: "Categories fetched failed",
+  } as const;
+
+  static readonly ROLE_FETCHED_SUCCESSFULLY = {
+    code: "1012",
+    message: "Role fetched successfully",
+  } as const;
+
+  static readonly ROLE_FETCH_FAILED = {
+    code: "1013",
+    message: "Role fetch failed",
   } as const;
 }
 
