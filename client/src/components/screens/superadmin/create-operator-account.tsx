@@ -1,4 +1,4 @@
-import CreateAccountForm from "@/components/create-account-form";
+import SuperAdminCreateAccountForm from "@/components/superAdmin-create-account-form";
 import React from "react";
 
 type Props = {};
@@ -6,7 +6,7 @@ type Props = {};
 export default function CreateOperatorAccount({}: Props) {
   return (
     <div>
-      <CreateAccountForm />
+      <SuperAdminCreateAccountForm />
     </div>
   );
 }

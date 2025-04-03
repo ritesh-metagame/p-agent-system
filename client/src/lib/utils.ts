@@ -23,11 +23,24 @@ export function generateSidebarMenusBasedOnRole(role: UserRole) {
             title: Pages.DASHBOARD,
             url: Paths.DASHBOARD,
           },
-          {
-            title: Pages.CREATE_SITE,
-            url: Paths.CREATE_SITE,
-            isActive: true,
-          },
+
+          //v2
+
+          ...(role == UserRole.SUPER_ADMIN
+            ? [
+                {
+                  title: "Manage Sites",
+                  url: Paths.MANAGE_SITES,
+                },
+                {
+                  title: Pages.CREATE_SITE,
+                  url: Paths.CREATE_SITE,
+                  isActive: true,
+                },
+              ]
+            : []),
+
+          //v2 ends
         ],
       },
       {
@@ -47,6 +60,16 @@ export function generateSidebarMenusBasedOnRole(role: UserRole) {
                 : "Create Account",
             url: Paths.CREATE_OPERATOR_ACCOUNT,
           },
+          // v2 starts
+          ...(role !== UserRole.SUPER_ADMIN
+            ? [
+                {
+                  title: "Manage Commission",
+                  url: Paths.MANAGE_COMMISSION,
+                },
+              ]
+            : []),
+          //v2 ends
           {
             title: Pages.PARTNER_MANAGEMENT,
             url: Paths.PARTNER_MANAGEMENT,

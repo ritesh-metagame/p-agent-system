@@ -33,15 +33,15 @@ import {
 } from "@/components/ui/dialog";
 import KYCVerification from "./tables/common/kyc-verification";
 
-// //v2 add
-// import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
-// import {
-//   Popover,
-//   PopoverTrigger,
-//   PopoverContent,
-// } from "@/components/ui/popover";
-// import { Circle, CircleDot } from "lucide-react"; // Icons for selection
-// //v2 ends
+//v2 add
+import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { Circle, CircleDot } from "lucide-react"; // Icons for selection
+//v2 ends
 
 type Props = {
   onSubmit?: (values: z.infer<typeof createAccountFormSchema>) => void;
@@ -63,15 +63,15 @@ const createAccountFormSchema = z.object({
     .string()
     .min(5, { message: "Account number must be at least 5 characters" })
     .regex(/^\d+$/, { message: "Account number must contain only digits" }),
-  commissionPercentage: z
-    .string()
-    .transform((val) => parseFloat(val)) // Convert to number
-    .refine((val) => !isNaN(val) && val >= 0 && val <= 100, {
-      message: "Commission percentage must be between 0 and 100",
-    }),
+  //   commissionPercentage: z
+  //     .string()
+  //     .transform((val) => parseFloat(val)) // Convert to number
+  //     .refine((val) => !isNaN(val) && val >= 0 && val <= 100, {
+  //       message: "Commission percentage must be between 0 and 100",
+  //     }),
 });
 
-export default function CreateAccountForm({ onSubmit }: Props) {
+export default function SuperAdminCreateAccountForm({ onSubmit }: Props) {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [csvPreview, setCsvPreview] = useState<string[][] | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -84,7 +84,7 @@ export default function CreateAccountForm({ onSubmit }: Props) {
       mobileNumber: "",
       bankName: "",
       accountNumber: "",
-      commissionPercentage: "",
+      //   commissionPercentage: "",
     },
   });
 
@@ -127,14 +127,14 @@ export default function CreateAccountForm({ onSubmit }: Props) {
     setIsDialogOpen(false);
   }
 
-  // const options = ["Site 1", "Site 2", "Site 3"]; // Replace with real data
-  // const [selected, setSelected] = useState<string[]>([]);
+  const options = ["Site 1", "Site 2", "Site 3"]; // Replace with real data
+  const [selected, setSelected] = useState<string[]>([]);
 
-  // const toggleSelection = (item: string) => {
-  //   setSelected((prev) =>
-  //     prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]
-  //   );
-  // };
+  const toggleSelection = (item: string) => {
+    setSelected((prev) =>
+      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]
+    );
+  };
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -312,7 +312,7 @@ export default function CreateAccountForm({ onSubmit }: Props) {
               )}
             />
 
-            {/* <Popover>
+            <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full">
                   {selected.length ? selected.join(", ") : "Select Sites"}
@@ -339,9 +339,9 @@ export default function CreateAccountForm({ onSubmit }: Props) {
                   </CommandGroup>
                 </Command>
               </PopoverContent>
-            </Popover> */}
+            </Popover>
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="commissionPercentage"
               render={({ field }) => (
@@ -350,6 +350,7 @@ export default function CreateAccountForm({ onSubmit }: Props) {
                   <FormControl>
                     <Input
                       placeholder="Commission Percentage"
+                      //   type="number"
                       {...field}
                       disabled={!!uploadedFile}
                     />
@@ -357,7 +358,7 @@ export default function CreateAccountForm({ onSubmit }: Props) {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             <Dialog>
               <DialogTrigger>

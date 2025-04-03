@@ -30,6 +30,7 @@ import {
   GoldenAllCommissionCutoff,
   OperatorAllCommissionCutoff,
   SuperAdminCreateSite,
+  SuperAdminManageSites,
 } from "@/components/screens";
 import CommissionRecentCutsOff from "@/components/screens/operator/commission-recent-cutoff";
 import PartnerManagement from "@/components/screens/operator/partner-management";
@@ -56,6 +57,8 @@ export enum Pages {
   SETTLEMENT_HISTORY = "Settlement History",
   KYC_VERIFICATION = "Verify KYC",
   CREATE_SITE = "Create Site",
+  MANAGE_SITES = "Manage Sites",
+  MANAGE_COMMISSION = "Manage Commission",
 }
 
 export enum Paths {
@@ -69,6 +72,8 @@ export enum Paths {
   SETTLEMENT_HISTORY = "/settlement-history",
   KYC_VERIFICATION = "/verify-kyc",
   CREATE_SITE = "/create-site",
+  MANAGE_SITES = "/manage-sites",
+  MANAGE_COMMISSION = "/manage-commission",
 }
 
 export const pagePaths = new Map<Paths, Pages>([
@@ -80,6 +85,8 @@ export const pagePaths = new Map<Paths, Pages>([
   [Paths.TRANSACTIONS, Pages.TRANSACTIONS],
   [Paths.COMMISSIONS, Pages.COMMISSIONS],
   [Paths.CREATE_SITE, Pages.CREATE_SITE],
+  [Paths.MANAGE_SITES, Pages.MANAGE_SITES],
+  [Paths.MANAGE_COMMISSION, Pages.MANAGE_COMMISSION],
 ]);
 
 export const users = [
@@ -125,6 +132,8 @@ export const RolePageComponentMap: RolePageMap = {
   [UserRole.SUPER_ADMIN]: {
     [Pages.DASHBOARD]: () => <SuperAdminDashboard />,
     [Pages.CREATE_SITE]: () => <SuperAdminCreateSite />,
+
+    [Pages.MANAGE_SITES]: () => <SuperAdminManageSites />,
 
     [Pages.CREATE_OPERATOR_ACCOUNT]: () => <SuperAdminCreateOperatorAccount />,
     [Pages.PARTNER_MANAGEMENT]: () => <SuperAdminPartnerManagement />,
