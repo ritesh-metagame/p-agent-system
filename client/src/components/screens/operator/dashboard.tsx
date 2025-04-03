@@ -20,6 +20,7 @@ import {
 } from "@/components/tables/operator/general/dashboard-columns";
 import CommonDashboard from "@/components/tables/common/common-downloadReports-components/common-dashboard-part";
 import Data from "./operator.json";
+import { useSelector } from "@/redux/store";
 
 type Props = {};
 
@@ -67,12 +68,16 @@ export default function Dashboard({}: Props) {
   //   },
   // ];
 
+  const user = useSelector((state) => state.authReducer.user);
+
+  console.log("user", user);
+
   return (
     <div className="container mx-auto p-4 space-y-6">
       {/* below is the common-dashboard-part rendered */}
       <CommonDashboard
         welcomeTierName="Platinum Partners"
-        referralLink="https://www.egames-referral-link.ph"
+        referralLink={user?.affiliateLink}
         networkOverviewData={networkOverviewData}
       />
 

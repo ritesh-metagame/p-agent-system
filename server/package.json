@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start:dev": "prisma generate && nodemon",
+    "nodemon": "nodemon",
     "start:studio": "npx prisma studio",
     "start:prod": "pm2 start dist/server.js --name server"
   },

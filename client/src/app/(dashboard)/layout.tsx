@@ -8,6 +8,7 @@ import {
   clearAuthLoading,
   setAuthLoading,
   setRole,
+  setUser,
   setUsername,
 } from "@/redux/slices/auth-slice";
 import { RootState, useDispatch } from "@/redux/store";
@@ -36,6 +37,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     if (typeof window !== "undefined") {
       const role = localStorage.getItem("role");
       const username = localStorage.getItem("username");
+      const user = localStorage.getItem("user");
 
       console.log({ role, username });
 
@@ -45,6 +47,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       if (username) {
         dispatch(setUsername(username));
+      }
+
+      if (user) {
+        dispatch(setUser(JSON.parse(user) as any));
       }
 
       dispatch(setAuthLoading(false));

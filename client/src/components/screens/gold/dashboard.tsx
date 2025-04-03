@@ -13,6 +13,7 @@ import { TypographyH4 } from "@/components/ui/typographyh4";
 import { DataTable } from "@/components/tables/data-table";
 import CommonDashboard from "@/components/tables/common/common-downloadReports-components/common-dashboard-part";
 import Data from "./gold.json";
+import { useSelector } from "@/redux/store";
 
 //below ends
 type Props = {};
@@ -28,12 +29,14 @@ const networkOverviewData: any[] = Data.networkOverviewData;
 //dummy data ends
 
 export default function Dashboard({}: Props) {
+  const user = useSelector((state) => state.authReducer.user);
+
   return (
     <div>
       <div className="container mb-10">
         <CommonDashboard
           welcomeTierName="Platinum Partners"
-          referralLink="https://www.egames-referral-link.ph"
+          referralLink={user?.affiliateLink}
           networkOverviewData={networkOverviewData}
         />
 

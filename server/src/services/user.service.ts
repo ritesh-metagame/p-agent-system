@@ -120,6 +120,24 @@ class UserService {
       );
     }
   }
+
+  public async getUsersByParentId(partnerId: string) {
+    try {
+      const users = await this.userDao.getUsersByParentId(partnerId);
+
+      return new Response(
+        ResponseCodes.USERS_FETCHED_SUCCESSFULLY.code,
+        ResponseCodes.USERS_FETCHED_SUCCESSFULLY.message,
+        users
+      );
+    } catch (error) {
+      return new Response(
+        ResponseCodes.USERS_FETCHED_FAILED.code,
+        `Error fetching users: ${error.message}`,
+        null
+      );
+    }
+  }
 }
 
 export { UserService };

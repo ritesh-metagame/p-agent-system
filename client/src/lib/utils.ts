@@ -60,15 +60,15 @@ export function generateSidebarMenusBasedOnRole(role: UserRole) {
                 : "Create Account",
             url: Paths.CREATE_OPERATOR_ACCOUNT,
           },
-          // v2 starts
-          ...(role !== UserRole.SUPER_ADMIN
-            ? [
-                {
-                  title: "Manage Commission",
-                  url: Paths.MANAGE_COMMISSION,
-                },
-              ]
-            : []),
+          // // v2 starts
+          // ...(role !== UserRole.SUPER_ADMIN
+          //   ? [
+          //       {
+          //         title: "Manage Commission",
+          //         url: Paths.MANAGE_COMMISSION,
+          //       },
+          //     ]
+          //   : []),
           //v2 ends
           {
             title: Pages.PARTNER_MANAGEMENT,
@@ -76,43 +76,43 @@ export function generateSidebarMenusBasedOnRole(role: UserRole) {
             isActive: true,
           },
           {
-            title: Pages.KYC_VERIFICATION,
-            url: Paths.KYC_VERIFICATION,
+            title: Pages.APPROVE_AGENTS,
+            url: Paths.APPROVE_AGENTS,
           },
         ],
       },
-      {
-        title: "Commission Release",
-        url: "#",
-        items: [
-          {
-            title: Pages.COMMISSION_RECENT_CUTOFF,
-            url: Paths.COMMISSION_RECENT_CUTOFF,
-          },
-          {
-            title: Pages.HISTORICAL_CUTOFFS,
-            url: Paths.HISTORICAL_CUTOFFS,
-          },
-        ],
-      },
-      {
-        title: "Download Reports",
-        url: "#",
-        items: [
-          {
-            title: Pages.TRANSACTIONS,
-            url: Paths.TRANSACTIONS,
-          },
-          {
-            title: Pages.COMMISSIONS,
-            url: Paths.COMMISSIONS,
-          },
-          {
-            title: Pages.SETTLEMENT_HISTORY,
-            url: Paths.SETTLEMENT_HISTORY,
-          },
-        ],
-      },
+      // {
+      //   title: "Commission Release",
+      //   url: "#",
+      //   items: [
+      //     {
+      //       title: Pages.COMMISSION_RECENT_CUTOFF,
+      //       url: Paths.COMMISSION_RECENT_CUTOFF,
+      //     },
+      //     {
+      //       title: Pages.HISTORICAL_CUTOFFS,
+      //       url: Paths.HISTORICAL_CUTOFFS,
+      //     },
+      //   ],
+      // },
+      // {
+      //   title: "Download Reports",
+      //   url: "#",
+      //   items: [
+      //     {
+      //       title: Pages.TRANSACTIONS,
+      //       url: Paths.TRANSACTIONS,
+      //     },
+      //     {
+      //       title: Pages.COMMISSIONS,
+      //       url: Paths.COMMISSIONS,
+      //     },
+      //     {
+      //       title: Pages.SETTLEMENT_HISTORY,
+      //       url: Paths.SETTLEMENT_HISTORY,
+      //     },
+      //   ],
+      // },
     ],
   };
 }

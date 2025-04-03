@@ -4,19 +4,25 @@ import { Site, User, UserSite } from "../../prisma/generated/prisma";
 import { Response } from "../common/config/response";
 import { ResponseCodes } from "../common/config/responseCodes";
 import { UserRole } from "../common/config/constants";
+import { RoleDao } from "../daos/role.dao";
 
 @Service()
 class SiteService {
   private siteDao: SiteDao;
+  private roleDao: RoleDao;
 
   constructor() {
     this.siteDao = new SiteDao();
+    this.roleDao = new RoleDao();
   }
 
   public async getAllSites(user: User, role: string) {
     try {
-      if (role === UserRole.SUPER_ADMIN) {
+      const currentUserRole = await this.roleDao.getRoleById(role);
+
+      if (currentUserRole.name === UserRole.SUPER_ADMIN) {
         const sites = await this.siteDao.getAllSitesForSuperAdmin();
+        console.log("Sites for Super Admin:", sites);
         return new Response(
           ResponseCodes.SITES_FETCHED_SUCCESSFULLY.code,
           ResponseCodes.SITES_FETCHED_SUCCESSFULLY.message,

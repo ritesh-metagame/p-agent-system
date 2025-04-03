@@ -5,6 +5,63 @@ import { ColumnDef } from "@tanstack/react-table";
 
 // Define the shape of the data for the table.
 
+export type Partners = {
+  id: string;
+  username: string;
+  password: string;
+  roleId: string;
+  affiliateLink: string;
+  firstName: string | null;
+  lastName: string | null;
+  mobileNumber: string | null;
+  bankName: string | null;
+  accountNumber: string | null;
+  parentId: string;
+  createdAt: string;
+  updatedAt: string;
+  role: {
+    id: string;
+    name: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+  commissions: any[]; // You might want to define a more specific type
+  userSites: {
+    userId: string;
+    siteId: string;
+    assignedAt: string;
+  }[];
+  children: any[]; // You might want to define a more specific type
+};
+
+export const partnerColumns: ColumnDef<Partners>[] = [
+  {
+    accessorKey: "username",
+    header: "USERNAME",
+  },
+  {
+    accessorKey: "role",
+    header: "ROLE",
+  },
+  {
+    accessorKey: "mobileNumber",
+    header: "MOBILE NUMBER",
+  },
+  {
+    accessorKey: "bankName",
+    header: "BANK NAME",
+  },
+  {
+    accessorKey: "accountNumber",
+    header: "ACCOUNT NUMBER",
+  },
+  {
+    accessorKey: "createdAt",
+    header: "CREATED AT",
+  },
+];
+
 export type PartnerManagementData = {
   operatorName: string;
   ppApproved: number | string;

@@ -546,3 +546,1572 @@ http: 2025-04-03T11:40:31.794Z [logger\morgan.js] POST /api/v1/user/create 200 4
 debug: 2025-04-03T11:56:45.267Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
 http: 2025-04-03T11:56:45.589Z [logger\morgan.js] POST /api/v1/user/create 200 484 - 322.617 ms
 
+http: 2025-04-03T12:43:41.988Z [logger\morgan.js] POST /api/v1/auth/login 200 766 - 92.608 ms
+
+debug: 2025-04-03T12:45:02.678Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T12:45:02.712Z [logger\morgan.js] POST /api/v1/site/create 500 278 - 14.914 ms
+
+debug: 2025-04-03T12:46:30.769Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T12:46:30.951Z [logger\morgan.js] POST /api/v1/user/create 200 496 - 182.557 ms
+
+http: 2025-04-03T12:50:34.710Z [logger\morgan.js] POST /api/v1/auth/login 200 766 - 74.385 ms
+
+debug: 2025-04-03T12:51:09.332Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T12:51:09.503Z [logger\morgan.js] POST /api/v1/user/create 200 496 - 175.471 ms
+
+http: 2025-04-03T12:51:23.576Z [logger\morgan.js] POST /api/v1/auth/login 200 766 - 69.983 ms
+
+debug: 2025-04-03T12:52:01.010Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T12:52:01.190Z [logger\morgan.js] POST /api/v1/user/create 200 - - 167.887 ms
+
+http: 2025-04-03T13:01:52.571Z [logger\morgan.js] POST /api/v1/auth/login 200 766 - 92.351 ms
+
+debug: 2025-04-03T13:04:15.764Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T13:04:15.778Z [logger\morgan.js] POST /api/v1/site/create 500 280 - 14.220 ms
+
+http: 2025-04-03T13:33:44.450Z [logger\morgan.js] POST /api/v1/auth/login 200 766 - 97.757 ms
+
+http: 2025-04-03T14:24:49.922Z [logger\morgan.js] POST /api/v1/auth/login 200 766 - 106.751 ms
+
+debug: 2025-04-03T14:32:50.602Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T14:32:50.627Z [logger\morgan.js] GET /api/v1/site 200 64 - 25.449 ms
+
+debug: 2025-04-03T14:32:52.417Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T14:32:52.426Z [logger\morgan.js] GET /api/v1/site 304 - - 9.221 ms
+
+debug: 2025-04-03T14:32:52.429Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T14:32:52.438Z [logger\morgan.js] GET /api/v1/site 304 - - 9.742 ms
+
+debug: 2025-04-03T14:32:59.657Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+debug: 2025-04-03T14:32:59.659Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T14:32:59.666Z [logger\morgan.js] GET /api/v1/site 200 64 - 8.627 ms
+
+http: 2025-04-03T14:32:59.681Z [logger\morgan.js] GET /api/v1/site 200 64 - 23.077 ms
+
+info: 2025-04-03T14:33:59.803Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:33:59.821Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+debug: 2025-04-03T14:34:08.770Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+debug: 2025-04-03T14:34:08.776Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T14:34:08.820Z [logger\morgan.js] GET /api/v1/site 200 64 - 43.762 ms
+
+http: 2025-04-03T14:34:08.828Z [logger\morgan.js] GET /api/v1/site 200 64 - 64.139 ms
+
+debug: 2025-04-03T14:34:28.522Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+debug: 2025-04-03T14:34:28.525Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T14:34:28.531Z [logger\morgan.js] GET /api/v1/site 200 64 - 10.468 ms
+
+http: 2025-04-03T14:34:28.535Z [logger\morgan.js] GET /api/v1/site 200 64 - 11.415 ms
+
+info: 2025-04-03T14:35:44.956Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:35:44.949Z [loaders\index.js] ✌️ Express loaded
+debug: 2025-04-03T14:35:53.217Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+debug: 2025-04-03T14:35:53.229Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T14:35:53.259Z [logger\morgan.js] GET /api/v1/site 200 64 - 29.184 ms
+
+http: 2025-04-03T14:35:53.268Z [logger\morgan.js] GET /api/v1/site 200 64 - 54.742 ms
+
+info: 2025-04-03T14:37:39.293Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:37:39.286Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:01.007Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:01.014Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:04.993Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:04.999Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:06.392Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:06.399Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:07.808Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:07.815Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:09.239Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:09.246Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:10.649Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:10.643Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:12.154Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:12.145Z [loaders\index.js] ✌️ Express loaded
+debug: 2025-04-03T14:38:12.424Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T14:38:12.453Z [logger\morgan.js] GET /api/v1/site 304 - - 32.204 ms
+
+debug: 2025-04-03T14:38:12.456Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T14:38:12.467Z [logger\morgan.js] GET /api/v1/site 304 - - 12.137 ms
+
+info: 2025-04-03T14:38:14.615Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:14.608Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:16.094Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:16.087Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:17.547Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:17.554Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:18.914Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:18.907Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:20.321Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:20.314Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:21.753Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:21.747Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:23.182Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:23.188Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:24.590Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:24.583Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:26.002Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:26.009Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:27.410Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:27.416Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:28.855Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:28.865Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:30.229Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:30.236Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:31.634Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:31.627Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:33.041Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:33.035Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:34.450Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:34.443Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:35.885Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:35.878Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:37.337Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:37.345Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:38.740Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:38.747Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:40.166Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:40.173Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:41.610Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:41.618Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:43.029Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:43.036Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:44.455Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:44.463Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:45.892Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:45.885Z [loaders\index.js] ✌️ Express loaded
+debug: 2025-04-03T14:38:46.034Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T14:38:46.056Z [logger\morgan.js] GET /api/v1/site 304 - - 24.302 ms
+
+debug: 2025-04-03T14:38:46.058Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T14:38:46.064Z [logger\morgan.js] GET /api/v1/site 304 - - 6.581 ms
+
+info: 2025-04-03T14:38:47.921Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:47.914Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:49.388Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:49.395Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:50.827Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:50.834Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:52.252Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:52.259Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:53.689Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:53.695Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:55.123Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:55.130Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:56.561Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:56.567Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:58.002Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:38:57.996Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:59.454Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:38:59.462Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:00.867Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:00.860Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:02.330Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:02.323Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:03.786Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:03.779Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:05.386Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:05.396Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:06.703Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:06.696Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:08.130Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:08.138Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:09.553Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:09.561Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:11.017Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:11.011Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:12.455Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:12.464Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:13.891Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:13.899Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:15.325Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:15.332Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:16.783Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:16.790Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:18.197Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:18.204Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:19.602Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:19.609Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:21.041Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:21.034Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:22.459Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:22.453Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:23.921Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:23.927Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:25.345Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:25.352Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:26.802Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:26.810Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:28.235Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:28.242Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:29.634Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:29.642Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:31.088Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:31.094Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:32.505Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:32.499Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:33.944Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:33.951Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:35.394Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:35.387Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:36.813Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:36.805Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:38.237Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:38.244Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:40.030Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:40.024Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:41.240Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:41.232Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:42.521Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:42.528Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:43.904Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:43.910Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:45.394Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:45.387Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:46.763Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:46.754Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:48.193Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:48.185Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:49.638Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:49.645Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:51.137Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:51.130Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:52.669Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:52.676Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:54.112Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:54.124Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:55.545Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:55.552Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:56.963Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:56.971Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:58.387Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:58.380Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:39:59.854Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:39:59.846Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:01.247Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:01.254Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:02.701Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:02.708Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:04.069Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:04.076Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:05.529Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:05.522Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:06.954Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:06.946Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:08.406Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:08.414Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:09.904Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:09.911Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:11.323Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:11.330Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:12.764Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:12.771Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:14.173Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:14.180Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:15.603Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:15.596Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:17.041Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:17.048Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:18.472Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:18.480Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:19.954Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:19.962Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:21.368Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:21.361Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:22.796Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:22.789Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:24.236Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:24.229Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:25.662Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:25.669Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:27.048Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:27.055Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:28.534Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:28.541Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:29.962Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:29.955Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:31.371Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:31.378Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:32.827Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:32.834Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:34.282Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:34.289Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:35.716Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:35.724Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:37.139Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:37.131Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:38.579Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:38.571Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:40.060Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:40.067Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:41.487Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:41.496Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:42.907Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:42.914Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:44.348Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:44.355Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:45.792Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:45.785Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:47.203Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:47.210Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:48.622Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:48.629Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:50.063Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:50.056Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:51.447Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:51.440Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:52.868Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:52.862Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:54.307Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:54.314Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:55.804Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:55.796Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:57.190Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:40:57.197Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:58.592Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:40:58.585Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:00.071Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:00.078Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:01.449Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:01.443Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:02.942Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:02.935Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:04.383Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:04.390Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:05.827Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:05.834Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:07.289Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:07.296Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:08.713Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:08.720Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:10.190Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:10.183Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:11.599Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:11.591Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:13.039Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:13.046Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:14.431Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:14.424Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:15.891Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:15.899Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:17.357Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:17.351Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:18.799Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:18.792Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:20.242Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:20.235Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:21.673Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:21.666Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:23.098Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:23.106Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:24.538Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:24.547Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:26.004Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:25.997Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:27.522Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:27.531Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:29.493Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:29.486Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:30.892Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:30.885Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:32.345Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:32.338Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:33.824Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:33.831Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:35.284Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:35.293Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:37.562Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:37.569Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:38.948Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:38.955Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:40.418Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:40.424Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:41.856Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:41.862Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:43.308Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:43.314Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:44.751Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:44.757Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:46.187Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:46.194Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:47.631Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:47.624Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:49.035Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:49.042Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:50.471Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:50.478Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:51.909Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:51.923Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:53.539Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:53.548Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:55.003Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:54.996Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:56.421Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:56.428Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:57.878Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:57.885Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:41:59.345Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:41:59.352Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:00.817Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:00.825Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:03.163Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:03.155Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:04.539Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:04.546Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:05.976Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:05.983Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:07.389Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:07.395Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:08.797Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:08.790Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:10.230Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:10.236Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:11.689Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:11.682Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:13.102Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:13.109Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:14.536Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:14.543Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:15.973Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:15.983Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:17.421Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:17.414Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:18.804Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:18.811Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:20.267Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:20.274Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:21.681Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:21.689Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:23.150Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:23.158Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:24.569Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:24.577Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:26.025Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:26.032Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:27.456Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:27.463Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:28.933Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:28.940Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:30.375Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:30.382Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:31.792Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:31.799Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:33.250Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:33.243Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:34.662Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:34.669Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:36.138Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:36.145Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:37.555Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:37.547Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:38.967Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:38.974Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:40.393Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:40.401Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:41.811Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:41.818Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:43.319Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:43.329Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:44.837Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:44.845Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:46.258Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:46.265Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:47.706Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:47.713Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:49.209Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:49.216Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:50.558Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:50.565Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:51.974Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:51.967Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:53.374Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:53.382Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:54.900Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:54.908Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:56.781Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:42:56.774Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:58.330Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:42:58.340Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:00.681Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:00.673Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:02.062Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:02.052Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:03.513Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:03.520Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:04.954Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:04.961Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:06.493Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:06.503Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:07.830Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:07.836Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:09.213Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:09.220Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:10.664Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:10.671Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:12.072Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:12.065Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:13.562Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:13.568Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:15.026Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:15.019Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:16.481Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:16.474Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:17.854Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:17.861Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:19.336Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:19.343Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:20.795Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:20.802Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:22.246Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:22.253Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:23.743Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:23.736Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:25.177Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:25.184Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:26.629Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:26.636Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:28.095Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:28.102Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:29.544Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:29.554Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:30.971Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:30.981Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:32.368Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:32.375Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:33.843Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:33.834Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:35.288Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:35.281Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:36.708Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:36.715Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:38.147Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:38.154Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:39.588Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:39.582Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:41.035Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:41.043Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:42.470Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:42.477Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:43.947Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:43.940Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:45.384Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:45.391Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:46.848Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:46.855Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:48.309Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:48.302Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:49.772Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:49.780Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:51.236Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:51.243Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:52.699Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:52.706Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:54.179Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:54.186Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:55.610Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:55.604Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:57.041Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:57.034Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:43:58.561Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:43:58.555Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:00.024Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:00.017Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:01.455Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:01.462Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:02.925Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:02.933Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:04.385Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:04.392Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:05.831Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:05.838Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:07.307Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:07.314Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:08.728Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:08.721Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:10.144Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:10.151Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:11.648Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:11.641Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:13.040Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:13.047Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:14.473Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:14.480Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:15.980Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:15.987Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:17.470Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:17.463Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:18.895Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:18.902Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:20.380Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:20.387Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:21.813Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:21.806Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:23.306Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:23.313Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:24.761Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:24.769Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:26.223Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:26.215Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:27.681Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:27.675Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:29.139Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:29.130Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:30.550Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:30.558Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:32.023Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:32.030Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:33.488Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:33.495Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:34.992Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:34.999Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:36.448Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:36.455Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:37.907Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:37.914Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:39.349Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:39.357Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:40.883Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:40.891Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:42.268Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:42.275Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:43.749Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:43.742Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:45.201Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:45.208Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:46.693Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:46.701Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:48.156Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:48.149Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:49.636Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:49.629Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:51.093Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:51.105Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:52.498Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:52.505Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:53.931Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:53.939Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:55.432Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:55.439Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:56.879Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:56.886Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:58.309Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:58.316Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:44:59.783Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:44:59.789Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:01.212Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:01.205Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:02.707Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:02.700Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:04.171Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:04.178Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:05.647Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:05.655Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:07.122Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:07.128Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:08.580Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:08.589Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:10.074Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:10.081Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:11.541Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:11.551Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:13.050Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:13.042Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:14.515Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:14.524Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:15.928Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:15.920Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:17.353Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:17.360Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:18.796Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:18.803Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:20.323Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:20.330Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:21.757Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:21.764Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:23.230Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:23.237Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:24.663Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:24.669Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:26.119Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:26.125Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:27.565Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:27.572Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:28.986Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:28.993Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:30.451Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:30.458Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:31.862Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:31.868Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:33.331Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:33.337Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:34.800Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:34.807Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:36.269Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:36.275Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:37.708Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:37.715Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:39.225Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:39.217Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:40.636Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:40.643Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:42.066Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:42.059Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:43.542Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:43.549Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:45:45.009Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:45:45.016Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T14:47:31.464Z [loaders\index.js] ✌️ Express loaded
+info: 2025-04-03T14:47:31.506Z [dist\server.js] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T15:21:44.303Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T15:21:44.322Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+debug: 2025-04-03T15:23:06.689Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+info: 2025-04-03T15:24:09.717Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T15:24:10.406Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+debug: 2025-04-03T15:24:15.569Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:24:15.702Z [logger\morgan.ts] GET /api/v1/site 200 - - 126.009 ms
+
+debug: 2025-04-03T15:24:15.706Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:24:15.726Z [logger\morgan.ts] GET /api/v1/site 304 - - 21.559 ms
+
+debug: 2025-04-03T15:24:25.164Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:24:25.191Z [logger\morgan.ts] GET /api/v1/site 200 - - 27.666 ms
+
+debug: 2025-04-03T15:24:25.424Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:24:25.444Z [logger\morgan.ts] GET /api/v1/site 200 - - 20.059 ms
+
+debug: 2025-04-03T15:26:03.314Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-03T15:26:03.318Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:26:03.345Z [logger\morgan.ts] GET /api/v1/site 200 - - 31.927 ms
+
+http: 2025-04-03T15:26:03.364Z [logger\morgan.ts] GET /api/v1/site 200 - - 44.850 ms
+
+debug: 2025-04-03T15:26:05.141Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:26:05.159Z [logger\morgan.ts] GET /api/v1/site 200 - - 17.770 ms
+
+debug: 2025-04-03T15:26:05.182Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:26:05.199Z [logger\morgan.ts] GET /api/v1/site 200 - - 18.027 ms
+
+debug: 2025-04-03T15:27:06.387Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-03T15:27:06.391Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:27:06.412Z [logger\morgan.ts] GET /api/v1/site 200 - - 22.056 ms
+
+http: 2025-04-03T15:27:06.414Z [logger\morgan.ts] GET /api/v1/site 200 - - 20.604 ms
+
+debug: 2025-04-03T15:27:07.956Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-03T15:27:07.958Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:27:07.972Z [logger\morgan.ts] GET /api/v1/site 200 - - 15.070 ms
+
+http: 2025-04-03T15:27:07.973Z [logger\morgan.ts] GET /api/v1/site 200 - - 14.669 ms
+
+debug: 2025-04-03T15:29:38.006Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-03T15:29:38.009Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:29:38.026Z [logger\morgan.ts] GET /api/v1/site 200 - - 18.824 ms
+
+http: 2025-04-03T15:29:38.039Z [logger\morgan.ts] GET /api/v1/site 200 - - 30.150 ms
+
+debug: 2025-04-03T15:29:39.032Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-03T15:29:39.036Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:29:39.052Z [logger\morgan.ts] GET /api/v1/site 200 - - 17.285 ms
+
+http: 2025-04-03T15:29:39.054Z [logger\morgan.ts] GET /api/v1/site 200 - - 16.661 ms
+
+debug: 2025-04-03T15:29:40.006Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-03T15:29:40.010Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:29:40.026Z [logger\morgan.ts] GET /api/v1/site 200 - - 16.304 ms
+
+http: 2025-04-03T15:29:40.028Z [logger\morgan.ts] GET /api/v1/site 200 - - 16.867 ms
+
+debug: 2025-04-03T15:30:23.054Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-03T15:30:23.056Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:30:23.068Z [logger\morgan.ts] GET /api/v1/site 200 - - 12.696 ms
+
+http: 2025-04-03T15:30:23.069Z [logger\morgan.ts] GET /api/v1/site 200 - - 12.491 ms
+
+debug: 2025-04-03T15:30:57.206Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-03T15:30:57.209Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:30:57.230Z [logger\morgan.ts] GET /api/v1/site 200 - - 22.516 ms
+
+http: 2025-04-03T15:30:57.231Z [logger\morgan.ts] GET /api/v1/site 200 - - 21.503 ms
+
+info: 2025-04-03T15:32:12.959Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T15:32:12.970Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+debug: 2025-04-03T15:33:11.038Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-03T15:33:11.045Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:33:11.098Z [logger\morgan.ts] GET /api/v1/site 200 - - 49.836 ms
+
+http: 2025-04-03T15:33:11.106Z [logger\morgan.ts] GET /api/v1/site 200 - - 70.352 ms
+
+debug: 2025-04-03T15:34:58.711Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:34:58.728Z [logger\morgan.ts] GET /api/v1/site 304 - - 18.045 ms
+
+debug: 2025-04-03T15:34:58.731Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:34:58.747Z [logger\morgan.ts] GET /api/v1/site 304 - - 17.207 ms
+
+debug: 2025-04-03T15:37:07.582Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:37:07.625Z [logger\morgan.ts] POST /api/v1/site/create 500 284 - 36.568 ms
+
+debug: 2025-04-03T15:37:21.688Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:37:21.753Z [logger\morgan.ts] POST /api/v1/site/create 500 56 - 63.974 ms
+
+debug: 2025-04-03T15:38:22.732Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:38:22.777Z [logger\morgan.ts] POST /api/v1/site/create 500 56 - 43.624 ms
+
+debug: 2025-04-03T15:38:23.712Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-03T15:38:23.718Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:38:23.741Z [logger\morgan.ts] GET /api/v1/site 200 - - 29.032 ms
+
+http: 2025-04-03T15:38:23.744Z [logger\morgan.ts] GET /api/v1/site 200 - - 21.324 ms
+
+debug: 2025-04-03T15:43:58.204Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:43:58.239Z [logger\morgan.ts] GET /api/v1/site 304 - - 35.732 ms
+
+debug: 2025-04-03T15:43:58.242Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T15:43:58.258Z [logger\morgan.ts] GET /api/v1/site 304 - - 16.717 ms
+
+http: 2025-04-03T15:49:48.850Z [logger\morgan.ts] POST /api/v1/auth/login 200 766 - 101.638 ms
+
+info: 2025-04-03T15:50:35.636Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T15:50:35.643Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+http: 2025-04-03T15:50:43.770Z [logger\morgan.ts] POST /api/v1/auth/login 200 - - 118.567 ms
+
+http: 2025-04-03T15:51:07.762Z [logger\morgan.ts] POST /api/v1/auth/login 200 66 - 84.409 ms
+
+http: 2025-04-03T15:51:18.779Z [logger\morgan.ts] POST /api/v1/auth/login 200 - - 82.222 ms
+
+http: 2025-04-03T15:55:45.339Z [logger\morgan.ts] POST /api/v1/auth/login 200 - - 103.031 ms
+
+http: 2025-04-03T16:02:50.373Z [logger\morgan.ts] POST /api/v1/auth/login 200 - - 87.227 ms
+
+info: 2025-04-03T16:10:26.709Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T16:10:26.736Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T16:11:25.270Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T16:11:25.278Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T16:11:49.453Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T16:11:49.462Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T16:11:54.752Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T16:11:54.760Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T16:12:03.227Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T16:12:03.219Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T16:12:09.003Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T16:12:09.011Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T16:13:18.712Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T16:13:18.721Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T16:13:21.943Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T16:13:21.934Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T16:13:33.936Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T16:13:33.928Z [loaders\index.ts] ✌️ Express loaded
+debug: 2025-04-03T16:13:54.245Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T16:13:54.310Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 65.130 ms
+
+info: 2025-04-03T16:18:59.973Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T16:19:00.009Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+debug: 2025-04-03T16:25:45.095Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-03T16:25:45.110Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T16:25:45.244Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 117.387 ms
+
+http: 2025-04-03T16:25:45.248Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 146.230 ms
+
+debug: 2025-04-03T16:28:52.398Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-03T16:28:52.402Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T16:28:52.422Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 18.760 ms
+
+http: 2025-04-03T16:28:52.424Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 20.754 ms
+
+debug: 2025-04-03T16:30:15.301Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-03T16:30:15.305Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T16:30:15.330Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 25.810 ms
+
+http: 2025-04-03T16:30:15.332Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 24.722 ms
+
+debug: 2025-04-03T16:35:10.892Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-03T16:35:10.901Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T16:35:10.928Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 35.937 ms
+
+http: 2025-04-03T16:35:10.929Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 27.625 ms
+
+debug: 2025-04-03T16:35:42.726Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-03T16:35:42.749Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T16:35:42.755Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 29.188 ms
+
+http: 2025-04-03T16:35:42.781Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 26.849 ms
+
+debug: 2025-04-03T16:36:11.035Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-03T16:36:11.039Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T16:36:11.059Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 23.343 ms
+
+http: 2025-04-03T16:36:11.066Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 26.244 ms
+
+debug: 2025-04-03T16:36:36.579Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T16:36:36.601Z [logger\morgan.ts] GET /api/v1/user/partners 304 - - 21.822 ms
+
+debug: 2025-04-03T16:36:36.604Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T16:36:36.623Z [logger\morgan.ts] GET /api/v1/user/partners 304 - - 20.211 ms
+
