@@ -2,7 +2,7 @@ import { Commission } from "../../prisma/generated/prisma";
 import { prisma } from "../server";
 
 class CommissionDao {
-  public async createCommission(commission: Commission): Promise<Commission> {
+  public async createCommission(commission: any): Promise<Commission> {
     try {
       const newCommission = await prisma.commission.create({
         data: commission,

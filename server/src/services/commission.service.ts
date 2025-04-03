@@ -13,7 +13,7 @@ class CommissionService {
     this.roleDao = new RoleDao();
   }
 
-  public async createCommission(commission: Commission) {
+  public async createCommission(commission: Partial<Commission>) {
     try {
       // Using the instance variable instead of creating a new instance
       const newCommission =

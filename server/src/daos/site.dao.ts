@@ -2,7 +2,7 @@ import { Site, UserSite } from "../../prisma/generated/prisma";
 import { prisma } from "../server";
 
 class SiteDao {
-  public async createSite(site: Site) {
+  public async createSite(site: any) {
     try {
       const newSite = await prisma.site.create({
         data: {
@@ -16,7 +16,7 @@ class SiteDao {
     }
   }
 
-  public async createUserSite(userSite: UserSite) {
+  public async createUserSite(userSite: any) {
     try {
       const newUserSite = await prisma.userSite.create({
         data: {

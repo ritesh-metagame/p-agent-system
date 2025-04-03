@@ -21,7 +21,6 @@ class UserDao {
     parentId,
     password,
     roleId,
-    userSites,
   }: Record<string, any>): Promise<User> {
     try {
       const user = await prisma.user.create({
@@ -30,7 +29,6 @@ class UserDao {
           password,
           parentId,
           roleId,
-          userSites,
         },
       });
 

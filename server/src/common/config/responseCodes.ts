@@ -23,10 +23,19 @@ class ResponseCodes {
     code: "1005",
     message: "Site created successfully",
   } as const;
+  static readonly SITE_CREATED_FAILED = {
+    code: "400",
+    message: "Site created failed",
+  } as const;
 
   static readonly USER_SITE_CREATED_SUCCESSFULLY = {
     code: "1006",
     message: "User site created successfully",
+  } as const;
+
+  static readonly USER_SITE_CREATED_FAILED = {
+    code: "S400",
+    message: "User site created failed",
   } as const;
 }
 

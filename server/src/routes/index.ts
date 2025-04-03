@@ -1,5 +1,7 @@
 import { Router } from "express";
 import authRoute from "./auth.route";
+import userRoute from "./user.route";
+import siteRoute from "./site.route";
 
 class Routes {
   private router: Router;
@@ -11,6 +13,8 @@ class Routes {
 
   private initializeRoutes() {
     authRoute(this.router);
+    userRoute(this.router);
+    siteRoute(this.router);
   }
 
   public getRouter() {

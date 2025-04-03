@@ -12,31 +12,37 @@ class SiteService {
     this.siteDao = new SiteDao();
   }
 
-  public async createUserSite(userSite: UserSite) {
+  public async createUserSite(userSite: Partial<UserSite>) {
     try {
-      const site = await this.siteDao.createUserSite(userSite);
+      const siteUserData = await this.siteDao.createUserSite(userSite);
 
       return new Response(
         ResponseCodes.USER_SITE_CREATED_SUCCESSFULLY.code,
         ResponseCodes.USER_SITE_CREATED_SUCCESSFULLY.message,
-        site
+        siteUserData
       );
     } catch (error) {
-      return error;
+      return new Response(
+        ResponseCodes.USER_SITE_CREATED_FAILED.code,
+        ResponseCodes.USER_SITE_CREATED_FAILED.message
+      );
     }
   }
 
-  public async createSite(site: Site) {
+  public async createSite(site: Partial<Site>) {
     try {
-      const s = await this.siteDao.createSite(site);
+      const siteData = await this.siteDao.createSite(site);
 
       return new Response(
         ResponseCodes.SITE_CREATED_SUCCESSFULLY.code,
         ResponseCodes.SITE_CREATED_SUCCESSFULLY.message,
-        s
+        siteData
       );
     } catch (error) {
-      return error;
+      return new Response(
+        ResponseCodes.SITE_CREATED_FAILED.code,
+        ResponseCodes.SITE_CREATED_FAILED.message
+      );
     }
   }
 }

@@ -15,9 +15,9 @@ class UserService {
     this.userDao = new UserDao();
   }
 
-  public async createUser(userData: User, user: User) {
+  public async createUser(userData: Partial<User>) {
     try {
-      const { roleId } = user;
+      const { roleId } = userData;
 
       const currentUserRole = await this.roleDao.getRoleById(roleId);
 
@@ -39,7 +39,7 @@ class UserService {
         throw new Error("Role not found");
       }
 
-      const data: User = {
+      const data: Partial<User> = {
         ...userData,
         roleId: role.id,
         parentId: currentUserRole.id,

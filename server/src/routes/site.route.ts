@@ -1,19 +1,19 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { catchAsync } from "../common/lib";
 import { celebrate } from "celebrate";
-import { UserController } from "../controllers/user.controller";
+import { SiteController } from "../controllers/site.controller";
 
 const route = Router();
 
 export default (app: Router) => {
-  app.use("/user", route);
+  app.use("/site", route);
 
   // Define your routes here
   route.post(
     "/create",
     celebrate({}),
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-      const response = await UserController.createUser(req, res, next);
+      const response = await SiteController.createSite(req, res, next);
 
       res.status(200).json(response);
     }) as any
