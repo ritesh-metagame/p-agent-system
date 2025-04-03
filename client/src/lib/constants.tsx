@@ -40,7 +40,7 @@ import PartnerManagement from "@/components/screens/operator/partner-management"
 import { JSX } from "react";
 
 export enum UserRole {
-  SUPER_ADMIN = "super-admin",
+  SUPER_ADMIN = "superadmin",
   OPERATOR = "operator",
   PLATINUM = "platinum",
   GOLD = "golden",
