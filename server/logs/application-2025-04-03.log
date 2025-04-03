@@ -452,3 +452,11 @@ development Platform is running at http://localhost:8080 🛡️
       
 http: 2025-04-03T07:14:26.195Z [logger\morgan.ts] POST /api/v1/auth/login 200 698 - 145.424 ms
 
+info: 2025-04-03T07:15:43.400Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T07:15:43.417Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+http: 2025-04-03T07:20:06.382Z [logger\morgan.ts] POST /api/v1/auth/login 200 698 - 126.121 ms
+
+http: 2025-04-03T07:22:16.377Z [logger\morgan.ts] POST /api/v1/auth/login 200 698 - 73.858 ms
+
