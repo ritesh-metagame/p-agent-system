@@ -446,3 +446,9 @@ development Platform is running at http://localhost:8080 🛡️
 debug: 2025-04-03T06:27:32.691Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
 http: 2025-04-03T06:27:32.730Z [logger\morgan.ts] GET /api/v1/role 200 358 - 41.099 ms
 
+info: 2025-04-03T07:14:22.393Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T07:14:23.922Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+http: 2025-04-03T07:14:26.195Z [logger\morgan.ts] POST /api/v1/auth/login 200 698 - 145.424 ms
+

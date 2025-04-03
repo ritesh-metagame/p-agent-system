@@ -8,6 +8,7 @@ class UserDao {
     try {
       const user = await prisma.user.findUnique({
         where: { username },
+        include: { role: true },
       });
 
       return user;
