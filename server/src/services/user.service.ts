@@ -5,6 +5,7 @@ import { Role, User } from "../../prisma/generated/prisma";
 import { UserRole } from "../common/config/constants";
 import { Response } from "../common/config/response";
 import { ResponseCodes } from "../common/config/responseCodes";
+import { BcryptService } from "../common/lib";
 
 @Service()
 class UserService {
@@ -13,13 +14,14 @@ class UserService {
 
   constructor() {
     this.userDao = new UserDao();
+    this.roleDao = new RoleDao();
   }
 
-  public async createUser(userData: Partial<User>) {
+  public async createUser(userData: Partial<User>, roleId: string, user: User) {
     try {
-      const { roleId } = userData;
-
       const currentUserRole = await this.roleDao.getRoleById(roleId);
+
+      console.log("Current User Role:", currentUserRole);
 
       let role: Role;
 
@@ -39,10 +41,15 @@ class UserService {
         throw new Error("Role not found");
       }
 
+      const hashedPassword = await BcryptService.generateHash(
+        userData.password
+      );
+
       const data: Partial<User> = {
         ...userData,
+        password: hashedPassword,
         roleId: role.id,
-        parentId: currentUserRole.id,
+        parentId: user.id,
       };
 
       const newUser = await this.userDao.createUser(data);
@@ -53,7 +60,11 @@ class UserService {
         newUser
       );
     } catch (error) {
-      throw new Error(`Error creating user: ${error}`);
+      return new Response(
+        ResponseCodes.USER_CREATED_SUCCESSFULLY.code,
+        `Error creating user: ${error.message}`,
+        null
+      );
     }
   }
 }
