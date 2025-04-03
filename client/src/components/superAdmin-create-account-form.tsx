@@ -54,6 +54,9 @@ const createAccountFormSchema = z.object({
   lastName: z
     .string()
     .min(2, { message: "Last name must be at least 2 characters" }),
+  // username: z
+  //   .string()
+  //   .min(2, { message: "First name must be at least 2 characters" }),
   mobileNumber: z
     .string()
     .min(10, { message: "Mobile number must be at least 10 digits" })
@@ -63,6 +66,23 @@ const createAccountFormSchema = z.object({
     .string()
     .min(5, { message: "Account number must be at least 5 characters" })
     .regex(/^\d+$/, { message: "Account number must contain only digits" }),
+  username: z
+    .string()
+    .min(2, { message: "First name must be at least 2 characters" }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long" })
+    .regex(/[A-Z]/, {
+      message: "Password must contain at least one uppercase letter",
+    })
+    .regex(/[a-z]/, {
+      message: "Password must contain at least one lowercase letter",
+    })
+    .regex(/\d/, { message: "Password must contain at least one number" })
+    .regex(/[!@#$%^&*]/, {
+      message:
+        "Password must contain at least one special character (!@#$%^&*)",
+    }),
   //   commissionPercentage: z
   //     .string()
   //     .transform((val) => parseFloat(val)) // Convert to number
@@ -79,11 +99,9 @@ export default function SuperAdminCreateAccountForm({ onSubmit }: Props) {
   const form = useForm<z.infer<typeof createAccountFormSchema>>({
     resolver: zodResolver(createAccountFormSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      mobileNumber: "",
-      bankName: "",
-      accountNumber: "",
+      username: "",
+      password: "",
+
       //   commissionPercentage: "",
     },
   });
@@ -149,7 +167,7 @@ export default function SuperAdminCreateAccountForm({ onSubmit }: Props) {
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-4"
           >
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 Bulk Upload via CSV
               </label>
@@ -187,7 +205,7 @@ export default function SuperAdminCreateAccountForm({ onSubmit }: Props) {
                   </div>
                 </div>
               )}
-            </div>
+            </div> */}
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogContent>
@@ -312,6 +330,43 @@ export default function SuperAdminCreateAccountForm({ onSubmit }: Props) {
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="John"
+                      {...field}
+                      // disabled={!!uploadedFile}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Doe"
+                      {...field}
+                      // disabled={!!uploadedFile}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full">
@@ -360,7 +415,7 @@ export default function SuperAdminCreateAccountForm({ onSubmit }: Props) {
               )}
             /> */}
 
-            <Dialog>
+            {/* <Dialog>
               <DialogTrigger>
                 <Button
                   variant="outline"
@@ -380,7 +435,7 @@ export default function SuperAdminCreateAccountForm({ onSubmit }: Props) {
                   <KYCVerification />
                 </div>
               </DialogContent>
-            </Dialog>
+            </Dialog> */}
 
             <Button
               variant="orange"

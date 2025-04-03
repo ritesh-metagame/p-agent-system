@@ -33,16 +33,6 @@ import {
 } from "@/components/ui/dialog";
 import KYCVerification from "./tables/common/kyc-verification";
 
-// //v2 add
-// import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
-// import {
-//   Popover,
-//   PopoverTrigger,
-//   PopoverContent,
-// } from "@/components/ui/popover";
-// import { Circle, CircleDot } from "lucide-react"; // Icons for selection
-// //v2 ends
-
 type Props = {
   onSubmit?: (values: z.infer<typeof createAccountFormSchema>) => void;
 };
@@ -54,6 +44,9 @@ const createAccountFormSchema = z.object({
   lastName: z
     .string()
     .min(2, { message: "Last name must be at least 2 characters" }),
+  username: z
+    .string()
+    .min(2, { message: "First name must be at least 2 characters" }),
   mobileNumber: z
     .string()
     .min(10, { message: "Mobile number must be at least 10 digits" })
@@ -68,6 +61,20 @@ const createAccountFormSchema = z.object({
     .transform((val) => parseFloat(val)) // Convert to number
     .refine((val) => !isNaN(val) && val >= 0 && val <= 100, {
       message: "Commission percentage must be between 0 and 100",
+    }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long" })
+    .regex(/[A-Z]/, {
+      message: "Password must contain at least one uppercase letter",
+    })
+    .regex(/[a-z]/, {
+      message: "Password must contain at least one lowercase letter",
+    })
+    .regex(/\d/, { message: "Password must contain at least one number" })
+    .regex(/[!@#$%^&*]/, {
+      message:
+        "Password must contain at least one special character (!@#$%^&*)",
     }),
 });
 
@@ -359,7 +366,7 @@ export default function CreateAccountForm({ onSubmit }: Props) {
               )}
             />
 
-            <Dialog>
+            {/* <Dialog>
               <DialogTrigger>
                 <Button
                   variant="outline"
@@ -379,7 +386,7 @@ export default function CreateAccountForm({ onSubmit }: Props) {
                   <KYCVerification />
                 </div>
               </DialogContent>
-            </Dialog>
+            </Dialog> */}
 
             <Button
               variant="orange"
