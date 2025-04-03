@@ -5,6 +5,8 @@ model User {
   roleId    String   @map("role_id")
   role      Role     @relation(fields: [roleId], references: [id])
 
+  affiliateLink String? @map("affiliate_link")
+
   firstName    String?
   lastName     String?
   mobileNumber String?
