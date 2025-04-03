@@ -7,7 +7,7 @@ class UserDao {
   public async getUserByUsername(username: string) {
     console.log("Username:", username); // Debugging line
     try {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: { username },
         include: { role: true },
       });
