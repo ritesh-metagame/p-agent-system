@@ -7,7 +7,7 @@ interface RoleBasedContentProps {
   page: Pages;
 }
 
-const RoleBasedContent = async ({ page }: RoleBasedContentProps) => {
+const RoleBasedContent = ({ page }: RoleBasedContentProps) => {
   // const role = "super-admin";
   // const role = getCookie("role") || UserRole.DEFAULT;
   const role = useSelector((state) => state.authReducer.role);

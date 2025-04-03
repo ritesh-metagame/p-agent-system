@@ -15,30 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import axios from "axios";
-
-// ✅ Success Popup Component
-function SuccessPopup({
-  message,
-  onClose,
-}: {
-  message: string;
-  onClose: () => void;
-}) {
-  return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-        <h2 className="text-xl font-bold text-green-600">Success!</h2>
-        <p className="mt-2 text-gray-700">{message}</p>
-        <button
-          onClick={onClose}
-          className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-        >
-          OK
-        </button>
-      </div>
-    </div>
-  );
-}
+import { useSonner } from "sonner";
+import { redirect, useRouter } from "next/navigation";
 
 // ✅ Define form schema
 const createSiteFormSchema = z.object({
@@ -59,8 +37,12 @@ export default function CreateSiteForm() {
     },
   });
 
+  const router = useRouter();
+
   // ✅ State for showing success popup
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const sonner = useSonner();
 
   // ✅ Get authentication token (stored in localStorage)
   const token = localStorage.getItem("token");
@@ -79,11 +61,10 @@ export default function CreateSiteForm() {
       );
 
       if (response) {
-        setSuccessMessage("Site created successfully!");
         form.reset(); // Reset form after success
-
         // ✅ Hide popup after 3 seconds
-        setTimeout(() => setSuccessMessage(null), 3000);
+        router.push("/manage-sites");
+        //r setTimeout(() => setSuccessMessage(null), 3000);
       } else {
         alert("Something went wrong!");
       }
@@ -163,12 +144,12 @@ export default function CreateSiteForm() {
       </Card>
 
       {/* ✅ Show Success Popup when form is submitted successfully */}
-      {successMessage && (
+      {/* {successMessage && (
         <SuccessPopup
           message={successMessage}
           onClose={() => setSuccessMessage(null)}
         />
-      )}
+      )} */}
     </>
   );
 }

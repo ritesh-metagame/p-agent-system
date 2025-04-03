@@ -42,6 +42,24 @@ class UserDao {
       throw new Error(`Error creating user: ${error}`);
     }
   }
+
+  public async getUsersByParentId(parentId: string) {
+    try {
+      const users = await prisma.user.findMany({
+        where: { parentId },
+        include: {
+          role: true,
+          commissions: true,
+          userSites: true,
+          children: true,
+        },
+      });
+
+      return users;
+    } catch (error) {
+      throw new Error(`Error fetching users by parent ID: ${error}`);
+    }
+  }
 }
 
 export default UserDao;

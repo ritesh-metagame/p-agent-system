@@ -63,44 +63,47 @@ class UserService {
 
       const newUser = await this.userDao.createUser(data);
 
-      const sites = await this.siteService.getAllSites(
-        user,
-        currentUserRole.name
-      );
+      if (currentUserRole.name !== UserRole.SUPER_ADMIN) {
+        const sites = await this.siteService.getAllSites(
+          user,
+          currentUserRole.name
+        );
 
-      const userSite = await this.siteService.createUserSite({
-        userId: newUser.id,
-        siteId: sites.data[Math.floor(Math.random() * sites.data.length)].id,
-      });
+        const userSite = await this.siteService.createUserSite({
+          userId: newUser.id,
+          siteId: sites.data[Math.floor(Math.random() * sites.data.length)].id,
+        });
 
-      const roles = await this.roleDao.getAllRolesForSuperAdmin();
+        const roles = await this.roleDao.getAllRolesForSuperAdmin();
 
-      const requiredRoles = roles.filter(
-        (r) => r.name !== UserRole.SUPER_ADMIN
-      );
+        const requiredRoles = roles.filter(
+          (r) =>
+            r.name !== UserRole.SUPER_ADMIN && r.name !== currentUserRole.name
+        );
 
-      console.log({ requiredRoles });
+        const categories = await this.categoryService.getAllCategories();
 
-      const categories = await this.categoryService.getAllCategories();
+        for (const r of requiredRoles) {
+          for (const category of categories.data) {
+            if (r.name === UserRole.GOLDEN) continue; // Skip Golden role for commission creation
 
-      for (const r of requiredRoles) {
-        for (const category of categories.data) {
-          let commissionPercentage = 2.0;
-          if (r.name === UserRole.PLATINUM) {
-            commissionPercentage = 3.0; // Example percentage for Platinum
-          } else if (r.name === UserRole.GOLDEN) {
-            commissionPercentage = 2.0; // Example percentage for Golden
-          } else if (r.name === UserRole.OPERATOR) {
-            commissionPercentage = 5.0; // Example percentage for Operator
+            let commissionPercentage = 2.0;
+            if (r.name === UserRole.PLATINUM) {
+              commissionPercentage = 3.0; // Example percentage for Platinum
+            } else if (r.name === UserRole.GOLDEN) {
+              commissionPercentage = 2.0; // Example percentage for Golden
+            } else if (r.name === UserRole.OPERATOR) {
+              commissionPercentage = 5.0; // Example percentage for Operator
+            }
+            const commission: Partial<Commission> = {
+              userId: newUser.id,
+              roleId: r.id,
+              categoryId: category.id,
+              siteId: sites.data[0].id, // Default percentage
+              commissionPercentage: commissionPercentage,
+            };
+            await this.commissionService.createCommission(commission);
           }
-          const commission: Partial<Commission> = {
-            userId: newUser.id,
-            roleId: r.id,
-            categoryId: category.id,
-            siteId: sites.data[0].id, // Default percentage
-            commissionPercentage: commissionPercentage,
-          };
-          await this.commissionService.createCommission(commission);
         }
       }
 
@@ -113,6 +116,24 @@ class UserService {
       return new Response(
         ResponseCodes.USER_CREATED_SUCCESSFULLY.code,
         `Error creating user: ${error.message}`,
+        null
+      );
+    }
+  }
+
+  public async getUsersByParentId(partnerId: string) {
+    try {
+      const users = await this.userDao.getUsersByParentId(partnerId);
+
+      return new Response(
+        ResponseCodes.USERS_FETCHED_SUCCESSFULLY.code,
+        ResponseCodes.USERS_FETCHED_SUCCESSFULLY.message,
+        users
+      );
+    } catch (error) {
+      return new Response(
+        ResponseCodes.USERS_FETCHED_FAILED.code,
+        `Error fetching users: ${error.message}`,
         null
       );
     }

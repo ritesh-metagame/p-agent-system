@@ -45,6 +45,24 @@ class UserController {
       next(error);
     }
   }
+
+  public static async getPartners(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = req.user;
+
+      const userService = Container.get(UserService);
+
+      const response = await userService.getUsersByParentId(user.id);
+
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { UserController };

@@ -13,6 +13,8 @@ model User {
   bankName     String?
   accountNumber String?
 
+  approved Boolean @default(true)
+
   userSites UserSite[]
 
   parentId  String?  @map("parent_id")

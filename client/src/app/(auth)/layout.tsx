@@ -3,6 +3,7 @@
 import {
   clearAuthLoading,
   setRole,
+  setUser,
   setUsername,
 } from "@/redux/slices/auth-slice";
 import { store } from "@/redux/store";
@@ -23,6 +24,7 @@ export default function AuthLayout({ children }: Props) {
 
     const role = localStorage.getItem("role");
     const username = localStorage.getItem("username");
+    const user = localStorage.getItem("user");
 
     if (!role || !username) {
       store.dispatch(clearAuthLoading());
@@ -30,6 +32,7 @@ export default function AuthLayout({ children }: Props) {
 
     store.dispatch(setRole(role));
     store.dispatch(setUsername(username));
+    store.dispatch(setUser(JSON.parse(user) as any));
   }, []);
 
   return <div>{children}</div>;
