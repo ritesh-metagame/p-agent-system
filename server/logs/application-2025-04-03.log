@@ -503,3 +503,21 @@ info: 2025-04-03T10:36:48.204Z [loaders\index.ts] ✌️ Express loaded
 debug: 2025-04-03T10:37:02.582Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
 http: 2025-04-03T10:37:02.997Z [logger\morgan.ts] POST /api/v1/user/create 200 484 - 413.769 ms
 
+info: 2025-04-03T15:52:35.741Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T15:52:35.725Z [loaders\index.ts] ✌️ Express loaded
+http: 2025-04-03T15:52:48.946Z [logger\morgan.ts] POST /api/v1/auth/login 200 698 - 98.787 ms
+
+info: 2025-04-03T15:54:36.174Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T15:54:36.184Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T15:54:40.976Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T15:54:40.993Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T15:55:25.662Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T15:55:25.673Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      

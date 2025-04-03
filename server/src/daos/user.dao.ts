@@ -5,11 +5,13 @@ class UserDao {
   constructor() {}
 
   public async getUserByUsername(username: string) {
+    console.log("Username:", username); // Debugging line
     try {
       const user = await prisma.user.findUnique({
         where: { username },
         include: { role: true },
       });
+      console.log("Username1111111111111:", username); // Debugging line
 
       return user;
     } catch (error) {
@@ -32,7 +34,6 @@ class UserDao {
           password,
           parentId,
           roleId,
-          affiliateLink,
         },
       });
 
