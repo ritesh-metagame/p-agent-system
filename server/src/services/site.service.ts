@@ -63,16 +63,17 @@ class SiteService {
     try {
       const siteData = await this.siteDao.createSite(site);
 
+      console.log({ siteData });
+
       return new Response(
         ResponseCodes.SITE_CREATED_SUCCESSFULLY.code,
         ResponseCodes.SITE_CREATED_SUCCESSFULLY.message,
         siteData
       );
     } catch (error) {
-      return new Response(
-        ResponseCodes.SITE_CREATED_FAILED.code,
-        ResponseCodes.SITE_CREATED_FAILED.message
-      );
+      console.error(error);
+
+      return error;
     }
   }
 }
