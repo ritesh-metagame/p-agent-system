@@ -503,3 +503,22 @@ info: 2025-04-03T10:36:48.204Z [loaders\index.ts] ✌️ Express loaded
 debug: 2025-04-03T10:37:02.582Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
 http: 2025-04-03T10:37:02.997Z [logger\morgan.ts] POST /api/v1/user/create 200 484 - 413.769 ms
 
+info: 2025-04-03T10:49:20.351Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T10:49:20.364Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T10:53:21.275Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T10:53:21.284Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T10:56:15.244Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T10:56:15.253Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+http: 2025-04-03T11:07:31.029Z [logger\morgan.ts] POST /api/v1/user/create?username=%22Aadsf%27&password=%22gasdFGA%22&firstname=%22adfasdf%22&lastname=%22Asdtr%22&mobileNumber=9938804562&bankName=%22Asd%22&accountNumber=5885556555 401 44 - 10.550 ms
+
+http: 2025-04-03T11:12:21.702Z [logger\morgan.ts] POST /api/v1/user/create 401 25 - 5.829 ms
+
+debug: 2025-04-03T11:12:56.388Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-03T11:12:56.664Z [logger\morgan.ts] POST /api/v1/user/create 200 - - 272.424 ms
+
