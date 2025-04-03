@@ -9,11 +9,26 @@ class UserController {
     next: NextFunction
   ) {
     try {
-      const { username, password, roleId, parentId } = req.body;
+      const {
+        username,
+        password,
+        firstname,
+        lastname,
+        mobileNumber,
+        bankName,
+        accountNumber,
+        roleId,
+        parentId,
+      } = req.body;
 
       const userData = {
         username,
         password,
+        firstname,
+        lastname,
+        mobileNumber,
+        bankName,
+        accountNumber,
       };
 
       const role = req.role;

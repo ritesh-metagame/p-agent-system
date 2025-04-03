@@ -5,6 +5,12 @@ model User {
   roleId    String   @map("role_id")
   role      Role     @relation(fields: [roleId], references: [id])
 
+  firstName    String?
+  lastName     String?
+  mobileNumber String?
+  bankName     String?
+  accountNumber String?
+
   userSites UserSite[]
 
   parentId  String?  @map("parent_id")
