@@ -15,6 +15,7 @@ class UserController {
         username,
         password,
         roleId,
+        parentId,
       };
 
       const userService = Container.get(UserService);

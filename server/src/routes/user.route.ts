@@ -11,7 +11,7 @@ export default (app: Router) => {
   // Define your routes here
   route.post(
     "/create",
-    celebrate({}),
+    // celebrate({}),
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {
       const response = await UserController.createUser(req, res, next);
 
