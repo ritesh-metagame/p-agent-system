@@ -522,3 +522,11 @@ http: 2025-04-03T11:12:21.702Z [logger\morgan.ts] POST /api/v1/user/create 401 2
 debug: 2025-04-03T11:12:56.388Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
 http: 2025-04-03T11:12:56.664Z [logger\morgan.ts] POST /api/v1/user/create 200 - - 272.424 ms
 
+info: 2025-04-03T11:14:59.059Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T11:14:59.037Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T11:17:08.963Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T11:17:09.012Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
