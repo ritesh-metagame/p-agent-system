@@ -24,6 +24,9 @@ const normalizedPaths = excludedPathsFromMiddleware.map((path) =>
 const isExcludedPath = (requestPath: string): boolean => {
   const normalizedRequestPath = requestPath.replace(/\//g, "");
 
+  console.log("isExcludedPath", normalizedRequestPath);
+  console.log("normalizedPaths", normalizedPaths);
+
   return normalizedPaths.some((path) => path === normalizedRequestPath);
 };
 
