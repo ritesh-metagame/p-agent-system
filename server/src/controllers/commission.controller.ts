@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import Container from "typedi";
 import { CommissionService } from "../services/commission.service";
 
-class UserController {
+class CommissionController {
   public static async createCommission(
     req: Request,
     res: Response,
@@ -24,11 +24,11 @@ class UserController {
 
       const response = await commissionService.createCommission(commissionData);
 
-      return res.status(201).json(response);
+      return response;
     } catch (error) {
       next(error);
     }
   }
 }
 
-export { UserController };
+export { CommissionController };

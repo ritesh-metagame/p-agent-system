@@ -2,6 +2,7 @@ import { Router } from "express";
 import authRoute from "./auth.route";
 import userRoute from "./user.route";
 import siteRoute from "./site.route";
+import commissionRoute from "./commission.route";
 
 class Routes {
   private router: Router;
@@ -15,6 +16,7 @@ class Routes {
     authRoute(this.router);
     userRoute(this.router);
     siteRoute(this.router);
+    commissionRoute(this.router);
   }
 
   public getRouter() {

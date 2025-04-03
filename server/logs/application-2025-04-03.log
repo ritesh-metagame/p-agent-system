@@ -351,3 +351,43 @@ info: 2025-04-03T05:55:50.247Z [loaders\index.ts] ✌️ Express loaded
 info: 2025-04-03T05:55:50.261Z [src\server.ts] 
 development Platform is running at http://localhost:8080 🛡️
       
+info: 2025-04-03T05:56:00.616Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T05:56:00.634Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T06:01:11.192Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T06:01:11.176Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T06:02:23.965Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T06:02:23.979Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T06:02:47.693Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T06:02:47.715Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T06:03:00.997Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T06:03:01.015Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T06:03:12.495Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T06:03:12.477Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T06:03:23.889Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T06:03:23.874Z [loaders\index.ts] ✌️ Express loaded
+error: 2025-04-03T06:09:41.544Z [services\auth.service.ts] Error in login:  this.bcryptService.compareHash is not a function
+http: 2025-04-03T06:09:41.549Z [logger\morgan.ts] POST /api/v1/auth/login 200 2 - 43.642 ms
+
+error: 2025-04-03T06:09:46.817Z [services\auth.service.ts] Error in login:  this.bcryptService.compareHash is not a function
+http: 2025-04-03T06:09:46.819Z [logger\morgan.ts] POST /api/v1/auth/login 200 2 - 4.665 ms
+
+error: 2025-04-03T06:09:53.891Z [services\auth.service.ts] Error in login:  this.bcryptService.compareHash is not a function
+http: 2025-04-03T06:09:53.893Z [logger\morgan.ts] POST /api/v1/auth/login 200 2 - 6.865 ms
+
+error: 2025-04-03T06:10:44.865Z [services\auth.service.ts] Error in login:  this.bcryptService.compareHash is not a function
+http: 2025-04-03T06:10:44.867Z [logger\morgan.ts] POST /api/v1/auth/login 200 2 - 6.374 ms
+

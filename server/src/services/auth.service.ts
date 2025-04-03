@@ -42,7 +42,7 @@ class AuthService {
 
       if (
         !user ||
-        !(await this.bcryptService.compareHash(password, user.password))
+        !(await BcryptService.compareHash(password, user.password))
       ) {
         return new Response(
           ResponseCodes.INVALID_USERNAME_OR_PASSWORD.code,
