@@ -34,3 +34,7 @@ info: 2025-04-03T20:03:33.151Z [loaders\index.ts] ✌️ Express loaded
 info: 2025-04-03T20:03:33.164Z [src\server.ts] 
 development Platform is running at http://localhost:8080 🛡️
       
+info: 2025-04-03T20:03:35.381Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T20:03:35.394Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
