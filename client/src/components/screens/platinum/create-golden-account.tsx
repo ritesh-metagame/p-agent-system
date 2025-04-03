@@ -7,6 +7,8 @@ export default function CreateGoldenAccount({}: Props) {
   return (
     <div>
       <CreateAccountForm />
+
+      {/* <p>tesxt</p> */}
     </div>
   );
 }

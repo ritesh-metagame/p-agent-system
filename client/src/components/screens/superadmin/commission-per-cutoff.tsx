@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { DataTable } from "@/components/tables/data-table";
 // import { commissionPerCutoffColumns } from "@/components/tables/superadmin/commission-release/commission-per-cutoff-columns";
 import {
@@ -20,9 +21,7 @@ const partnerCommissionData: PartnerCommissionData[] =
 const commissionPerCutoffData: CommissionPerCutoffData[] =
   Data.commissionPerCutoffData || [];
 
-export default async function CommissionRecentCutoff({}: Props) {
-  const response = await fetch("");
-  const responseJson = await response.json();
+export default function CommissionRecentCutoff({}: Props) {
   return (
     <div>
       <div className="mb-10">

@@ -25,10 +25,7 @@ export const operatorWiseNetworkStatsData: PartnerManagementData[] =
 
 type Props = {};
 
-export default async function PartnerManagement({}: Props) {
-  const response = await fetch("");
-  const responseJson = await response.json();
-
+export default function PartnerManagement({}: Props) {
   return (
     <div>
       <div className="mb-10">

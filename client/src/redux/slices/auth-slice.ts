@@ -22,7 +22,7 @@ interface AuthState {
 // Initial state
 const initialState: AuthState = {
   authLoading: true,
-  role: UserRole?.SUPER_ADMIN ?? "defaultOperator",
+  role: UserRole?.DEFAULT ?? "defaultOperator",
   username: null,
 };
 
