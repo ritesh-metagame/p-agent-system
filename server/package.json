@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "start:dev": "prisma generate && nodemon",
-    "start:studio": "npx prisma studio"
+    "start:studio": "npx prisma studio",
+    "start:prod": "pm2 start dist/server.js --name server"
   },
   "devDependencies": {
     "@types/axios": "^0.14.4",

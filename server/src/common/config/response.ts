@@ -1,22 +1,28 @@
-import { IResponse } from '../interfaces/response.interface';
+// import { IResponse } from '../interfaces/response.interface';
+
+interface IResponse {
+  code: string;
+  message: string;
+  data: any;
+}
 
 class Response<T = unknown> implements IResponse {
-	code: string;
-	message: string;
-	data: any;
+  code: string;
+  message: string;
+  data: any;
 
-	constructor(code: string, message: string, data: T = null) {
-		this.code = code;
-		this.message = message;
-		this.data = data ?? {};
-	}
-	getResponse() {
-		return {
-			code: this.code,
-			message: this.message,
-			data: this.data,
-		};
-	}
+  constructor(code: string, message: string, data: T = null) {
+    this.code = code;
+    this.message = message;
+    this.data = data ?? {};
+  }
+  getResponse() {
+    return {
+      code: this.code,
+      message: this.message,
+      data: this.data,
+    };
+  }
 }
 
 export { Response };
