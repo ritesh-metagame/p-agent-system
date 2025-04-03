@@ -178,3 +178,45 @@ info: 2025-04-02T20:05:04.128Z [loaders\index.ts] ✌️ Express loaded
 info: 2025-04-02T20:05:04.137Z [src\server.ts] 
 development Platform is running at http://localhost:8080 🛡️
       
+info: 2025-04-03T05:04:01.491Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T05:04:01.478Z [loaders\index.ts] ✌️ Express loaded
+http: 2025-04-03T05:04:06.811Z [logger\morgan.ts] GET /api/v1/category 200 625 - 39.481 ms
+
+http: 2025-04-03T05:04:33.785Z [logger\morgan.ts] GET /api/v1/category 200 625 - 2.929 ms
+
+info: 2025-04-03T05:04:59.870Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T05:04:59.863Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T05:05:10.821Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T05:05:10.830Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+http: 2025-04-03T05:05:13.374Z [logger\morgan.ts] GET /api/v1/category 200 625 - 36.615 ms
+
+info: 2025-04-03T05:17:04.559Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T05:17:04.551Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T05:18:52.552Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T05:18:52.560Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T05:21:42.706Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T05:21:42.715Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T05:22:40.276Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T05:22:40.285Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T05:23:16.292Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T05:23:16.285Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-03T05:23:21.089Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-03T05:23:21.082Z [loaders\index.ts] ✌️ Express loaded

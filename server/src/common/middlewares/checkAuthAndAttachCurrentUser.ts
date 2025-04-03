@@ -11,7 +11,11 @@ import UserDao from "../../daos/user.dao";
 
 const log = getLogger(module);
 
-const excludedPathsFromMiddleware = ["/api/v1/auth/login", "/"];
+const excludedPathsFromMiddleware = [
+  "/api/v1/auth/login",
+  "/api/v1/category",
+  "/",
+];
 
 const normalizedPaths = excludedPathsFromMiddleware.map((path) =>
   path.replace(/\//g, "")

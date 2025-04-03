@@ -49,6 +49,28 @@ class SiteController {
       next(error);
     }
   }
+
+  public static async getSites(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const siteService = Container.get(SiteService);
+
+      const currentUser = req.user;
+      const currentUserRole = req.role;
+
+      const response = await siteService.getAllSites(
+        currentUser,
+        currentUserRole
+      );
+
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { SiteController };

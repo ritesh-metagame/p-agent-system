@@ -11,9 +11,18 @@ export default (app: Router) => {
   // Define your routes here
   route.post(
     "/create",
-    celebrate({}),
+    // celebrate({}),
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {
       const response = await SiteController.createSite(req, res, next);
+
+      res.status(200).json(response);
+    }) as any
+  );
+
+  route.get(
+    "/",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await SiteController.getSites(req, res, next);
 
       res.status(200).json(response);
     }) as any

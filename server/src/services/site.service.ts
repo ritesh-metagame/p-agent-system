@@ -1,8 +1,9 @@
 import { Service } from "typedi";
 import { SiteDao } from "../daos/site.dao";
-import { Site, UserSite } from "../../prisma/generated/prisma";
+import { Site, User, UserSite } from "../../prisma/generated/prisma";
 import { Response } from "../common/config/response";
 import { ResponseCodes } from "../common/config/responseCodes";
+import { UserRole } from "../common/config/constants";
 
 @Service()
 class SiteService {
@@ -10,6 +11,29 @@ class SiteService {
 
   constructor() {
     this.siteDao = new SiteDao();
+  }
+
+  public async getAllSites(user: User, role: string) {
+    try {
+      if (role === UserRole.SUPER_ADMIN) {
+        const sites = await this.siteDao.getAllSitesForSuperAdmin();
+        return new Response(
+          ResponseCodes.SITES_FETCHED_SUCCESSFULLY.code,
+          ResponseCodes.SITES_FETCHED_SUCCESSFULLY.message,
+          sites
+        );
+      }
+
+      const sites = await this.siteDao.getAllSites(user.id);
+
+      return new Response(
+        ResponseCodes.SITES_FETCHED_SUCCESSFULLY.code,
+        ResponseCodes.SITES_FETCHED_SUCCESSFULLY.message,
+        sites
+      );
+    } catch (error) {
+      return error;
+    }
   }
 
   public async createUserSite(userSite: Partial<UserSite>) {
