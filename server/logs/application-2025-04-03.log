@@ -543,3 +543,6 @@ http: 2025-04-03T11:32:24.878Z [logger\morgan.js] POST /api/v1/auth/login 200 76
 debug: 2025-04-03T11:40:31.432Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
 http: 2025-04-03T11:40:31.794Z [logger\morgan.js] POST /api/v1/user/create 200 484 - 379.306 ms
 
+debug: 2025-04-03T11:56:45.267Z [middlewares\checkAuthAndAttachCurrentUser.js] Getting player by id--
+http: 2025-04-03T11:56:45.589Z [logger\morgan.js] POST /api/v1/user/create 200 484 - 322.617 ms
+
