@@ -23,6 +23,8 @@ class UserDao {
     password,
     roleId,
   }: Record<string, any>): Promise<User> {
+    const affiliateLink: string = `https://example.com/${username}`; // Example affiliate link generation
+
     try {
       const user = await prisma.user.create({
         data: {
@@ -30,6 +32,7 @@ class UserDao {
           password,
           parentId,
           roleId,
+          affiliateLink,
         },
       });
 
