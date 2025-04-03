@@ -61,6 +61,16 @@ class ResponseCodes {
     code: "1011",
     message: "Categories fetched failed",
   } as const;
+
+  static readonly ROLE_FETCHED_SUCCESSFULLY = {
+    code: "1012",
+    message: "Role fetched successfully",
+  } as const;
+
+  static readonly ROLE_FETCH_FAILED = {
+    code: "1013",
+    message: "Role fetch failed",
+  } as const;
 }
 
 export { ResponseCodes };
