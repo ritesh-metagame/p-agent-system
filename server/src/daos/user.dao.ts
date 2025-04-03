@@ -34,6 +34,7 @@ class UserDao {
           password,
           parentId,
           roleId,
+          affiliateLink,
         },
       });
 
