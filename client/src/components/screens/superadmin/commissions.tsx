@@ -3,12 +3,7 @@ import React from "react";
 
 type Props = {};
 
-export default async function SuperAdminCommissions({}: Props) {
-  const response = await fetch("");
-  const responseJson = await response.json();
-
-  const commissionsData = responseJson.commissionsData || [];
-
+export default function SuperAdminCommissions({}: Props) {
   return (
     <div>
       <Commissions />

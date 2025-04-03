@@ -48,29 +48,7 @@ const topPerformersData: TopPerformersOverview[] =
 const topPerformersDataPerCutoff: TopPerformersOverview[] =
   Data.topPerformersOverview || [];
 
-export default async function Dashboard({}) {
-  const response = await fetch("");
-  const responseJson = await response.json();
-
-  const networkStatisticsData: NetworkStatistics[] =
-    responseJson.networkStatistics || [];
-  const commissionOverviewData: CommissionOverview[] =
-    responseJson.commissionOverview || [];
-  const financialOverviewData: FinancialOverview[] =
-    responseJson.financialOverview || [];
-  const categoryFinancialOverviewData: CategoryFinancialOverview[] =
-    responseJson.categoryFinancialOverview || [];
-  const sportsBettingOverviewData: SportsBettingOverview[] =
-    responseJson.sportsBettingOverview || [];
-  const topPlayersDepositsData: TopPlayersDepositsOverview[] =
-    responseJson.topPlayersDepositsOverview || [];
-  const topPlayersGGRData: TopPlayersGGROverview[] =
-    responseJson.topPlayersGGROverview || [];
-  const topPerformersData: TopPerformersOverview[] =
-    responseJson.topPerformersOverview || [];
-  const topPerformersDataPerCutoff: TopPerformersOverview[] =
-    responseJson.topPerformersOverview || [];
-
+export default function Dashboard({}) {
   return (
     <div>
       <div className="mb-10">
