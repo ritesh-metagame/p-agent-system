@@ -3,7 +3,7 @@ import React from "react";
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-// import CreateAccountForm from "@/components/create-account-form";
+import CreateAccountForm from "@/components/create-account-form";
 
 import { z } from "zod";
 import { useForm } from "react-hook-form";

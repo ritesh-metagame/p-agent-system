@@ -3,7 +3,7 @@ export { default as PlatinumDashboard } from "./platinum/dashboard";
 export { default as OperatorDashboard } from "./operator/dashboard";
 export { default as GoldenDashboard } from "./gold/dashboard";
 
-export { default as SuperAdminCreateOperatorAccount } from "./superadmin/create-operator-account";
+export { default as SuperAdminCreateAccountForm } from "./superadmin/create-operator-account";
 export { default as SuperAdminCreateSite } from "./superadmin/create-site";
 export { default as SuperAdminPartnerManagement } from "./superadmin/partner-management";
 export { default as PartnerManagement } from "./operator/partner-management";
@@ -13,6 +13,8 @@ export { default as SuperAdminCommissionRecentCutoff } from "./superadmin/commis
 // export { default as SuperAdminCreateOperatorAccount } from "./superadmin/create-operator-account";
 export { default as SuperAdminAllCommissionCutoffs } from "./superadmin/all-commission-cutoffs";
 export { default as SuperAdminManageSites } from "./superadmin/manage-sites";
+
+export { default as OperatorCreatePlatinumAccount } from "./operator/create-platinum-account";
 
 export { default as PlatinumPartnerManagement } from "./platinum/partner-management";
 export { default as PlatinumCommissionRecentCutoff } from "./platinum/commission-recent-cutoff";
@@ -31,6 +33,8 @@ export { default as OperatorTransactions } from "./operator/transactions";
 export { default as OperatorSettlementHistory } from "./operator/settlement-history";
 
 export { default as OperatorAllCommissionCutoff } from "./operator/all-commission-cutoff";
+
+export { default as CreatePlatinumAccount } from "./operator/create-platinum-account";
 
 //below golden
 export { default as GoldenCommissions } from "./gold/commissions";

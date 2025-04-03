@@ -84,7 +84,7 @@ export default function CreateAccountForm({ onSubmit }: Props) {
       mobileNumber: "",
       bankName: "",
       accountNumber: "",
-      commissionPercentage: "",
+      commissionPercentage: 0,
     },
   });
 

@@ -3,7 +3,7 @@ import React from "react";
 
 type Props = {};
 
-export default function GoldenCreateOperatorAccount({}: Props) {
+export default function OperatorCreatePlatinumAccount({}: Props) {
   return (
     <div>
       <CreateAccountForm />
