@@ -13,27 +13,21 @@ class UserDao {
       });
       console.log("Username1111111111111:", username); // Debugging line
 
+      console.log("User fetched:", user);
+
       return user;
     } catch (error) {
       throw new Error(`Error fetching user: ${error}`);
     }
   }
 
-  public async createUser({
-    username,
-    parentId,
-    password,
-    roleId,
-  }: Record<string, any>): Promise<User> {
-    const affiliateLink: string = `https://example.com/${username}`; // Example affiliate link generation
+  public async createUser({ ...data }: Record<string, any>): Promise<User> {
+    const affiliateLink: string = `https://example.com/${data?.username}`; // Example affiliate link generation
 
     try {
       const user = await prisma.user.create({
         data: {
-          username,
-          password,
-          parentId,
-          roleId,
+          ...(data as any),
           affiliateLink,
         },
       });

@@ -78,6 +78,8 @@ export default async (req: JWTRequest, res: Response, next: NextFunction) => {
         return next(err);
       }
 
+      console.log("req.auth", req.auth.username);
+
       const userDao = new UserDao();
       // Retrieve player information from the database based on JWT's player ID
       log.debug(`Getting player by id--`);

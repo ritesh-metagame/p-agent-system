@@ -9,6 +9,8 @@ import { BcryptService } from "../common/lib";
 import { CommissionService } from "./commission.service";
 import { CategoryService } from "./category.service";
 import { SiteService } from "./site.service";
+import { CategoryDao } from "../daos/category.dao";
+import { toFloat } from "validator";
 
 @Service()
 class UserService {
@@ -17,6 +19,7 @@ class UserService {
   private commissionService: CommissionService;
   private categoryService: CategoryService;
   private siteService: SiteService;
+  private categoryDao: CategoryDao;
 
   constructor() {
     this.userDao = new UserDao();
@@ -24,13 +27,20 @@ class UserService {
     this.commissionService = Container.get(CommissionService);
     this.categoryService = Container.get(CategoryService);
     this.siteService = Container.get(SiteService);
+    this.categoryDao = new CategoryDao();
   }
 
-  public async createUser(userData: Partial<User>, roleId: string, user: User) {
+  public async createUser(
+    userData: Record<string, any>,
+    roleId: string,
+    user: User
+  ) {
     try {
       const currentUserRole = await this.roleDao.getRoleById(roleId);
 
       console.log("Current User Role:", currentUserRole);
+
+      console.log("User Data:", userData);
 
       let role: Role;
 
@@ -46,63 +56,97 @@ class UserService {
         role = await this.roleDao.getRoleByName(UserRole.GOLDEN);
       }
 
+      console.log("New user role is:", role);
+
       if (!role) {
         throw new Error("Role not found");
       }
+
+      console.log("User Data before hashing:", userData);
 
       const hashedPassword = await BcryptService.generateHash(
         userData.password
       );
 
+      console.log("Hashed Password:", hashedPassword);
+
       const data: Partial<User> = {
-        ...userData,
+        username: userData.username,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        bankName: userData.bankName,
+        accountNumber: userData.accountNumber,
         password: hashedPassword,
         roleId: role.id,
         parentId: user.id,
       };
 
+      console.log("Data to be saved:", data);
+
       const newUser = await this.userDao.createUser(data);
 
-      if (currentUserRole.name !== UserRole.SUPER_ADMIN) {
-        const sites = await this.siteService.getAllSites(
-          user,
-          currentUserRole.name
-        );
+      console.log("New User Created:", newUser);
 
-        const userSite = await this.siteService.createUserSite({
-          userId: newUser.id,
-          siteId: sites.data[Math.floor(Math.random() * sites.data.length)].id,
-        });
+      const categories = await this.categoryDao.getAllCategories();
 
-        const roles = await this.roleDao.getAllRolesForSuperAdmin();
+      console.log("Categories:", categories);
 
-        const requiredRoles = roles.filter(
-          (r) =>
-            r.name !== UserRole.SUPER_ADMIN && r.name !== currentUserRole.name
-        );
+      if (userData.siteIds.length > 0) {
+        for (const siteId of userData.siteIds) {
+          console.log("Site ID:", siteId);
+          const site = await this.siteService.createUserSite({
+            userId: newUser.id,
+            siteId,
+          });
 
-        const categories = await this.categoryService.getAllCategories();
+          if (userData.commissions.eSports) {
+            console.log("Creating commission for E-Sports");
 
-        for (const r of requiredRoles) {
-          for (const category of categories.data) {
-            if (r.name === UserRole.GOLDEN) continue; // Skip Golden role for commission creation
+            const eSportsCategory = categories.find(
+              (category) => category.name === "E-Sports"
+            );
 
-            let commissionPercentage = 2.0;
-            if (r.name === UserRole.PLATINUM) {
-              commissionPercentage = 3.0; // Example percentage for Platinum
-            } else if (r.name === UserRole.GOLDEN) {
-              commissionPercentage = 2.0; // Example percentage for Golden
-            } else if (r.name === UserRole.OPERATOR) {
-              commissionPercentage = 5.0; // Example percentage for Operator
-            }
-            const commission: Partial<Commission> = {
+            await this.commissionService.createCommission({
               userId: newUser.id,
-              roleId: r.id,
-              categoryId: category.id,
-              siteId: sites.data[0].id, // Default percentage
-              commissionPercentage: commissionPercentage,
-            };
-            await this.commissionService.createCommission(commission);
+              roleId: role.id,
+              siteId: site.data.siteId,
+              categoryId: eSportsCategory.id,
+              commissionPercentage: toFloat(userData.commissions.eSports), // Example percentage for eSports
+            });
+          }
+
+          if (userData.commissions.sportsBetting) {
+            console.log("Creating commission for Sports Betting");
+
+            const sportsBettingCategory = categories.find(
+              (category) => category.name === "Sports Betting"
+            );
+
+            await this.commissionService.createCommission({
+              userId: newUser.id,
+              roleId: role.id,
+              siteId: site.data.siteId,
+              categoryId: sportsBettingCategory.id,
+              commissionPercentage: toFloat(userData.commissions.sportsBetting), // Example percentage for Sports Betting
+            });
+          }
+
+          if (userData.commissions.specialtyGames) {
+            console.log("Creating commission for Specialty Games");
+
+            const specialtyGamesCategory = categories.find(
+              (category) => category.name === "Specialty Games"
+            );
+
+            await this.commissionService.createCommission({
+              userId: newUser.id,
+              roleId: role.id,
+              siteId: site.data.siteId,
+              categoryId: specialtyGamesCategory.id,
+              commissionPercentage: toFloat(
+                userData.commissions.specialtyGames
+              ), // Example percentage for Specialty Games
+            });
           }
         }
       }
@@ -113,11 +157,8 @@ class UserService {
         newUser
       );
     } catch (error) {
-      return new Response(
-        ResponseCodes.USER_CREATED_SUCCESSFULLY.code,
-        `Error creating user: ${error.message}`,
-        null
-      );
+      console.error("Error creating user:", error);
+      return error;
     }
   }
 
