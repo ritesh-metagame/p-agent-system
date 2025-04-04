@@ -42,7 +42,12 @@ class UserDao {
         where: { parentId },
         include: {
           role: true,
-          commissions: true,
+          commissions: {
+            include: {
+              category: true,
+              site: true,
+            },
+          },
           userSites: true,
           children: true,
         },

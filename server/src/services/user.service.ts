@@ -99,19 +99,19 @@ class UserService {
             siteId,
           });
 
-          if (userData.commissions.eSports) {
-            console.log("Creating commission for E-Sports");
+          if (userData.commissions.eGames) {
+            console.log("Creating commission for E-Games");
 
-            const eSportsCategory = categories.find(
-              (category) => category.name === "E-Sports"
+            const eGamesCategory = categories.find(
+              (category) => category.name === "E Games"
             );
 
             await this.commissionService.createCommission({
               userId: newUser.id,
               roleId: role.id,
               siteId: site.data.siteId,
-              categoryId: eSportsCategory.id,
-              commissionPercentage: toFloat(userData.commissions.eSports), // Example percentage for eSports
+              categoryId: eGamesCategory.id,
+              commissionPercentage: toFloat(userData.commissions.eGames), // Example percentage for E Games
               settlementPeriod: userData.settlementDetails.period,
               settlementStartingFrom: new Date(
                 userData.settlementDetails.startDate

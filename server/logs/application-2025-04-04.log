@@ -343,3 +343,49 @@ http: 2025-04-04T12:01:13.859Z [logger\morgan.ts] GET /api/v1/user/partners 200 
 
 http: 2025-04-04T12:01:13.863Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 25.628 ms
 
+info: 2025-04-04T15:14:28.463Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-04T15:14:28.508Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+http: 2025-04-04T15:14:40.359Z [logger\morgan.ts] POST /api/v1/auth/login 200 - - 215.523 ms
+
+debug: 2025-04-04T15:14:44.088Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-04T15:14:44.092Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-04T15:14:44.132Z [logger\morgan.ts] GET /api/v1/site 200 - - 41.131 ms
+
+http: 2025-04-04T15:14:44.145Z [logger\morgan.ts] GET /api/v1/site 200 - - 58.789 ms
+
+http: 2025-04-04T15:15:03.338Z [logger\morgan.ts] POST /api/v1/auth/login 200 - - 111.426 ms
+
+debug: 2025-04-04T15:15:08.005Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-04T15:15:08.010Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-04T15:15:08.039Z [logger\morgan.ts] GET /api/v1/site 200 875 - 36.328 ms
+
+http: 2025-04-04T15:15:08.041Z [logger\morgan.ts] GET /api/v1/site 200 875 - 33.360 ms
+
+debug: 2025-04-04T15:15:36.676Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-04T15:15:36.859Z [logger\morgan.ts] POST /api/v1/user/create 200 2 - 184.888 ms
+
+debug: 2025-04-04T15:15:51.896Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-04T15:15:52.060Z [logger\morgan.ts] POST /api/v1/user/create 200 509 - 169.864 ms
+
+debug: 2025-04-04T15:15:52.376Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-04T15:15:52.397Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 21.636 ms
+
+debug: 2025-04-04T15:15:52.407Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-04T15:15:52.426Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 20.410 ms
+
+http: 2025-04-04T15:15:58.604Z [logger\morgan.ts] POST /api/v1/auth/login 200 - - 77.773 ms
+
+info: 2025-04-04T18:22:29.887Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-04T18:22:29.917Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+http: 2025-04-04T18:28:54.865Z [logger\morgan.ts] POST /api/v1/auth/login 200 - - 194.614 ms
+
+debug: 2025-04-04T18:29:03.484Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-04T18:29:03.528Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 48.490 ms
+
+debug: 2025-04-04T18:29:03.533Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-04T18:29:03.561Z [logger\morgan.ts] GET /api/v1/user/partners 304 - - 29.842 ms
+
