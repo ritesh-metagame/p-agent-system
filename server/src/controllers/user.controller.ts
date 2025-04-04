@@ -45,6 +45,27 @@ class UserController {
       next(error);
     }
   }
+
+  public static async getAllUsers(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { startDate, endDate } = req.query;
+
+      const userService = Container.get(UserService);
+
+      const response = await userService.getAllUsers(
+        startDate as string,
+        endDate as string
+      );
+
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { UserController };

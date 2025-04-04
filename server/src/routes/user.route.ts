@@ -8,6 +8,15 @@ const route = Router();
 export default (app: Router) => {
   app.use("/user", route);
 
+  route.get(
+    "/all",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await UserController.getAllUsers(req, res, next);
+
+      res.status(200).json(response);
+    })
+  );
+
   // Define your routes here
   route.post(
     "/create",
