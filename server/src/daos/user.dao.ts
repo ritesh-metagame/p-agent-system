@@ -56,38 +56,66 @@ class UserDao {
     }
   }
 
+  // public async getAllUsersWithDetails(startDate?: string, endDate?: string) {
+  //   try {
+  //     const whereClause: any = {}; // Initialize an empty where clause
+
+  //     if (startDate && endDate) {
+  //       whereClause.createdAt = {
+  //         gte: new Date(startDate), // Greater than or equal to startDate
+  //         lte: new Date(endDate), // Less than or equal to endDate
+  //       };
+  //     }
+
+  //     const users = await prisma.user.findMany({
+  //       where: whereClause, // Apply the filtering condition
+  //       include: {
+  //         role: true,
+  //         commissions: {
+  //           include: {
+  //             category: true,
+  //             site: true,
+  //           },
+  //         },
+  //         userSites: {
+  //           include: {
+  //             site: true,
+  //           },
+  //         },
+  //       },
+  //     });
+
+  //     return users;
+  //   } catch (error) {
+  //     throw new Error(`Error fetching users with details: ${error}`);
+  //   }
+  // }
+
   public async getAllUsersWithDetails(startDate?: string, endDate?: string) {
     try {
-      const whereClause: any = {}; // Initialize an empty where clause
+      // Step 1: Get unique Commission IDs (grouped)
+      const groupedCommissions = await prisma.commission.groupBy({
+        by: ["id"],
+      });
 
-      if (startDate && endDate) {
-        whereClause.createdAt = {
-          gte: new Date(startDate), // Greater than or equal to startDate
-          lte: new Date(endDate), // Less than or equal to endDate
-        };
-      }
+      const commissionIds = groupedCommissions.map((c) => c.id);
 
-      const users = await prisma.user.findMany({
-        where: whereClause, // Apply the filtering condition
+      // Step 2: Fetch full details for grouped Commission IDs
+      const commissions = await prisma.commission.findMany({
+        where: {
+          id: { in: commissionIds },
+        },
         include: {
+          site: true,
+          user: true,
           role: true,
-          commissions: {
-            include: {
-              category: true,
-              site: true,
-            },
-          },
-          userSites: {
-            include: {
-              site: true,
-            },
-          },
+          category: true,
         },
       });
 
-      return users;
+      return commissions;
     } catch (error) {
-      throw new Error(`Error fetching users with details: ${error}`);
+      throw new Error(`Error fetching grouped commissions: ${error.message}`);
     }
   }
 }
