@@ -337,3 +337,9 @@ http: 2025-04-04T11:37:20.243Z [logger\morgan.ts] GET /api/v1/user/partners 200 
 
 http: 2025-04-04T11:37:20.244Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 23.382 ms
 
+debug: 2025-04-04T12:01:13.832Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-04T12:01:13.840Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-04T12:01:13.859Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 27.576 ms
+
+http: 2025-04-04T12:01:13.863Z [logger\morgan.ts] GET /api/v1/user/partners 200 - - 25.628 ms
+
