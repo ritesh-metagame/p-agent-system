@@ -112,6 +112,13 @@ class UserService {
               siteId: site.data.siteId,
               categoryId: eSportsCategory.id,
               commissionPercentage: toFloat(userData.commissions.eSports), // Example percentage for eSports
+              settlementPeriod: userData.settlementDetails.period,
+              settlementStartingFrom: new Date(
+                userData.settlementDetails.startDate
+              ).toISOString() as any,
+              settlementEndingAt: new Date(
+                userData.settlementDetails.endDate
+              ).toISOString() as any,
             });
           }
 
@@ -128,6 +135,13 @@ class UserService {
               siteId: site.data.siteId,
               categoryId: sportsBettingCategory.id,
               commissionPercentage: toFloat(userData.commissions.sportsBetting), // Example percentage for Sports Betting
+              settlementPeriod: userData.settlementDetails.period,
+              settlementStartingFrom: new Date(
+                userData.settlementDetails.startDate
+              ).toISOString() as any,
+              settlementEndingAt: new Date(
+                userData.settlementDetails.endDate
+              ).toISOString() as any,
             });
           }
 
@@ -146,6 +160,13 @@ class UserService {
               commissionPercentage: toFloat(
                 userData.commissions.specialtyGames
               ), // Example percentage for Specialty Games
+              settlementPeriod: userData.settlementDetails.period,
+              settlementStartingFrom: new Date(
+                userData.settlementDetails.startDate
+              ).toISOString() as any,
+              settlementEndingAt: new Date(
+                userData.settlementDetails.endDate
+              ).toISOString() as any,
             });
           }
         }
