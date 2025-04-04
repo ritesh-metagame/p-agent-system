@@ -24,6 +24,9 @@ const normalizedPaths = excludedPathsFromMiddleware.map((path) =>
 const isExcludedPath = (requestPath: string): boolean => {
   const normalizedRequestPath = requestPath.replace(/\//g, "");
 
+  console.log("normalizedRequestPath: ", normalizedRequestPath);
+  console.log("normalizedPaths: ", normalizedPaths);
+
   return normalizedPaths.some((path) => path === normalizedRequestPath);
 };
 
@@ -70,6 +73,8 @@ export default async (req: JWTRequest, res: Response, next: NextFunction) => {
         // If there's an error with authentication, pass it to the error handler
         return next(err);
       }
+
+      console.log("req.auth", req.auth.username);
 
       const userDao = new UserDao();
       // Retrieve player information from the database based on JWT's player ID
