@@ -177,3 +177,7 @@ debug: 2025-04-04T15:49:23.793Z [middlewares\checkAuthAndAttachCurrentUser.ts] U
 debug: 2025-04-04T15:49:23.794Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm90wf0oo0004v9m4ndz6cyy1
 http: 2025-04-04T15:49:23.859Z [logger\morgan.ts] GET /api/v1/user/all?startDate=2025-04-02&endDate=2025-04-05 200 - - 97.000 ms
 
+info: 2025-04-04T15:51:03.200Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-04T15:51:03.212Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
