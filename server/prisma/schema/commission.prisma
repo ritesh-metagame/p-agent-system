@@ -4,6 +4,9 @@ model Commission {
   site                Site     @relation(fields: [siteId], references: [id])
   userId              String   @map("user_id")
   user                User     @relation(fields: [userId], references: [id])
+  settlementPeriod    SettlementPeriod @map("settlement_period") @default(MONTHLY)
+  settlementStartingFrom DateTime @map("settlement_starting_from") @default(now())
+  settlementEndingAt DateTime @map("settlement_ending_at") @default(now())
   roleId              String   @map("role_id")
   role                Role     @relation(fields: [roleId], references: [id])
   categoryId          String   @map("category_id")
@@ -17,4 +20,10 @@ model Commission {
   @@index([roleId])
   @@index([categoryId])
   @@unique([siteId, userId, roleId, categoryId])
+}
+
+enum SettlementPeriod {
+  WEEKLY
+  BI_WEEKLY
+  MONTHLY
 }
