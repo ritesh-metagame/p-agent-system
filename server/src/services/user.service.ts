@@ -103,7 +103,7 @@ class UserService {
             console.log("Creating commission for E-Games");
 
             const eGamesCategory = categories.find(
-              (category) => category.name === "E Games"
+              (category) => category.name === "eGames"
             );
 
             await this.commissionService.createCommission({
@@ -126,7 +126,7 @@ class UserService {
             console.log("Creating commission for Sports Betting");
 
             const sportsBettingCategory = categories.find(
-              (category) => category.name === "Sports Betting"
+              (category) => category.name === "Sports-Betting"
             );
 
             await this.commissionService.createCommission({
@@ -149,7 +149,7 @@ class UserService {
             console.log("Creating commission for Specialty Games");
 
             const specialtyGamesCategory = categories.find(
-              (category) => category.name === "Specialty Games"
+              (category) => category.name === "SpecialtyGames"
             );
 
             await this.commissionService.createCommission({
