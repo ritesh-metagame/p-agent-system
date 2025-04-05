@@ -1,0 +1,64 @@
+model BetSummary {
+  id          String   @id @default(cuid())
+  siteId      String   @map("site_id")
+  site        Site     @relation(fields: [siteId], references: [id])
+  totalBets   Int      @map("total_bets")
+  totalAmount Float    @map("total_amount")
+  date        DateTime @db.Date
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([siteId])
+  @@index([date])
+  @@unique([siteId, date])
+}
+
+model CategorySummary {
+  id               String   @id @default(cuid())
+  categoryId       String   @map("category_id")
+  category         Category @relation(fields: [categoryId], references: [id])
+  totalBets        Int      @map("total_bets")
+  totalCommissions Float    @map("total_commissions")
+  date             DateTime @db.Date
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([date])
+  @@unique([categoryId, date])
+}
+
+model CommissionSummary {
+  id                 String   @id @default(cuid())
+  siteId             String   @map("site_id")
+  site               Site     @relation(fields: [siteId], references: [id])
+  userId             String   @map("user_id")
+  user               User     @relation(fields: [userId], references: [id])
+  roleId             String   @map("role_id")
+  role               Role     @relation(fields: [roleId], references: [id])
+  totalCommissionAmount Float @map("total_commission_amount")
+  date               DateTime @db.Date
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([siteId])
+  @@index([userId])
+  @@index([roleId])
+  @@index([date])
+  @@unique([siteId, userId, roleId, date])
+}
+
+model AgentSummary {
+  id              String   @id @default(cuid())
+  agentId         String   @map("agent_id")
+  agent           User     @relation(fields: [agentId], references: [id])
+  totalBets       Int      @map("total_bets")
+  totalCommission Float    @map("total_commission")
+  date            DateTime @db.Date
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([agentId])
+  @@index([date])
+  @@unique([agentId, date])
+}

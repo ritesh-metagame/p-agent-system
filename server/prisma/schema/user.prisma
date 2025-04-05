@@ -1,0 +1,40 @@
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  roleId    String   @map("role_id")
+  role      Role     @relation(fields: [roleId], references: [id])
+
+  affiliateLink String? @map("affiliate_link")
+
+  firstName    String?
+  lastName     String?
+  mobileNumber String?
+  bankName     String?
+  accountNumber String?
+
+  approved Boolean @default(true)
+
+  userSites UserSite[]
+
+  parentId  String?  @map("parent_id")
+  parent    User?    @relation("UserToUser", fields: [parentId], references: [id])
+  children  User[]   @relation("UserToUser")
+
+  commissions         Commission[]
+  commissionSummaries CommissionSummary[]
+  agentSummaries      AgentSummary[]
+
+    // Relations with logs as creator
+  categoryLogsCreated CategoryLog[] @relation("CategoryLogCreator")
+  roleLogsCreated     RoleLog[]     @relation("RoleLogCreator")
+  siteLogsCreated     SiteLog[]     @relation("SiteLogCreator")
+  
+  // Relations with logs as updater
+  categoryLogsUpdated CategoryLog[] @relation("CategoryLogUpdater")
+  roleLogsUpdated     RoleLog[]     @relation("RoleLogUpdater")
+  siteLogsUpdated     SiteLog[]     @relation("SiteLogUpdater")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
