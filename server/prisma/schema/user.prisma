@@ -25,7 +25,12 @@ model User {
   commissionSummaries CommissionSummary[]
   agentSummaries      AgentSummary[]
 
-    // Relations with logs as creator
+  transactionsAsAdmin Transaction[] @relation("AdminToTransaction")
+  transactionsAsOwner Transaction[] @relation("OwnerToTransaction")
+  transactionsAsMaster Transaction[] @relation("MasterToTransaction")
+  transactionsAsGolden Transaction[] @relation("GoldenToTransaction")
+
+  // Relations with logs as creator
   categoryLogsCreated CategoryLog[] @relation("CategoryLogCreator")
   roleLogsCreated     RoleLog[]     @relation("RoleLogCreator")
   siteLogsCreated     SiteLog[]     @relation("SiteLogCreator")

@@ -200,6 +200,55 @@ class UserService {
       );
     }
   }
+
+  // public async getCommissionHierarchy(userId: string) {
+  //   try {
+  //     // Fetch the user and their hierarchy
+  //     const user = await this.userDao.getUserById(userId);
+  //     if (!user) {
+  //       throw new Error("User not found");
+  //     }
+
+  //     // Recursive function to calculate commission for a user and their children
+  //     const calculateCommission = async (userId: string) => {
+  //       const user = await this.userDao.getUserById(userId);
+  //       const children = await this.userDao.getUsersByParentId(userId);
+
+  //       // Fetch transactions and commissions for the user
+  //       const transactions = await this.userDao.getTransactionsByUserId(userId);
+  //       const commissions = await this.commissionService.calculateCommission(transactions, user.roleId);
+
+  //       // Calculate commission for children
+  //       const childrenCommissions = await Promise.all(
+  //         children.map((child) => calculateCommission(child.id))
+  //       );
+
+  //       return {
+  //         userId: user.id,
+  //         username: user.username,
+  //         role: user.role.name,
+  //         totalCommission: commissions.total,
+  //         children: childrenCommissions,
+  //       };
+  //     };
+
+  //     // Start calculation from the given user
+  //     const hierarchyCommission = await calculateCommission(userId);
+
+  //     return new Response(
+  //       ResponseCodes.SUCCESS.code,
+  //       ResponseCodes.SUCCESS.message,
+  //       hierarchyCommission
+  //     );
+  //   } catch (error) {
+  //     console.error("Error fetching commission hierarchy:", error);
+  //     return new Response(
+  //       ResponseCodes.ERROR.code,
+  //       `Error fetching commission hierarchy: ${error.message}`,
+  //       null
+  //     );
+  //   }
+  // }
 }
 
 export { UserService };

@@ -27,4 +27,9 @@ export default (app: Router) => {
       res.status(200).json(response);
     })
   );
+
+  // route.get("/commission-hierarchy/:userId", (req, res) => {
+  //   const userController = new UserController();
+  //   userController.getCommissionHierarchy(req, res);
+  // });
 };

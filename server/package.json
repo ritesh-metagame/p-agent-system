@@ -7,7 +7,8 @@
     "start:dev": "prisma generate && nodemon",
     "nodemon": "nodemon",
     "start:studio": "npx prisma studio",
-    "start:prod": "pm2 start dist/server.js --name server"
+    "start:prod": "pm2 start dist/server.js --name server",
+    "seed:transactions": "ts-node ./src/seed-transactions.ts"
   },
   "devDependencies": {
     "@types/axios": "^0.14.4",
