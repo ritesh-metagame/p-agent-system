@@ -149,7 +149,7 @@ class UserService {
             console.log("Creating commission for Specialty Games");
 
             const specialtyGamesCategory = categories.find(
-              (category) => category.name === "SpecialtyGames"
+              (category) => category.name === "SpecialityGames"
             );
 
             await this.commissionService.createCommission({
