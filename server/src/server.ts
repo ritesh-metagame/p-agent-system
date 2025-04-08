@@ -5,7 +5,9 @@ import logger from "./common/logger";
 import config from "./common/config";
 import AppLoader from "./common/loaders";
 
-import { PrismaClient } from "./../prisma/generated/prisma";
+import { PrismaClient, TransactionType } from "./../prisma/generated/prisma";
+import "./main";
+import { Decimal } from "../prisma/generated/prisma/runtime/library";
 
 // import { redisService } from "./core/services/redis.service";
 
@@ -36,6 +38,58 @@ class Server {
 
     // const conn = await connect(DB_URL, config.mongo.dbName!);
     // log.info(`Platform db is running on host ${conn?.connection.host}`);
+
+    const goldenAgentIds = [
+      "cm96yxeie000lv9awbuanpens",
+      "cm96z65kj0001v9n420ugv1uy",
+    ];
+
+    const siteIds = [
+      "cm90wg9nn0000v9vg4z40nj5v",
+      "cm914zrms0000v9jwuq556yrv",
+      "cm91547k40002v9jwu53mbwth",
+      "cm91538w40001v9jwepjr4h1d",
+    ];
+
+    const getRandomSiteId = () =>
+      siteIds[Math.floor(Math.random() * siteIds.length)];
+    const getRandomDecimal = () =>
+      new Decimal((Math.random() * 1000).toFixed(2));
+
+    async function insertTransactions() {
+      const transactions = [];
+
+      for (const agentGoldenId of goldenAgentIds) {
+        for (let i = 0; i < 5; i++) {
+          transactions.push(
+            prisma.transaction.create({
+              data: {
+                betId: `BID-${Math.random().toString(36).substring(2, 10)}`,
+                transactionId: `TXN-${Math.random().toString(36).substring(2, 10)}`,
+                agentGoldenId,
+                // site
+                siteId: getRandomSiteId(),
+                betAmount: getRandomDecimal(),
+                payoutAmount: getRandomDecimal(),
+                depositAmount: new Decimal(0),
+                withdrawAmount: new Decimal(0),
+                transactionType: TransactionType.bet,
+                settled: "N",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              },
+            })
+          );
+        }
+      }
+
+      await Promise.all(transactions);
+      console.log("Transactions inserted successfully.");
+    }
+
+    insertTransactions()
+      .catch((e) => console.error(e))
+      .finally(() => prisma.$disconnect());
 
     // redisService.connect();
 

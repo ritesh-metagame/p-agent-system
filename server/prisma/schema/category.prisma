@@ -1,0 +1,41 @@
+model TransactionCommissionSummary {
+  id                 String   @id @default(cuid())
+  betId              String
+  transactionId      String
+  betAmount          Float
+  payoutAmount       Float
+  refundAmount       Float
+  depositAmount      Float
+  withdrawAmount     Float
+  siteId             String
+
+  agentGoldenId      String
+  agentGolden        AgentInfo @relation("GoldenAgent", fields: [agentGoldenId], references: [id])
+
+  agentPlatinumId    String
+  agentPlatinum      AgentInfo @relation("PlatinumAgent", fields: [agentPlatinumId], references: [id])
+
+  agentOperatorId    String
+  agentOperator      AgentInfo @relation("OperatorAgent", fields: [agentOperatorId], references: [id])
+
+  transactionType    String
+  settled            Boolean
+
+  commissionId       String
+  category           String
+  categoryId         String
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model AgentInfo {
+  id         String   @id
+  percentage Float
+  amount     Float
+
+  // Back-references (optional but helpful for relation naming)
+  goldenTransactions   TransactionCommissionSummary[] @relation("GoldenAgent")
+  platinumTransactions TransactionCommissionSummary[] @relation("PlatinumAgent")
+  operatorTransactions TransactionCommissionSummary[] @relation("OperatorAgent")
+}

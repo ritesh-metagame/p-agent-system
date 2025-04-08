@@ -221,6 +221,48 @@ class UserService {
       );
     }
   }
+
+  public async getTransactionByCategory(categoryName?: string) {
+    try {
+      const users = await this.userDao.getTransactionsByCategoryName();
+
+      return new Response(
+        ResponseCodes.TRANSACTION_FETCHED_SUCCESSFULLY.code,
+        ResponseCodes.TRANSACTION_FETCHED_SUCCESSFULLY.message,
+        users
+      );
+    } catch (error) {
+      return new Response(
+        ResponseCodes.USERS_FETCHED_FAILED.code,
+        `Error fetching all users: ${error.message}`,
+        null
+      );
+    }
+  }
+
+  public async getTransactionByCategoryAndAgent(
+    categoryName?: string,
+    agent?: "gold" | "platinum" | "operator"
+  ) {
+    try {
+      const users = await this.userDao.getCategoryTransaction(
+        categoryName,
+        agent
+      );
+
+      return new Response(
+        ResponseCodes.TRANSACTION_FETCHED_SUCCESSFULLY.code,
+        ResponseCodes.TRANSACTION_FETCHED_SUCCESSFULLY.message,
+        users
+      );
+    } catch (error) {
+      return new Response(
+        ResponseCodes.USERS_FETCHED_FAILED.code,
+        `Error fetching all users: ${error.message}`,
+        null
+      );
+    }
+  }
 }
 
 export { UserService };
