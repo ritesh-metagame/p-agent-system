@@ -41,7 +41,7 @@ class Server {
 
     const goldenAgentIds = [
       "cm98in9i70016ioknpah55tja",
-      "cm98iu33n001cioknkd4vh7o9",
+      "cm98l67eu001tio9da4d9k30g",
       //   "cm96y9psv004rjf9wyib6e4y5",
       //   "cm96yaff00055jjf9wfd2iufyu",
       //   "cm96yb9xv005jjf9w5yqyfnpv",
