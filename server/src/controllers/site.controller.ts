@@ -21,8 +21,9 @@ class SiteController {
 
       const response = await siteService.createSite(siteData);
 
-      return res.status(201).json(response);
+      return response;
     } catch (error) {
+      console;
       next(error);
     }
   }
@@ -44,7 +45,7 @@ class SiteController {
 
       const response = await siteService.createUserSite(siteUserData);
 
-      return res.status(201).json(response);
+      return response;
     } catch (error) {
       next(error);
     }

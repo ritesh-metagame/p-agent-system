@@ -13,7 +13,7 @@ const log = getLogger(module);
 
 const excludedPathsFromMiddleware = [
   "/api/v1/auth/login",
-  "/api/v1/category",
+  // "/v1/category",
   "/",
 ];
 
@@ -24,8 +24,8 @@ const normalizedPaths = excludedPathsFromMiddleware.map((path) =>
 const isExcludedPath = (requestPath: string): boolean => {
   const normalizedRequestPath = requestPath.replace(/\//g, "");
 
-  console.log("normalizedRequestPath: ", normalizedRequestPath);
-  console.log("normalizedPaths: ", normalizedPaths);
+  console.log("isExcludedPath", normalizedRequestPath);
+  console.log("normalizedPaths", normalizedPaths);
 
   return normalizedPaths.some((path) => path === normalizedRequestPath);
 };
@@ -69,6 +69,10 @@ export default async (req: JWTRequest, res: Response, next: NextFunction) => {
     }
     // Call the authAndAttachUser middleware
     await authAndAttachUser(req, res, async (err: any) => {
+      console.log("======================================");
+      console.log(req.headers.authorization);
+      console.log("======================================");
+
       if (err) {
         // If there's an error with authentication, pass it to the error handler
         return next(err);
@@ -80,6 +84,7 @@ export default async (req: JWTRequest, res: Response, next: NextFunction) => {
       // Retrieve player information from the database based on JWT's player ID
       log.debug(`Getting player by id--`);
       const user = await userDao.getUserByUsername(req.auth!.username);
+      log.debug(`Player found: ${user}`);
 
       // Retrieve player information from the database based on JWT's player ID
       // If no player is found, respond with Unauthorized status
@@ -90,6 +95,11 @@ export default async (req: JWTRequest, res: Response, next: NextFunction) => {
       // Attach the retrieved user to the request object as currentUser
       req.user = user;
       req.role = user.roleId;
+
+      // Log the user information for debugging
+      log.debug(`User found: ${user}`);
+      log.debug(`User role: ${user.roleId}`);
+      log.debug(`User id: ${user.id}`);
 
       // Continue to the next middleware or route handler
       return next();

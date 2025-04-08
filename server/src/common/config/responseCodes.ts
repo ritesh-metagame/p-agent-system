@@ -77,6 +77,11 @@ class ResponseCodes {
     message: "Users fetched successfully",
   } as const;
 
+  static readonly TRANSACTION_FETCHED_SUCCESSFULLY = {
+    code: "T214",
+    message: "Transaction fetched successfully",
+  } as const;
+
   static readonly USERS_FETCHED_FAILED = {
     code: "1015",
     message: "Users fetched failed",

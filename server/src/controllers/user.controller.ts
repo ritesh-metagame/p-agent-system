@@ -45,6 +45,73 @@ class UserController {
       next(error);
     }
   }
+
+  public static async getAllUsers(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { startDate, endDate } = req.query;
+
+      const userService = Container.get(UserService);
+
+      const response = await userService.getAllUsers(
+        startDate as string,
+        endDate as string
+      );
+
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getTransactionByCategory(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { categoryName } = req.query;
+
+      console.log("Category Name in UserController:", categoryName);
+
+      const userService = Container.get(UserService);
+
+      const response = await userService.getTransactionByCategory(
+        categoryName as string
+      );
+
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getTransactionByCategoryAndAgent(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { categoryName } = req.query;
+      const { agent } = req.query;
+
+      console.log("Category Name in UserController:", categoryName);
+
+      const userService = Container.get(UserService);
+
+      const response = await userService.getTransactionByCategoryAndAgent(
+        categoryName as string,
+        agent as "gold" | "platinum" | "operator"
+      );
+
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { UserController };
