@@ -1003,3 +1003,7 @@ debug: 2025-04-08T11:24:48.524Z [middlewares\checkAuthAndAttachCurrentUser.ts] U
 http: 2025-04-08T11:24:48.620Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=gold 200 - - 144.066 ms
 >>>>>>> 76a24367ddaace458038de2a8508c3d953309954
 
+info: 2025-04-08T13:36:03.395Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-08T13:36:03.414Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      

@@ -281,7 +281,7 @@ class UserDao {
           continue; // skip to next transaction
         }
 
-        const category = golden.commissions[2].category;
+        const category = golden.commissions[0].category;
         if (!category) {
           console.warn(
             "Missing category for transaction:",
