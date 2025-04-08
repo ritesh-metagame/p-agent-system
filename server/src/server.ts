@@ -64,6 +64,7 @@ class Server {
 
       for (const agentGoldenId of goldenAgentIds) {
         for (let i = 0; i < 5; i++) {
+          const settled = Math.random() > 0.5 ? "Y" : "N";
           transactions.push(
             prisma.transaction.create({
               data: {
@@ -77,13 +78,32 @@ class Server {
                 depositAmount: new Decimal(0),
                 withdrawAmount: new Decimal(0),
                 transactionType: TransactionType.bet,
-                settled: "N",
+                settled: settled,
                 createdAt: new Date(),
                 updatedAt: new Date(),
               },
             })
           );
         }
+        transactions.push(
+          prisma.transaction.create({
+            data: {
+              betId: `BID-${Math.random().toString(36).substring(2, 10)}`,
+              transactionId: `TXN-${Math.random().toString(36).substring(2, 10)}`,
+              agentGoldenId,
+              // site
+              siteId: getRandomSiteId(),
+              betAmount: getRandomDecimal(),
+              payoutAmount: getRandomDecimal(),
+              depositAmount: new Decimal(0),
+              withdrawAmount: new Decimal(0),
+              transactionType: TransactionType.bet,
+              settled: "N",
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            },
+          })
+        );
       }
 
       await Promise.all(transactions);
