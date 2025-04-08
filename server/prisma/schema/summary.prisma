@@ -13,6 +13,38 @@ model BetSummary {
   @@unique([siteId, date])
 }
 
+model TopPerformerSummary {
+  id          String   @id @default(cuid())
+  roleId      String   @map("role_id")
+  role        Role     @relation(fields: [roleId], references: [id])
+  siteId      String   @map("site_id")
+  site        Site     @relation(fields: [siteId], references: [id])
+  userId      String   @map("user_id")
+  user        User     @relation(fields: [userId], references: [id])
+  
+  type        String   @map("type")
+  
+  // Performance metrics
+  settledTransactions Int      @default(0) @map("settled_transactions")
+  pendingTransactions Int      @default(0) @map("pending_transactions")
+  totalTransactions   Int      @default(0) @map("total_transactions")
+  operatorName        String?  @map("operator_name")
+  pendingCommission   Float?   @map("pending_commission")
+  releasedAllTime     Float?   @map("released_all_time")
+  calculationDate     DateTime @default(now()) @map("calculation_date")
+
+  createdBy String? @map("created_by") @default("system")
+  updatedBy String? @map("updated_by") @default("system")
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([siteId])
+  @@index([userId])
+  @@index([roleId])
+  @@unique([userId, siteId, calculationDate], name: "userId_siteId_calculationDate")
+}
+
 model CategorySummary {
   id               String   @id @default(cuid())
   categoryId       String   @map("category_id")
@@ -61,4 +93,23 @@ model AgentSummary {
   @@index([agentId])
   @@index([date])
   @@unique([agentId, date])
+}
+
+model NetworkStatistics {
+  id                String   @id @default(cuid())
+  roleId            String   @map("role_id")
+  role              Role     @relation(fields: [roleId], references: [id])
+  
+  approvedCount     Int      @default(0) @map("approved_count")
+  pendingCount      Int      @default(0) @map("pending_count") 
+  declinedCount     Int      @default(0) @map("declined_count")
+  suspendedCount    Int      @default(0) @map("suspended_count")
+  totalCount        Int      @default(0) @map("total_count")
+  
+  calculationDate   DateTime @default(now()) @map("calculation_date")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([roleId])
+  @@unique([roleId, calculationDate], name: "roleId_calculationDate")
 }

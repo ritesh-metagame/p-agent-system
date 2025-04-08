@@ -16,6 +16,8 @@ model Role {
   users         User[]
   commissions   Commission[]
   commissionSummaries CommissionSummary[]
+  topPerformerSummaries TopPerformerSummary[]
+  networkStatistics NetworkStatistics[]
   roleLogs      RoleLog[]
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -30,6 +32,8 @@ model Site {
   commissions   Commission[]
   betSummaries  BetSummary[]
   commissionSummaries CommissionSummary[]
+  topPerformerSummaries TopPerformerSummary[]
+  // networkStatistics NetworkStatistics[]
   siteLogs      SiteLog[]
   transactions  Transaction[]
   createdAt     DateTime @default(now())

@@ -17,6 +17,8 @@ model User {
 
   userSites UserSite[]
 
+  topPerformerSummaries TopPerformerSummary[]
+
   parentId  String?  @map("parent_id")
   parent    User?    @relation("UserToUser", fields: [parentId], references: [id])
   children  User[]   @relation("UserToUser")

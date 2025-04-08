@@ -3,6 +3,7 @@ enum UserRole {
   OPERATOR = "operator",
   PLATINUM = "platinum",
   GOLDEN = "gold",
+  PLAYER = "player",
 }
 
 export { UserRole };

@@ -81,6 +81,17 @@ class ResponseCodes {
     code: "1015",
     message: "Users fetched failed",
   } as const;
+
+  static readonly NETWORK_STATISTICS_UPDATED_SUCCESSFULLY = {
+    code: "1016",
+    message: "Network statistics calculated and updated successfully",
+  } as const;
+  static readonly NETWORK_STATISTICS_FETCHED_SUCCESSFULLY = {
+    code: "1017",
+    message: "Network statistics fetched successfully",
+  } as const;
 }
 
 export { ResponseCodes };
+
+// Add this to the ResponseCodes class:

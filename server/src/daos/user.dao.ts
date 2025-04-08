@@ -4,6 +4,21 @@ import type { User } from "../../prisma/generated/prisma";
 class UserDao {
   constructor() {}
 
+  public async getUserByUserId(userId: string) {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: { role: true },
+      });
+
+      console.log("User fetched:", user);
+
+      return user;
+    } catch (error) {
+      throw new Error(`Error fetching user: ${error}`);
+    }
+  }
+
   public async getUserByUsername(username: string) {
     try {
       const user = await prisma.user.findUnique({
