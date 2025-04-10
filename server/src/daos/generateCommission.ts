@@ -18,7 +18,7 @@ class GenerateCommission {
 
     const platformToCategoryMap: Record<string, string> = {
       egames: "eGames",
-      sportsbettings: "Sports-Bettings",
+      sportsbettings: "Sports-Betting",
       // Add more mappings if needed
     };
 
@@ -40,14 +40,20 @@ class GenerateCommission {
     for (const txn of transactions) {
       const rawPlatform = txn.platformName?.toLowerCase();
       const categoryName = platformToCategoryMap[rawPlatform ?? ""];
+      console.log("Category:", categoryName);
+
       if (!categoryName || !txn.agentGoldenId) continue;
 
       const category = await prisma.category.findUnique({
         where: { name: categoryName },
       });
+
+      // console.log("Category:", category);
       if (!category) continue;
 
       const categoryId = category.id;
+      console.log("Category ID:", categoryId);
+      console.log("Category name:", category.name);
 
       const goldUser = await prisma.user.findUnique({
         where: { id: txn.agentGoldenId },
@@ -144,6 +150,102 @@ class GenerateCommission {
     }
 
     console.log("Commission summaries generated successfully.");
+  }
+
+  public async generateTopPerformers(date: string) {
+    const start = new Date(date);
+    const end = new Date(date);
+    end.setUTCDate(end.getUTCDate() + 1);
+
+    const topTransactions = await prisma.transaction.findMany({
+      where: {
+        timeOfBet: {
+          gte: new Date(start),
+          lte: new Date(end),
+        },
+      },
+      orderBy: {
+        betAmount: "desc",
+      },
+      take: 10,
+    });
+
+    const userMap = new Map<
+      string,
+      {
+        userId: string;
+        playerId: string;
+        userRole: string;
+        deposit: number;
+        totalBetAmount: number;
+        GGR: number;
+      }
+    >();
+
+    for (const txn of topTransactions) {
+      if (!txn.agentGoldenId) continue;
+
+      const goldUser = await prisma.user.findUnique({
+        where: { id: txn.agentGoldenId },
+        include: { role: true },
+      });
+
+      if (!goldUser || !goldUser.role) continue;
+
+      const platinumUser = goldUser.parentId
+        ? await prisma.user.findUnique({
+            where: { id: goldUser.parentId },
+            include: { role: true },
+          })
+        : null;
+
+      const operatorUser = platinumUser?.parentId
+        ? await prisma.user.findUnique({
+            where: { id: platinumUser.parentId },
+            include: { role: true },
+          })
+        : null;
+
+      const betAmount = Number(txn.betAmount ?? 0);
+      const payoutAmount = Number(txn.payoutAmount ?? 0);
+      const deposit = Number(txn.depositAmount ?? 0);
+      const netGGR = betAmount - payoutAmount;
+      const playerId = txn.playerId || "";
+
+      const hierarchy = [
+        { user: goldUser, role: goldUser.role.name },
+        { user: platinumUser, role: platinumUser?.role?.name },
+        { user: operatorUser, role: operatorUser?.role?.name },
+      ].filter((entry) => entry.user && entry.role);
+
+      for (const entry of hierarchy) {
+        const { user, role } = entry;
+        const key = user.id;
+
+        const existing = userMap.get(key) ?? {
+          userId: user.id,
+          playerId,
+          userRole: role!,
+          deposit: 0,
+          totalBetAmount: 0,
+          GGR: 0,
+        };
+
+        existing.deposit += deposit;
+        existing.totalBetAmount += betAmount;
+        existing.GGR += netGGR;
+
+        userMap.set(key, existing);
+      }
+    }
+
+    for (const userSummary of userMap.values()) {
+      await prisma.topPerformer.create({
+        data: userSummary,
+      });
+    }
+
+    console.log("Grouped TopPerformers inserted successfully.");
   }
 }
 

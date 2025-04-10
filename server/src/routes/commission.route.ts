@@ -9,6 +9,16 @@ export default (app: Router) => {
   app.use("/commission", route);
 
   route.post(
+    "/topPerformer",
+    // celebrate({}),
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await CommissionController.topPerformer(req, res, next);
+
+      res.status(200).json(response);
+    }) as any
+  );
+
+  route.post(
     "/commissionByCategory",
     // celebrate({}),
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {

@@ -1,0 +1,12 @@
+model TopPerformer {
+  id             String   @id @default(cuid())
+  userId         String
+  playerId       String
+  userRole       String
+  deposit        Float
+  totalBetAmount Float
+  GGR            Float
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
