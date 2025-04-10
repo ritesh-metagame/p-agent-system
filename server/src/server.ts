@@ -39,80 +39,80 @@ class Server {
     // const conn = await connect(DB_URL, config.mongo.dbName!);
     // log.info(`Platform db is running on host ${conn?.connection.host}`);
 
-    const goldenAgentIds = [
-      "cm98in9i70016ioknpah55tja",
-      "cm98l67eu001tio9da4d9k30g",
-      //   "cm96y9psv004rjf9wyib6e4y5",
-      //   "cm96yaff00055jjf9wfd2iufyu",
-      //   "cm96yb9xv005jjf9w5yqyfnpv",
-      //   "cm96ybs86805xjf9wa9m7zbxx",
-      //   "cm96ycsgb006bjf9wtvbk7avg",
-      //   "cm96ydc7g006pjf9wmsksay3x",
-      //   "cm96ye7ut0073jf9w2zxra1ev",
-      //   "cm96yepy0007hjf9wh0qujc51",
-    ];
+    // const goldenAgentIds = [
+    //   "cm98in9i70016ioknpah55tja",
+    //   "cm98l67eu001tio9da4d9k30g",
+    //   //   "cm96y9psv004rjf9wyib6e4y5",
+    //   //   "cm96yaff00055jjf9wfd2iufyu",
+    //   //   "cm96yb9xv005jjf9w5yqyfnpv",
+    //   //   "cm96ybs86805xjf9wa9m7zbxx",
+    //   //   "cm96ycsgb006bjf9wtvbk7avg",
+    //   //   "cm96ydc7g006pjf9wmsksay3x",
+    //   //   "cm96ye7ut0073jf9w2zxra1ev",
+    //   //   "cm96yepy0007hjf9wh0qujc51",
+    // ];
 
-    const siteIds = ["cm93pe3n10000iokn0tb8c6hk"];
+    // const siteIds = ["cm93pe3n10000iokn0tb8c6hk"];
 
-    const getRandomSiteId = () =>
-      siteIds[Math.floor(Math.random() * siteIds.length)];
-    const getRandomDecimal = () =>
-      new Decimal((Math.random() * 1000).toFixed(2));
+    // const getRandomSiteId = () =>
+    //   siteIds[Math.floor(Math.random() * siteIds.length)];
+    // const getRandomDecimal = () =>
+    //   new Decimal((Math.random() * 1000).toFixed(2));
 
-    async function insertTransactions() {
-      const transactions = [];
+    // async function insertTransactions() {
+    //   const transactions = [];
 
-      for (const agentGoldenId of goldenAgentIds) {
-        for (let i = 0; i < 5; i++) {
-          const settled = Math.random() > 0.5 ? "Y" : "N";
-          transactions.push(
-            prisma.transaction.create({
-              data: {
-                betId: `BID-${Math.random().toString(36).substring(2, 10)}`,
-                transactionId: `TXN-${Math.random().toString(36).substring(2, 10)}`,
-                agentGoldenId,
-                // site
-                siteId: getRandomSiteId(),
-                betAmount: getRandomDecimal(),
-                payoutAmount: getRandomDecimal(),
-                depositAmount: new Decimal(0),
-                withdrawAmount: new Decimal(0),
-                transactionType: TransactionType.bet,
-                settled: settled,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-              },
-            })
-          );
-        }
-        transactions.push(
-          prisma.transaction.create({
-            data: {
-              betId: `BID-${Math.random().toString(36).substring(2, 10)}`,
-              transactionId: `TXN-${Math.random().toString(36).substring(2, 10)}`,
-              agentGoldenId,
-              // site
-              siteId: getRandomSiteId(),
-              betAmount: getRandomDecimal(),
-              payoutAmount: getRandomDecimal(),
-              depositAmount: new Decimal(0),
-              withdrawAmount: new Decimal(0),
-              transactionType: TransactionType.bet,
-              settled: "N",
-              createdAt: new Date(),
-              updatedAt: new Date(),
-            },
-          })
-        );
-      }
+    //   for (const agentGoldenId of goldenAgentIds) {
+    //     for (let i = 0; i < 5; i++) {
+    //       const settled = Math.random() > 0.5 ? "Y" : "N";
+    //       transactions.push(
+    //         prisma.transaction.create({
+    //           data: {
+    //             betId: `BID-${Math.random().toString(36).substring(2, 10)}`,
+    //             transactionId: `TXN-${Math.random().toString(36).substring(2, 10)}`,
+    //             agentGoldenId,
+    //             // site
+    //             siteId: getRandomSiteId(),
+    //             betAmount: getRandomDecimal(),
+    //             payoutAmount: getRandomDecimal(),
+    //             depositAmount: new Decimal(0),
+    //             withdrawAmount: new Decimal(0),
+    //             transactionType: TransactionType.bet,
+    //             settled: settled,
+    //             createdAt: new Date(),
+    //             updatedAt: new Date(),
+    //           },
+    //         })
+    //       );
+    //     }
+    //     transactions.push(
+    //       prisma.transaction.create({
+    //         data: {
+    //           betId: `BID-${Math.random().toString(36).substring(2, 10)}`,
+    //           transactionId: `TXN-${Math.random().toString(36).substring(2, 10)}`,
+    //           agentGoldenId,
+    //           // site
+    //           siteId: getRandomSiteId(),
+    //           betAmount: getRandomDecimal(),
+    //           payoutAmount: getRandomDecimal(),
+    //           depositAmount: new Decimal(0),
+    //           withdrawAmount: new Decimal(0),
+    //           transactionType: TransactionType.bet,
+    //           settled: "N",
+    //           createdAt: new Date(),
+    //           updatedAt: new Date(),
+    //         },
+    //       })
+    //     );
+    //   }
 
-      await Promise.all(transactions);
-      console.log("Transactions inserted successfully.");
-    }
+    //   await Promise.all(transactions);
+    //   console.log("Transactions inserted successfully.");
+    // }
 
-    insertTransactions()
-      .catch((e) => console.error(e))
-      .finally(() => prisma.$disconnect());
+    // insertTransactions()
+    //   .catch((e) => console.error(e))
+    //   .finally(() => prisma.$disconnect());
 
     // redisService.connect();
 

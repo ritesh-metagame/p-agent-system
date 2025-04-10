@@ -7,6 +7,8 @@ model BetSummary {
   date        DateTime @db.Date
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  createdBy String? @map("created_by") @default("system")
+  updatedBy String? @map("updated_by") @default("system")
 
   @@index([siteId])
   @@index([date])
@@ -55,6 +57,9 @@ model CategorySummary {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
+  createdBy String? @map("created_by") @default("system")
+  updatedBy String? @map("updated_by") @default("system")
+
   @@index([categoryId])
   @@index([date])
   @@unique([categoryId, date])
@@ -73,6 +78,9 @@ model CommissionSummary {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
+  createdBy String? @map("created_by") @default("system")
+  updatedBy String? @map("updated_by") @default("system")
+
   @@index([siteId])
   @@index([userId])
   @@index([roleId])
@@ -89,6 +97,9 @@ model AgentSummary {
   date            DateTime @db.Date
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  createdBy String? @map("created_by") @default("system")
+  updatedBy String? @map("updated_by") @default("system")
 
   @@index([agentId])
   @@index([date])
@@ -109,6 +120,9 @@ model NetworkStatistics {
   calculationDate   DateTime @default(now()) @map("calculation_date")
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+
+  createdBy String? @map("created_by") @default("system")
+  updatedBy String? @map("updated_by") @default("system")
 
   @@index([roleId])
   @@unique([roleId, calculationDate], name: "roleId_calculationDate")

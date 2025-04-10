@@ -6,7 +6,9 @@ model Category {
   categorySummaries CategorySummary[]
   categoryLogs  CategoryLog[]
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime @updatedAt @default(now())
+  createdBy   String   @map("created_by") @default("system")
+  updatedBy   String   @map("updated_by") @default("system")
 }
 
 model Role {
@@ -20,7 +22,10 @@ model Role {
   networkStatistics NetworkStatistics[]
   roleLogs      RoleLog[]
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime @default(now())
+
+  createdBy   String   @map("created_by") @default("system")
+  updatedBy   String   @map("updated_by") @default("system")
 }
 
 model Site {
@@ -37,7 +42,10 @@ model Site {
   siteLogs      SiteLog[]
   transactions  Transaction[]
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime @updatedAt @default(now())
+
+  createdBy   String   @map("created_by") @default("system")
+  updatedBy   String   @map("updated_by") @default("system")
 }
 
 model UserSite {
@@ -46,6 +54,12 @@ model UserSite {
   site        Site     @relation(fields: [siteId], references: [id])
   siteId      String   @map("site_id")
   assignedAt  DateTime @default(now())
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt @default(now())
+
+  createdBy   String   @map("created_by") @default("system")
+  updatedBy   String   @map("updated_by") @default("system")
 
   @@id([userId, siteId])
   @@index([userId])
@@ -63,7 +77,7 @@ model CategoryLog {
   updatedById   String?  @map("updated_by_id")
   updatedBy     User?    @relation("CategoryLogUpdater", fields: [updatedById], references: [id])
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime @default(now())
 
   @@index([categoryId])
   @@index([createdById])
