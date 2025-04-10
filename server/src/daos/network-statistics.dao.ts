@@ -170,7 +170,7 @@ export class NetworkStatisticsDao {
 
             case "gold":
               stats.goldUserTotalCount++;
-              if (child.apapproved) stats.goldUserApprovedCount++;
+              if (child.approved) stats.goldUserApprovedCount++;
               else if (child.declined) stats.goldUserDeclinedCount++;
               else if (child.suspended) stats.goldUserSuspendedCount++;
               else stats.goldUserPendingCount++;
