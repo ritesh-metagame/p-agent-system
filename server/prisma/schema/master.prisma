@@ -1,65 +1,65 @@
 model Category {
-  id            String   @id @default(cuid())
-  name          String   @unique
-  description   String?
-  commissions   Commission[]
+  id                String            @id @default(cuid())
+  name              String            @unique
+  description       String?
+  commissions       Commission[]
   categorySummaries CategorySummary[]
-  categoryLogs  CategoryLog[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt @default(now())
-  createdBy   String   @map("created_by") @default("system")
-  updatedBy   String   @map("updated_by") @default("system")
+  categoryLogs      CategoryLog[]
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @default(now()) @updatedAt
+  createdBy         String            @default("system") @map("created_by")
+  updatedBy         String            @default("system") @map("updated_by")
 }
 
 model Role {
-  id            String   @id @default(cuid())
-  name          String   @unique // Super Admin, Operator, Platinum, Gold, Player
-  description   String?
-  users         User[]
-  commissions   Commission[]
-  commissionSummaries CommissionSummary[]
+  id                    String                @id @default(cuid())
+  name                  String                @unique // Super Admin, Operator, Platinum, Gold, Player
+  description           String?
+  users                 User[]
+  commissions           Commission[]
+  commissionSummaries   CommissionSummary[]
   topPerformerSummaries TopPerformerSummary[]
-  networkStatistics NetworkStatistics[]
-  roleLogs      RoleLog[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now())
+  networkStatistics     NetworkStatistics[]
+  roleLogs              RoleLog[]
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @default(now())
 
-  createdBy   String   @map("created_by") @default("system")
-  updatedBy   String   @map("updated_by") @default("system")
+  createdBy String @default("system") @map("created_by")
+  updatedBy String @default("system") @map("updated_by")
 }
 
 model Site {
-  id            String   @id @default(cuid())
-  name          String   @unique
-  url           String?
-  description   String?
-  users        UserSite[]
-  commissions   Commission[]
-  betSummaries  BetSummary[]
-  commissionSummaries CommissionSummary[]
+  id                    String                @id @default(cuid())
+  name                  String                @unique
+  url                   String?
+  description           String?
+  users                 UserSite[]
+  commissions           Commission[]
+  betSummaries          BetSummary[]
+  commissionSummaries   CommissionSummary[]
   topPerformerSummaries TopPerformerSummary[]
   // networkStatistics NetworkStatistics[]
-  siteLogs      SiteLog[]
-  transactions  Transaction[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt @default(now())
+  siteLogs              SiteLog[]
+  transactions          Transaction[]
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @default(now()) @updatedAt
 
-  createdBy   String   @map("created_by") @default("system")
-  updatedBy   String   @map("updated_by") @default("system")
+  createdBy String @default("system") @map("created_by")
+  updatedBy String @default("system") @map("updated_by")
 }
 
 model UserSite {
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String   @map("user_id")
-  site        Site     @relation(fields: [siteId], references: [id])
-  siteId      String   @map("site_id")
-  assignedAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String   @map("user_id")
+  site       Site     @relation(fields: [siteId], references: [id])
+  siteId     String   @map("site_id")
+  assignedAt DateTime @default(now())
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
-  createdBy   String   @map("created_by") @default("system")
-  updatedBy   String   @map("updated_by") @default("system")
+  createdBy String @default("system") @map("created_by")
+  updatedBy String @default("system") @map("updated_by")
 
   @@id([userId, siteId])
   @@index([userId])
@@ -67,17 +67,17 @@ model UserSite {
 }
 
 model CategoryLog {
-  id            String   @id @default(cuid())
-  categoryId    String   @map("category_id")
-  category      Category @relation(fields: [categoryId], references: [id])
-  name          String
-  description   String?
-  createdById   String   @map("created_by_id")
-  createdBy     User     @relation("CategoryLogCreator", fields: [createdById], references: [id])
-  updatedById   String?  @map("updated_by_id")
-  updatedBy     User?    @relation("CategoryLogUpdater", fields: [updatedById], references: [id])
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now())
+  id          String   @id @default(cuid())
+  categoryId  String   @map("category_id")
+  category    Category @relation(fields: [categoryId], references: [id])
+  name        String
+  description String?
+  createdById String   @map("created_by_id")
+  createdBy   User     @relation("CategoryLogCreator", fields: [createdById], references: [id])
+  updatedById String?  @map("updated_by_id")
+  updatedBy   User?    @relation("CategoryLogUpdater", fields: [updatedById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
 
   @@index([categoryId])
   @@index([createdById])
@@ -85,17 +85,17 @@ model CategoryLog {
 }
 
 model RoleLog {
-  id            String   @id @default(cuid())
-  roleId        String   @map("role_id")
-  role          Role     @relation(fields: [roleId], references: [id])
-  name          String
-  description   String?
-  createdById   String   @map("created_by_id")
-  createdBy     User     @relation("RoleLogCreator", fields: [createdById], references: [id])
-  updatedById   String?  @map("updated_by_id")
-  updatedBy     User?    @relation("RoleLogUpdater", fields: [updatedById], references: [id])
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String   @id @default(cuid())
+  roleId      String   @map("role_id")
+  role        Role     @relation(fields: [roleId], references: [id])
+  name        String
+  description String?
+  createdById String   @map("created_by_id")
+  createdBy   User     @relation("RoleLogCreator", fields: [createdById], references: [id])
+  updatedById String?  @map("updated_by_id")
+  updatedBy   User?    @relation("RoleLogUpdater", fields: [updatedById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([roleId])
   @@index([createdById])
@@ -103,18 +103,18 @@ model RoleLog {
 }
 
 model SiteLog {
-  id            String   @id @default(cuid())
-  siteId        String   @map("site_id")
-  site          Site     @relation(fields: [siteId], references: [id])
-  name          String
-  url           String?
-  description   String?
-  createdById   String   @map("created_by_id")
-  createdBy     User     @relation("SiteLogCreator", fields: [createdById], references: [id])
-  updatedById   String?  @map("updated_by_id")
-  updatedBy     User?    @relation("SiteLogUpdater", fields: [updatedById], references: [id])
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String   @id @default(cuid())
+  siteId      String   @map("site_id")
+  site        Site     @relation(fields: [siteId], references: [id])
+  name        String
+  url         String?
+  description String?
+  createdById String   @map("created_by_id")
+  createdBy   User     @relation("SiteLogCreator", fields: [createdById], references: [id])
+  updatedById String?  @map("updated_by_id")
+  updatedBy   User?    @relation("SiteLogUpdater", fields: [updatedById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([siteId])
   @@index([createdById])

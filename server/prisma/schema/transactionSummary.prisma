@@ -1,39 +1,39 @@
 model TransactionCommission {
-  id                 String   @id @default(cuid())
-  betId              String
-  transactionId      String
-  betAmount          Float
-  payoutAmount       Float
-  refundAmount       Float
-  depositAmount      Float
-  withdrawAmount     Float
-  siteId             String
+  id             String @id @default(cuid())
+  betId          String
+  transactionId  String
+  betAmount      Float
+  payoutAmount   Float
+  refundAmount   Float
+  depositAmount  Float
+  withdrawAmount Float
+  siteId         String
 
-  agentGoldenId      String
-  agentGolden        Agent @relation("GoldenAgent", fields: [agentGoldenId], references: [id])
+  agentGoldenId String
+  agentGolden   Agent  @relation("GoldenAgent", fields: [agentGoldenId], references: [id])
 
-  agentPlatinumId    String
-  agentPlatinum      Agent @relation("PlatinumAgent", fields: [agentPlatinumId], references: [id])
+  agentPlatinumId String
+  agentPlatinum   Agent  @relation("PlatinumAgent", fields: [agentPlatinumId], references: [id])
 
-  agentOperatorId    String
-  agentOperator      Agent @relation("OperatorAgent", fields: [agentOperatorId], references: [id])
+  agentOperatorId String
+  agentOperator   Agent  @relation("OperatorAgent", fields: [agentOperatorId], references: [id])
 
-  transactionType    String
-  settled            Boolean
+  transactionType String
+  settled         Boolean
 
-  commissionId       String
-  category           String
-  categoryId         String
+  commissionId String
+  category     String
+  categoryId   String
 
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  createdBy          String?  @map("created_by") @default("system")
-  updatedBy          String?  @map("updated_by") @default("system")
+  createdBy String? @default("system") @map("created_by")
+  updatedBy String? @default("system") @map("updated_by")
 }
 
 model Agent {
-  id         String   @id
+  id         String @id
   percentage Float
   amount     Float
 
@@ -45,6 +45,6 @@ model Agent {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  createdBy String?  @map("created_by") @default("system")
-  updatedBy String?  @map("updated_by") @default("system")
+  createdBy String? @default("system") @map("created_by")
+  updatedBy String? @default("system") @map("updated_by")
 }

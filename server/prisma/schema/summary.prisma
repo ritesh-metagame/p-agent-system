@@ -7,25 +7,25 @@ model BetSummary {
   date        DateTime @db.Date
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  createdBy String? @map("created_by") @default("system")
-  updatedBy String? @map("updated_by") @default("system")
+  createdBy   String?  @default("system") @map("created_by")
+  updatedBy   String?  @default("system") @map("updated_by")
 
+  @@unique([siteId, date])
   @@index([siteId])
   @@index([date])
-  @@unique([siteId, date])
 }
 
 model TopPerformerSummary {
-  id          String   @id @default(cuid())
-  roleId      String   @map("role_id")
-  role        Role     @relation(fields: [roleId], references: [id])
-  siteId      String   @map("site_id")
-  site        Site     @relation(fields: [siteId], references: [id])
-  userId      String   @map("user_id")
-  user        User     @relation(fields: [userId], references: [id])
-  
-  type        String   @map("type")
-  
+  id     String @id @default(cuid())
+  roleId String @map("role_id")
+  role   Role   @relation(fields: [roleId], references: [id])
+  siteId String @map("site_id")
+  site   Site   @relation(fields: [siteId], references: [id])
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
+  type String @map("type")
+
   // Performance metrics
   settledTransactions Int      @default(0) @map("settled_transactions")
   pendingTransactions Int      @default(0) @map("pending_transactions")
@@ -35,16 +35,16 @@ model TopPerformerSummary {
   releasedAllTime     Float?   @map("released_all_time")
   calculationDate     DateTime @default(now()) @map("calculation_date")
 
-  createdBy String? @map("created_by") @default("system")
-  updatedBy String? @map("updated_by") @default("system")
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdBy String? @default("system") @map("created_by")
+  updatedBy String? @default("system") @map("updated_by")
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, siteId, calculationDate], name: "userId_siteId_calculationDate")
   @@index([siteId])
   @@index([userId])
   @@index([roleId])
-  @@unique([userId, siteId, calculationDate], name: "userId_siteId_calculationDate")
 }
 
 model CategorySummary {
@@ -57,35 +57,35 @@ model CategorySummary {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  createdBy String? @map("created_by") @default("system")
-  updatedBy String? @map("updated_by") @default("system")
+  createdBy String? @default("system") @map("created_by")
+  updatedBy String? @default("system") @map("updated_by")
 
+  @@unique([categoryId, date])
   @@index([categoryId])
   @@index([date])
-  @@unique([categoryId, date])
 }
 
 model CommissionSummary {
-  id                 String   @id @default(cuid())
-  siteId             String   @map("site_id")
-  site               Site     @relation(fields: [siteId], references: [id])
-  userId             String   @map("user_id")
-  user               User     @relation(fields: [userId], references: [id])
-  roleId             String   @map("role_id")
-  role               Role     @relation(fields: [roleId], references: [id])
-  totalCommissionAmount Float @map("total_commission_amount")
-  date               DateTime @db.Date
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  id                    String   @id @default(cuid())
+  siteId                String   @map("site_id")
+  site                  Site     @relation(fields: [siteId], references: [id])
+  userId                String   @map("user_id")
+  user                  User     @relation(fields: [userId], references: [id])
+  roleId                String   @map("role_id")
+  role                  Role     @relation(fields: [roleId], references: [id])
+  totalCommissionAmount Float    @map("total_commission_amount")
+  date                  DateTime @db.Date
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
-  createdBy String? @map("created_by") @default("system")
-  updatedBy String? @map("updated_by") @default("system")
+  createdBy String? @default("system") @map("created_by")
+  updatedBy String? @default("system") @map("updated_by")
 
+  @@unique([siteId, userId, roleId, date])
   @@index([siteId])
   @@index([userId])
   @@index([roleId])
   @@index([date])
-  @@unique([siteId, userId, roleId, date])
 }
 
 model AgentSummary {
@@ -98,32 +98,47 @@ model AgentSummary {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  createdBy String? @map("created_by") @default("system")
-  updatedBy String? @map("updated_by") @default("system")
+  createdBy String? @default("system") @map("created_by")
+  updatedBy String? @default("system") @map("updated_by")
 
+  @@unique([agentId, date])
   @@index([agentId])
   @@index([date])
-  @@unique([agentId, date])
 }
 
 model NetworkStatistics {
-  id                String   @id @default(cuid())
-  roleId            String   @map("role_id")
-  role              Role     @relation(fields: [roleId], references: [id])
-  
-  approvedCount     Int      @default(0) @map("approved_count")
-  pendingCount      Int      @default(0) @map("pending_count") 
-  declinedCount     Int      @default(0) @map("declined_count")
-  suspendedCount    Int      @default(0) @map("suspended_count")
-  totalCount        Int      @default(0) @map("total_count")
-  
-  calculationDate   DateTime @default(now()) @map("calculation_date")
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id     String @id @default(cuid())
+  roleId String @map("role_id")
+  role   Role   @relation(fields: [roleId], references: [id])
 
-  createdBy String? @map("created_by") @default("system")
-  updatedBy String? @map("updated_by") @default("system")
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
 
-  @@index([roleId])
+  operatorUserApprovedCount  Int @default(0) @map("operator_user_approved_count")
+  operatorUserPendingCount   Int @default(0) @map("operator_user_pending_count")
+  operatorUserDeclinedCount  Int @default(0) @map("operator_user_declined_count")
+  operatorUserSuspendedCount Int @default(0) @map("operator_user_suspended_count")
+  operatorUserTotalCount     Int @default(0) @map("operator_user_total_count")
+
+  platinumUserApprovedCount  Int @default(0) @map("platinum_user_approved_count")
+  platinumUserPendingCount   Int @default(0) @map("platinum_user_pending_count")
+  platinumUserDeclinedCount  Int @default(0) @map("platinum_user_declined_count")
+  platinumUserSuspendedCount Int @default(0) @map("platinum_user_suspended_count")
+  platinumUserTotalCount     Int @default(0) @map("platinum_user_total_count")
+
+  goldUserApprovedCount  Int @default(0) @map("gold_user_approved_count")
+  goldUserPendingCount   Int @default(0) @map("gold_user_pending_count")
+  goldUserDeclinedCount  Int @default(0) @map("gold_user_declined_count")
+  goldUserSuspendedCount Int @default(0) @map("gold_user_suspended_count")
+  goldUserTotalCount     Int @default(0) @map("gold_user_total_count")
+
+  calculationDate DateTime @default(now()) @map("calculation_date")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  createdBy String? @default("system") @map("created_by")
+  updatedBy String? @default("system") @map("updated_by")
+
   @@unique([roleId, calculationDate], name: "roleId_calculationDate")
+  @@index([roleId])
 }

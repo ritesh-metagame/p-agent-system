@@ -41,7 +41,10 @@ export class NetworkStatisticsService {
    * - Platinum: Only GOLDEN and PLAYER
    * - Golden: Only PLAYER
    */
-  public async getNetworkStatisticsByUserRole(userRoleId: string) {
+  public async getNetworkStatisticsByUserRole(
+    userRoleId: string,
+    userId: string
+  ) {
     try {
       const userRole = await this.roleDao.getRoleById(userRoleId);
 
@@ -51,107 +54,69 @@ export class NetworkStatisticsService {
 
       console.log("Getting statistics for user role:", userRole.name);
 
-      // Get all network statistics
-      const allStats =
-        await this.networkStatisticsDao.getLatestNetworkStatistics();
+      // Get statistics for this specific user
+      const userStats =
+        await this.networkStatisticsDao.getLatestNetworkStatisticsByUserId(
+          userId
+        );
 
-      if (allStats.length === 0) {
+      if (userStats.length === 0) {
         // If no statistics exist yet, calculate them first
         console.log("No statistics found, calculating now...");
         await this.networkStatisticsDao.calculateAndUpdateNetworkStatistics();
-        // Then fetch the newly calculated statistics
         const freshStats =
-          await this.networkStatisticsDao.getLatestNetworkStatistics();
-        console.log(`Calculated ${freshStats.length} new statistics entries`);
-        return this.filterStatisticsByRole(userRole.name, freshStats);
+          await this.networkStatisticsDao.getLatestNetworkStatisticsByUserId(
+            userId
+          );
+        return this.formatStatistics(userRole.name, freshStats);
       }
 
-      console.log(`Found ${allStats.length} existing statistics entries`);
-      return this.filterStatisticsByRole(userRole.name, allStats);
+      return this.formatStatistics(userRole.name, userStats);
     } catch (error) {
       console.error("Error fetching network statistics:", error);
       return error;
     }
   }
 
-  /**
-   * Filter statistics based on user role
-   */
-  private filterStatisticsByRole(userRoleName: string, statistics: any[]) {
-    console.log(`Filtering statistics for role: ${userRoleName}`);
-    console.log(
-      `Available roles in statistics: ${statistics.map((stat) => stat.role.name).join(", ")}`
-    );
-
-    let filteredStats = [];
-    let includeSuspendedAndTotal = true;
+  private formatStatistics(userRoleName: string, statistics: any[]) {
+    const formattedStats: any = {};
 
     // Convert role names to lowercase for case-insensitive comparison
     const lowerUserRoleName = userRoleName.toLowerCase();
 
-    switch (lowerUserRoleName) {
-      case UserRole.SUPER_ADMIN.toLowerCase():
-        // Super Admin can see all roles - include everything
-        console.log("SuperAdmin role: returning all statistics");
-        filteredStats = statistics;
-        includeSuspendedAndTotal = false; // SuperAdmin doesn't need suspended and total columns
-        break;
-
-      case UserRole.OPERATOR.toLowerCase():
-        // Operator can see PLATINUM and GOLDEN only
-        console.log("Operator role: filtering to show only Platinum and Gold");
-        filteredStats = statistics.filter(
-          (stat) =>
-            stat.role.name.toLowerCase() === UserRole.PLATINUM.toLowerCase() ||
-            stat.role.name.toLowerCase() === UserRole.GOLDEN.toLowerCase()
-        );
-        break;
-
-      case UserRole.PLATINUM.toLowerCase():
-        // Platinum can see only GOLDEN
-        console.log("Platinum role: filtering to show only Gold");
-        filteredStats = statistics.filter(
-          (stat) =>
-            stat.role.name.toLowerCase() === UserRole.GOLDEN.toLowerCase()
-        );
-        break;
-
-      default:
-        console.log(`No specific filtering for role: ${userRoleName}`);
-        filteredStats = [];
-    }
-
-    console.log(
-      `After filtering: ${filteredStats.length} statistics entries remain`
-    );
-    if (filteredStats.length > 0) {
-      console.log(
-        `Filtered roles: ${filteredStats.map((stat) => stat.role.name).join(", ")}`
-      );
-    } else {
-      console.log("No statistics remain after filtering");
-    }
-
-    // Format the result for the frontend
-    const formattedStats = filteredStats.map((stat) => {
-      const baseStats = {
-        role: stat.role.name,
-        approved: stat.approvedCount,
-        pending: stat.pendingCount,
-        declined: stat.declinedCount,
-      };
-
-      // Add suspended and total columns for non-SuperAdmin roles
-      if (includeSuspendedAndTotal) {
-        return {
-          ...baseStats,
-          suspended: stat.suspendedCount,
-          total: stat.totalCount,
-        };
-      }
-
-      return baseStats;
+    // Helper function to format counts for a role
+    const formatRoleCounts = (stat: any, rolePrefix: string) => ({
+      approved: stat[`${rolePrefix}UserApprovedCount`] || 0,
+      pending: stat[`${rolePrefix}UserPendingCount`] || 0,
+      declined: stat[`${rolePrefix}UserDeclinedCount`] || 0,
+      suspended: stat[`${rolePrefix}UserSuspendedCount`] || 0,
+      total: stat[`${rolePrefix}UserTotalCount`] || 0,
     });
+
+    // Add statistics based on user role
+    switch (lowerUserRoleName) {
+      case "superadmin":
+        // SuperAdmin sees all roles
+        formattedStats.operator = formatRoleCounts(statistics[0], "operator");
+        formattedStats.platinum = formatRoleCounts(statistics[0], "platinum");
+        formattedStats.gold = formatRoleCounts(statistics[0], "gold");
+        break;
+
+      case "operator":
+        // Operator sees platinum and gold
+        formattedStats.platinum = formatRoleCounts(statistics[0], "platinum");
+        formattedStats.gold = formatRoleCounts(statistics[0], "gold");
+        break;
+
+      case "platinum":
+        // Platinum sees only gold
+        formattedStats.gold = formatRoleCounts(statistics[0], "gold");
+        break;
+
+      case "gold":
+        // Gold sees nothing
+        break;
+    }
 
     return new Response(
       ResponseCodes.NETWORK_STATISTICS_FETCHED_SUCCESSFULLY.code,

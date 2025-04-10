@@ -1,71 +1,71 @@
 model Transaction {
-  id                  BigInt    @id @default(autoincrement())
-  betId               String
-  settlementTime      DateTime?
-  timeOfBet           DateTime?
-  outletId            String?
-  playerId            String?
-  playerName          String?
-  transactionId       String
-  gameId              String?
-  gameName            String?
-  gameType            String?
-  gameProvider        String?
-  machineId           String?
-  betAmount           Decimal?
-  payoutAmount        Decimal?
-  refundAmount        Decimal?
-  depositAmount       Decimal  @default(0.00)
-  withdrawAmount      Decimal  @default(0.00)
-  jackpotContribution String?
-  jackpotPayout       String?
-  seedContriAmount    String?
-  jackpotType         String?
-  jackpotDetails      String?
-  channelType         String?
-  brand               String?
-  sport               String?
-  ticketStatus        String?
-  prematchLive        String?
-  kioskTerminal       String?
-  platformCode        Int?
-  platformName        String?
-  gameStatusId        String?
-  roundId             String?
-  site        Site     @relation(fields: [siteId], references: [id])
-  siteId      String   @map("site_id")
-  agentAdmin User? @relation("AdminToTransaction", fields: [agentAdminId], references: [id])
-  agentAdminId        String?   @map("agent_admin_id")
-  agentAdminName      String?
-  agentOwner User? @relation("OwnerToTransaction", fields: [agentOwnerId], references: [id])
-  agentOwnerId        String?   @map("agent_owner_id")
-  agentOwnerName      String?
-  agentMaster User? @relation("MasterToTransaction", fields: [agentMasterId], references: [id])
-  agentMasterId       String?   @map("agent_master_id")
-  agentMasterName     String?
-  agentGolden User? @relation("GoldenToTransaction", fields: [agentGoldenId], references: [id])
-  agentGoldenId       String?   @map("agent_golden_id")
-  agentGoldenName     String?
-  agentUserType       String?
+  id                    BigInt          @id @default(autoincrement())
+  betId                 String
+  settlementTime        DateTime?
+  timeOfBet             DateTime?
+  outletId              String?
+  playerId              String?
+  playerName            String?
+  transactionId         String
+  gameId                String?
+  gameName              String?
+  gameType              String?
+  gameProvider          String?
+  machineId             String?
+  betAmount             Decimal?
+  payoutAmount          Decimal?
+  refundAmount          Decimal?
+  depositAmount         Decimal         @default(0.00)
+  withdrawAmount        Decimal         @default(0.00)
+  jackpotContribution   String?
+  jackpotPayout         String?
+  seedContriAmount      String?
+  jackpotType           String?
+  jackpotDetails        String?
+  channelType           String?
+  brand                 String?
+  sport                 String?
+  ticketStatus          String?
+  prematchLive          String?
+  kioskTerminal         String?
+  platformCode          Int?
+  platformName          String?
+  gameStatusId          String?
+  roundId               String?
+  site                  Site            @relation(fields: [siteId], references: [id])
+  siteId                String          @map("site_id")
+  agentAdmin            User?           @relation("AdminToTransaction", fields: [agentAdminId], references: [id])
+  agentAdminId          String?         @map("agent_admin_id")
+  agentAdminName        String?
+  agentOwner            User?           @relation("OwnerToTransaction", fields: [agentOwnerId], references: [id])
+  agentOwnerId          String?         @map("agent_owner_id")
+  agentOwnerName        String?
+  agentMaster           User?           @relation("MasterToTransaction", fields: [agentMasterId], references: [id])
+  agentMasterId         String?         @map("agent_master_id")
+  agentMasterName       String?
+  agentGolden           User?           @relation("GoldenToTransaction", fields: [agentGoldenId], references: [id])
+  agentGoldenId         String?         @map("agent_golden_id")
+  agentGoldenName       String?
+  agentUserType         String?
   ownerActualPercentage Decimal?
-  ownerPercentage     Decimal?
+  ownerPercentage       Decimal?
   masterAgentPercentage Decimal?
   goldenAgentPercentage Decimal?
-  ggrAmount           Decimal?
-  totalCommission     Decimal?
-  ownerCommission     Decimal?
+  ggrAmount             Decimal?
+  totalCommission       Decimal?
+  ownerCommission       Decimal?
   masterAgentCommission Decimal?
   goldenAgentCommission Decimal?
-  depositCommission   Decimal  @default(0.00)
-  withdrawCommission  Decimal  @default(0.00)
-  transactionType     TransactionType @default(bet)
-  status              String?
-  settled             String?  @default("N")
-  timestamp           DateTime?
-  createdAt           DateTime? @default(now())
-  updatedAt           DateTime? @default(now())
-  createdBy           String?  @map("created_by") @default("system")
-  updatedBy           String?  @map("updated_by") @default("system")
+  depositCommission     Decimal         @default(0.00)
+  withdrawCommission    Decimal         @default(0.00)
+  transactionType       TransactionType @default(bet)
+  status                String?
+  settled               String?         @default("N")
+  timestamp             DateTime?
+  createdAt             DateTime?       @default(now())
+  updatedAt             DateTime?       @default(now())
+  createdBy             String?         @default("system") @map("created_by")
+  updatedBy             String?         @default("system") @map("updated_by")
 
   @@index([agentAdminId])
   @@index([agentOwnerId])

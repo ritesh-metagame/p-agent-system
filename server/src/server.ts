@@ -9,6 +9,9 @@ import { PrismaClient, TransactionType } from "./../prisma/generated/prisma";
 import "./main";
 import { Decimal } from "../prisma/generated/prisma/runtime/library";
 
+import fs from "fs";
+import csv from "csv-parser";
+
 // import { redisService } from "./core/services/redis.service";
 
 const log = logger(module);
@@ -39,86 +42,106 @@ class Server {
     // const conn = await connect(DB_URL, config.mongo.dbName!);
     // log.info(`Platform db is running on host ${conn?.connection.host}`);
 
-    // const goldenAgentIds = [
-    //   "cm98in9i70016ioknpah55tja",
-    //   "cm98l67eu001tio9da4d9k30g",
-    //   //   "cm96y9psv004rjf9wyib6e4y5",
-    //   //   "cm96yaff00055jjf9wfd2iufyu",
-    //   //   "cm96yb9xv005jjf9w5yqyfnpv",
-    //   //   "cm96ybs86805xjf9wa9m7zbxx",
-    //   //   "cm96ycsgb006bjf9wtvbk7avg",
-    //   //   "cm96ydc7g006pjf9wmsksay3x",
-    //   //   "cm96ye7ut0073jf9w2zxra1ev",
-    //   //   "cm96yepy0007hjf9wh0qujc51",
-    // ];
+    const siteIds = ["cm9aylz4z0000jf78g1kvma8h"];
+    const goldenAgentIds = [
+      "cm9b3w6r7001bjf1o3nxdr5qa",
+      "cm9b3xoi5001jjf1oz3mces6x",
+      "cm9b3yfx9001rjf1oizxmaoqd",
+      "cm9b3z4ps001zjf1o4nmmjzxn",
+    ];
 
-    // const siteIds = ["cm93pe3n10000iokn0tb8c6hk"];
+    const getRandom = (arr: string[]) =>
+      arr[Math.floor(Math.random() * arr.length)];
 
-    // const getRandomSiteId = () =>
-    //   siteIds[Math.floor(Math.random() * siteIds.length)];
-    // const getRandomDecimal = () =>
-    //   new Decimal((Math.random() * 1000).toFixed(2));
+    const getRandomSettledStatus = () => (Math.random() < 0.5 ? "Y" : "N");
 
-    // async function insertTransactions() {
-    //   const transactions = [];
+    async function insertTransactionsFromCSV(filePath: string) {
+      const transactions: any[] = [];
 
-    //   for (const agentGoldenId of goldenAgentIds) {
-    //     for (let i = 0; i < 5; i++) {
-    //       const settled = Math.random() > 0.5 ? "Y" : "N";
-    //       transactions.push(
-    //         prisma.transaction.create({
-    //           data: {
-    //             betId: `BID-${Math.random().toString(36).substring(2, 10)}`,
-    //             transactionId: `TXN-${Math.random().toString(36).substring(2, 10)}`,
-    //             agentGoldenId,
-    //             // site
-    //             siteId: getRandomSiteId(),
-    //             betAmount: getRandomDecimal(),
-    //             payoutAmount: getRandomDecimal(),
-    //             depositAmount: new Decimal(0),
-    //             withdrawAmount: new Decimal(0),
-    //             transactionType: TransactionType.bet,
-    //             settled: settled,
-    //             createdAt: new Date(),
-    //             updatedAt: new Date(),
-    //           },
-    //         })
-    //       );
-    //     }
-    //     transactions.push(
-    //       prisma.transaction.create({
-    //         data: {
-    //           betId: `BID-${Math.random().toString(36).substring(2, 10)}`,
-    //           transactionId: `TXN-${Math.random().toString(36).substring(2, 10)}`,
-    //           agentGoldenId,
-    //           // site
-    //           siteId: getRandomSiteId(),
-    //           betAmount: getRandomDecimal(),
-    //           payoutAmount: getRandomDecimal(),
-    //           depositAmount: new Decimal(0),
-    //           withdrawAmount: new Decimal(0),
-    //           transactionType: TransactionType.bet,
-    //           settled: "N",
-    //           createdAt: new Date(),
-    //           updatedAt: new Date(),
-    //         },
-    //       })
-    //     );
-    //   }
+      return new Promise<void>((resolve, reject) => {
+        fs.createReadStream(filePath)
+          .pipe(csv({ separator: "\t" }))
+          .on("data", (row) => {
+            console.log("Row:", row);
+            // Construct the transaction object, map/parse types as needed
+            const transaction = {
+              id: row.id,
+              betAmount: row.bet_amount || null,
+              betId: row.bet_id,
+              brand: row.brand || null,
+              channelType: row.channel_type || null,
+              gameId: row.game_id || null,
+              gameName: row.game_name || null,
+              gameProvider: row.game_provider || null,
+              gameStatusId: row.game_status_id || null,
+              gameType: row.game_type || null,
+              jackpotContribution: row.jackpot_contribution || null,
+              jackpotDetails: row.jackpot_details || null,
+              jackpotPayout: row.jackpot_payout || null,
+              jackpotType: row.jackpot_type || null,
+              kioskTerminal: row.kiosk_terminal || null,
+              machineId: row.machine_id || null,
+              outletId: row.outlet_id || null,
+              payoutAmount: row.payout_amount
+                ? new Decimal(row.payout_amount)
+                : null,
+              platformCode: row.platform_code
+                ? parseInt(row.platform_code)
+                : null,
+              platformName: row.platform_name || null,
+              playerId: row.player_id || null,
+              prematchLive: row.prematch_live || null,
+              refundAmount: row.refund_amount
+                ? new Decimal(row.refund_amount)
+                : null,
+              roundId: row.round_id || null,
+              seedContriAmount: row.seed_contri_amount || null,
+              settlementTime: row.settlement_time
+                ? new Date(row.settlement_time)
+                : null,
+              siteId: getRandom(siteIds),
+              sport: row.sport || null,
+              status: row.status || null,
+              ticketStatus: row.ticket_status || null,
+              timeOfBet: row.time_of_bet ? new Date(row.time_of_bet) : null,
+              timestamp: row.timestamp ? new Date(row.timestamp) : null,
+              transactionId: row.transaction_id,
+              transactionType: TransactionType.bet, // default as bet, override if needed
+              depositAmount: new Decimal(0), // default to 0
+              withdrawAmount: new Decimal(0), // default to 0
+              depositCommission: new Decimal(0),
+              withdrawCommission: new Decimal(0),
+              settled: getRandomSettledStatus(),
+              agentGoldenId: getRandom(goldenAgentIds),
+            };
+            console.log("Transaction:", transaction);
 
-    //   await Promise.all(transactions);
-    //   console.log("Transactions inserted successfully.");
-    // }
+            transactions.push(transaction);
+          })
+          .on("end", async () => {
+            try {
+              for (const tx of transactions) {
+                await prisma.transaction.create({
+                  data: tx,
+                });
+              }
+              console.log("✅ All transactions inserted successfully");
+              resolve();
+            } catch (err) {
+              console.error("❌ Error inserting transactions:", err);
+              reject(err);
+            }
+          });
+      });
+    } //   });
 
-    // insertTransactions()
-    //   .catch((e) => console.error(e))
-    //   .finally(() => prisma.$disconnect());
-
-    // redisService.connect();
-
-    // const { server } = this.socketService;
-
-    // await this.connectRedisClient();
+    // insertTransactionsFromCSV("data1.csv")
+    //   .then(() => {
+    //     console.log("Import complete.");
+    //   })
+    //   .catch((err) => {
+    //     console.error("Import failed:", err);
+    //   });
 
     this.app
       .listen(config.port, () => {

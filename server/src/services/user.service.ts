@@ -36,11 +36,21 @@ class UserService {
     user: User
   ) {
     try {
+      // Add debug logs at each step of the createUser method
+      console.debug("[createUser] Start creating user", {
+        userData,
+        roleId,
+        user,
+      });
+
       // Import prisma client
       const { prisma } = await import("../server");
 
       // Get current user role and determine new user role in one step
       const currentUserRole = await this.roleDao.getRoleById(roleId);
+
+      // Log current user role
+      console.debug("[createUser] Current user role", { currentUserRole });
 
       let role: Role;
       switch (currentUserRole.name) {
@@ -57,11 +67,35 @@ class UserService {
           throw new Error("Role not found");
       }
 
+      // Log role determination
+      console.debug("[createUser] Determined role for new user", { role });
+
       if (!role) {
         throw new Error("Role not found");
       }
 
+      console.log({ userData });
+
+      // Log settlement details validation
+      if (currentUserRole.name === UserRole.SUPER_ADMIN) {
+        if (
+          !userData.eGamesCommissionComputationPeriod ||
+          !userData.sportsBettingCommissionComputationPeriod ||
+          !userData.specialityGamesCommissionComputationPeriod
+        ) {
+          throw new Error(
+            "Commission computation period is required for SUPER_ADMIN role"
+          );
+        }
+      } else {
+        // Remove commission computation period for non-SUPER_ADMIN roles
+        delete userData.eGamesCommissionComputationPeriod;
+        delete userData.sportsBettingCommissionComputationPeriod;
+        delete userData.specialityGamesCommissionComputationPeriod;
+      }
+
       // Hash password and fetch categories in parallel
+      console.debug("[createUser] Hashing password and fetching categories");
       const [hashedPassword, categories] = await Promise.all([
         BcryptService.generateHash(userData.password),
         this.categoryDao.getAllCategories(),
@@ -80,12 +114,15 @@ class UserService {
       };
 
       // Execute all operations in a transaction to ensure atomicity
+      console.debug("[createUser] Starting transaction for user creation");
       const result = await prisma.$transaction(
         async (tx) => {
           // Create user within transaction
+          console.debug("[createUser] Creating new user", { data });
           const newUser = await tx.user.create({
             data: data as any,
           });
+          console.debug("[createUser] New user created", { newUser });
 
           // Helper function to find category by name
           const findCategory = (name: string) =>
@@ -93,6 +130,9 @@ class UserService {
 
           // Process sites and commissions
           if (userData.siteIds && userData.siteIds.length > 0) {
+            console.debug("[createUser] Processing sites and commissions", {
+              siteIds: userData.siteIds,
+            });
             for (const siteId of userData.siteIds) {
               // Create user-site relationship within transaction
               const userSite = await tx.userSite.create({
@@ -102,11 +142,21 @@ class UserService {
                 },
               });
 
+              console.debug("[createUser] User-site relationship created", {
+                userSite,
+              });
+
               // Create commissions for each category that has a value
               const commissionData = [];
 
               // Prepare commission data for eGames if provided
               if (userData.commissions.eGames) {
+                console.debug(
+                  "[createUser] Preparing commission data for eGames",
+                  {
+                    userData: userData.commissions.eGames,
+                  }
+                );
                 const eGamesCategory = findCategory("eGames");
                 if (eGamesCategory) {
                   commissionData.push({
@@ -115,19 +165,25 @@ class UserService {
                     siteId: siteId,
                     categoryId: eGamesCategory.id,
                     commissionPercentage: toFloat(userData.commissions.eGames),
-                    settlementPeriod: userData.settlementDetails.period,
-                    settlementStartingFrom: new Date(
-                      userData.settlementDetails.startDate
-                    ),
-                    settlementEndingAt: new Date(
-                      userData.settlementDetails.endDate
-                    ),
+                    settlementPeriod: userData.settlementDetails?.period,
+                    settlementStartingFrom: userData.settlementDetails
+                      ? new Date(userData.settlementDetails.startDate)
+                      : undefined,
+                    settlementEndingAt: userData.settlementDetails
+                      ? new Date(userData.settlementDetails.endDate)
+                      : undefined,
                   });
                 }
               }
 
               // Prepare commission data for sportsBetting if provided
               if (userData.commissions.sportsBetting) {
+                console.debug(
+                  "[createUser] Preparing commission data for sportsBetting",
+                  {
+                    userData: userData.commissions.sportsBetting,
+                  }
+                );
                 const sportsBettingCategory = findCategory("Sports-Betting");
                 if (sportsBettingCategory) {
                   commissionData.push({
@@ -138,19 +194,25 @@ class UserService {
                     commissionPercentage: toFloat(
                       userData.commissions.sportsBetting
                     ),
-                    settlementPeriod: userData.settlementDetails.period,
-                    settlementStartingFrom: new Date(
-                      userData.settlementDetails.startDate
-                    ),
-                    settlementEndingAt: new Date(
-                      userData.settlementDetails.endDate
-                    ),
+                    settlementPeriod: userData.settlementDetails?.period,
+                    settlementStartingFrom: userData.settlementDetails
+                      ? new Date(userData.settlementDetails.startDate)
+                      : undefined,
+                    settlementEndingAt: userData.settlementDetails
+                      ? new Date(userData.settlementDetails.endDate)
+                      : undefined,
                   });
                 }
               }
 
               // Prepare commission data for specialtyGames if provided
               if (userData.commissions.specialtyGames) {
+                console.debug(
+                  "[createUser] Preparing commission data for specialtyGames",
+                  {
+                    userData: userData.commissions.specialtyGames,
+                  }
+                );
                 const specialtyGamesCategory = findCategory("SpecialityGames");
                 if (specialtyGamesCategory) {
                   commissionData.push({
@@ -161,16 +223,21 @@ class UserService {
                     commissionPercentage: toFloat(
                       userData.commissions.specialtyGames
                     ),
-                    settlementPeriod: userData.settlementDetails.period,
-                    settlementStartingFrom: new Date(
-                      userData.settlementDetails.startDate
-                    ),
-                    settlementEndingAt: new Date(
-                      userData.settlementDetails.endDate
-                    ),
+                    settlementPeriod: userData.settlementDetails?.period,
+                    settlementStartingFrom: userData.settlementDetails
+                      ? new Date(userData.settlementDetails.startDate)
+                      : undefined,
+                    settlementEndingAt: userData.settlementDetails
+                      ? new Date(userData.settlementDetails.endDate)
+                      : undefined,
                   });
                 }
               }
+
+              console.debug(
+                "[createUser] Commission data prepared for user-site relationship",
+                { commissionData }
+              );
 
               // Create all commissions in transaction
               for (const commission of commissionData) {
@@ -189,6 +256,7 @@ class UserService {
         }
       );
 
+      console.debug("[createUser] Transaction completed successfully");
       return new Response(
         ResponseCodes.USER_CREATED_SUCCESSFULLY.code,
         ResponseCodes.USER_CREATED_SUCCESSFULLY.message,
