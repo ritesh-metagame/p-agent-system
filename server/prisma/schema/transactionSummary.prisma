@@ -1,36 +1,36 @@
 model TransactionCommission {
-  id                 String   @id @default(cuid())
-  betId              String
-  transactionId      String
-  betAmount          Float
-  payoutAmount       Float
-  refundAmount       Float
-  depositAmount      Float
-  withdrawAmount     Float
-  siteId             String
+  id             String @id @default(cuid())
+  betId          String
+  transactionId  String
+  betAmount      Float
+  payoutAmount   Float
+  refundAmount   Float
+  depositAmount  Float
+  withdrawAmount Float
+  siteId         String
 
-  agentGoldenId      String
-  agentGolden        Agent @relation("GoldenAgent", fields: [agentGoldenId], references: [id])
+  agentGoldenId String
+  agentGolden   Agent  @relation("GoldenAgent", fields: [agentGoldenId], references: [id])
 
-  agentPlatinumId    String
-  agentPlatinum      Agent @relation("PlatinumAgent", fields: [agentPlatinumId], references: [id])
+  agentPlatinumId String
+  agentPlatinum   Agent  @relation("PlatinumAgent", fields: [agentPlatinumId], references: [id])
 
-  agentOperatorId    String
-  agentOperator      Agent @relation("OperatorAgent", fields: [agentOperatorId], references: [id])
+  agentOperatorId String
+  agentOperator   Agent  @relation("OperatorAgent", fields: [agentOperatorId], references: [id])
 
-  transactionType    String
-  settled            Boolean
+  transactionType String
+  settled         Boolean
 
-  commissionId       String
-  category           String
-  categoryId         String
+  commissionId String
+  category     String
+  categoryId   String
 
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Agent {
-  id         String   @id
+  id         String @id
   percentage Float
   amount     Float
 

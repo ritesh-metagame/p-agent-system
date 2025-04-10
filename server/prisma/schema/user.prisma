@@ -1,16 +1,16 @@
 model User {
-  id        String   @id @default(cuid())
-  username  String   @unique
-  password  String
-  roleId    String   @map("role_id")
-  role      Role     @relation(fields: [roleId], references: [id])
+  id       String @id @default(cuid())
+  username String @unique
+  password String
+  roleId   String @map("role_id")
+  role     Role   @relation(fields: [roleId], references: [id])
 
   affiliateLink String? @map("affiliate_link")
 
-  firstName    String?
-  lastName     String?
-  mobileNumber String?
-  bankName     String?
+  firstName     String?
+  lastName      String?
+  mobileNumber  String?
+  bankName      String?
   accountNumber String?
 
   approved Boolean @default(true)
@@ -19,16 +19,16 @@ model User {
 
   topPerformerSummaries TopPerformerSummary[]
 
-  parentId  String?  @map("parent_id")
-  parent    User?    @relation("UserToUser", fields: [parentId], references: [id])
-  children  User[]   @relation("UserToUser")
+  parentId String? @map("parent_id")
+  parent   User?   @relation("UserToUser", fields: [parentId], references: [id])
+  children User[]  @relation("UserToUser")
 
   commissions         Commission[]
   commissionSummaries CommissionSummary[]
   agentSummaries      AgentSummary[]
 
-  transactionsAsAdmin Transaction[] @relation("AdminToTransaction")
-  transactionsAsOwner Transaction[] @relation("OwnerToTransaction")
+  transactionsAsAdmin  Transaction[] @relation("AdminToTransaction")
+  transactionsAsOwner  Transaction[] @relation("OwnerToTransaction")
   transactionsAsMaster Transaction[] @relation("MasterToTransaction")
   transactionsAsGolden Transaction[] @relation("GoldenToTransaction")
 
@@ -36,7 +36,7 @@ model User {
   categoryLogsCreated CategoryLog[] @relation("CategoryLogCreator")
   roleLogsCreated     RoleLog[]     @relation("RoleLogCreator")
   siteLogsCreated     SiteLog[]     @relation("SiteLogCreator")
-  
+
   // Relations with logs as updater
   categoryLogsUpdated CategoryLog[] @relation("CategoryLogUpdater")
   roleLogsUpdated     RoleLog[]     @relation("RoleLogUpdater")
