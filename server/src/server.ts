@@ -41,12 +41,12 @@ class Server {
     // const conn = await connect(DB_URL, config.mongo.dbName!);
     // log.info(`Platform db is running on host ${conn?.connection.host}`);
 
-    const siteIds = ["cm9aylz4z0000jf78g1kvma8h"];
+    const siteIds = ["cm9bb4lno0002jfx8kwuws9rb", "cm9bb4w7i0003jfx8hvsob15z"];
     const goldenAgentIds = [
-      "cm9b3w6r7001bjf1o3nxdr5qa",
-      "cm9b3xoi5001jjf1oz3mces6x",
-      "cm9b3yfx9001rjf1oizxmaoqd",
-      "cm9b3z4ps001zjf1o4nmmjzxn",
+      "cm9bbatu1002tjfx802jymuf1",
+      "cm9bbbo3d0031jfx8guy727b9",
+      "cm9bbccuj003fjfx8ywi5oy2q",
+      // "cm9b3z4ps001zjf1o4nmmjzxn",
     ];
 
     const getRandom = (arr: string[]) =>

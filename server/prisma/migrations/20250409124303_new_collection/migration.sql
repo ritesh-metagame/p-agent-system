@@ -1,3 +1,6 @@
+-- Drop the existing table first
+DROP TABLE IF EXISTS `transactioncommission`;
+
 -- CreateTable
 CREATE TABLE `GameTransaction` (
     `id` INTEGER NOT NULL,
@@ -65,13 +68,13 @@ CREATE TABLE `TransactionCommission` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Agent` (
-    `id` VARCHAR(191) NOT NULL,
-    `percentage` DOUBLE NOT NULL,
-    `amount` DOUBLE NOT NULL,
+-- CREATE TABLE `Agent` (
+--     `id` VARCHAR(191) NOT NULL,
+--     `percentage` DOUBLE NOT NULL,
+--     `amount` DOUBLE NOT NULL,
 
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+--     PRIMARY KEY (`id`)
+-- ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
 ALTER TABLE `TransactionCommission` ADD CONSTRAINT `TransactionCommission_agentGoldenId_fkey` FOREIGN KEY (`agentGoldenId`) REFERENCES `Agent`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -17,8 +17,8 @@ class GenerateCommission {
     });
 
     const platformToCategoryMap: Record<string, string> = {
-      egames: "eGames",
-      sportsbettings: "Sports-Bettings",
+      egames: "E-Games",
+      sportsbettings: "Sports-Betting",
       // Add more mappings if needed
     };
 
