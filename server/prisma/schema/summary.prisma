@@ -65,29 +65,6 @@ model CategorySummary {
   @@index([date])
 }
 
-model CommissionSummary {
-  id                    String   @id @default(cuid())
-  siteId                String   @map("site_id")
-  site                  Site     @relation(fields: [siteId], references: [id])
-  userId                String   @map("user_id")
-  user                  User     @relation(fields: [userId], references: [id])
-  roleId                String   @map("role_id")
-  role                  Role     @relation(fields: [roleId], references: [id])
-  totalCommissionAmount Float    @map("total_commission_amount")
-  date                  DateTime @db.Date
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-
-  createdBy String? @default("system") @map("created_by")
-  updatedBy String? @default("system") @map("updated_by")
-
-  @@unique([siteId, userId, roleId, date])
-  @@index([siteId])
-  @@index([userId])
-  @@index([roleId])
-  @@index([date])
-}
-
 model AgentSummary {
   id              String   @id @default(cuid())
   agentId         String   @map("agent_id")

@@ -9,6 +9,7 @@ model Category {
   updatedAt         DateTime          @default(now()) @updatedAt
   createdBy         String            @default("system") @map("created_by")
   updatedBy         String            @default("system") @map("updated_by")
+  commissionSummaries CommissionSummary[]
 }
 
 model Role {

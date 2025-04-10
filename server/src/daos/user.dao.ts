@@ -255,11 +255,7 @@ class UserDao {
   }
 
   public async createTransactionSummary(transactions: any[]) {
-    function extractDecimal({ s, e, d }: any): number {
-      const num =
-        parseFloat(d.join("")) * Math.pow(10, e - (d.join("").length - 1));
-      return s === -1 ? -num : num;
-    }
+    
 
     function getCommission(agent: any, categoryId: string): number {
       const match = agent?.commissions?.find(
@@ -281,7 +277,7 @@ class UserDao {
           continue; // skip to next transaction
         }
 
-        const category = golden.commissions[2].category;
+        const category = golden.commissions[1].category;
         if (!category) {
           console.warn(
             "Missing category for transaction:",

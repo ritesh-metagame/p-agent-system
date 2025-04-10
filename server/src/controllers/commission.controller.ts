@@ -29,6 +29,24 @@ class CommissionController {
       next(error);
     }
   }
+
+  public static async commissionByCategory(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { date } = req.query as any;
+
+      const commissionService = Container.get(CommissionService);
+
+      const response = await commissionService.createCommissionCategory(date);
+
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { CommissionController };

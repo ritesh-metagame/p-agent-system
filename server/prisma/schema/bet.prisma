@@ -1,0 +1,37 @@
+model GameTransaction {
+  id                   Int       @id
+  bet_amount           Float
+  bet_id               String
+  brand                String
+  channel_type         String
+  game_id              Int
+  game_name            String
+  game_provider        String
+  game_status_id       Int
+  game_type            String
+  jackpot_contribution Float?
+  jackpot_details      String?
+  jackpot_payout       Float?
+  jackpot_type         String?
+  kiosk_terminal       String?
+  machine_id           String?
+  outlet_id            String?
+  payout_amount        Float?
+  platform_code        String?
+  platform_name        String?
+  player_id            String?
+  prematch_live        String?
+  refund_amount        Float?
+  round_id             String?
+  seed_contri_amount   Float?
+  settlement_time      DateTime?
+  site                 String?
+  sport                String?
+  status               String?
+  ticket_status        String?
+  time_of_bet          DateTime?
+  createdAt            DateTime? @default(now())
+  updatedAt            DateTime? @updatedAt
+  timestamp            DateTime?
+  transaction_id       String
+}

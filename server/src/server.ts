@@ -8,9 +8,8 @@ import AppLoader from "./common/loaders";
 import { PrismaClient, TransactionType } from "./../prisma/generated/prisma";
 import "./main";
 import { Decimal } from "../prisma/generated/prisma/runtime/library";
-
 import fs from "fs";
-import csv from "csv-parser";
+import csv from "csv-parser"; // install with: npm install csv-parser
 
 // import { redisService } from "./core/services/redis.service";
 

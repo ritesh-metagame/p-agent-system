@@ -8,6 +8,20 @@ const route = Router();
 export default (app: Router) => {
   app.use("/commission", route);
 
+  route.post(
+    "/commissionByCategory",
+    // celebrate({}),
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await CommissionController.commissionByCategory(
+        req,
+        res,
+        next
+      );
+
+      res.status(200).json(response);
+    }) as any
+  );
+
   // Define your routes here
   route.post(
     "/create",
