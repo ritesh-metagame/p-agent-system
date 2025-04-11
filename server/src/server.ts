@@ -124,8 +124,12 @@ class Server {
           .on("end", async () => {
             try {
               for (const tx of transactions) {
-                await prisma.transaction.create({
-                  data: tx,
+                await prisma.transaction.upsert({
+                  where: {
+                    id: BigInt(tx.id)
+                  },
+                  update: tx,
+                  create: tx
                 });
               }
               console.log("✅ All transactions inserted successfully");
