@@ -242,23 +242,89 @@ class CommissionDao {
     }
   }
 
-  public async getCommissionPayoutReport(categoryId?: string) {
+  public async getCommissionPayoutReport(userId: string, categoryId?: string) {
     try {
-      // Calculate the current month's period from 1st till today
-      const today = new Date();
-      const startDate = new Date(today.getFullYear(), today.getMonth(), 1); // 1st of current month
-      const endDate = today; // Current date
+      console.log("userId", userId); // Debugging line
+      console.log("categoryId", categoryId); // Debugging line
 
-      // Fetch current cycle data
+      // Get user details with role
+      const user = await prisma.user.findUnique({
+        where: {
+          id: userId, // Fixed: Properly passing the userId
+        },
+        include: {
+          role: true,
+        },
+      });
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      const today = new Date();
+      const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+      const endDate = today;
+
+      // Base where clause
+      const baseWhereClause: any = {
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+        ...(categoryId ? { categoryId } : {}),
+      };
+
+      // Add role-specific filters
+      switch (user.role.name.toLowerCase()) {
+        case "operator":
+          baseWhereClause.OR = [
+            { userId: user.id }, // Operator's own data
+            {
+              user: {
+                parentId: user.id,
+                role: { name: "platinum" },
+              },
+            }, // Platinum children
+            {
+              user: {
+                parent: {
+                  parentId: user.id,
+                  role: { name: "platinum" },
+                },
+                role: { name: "gold" },
+              },
+            }, // Gold grandchildren
+          ];
+          break;
+
+        case "platinum":
+          baseWhereClause.OR = [
+            { userId: user.id }, // Platinum's own data
+            {
+              user: {
+                parentId: user.id,
+                role: { name: "gold" },
+              },
+            }, // Gold children
+          ];
+          break;
+
+        case "gold":
+          baseWhereClause.userId = user.id; // Only their own data
+          break;
+
+        case "super_admin":
+          // No additional filters - can see all data
+          break;
+
+        default:
+          throw new Error("Invalid user role");
+      }
+
+      // Fetch current cycle data with role-based filtering
       const pendingSettlements = await prisma.commissionSummary.groupBy({
         by: ["categoryId"],
-        where: {
-          ...(categoryId ? { categoryId } : {}),
-          createdAt: {
-            gte: startDate,
-            lte: endDate,
-          },
-        },
+        where: baseWhereClause,
         _sum: {
           totalDeposit: true,
           totalWithdrawals: true,
@@ -270,11 +336,14 @@ class CommissionDao {
         },
       });
 
-      // Fetch all-time data (no date restrictions)
+      // Fetch all-time data with the same role-based filtering
       const allTimeData = await prisma.commissionSummary.groupBy({
         by: ["categoryId"],
         where: {
           ...(categoryId ? { categoryId } : {}),
+          ...baseWhereClause,
+          // Remove date range for all-time data
+          createdAt: undefined,
         },
         _sum: {
           totalDeposit: true,
@@ -313,6 +382,7 @@ class CommissionDao {
           startDate,
           endDate,
         },
+        userRole: user.role.name,
       };
     } catch (error) {
       throw new Error(`Error fetching commission payout report: ${error}`);

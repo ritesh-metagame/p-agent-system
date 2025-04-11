@@ -297,7 +297,7 @@ class CommissionService {
     }
   }
 
-  public async getCommissionPayoutReport(categoryId?: string) {
+  public async getCommissionPayoutReport(userId: string, categoryId?: string) {
     try {
       interface CommissionMetrics {
         metric: string;
@@ -316,7 +316,7 @@ class CommissionService {
       }
 
       const { pendingSettlements, allTimeData, categories, periodInfo } =
-        await this.commissionDao.getCommissionPayoutReport(categoryId);
+        await this.commissionDao.getCommissionPayoutReport(userId, categoryId);
 
       const initialTotal: SummaryTotal = {
         totalDeposit: 0,

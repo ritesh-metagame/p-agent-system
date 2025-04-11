@@ -121,10 +121,20 @@ class CommissionController {
   ) {
     try {
       const { categoryId } = req.query;
+      const user = req.user;
+
+      if (!user) {
+        return new ApiResponse(
+          ResponseCodes.UNAUTHORIZED.code,
+          "Unauthorized - User details not found",
+          null
+        );
+      }
 
       const commissionService = Container.get(CommissionService);
       const result = await commissionService.getCommissionPayoutReport(
-        categoryId as string
+        user.id,
+        categoryId as string | undefined
       );
 
       return new ApiResponse(
