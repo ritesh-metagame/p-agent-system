@@ -126,10 +126,10 @@ class Server {
               for (const tx of transactions) {
                 await prisma.transaction.upsert({
                   where: {
-                    id: BigInt(tx.id)
+                    id: BigInt(tx.id),
                   },
                   update: tx,
-                  create: tx
+                  create: tx,
                 });
               }
               console.log("✅ All transactions inserted successfully");
@@ -142,13 +142,13 @@ class Server {
       });
     } //   });
 
-    insertTransactionsFromCSV("data1.csv")
-      .then(() => {
-        console.log("Import complete.");
-      })
-      .catch((err) => {
-        console.error("Import failed:", err);
-      });
+    // insertTransactionsFromCSV("data1.csv")
+    //   .then(() => {
+    //     console.log("Import complete.");
+    //   })
+    //   .catch((err) => {
+    //     console.error("Import failed:", err);
+    //   });
 
     this.app
       .listen(config.port, () => {

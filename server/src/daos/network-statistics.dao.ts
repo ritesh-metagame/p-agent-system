@@ -8,42 +8,63 @@ export class NetworkStatisticsDao {
   ): Promise<NetworkStatistics> {
     const { roleId, calculationDate = new Date(), userId, ...rest } = data;
 
-    try {
-      // Try to create first
-      return await prisma.networkStatistics.create({
+    // First check if a record exists with this combination
+    const existing = await prisma.networkStatistics.findFirst({
+      where: {
+        roleId,
+        userId,
+        calculationDate,
+      },
+    });
+
+    if (existing) {
+      // Update the existing record
+      return prisma.networkStatistics.update({
+        where: { id: existing.id },
         data: {
-          role: {
-            connect: { id: roleId },
-          },
-          user: {
-            connect: { id: userId },
-          },
-          calculationDate,
           ...rest,
+          updatedAt: new Date(),
         },
       });
-    } catch (error) {
-      if (error.code === "P2002") {
-        // If creation fails due to unique constraint, update the existing record
-        const existing = await prisma.networkStatistics.findFirst({
-          where: {
-            roleId,
-            userId,
+    } else {
+      try {
+        // Try to create a new record
+        return await prisma.networkStatistics.create({
+          data: {
+            role: {
+              connect: { id: roleId },
+            },
+            user: {
+              connect: { id: userId },
+            },
             calculationDate,
+            ...rest,
           },
         });
-
-        if (existing) {
-          return prisma.networkStatistics.update({
-            where: { id: existing.id },
-            data: {
-              ...rest,
-              updatedAt: new Date(),
+      } catch (error) {
+        if (error.code === "P2002") {
+          // If unique constraint failed, try to find the record again with different criteria
+          // This handles both roleId_calculationDate and roleId_userId_calculationDate constraints
+          const existingWithoutUserId = await prisma.networkStatistics.findFirst({
+            where: {
+              roleId,
+              calculationDate,
             },
           });
+
+          if (existingWithoutUserId) {
+            return prisma.networkStatistics.update({
+              where: { id: existingWithoutUserId.id },
+              data: {
+                ...rest,
+                userId, // Also update the userId in case it was missing before
+                updatedAt: new Date(),
+              },
+            });
+          }
         }
+        throw error;
       }
-      throw error;
     }
   }
 
