@@ -116,6 +116,7 @@ model NetworkStatistics {
   createdBy String? @default("system") @map("created_by")
   updatedBy String? @default("system") @map("updated_by")
 
-  @@unique([roleId, calculationDate], name: "roleId_calculationDate")
+  @@unique([roleId, userId, calculationDate], name: "roleId_userId_calculationDate")
   @@index([roleId])
+  @@index([userId])
 }

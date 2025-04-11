@@ -23,11 +23,12 @@ export class NetworkStatisticsDao {
         },
       });
     } catch (error) {
-      if (error.code === 'P2002') {
+      if (error.code === "P2002") {
         // If creation fails due to unique constraint, update the existing record
         const existing = await prisma.networkStatistics.findFirst({
           where: {
             roleId,
+            userId,
             calculationDate,
           },
         });
@@ -35,7 +36,10 @@ export class NetworkStatisticsDao {
         if (existing) {
           return prisma.networkStatistics.update({
             where: { id: existing.id },
-            data: rest,
+            data: {
+              ...rest,
+              updatedAt: new Date(),
+            },
           });
         }
       }
