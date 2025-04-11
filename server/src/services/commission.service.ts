@@ -612,9 +612,11 @@ class CommissionService {
         to: timestamp.toISOString(),
       };
 
+      console.log({ commissionSummaries})
+
       // Calculate totals for each game category
       commissionSummaries.forEach((summary) => {
-        if (summary.category.name === "E-Games") {
+        if (summary.category.name === "egames" || summary.category.name === "E-Games" || summary.category.name === "eGames") {
           result.tally[0].eGames += Number(
             summary.netCommissionAvailablePayout || 0
           );
