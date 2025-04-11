@@ -244,13 +244,10 @@ class CommissionDao {
 
   public async getCommissionPayoutReport(userId: string, categoryId?: string) {
     try {
-      console.log("userId", userId); // Debugging line
-      console.log("categoryId", categoryId); // Debugging line
-
       // Get user details with role
       const user = await prisma.user.findUnique({
         where: {
-          id: userId, // Fixed: Properly passing the userId
+          id: userId,
         },
         include: {
           role: true,
@@ -313,8 +310,27 @@ class CommissionDao {
           baseWhereClause.userId = user.id; // Only their own data
           break;
 
-        case "super_admin":
-          // No additional filters - can see all data
+        case "superadmin":
+          baseWhereClause.OR = [
+            // Get all operator data
+            {
+              user: {
+                role: { name: "operator" },
+              },
+            },
+            // Get all platinum data
+            {
+              user: {
+                role: { name: "platinum" },
+              },
+            },
+            // Get all gold data
+            {
+              user: {
+                role: { name: "gold" },
+              },
+            },
+          ];
           break;
 
         default:
