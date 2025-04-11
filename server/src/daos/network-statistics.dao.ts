@@ -8,32 +8,39 @@ export class NetworkStatisticsDao {
   ): Promise<NetworkStatistics> {
     const { roleId, calculationDate = new Date(), userId, ...rest } = data;
 
-    const existing = await prisma.networkStatistics.findFirst({
-      where: {
-        roleId,
-        calculationDate,
-      },
-    });
-
-    if (existing) {
-      return prisma.networkStatistics.update({
-        where: { id: existing.id },
-        data: rest,
+    try {
+      // Try to create first
+      return await prisma.networkStatistics.create({
+        data: {
+          role: {
+            connect: { id: roleId },
+          },
+          user: {
+            connect: { id: userId },
+          },
+          calculationDate,
+          ...rest,
+        },
       });
-    }
+    } catch (error) {
+      if (error.code === 'P2002') {
+        // If creation fails due to unique constraint, update the existing record
+        const existing = await prisma.networkStatistics.findFirst({
+          where: {
+            roleId,
+            calculationDate,
+          },
+        });
 
-    return prisma.networkStatistics.create({
-      data: {
-        role: {
-          connect: { id: roleId },
-        },
-        user: {
-          connect: { id: userId },
-        },
-        calculationDate,
-        ...rest,
-      },
-    });
+        if (existing) {
+          return prisma.networkStatistics.update({
+            where: { id: existing.id },
+            data: rest,
+          });
+        }
+      }
+      throw error;
+    }
   }
 
   async getNetworkStatisticsByRole(
