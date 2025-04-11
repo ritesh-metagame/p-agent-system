@@ -41,11 +41,11 @@ class Server {
     // const conn = await connect(DB_URL, config.mongo.dbName!);
     // log.info(`Platform db is running on host ${conn?.connection.host}`);
 
-    const siteIds = ["cm9bb4lno0002jfx8kwuws9rb", "cm9bb4w7i0003jfx8hvsob15z"];
+    const siteIds = ["cm93pe3n10000iokn0tb8c6hk"];
     const goldenAgentIds = [
-      "cm9bbatu1002tjfx802jymuf1",
-      "cm9bbbo3d0031jfx8guy727b9",
-      "cm9bbccuj003fjfx8ywi5oy2q",
+      "cm98l4r2u001lio9dll0fp2ft",
+      "cm98l67eu001tio9da4d9k30g",
+      // "cm9bbccuj003fjfx8ywi5oy2q",
       // "cm9b3z4ps001zjf1o4nmmjzxn",
     ];
 
@@ -134,13 +134,13 @@ class Server {
       });
     } //   });
 
-    // insertTransactionsFromCSV("data1.csv")
-    //   .then(() => {
-    //     console.log("Import complete.");
-    //   })
-    //   .catch((err) => {
-    //     console.error("Import failed:", err);
-    //   });
+    insertTransactionsFromCSV("data1.csv")
+      .then(() => {
+        console.log("Import complete.");
+      })
+      .catch((err) => {
+        console.error("Import failed:", err);
+      });
 
     this.app
       .listen(config.port, () => {

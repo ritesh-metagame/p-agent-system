@@ -308,3 +308,11 @@ http: 2025-04-11T04:35:29.920Z [logger\morgan.ts] GET /api/v1/commission/payout-
 
 http: 2025-04-11T04:35:29.923Z [logger\morgan.ts] GET /api/v1/commission/payout-report 200 - - 39.477 ms
 
+info: 2025-04-11T05:21:15.183Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-11T05:21:15.169Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-11T05:21:24.701Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-11T05:21:24.713Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
