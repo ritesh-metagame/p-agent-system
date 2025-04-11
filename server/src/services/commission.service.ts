@@ -656,6 +656,17 @@ class CommissionService {
       throw new Error(`Error creating commission: ${error}`);
     }
   }
+
+  public async getTotalCommissionByUser(date: string) {
+    try {
+      // Using the instance variable instead of creating a new instance
+      const newCommission =
+        await this.commissionDao.getAllCommissionTransactionsByUser(date);
+      return newCommission;
+    } catch (error) {
+      throw new Error(`Error creating commission: ${error}`);
+    }
+  }
 }
 
 export { CommissionService };

@@ -210,6 +210,24 @@ class CommissionController {
       next(error);
     }
   }
+
+  public static async getTotalCommissionByUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { userId } = req.query as any;
+
+      const commissionService = Container.get(CommissionService);
+
+      const response = await commissionService.getTotalCommissionByUser(userId);
+
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { CommissionController };
