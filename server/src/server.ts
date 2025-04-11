@@ -134,13 +134,13 @@ class Server {
       });
     } //   });
 
-    insertTransactionsFromCSV("data1.csv")
-      .then(() => {
-        console.log("Import complete.");
-      })
-      .catch((err) => {
-        console.error("Import failed:", err);
-      });
+    // insertTransactionsFromCSV("data1.csv")
+    //   .then(() => {
+    //     console.log("Import complete.");
+    //   })
+    //   .catch((err) => {
+    //     console.error("Import failed:", err);
+    //   });
 
     this.app
       .listen(config.port, () => {

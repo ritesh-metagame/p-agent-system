@@ -8,17 +8,22 @@ export class NetworkStatisticsDao {
   ): Promise<NetworkStatistics> {
     const { roleId, calculationDate = new Date(), userId, ...rest } = data;
 
-    console.log({ data });
-
-    return prisma.networkStatistics.upsert({
+    const existing = await prisma.networkStatistics.findFirst({
       where: {
-        roleId_calculationDate: {
-          roleId,
-          calculationDate: calculationDate,
-        },
+        roleId,
+        calculationDate,
       },
-      update: { ...rest },
-      create: {
+    });
+
+    if (existing) {
+      return prisma.networkStatistics.update({
+        where: { id: existing.id },
+        data: rest,
+      });
+    }
+
+    return prisma.networkStatistics.create({
+      data: {
         role: {
           connect: { id: roleId },
         },
