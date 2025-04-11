@@ -143,6 +143,10 @@ export class NetworkStatisticsDao {
       },
     });
 
+    // Use a single calculation date for all records
+    const calculationDate = new Date();
+
+    // Process users sequentially to avoid race conditions
     for (const user of users) {
       const stats = {
         operatorUserApprovedCount: 0,
@@ -164,7 +168,6 @@ export class NetworkStatisticsDao {
         goldUserTotalCount: 0,
       };
 
-      // Function to count users recursively
       const countUsersInChain = (children: any[]) => {
         for (const child of children) {
           switch (child.role.name.toLowerCase()) {
@@ -193,27 +196,22 @@ export class NetworkStatisticsDao {
               break;
           }
 
-          // Recursively count children's children
           if (child.children?.length > 0) {
             countUsersInChain(child.children);
           }
         }
       };
 
-      // Start counting from immediate children
       if (user.children?.length > 0) {
         countUsersInChain(user.children);
       }
 
-      // Only store statistics that are relevant for the user's role
       const roleStats: any = {};
       switch (user.role.name.toLowerCase()) {
         case "superadmin":
-          // SuperAdmin can see all counts
           Object.assign(roleStats, stats);
           break;
         case "operator":
-          // Operator can see platinum and gold counts
           Object.assign(roleStats, {
             platinumUserApprovedCount: stats.platinumUserApprovedCount,
             platinumUserPendingCount: stats.platinumUserPendingCount,
@@ -229,7 +227,6 @@ export class NetworkStatisticsDao {
           });
           break;
         case "platinum":
-          // Platinum can see only gold counts
           Object.assign(roleStats, {
             goldUserApprovedCount: stats.goldUserApprovedCount,
             goldUserPendingCount: stats.goldUserPendingCount,
@@ -243,12 +240,17 @@ export class NetworkStatisticsDao {
           break;
       }
 
-      await this.createOrUpdate({
-        roleId: user.roleId,
-        userId: user.id,
-        calculationDate: new Date(),
-        ...roleStats,
-      });
+      try {
+        await this.createOrUpdate({
+          roleId: user.roleId,
+          userId: user.id,
+          calculationDate,
+          ...roleStats,
+        });
+      } catch (error) {
+        console.error(`Error updating stats for user ${user.id}:`, error);
+        throw error;
+      }
     }
   }
 }
