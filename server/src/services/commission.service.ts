@@ -645,6 +645,17 @@ class CommissionService {
         return "";
     }
   }
+
+  public async getTopPerformer(date: string) {
+    try {
+      // Using the instance variable instead of creating a new instance
+      const newCommission =
+        await this.commissionSummaryDao.generateTopPerformers(date);
+      return newCommission;
+    } catch (error) {
+      throw new Error(`Error creating commission: ${error}`);
+    }
+  }
 }
 
 export { CommissionService };
