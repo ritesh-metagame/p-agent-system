@@ -1170,3 +1170,7 @@ debug: 2025-04-11T09:01:15.422Z [middlewares\checkAuthAndAttachCurrentUser.ts] P
 http: 2025-04-11T09:01:15.426Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting 401 26 - 9.073 ms
 
 debug: 2025-04-11T09:01:15.425Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+info: 2025-04-11T09:05:52.938Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-11T09:05:52.923Z [loaders\index.ts] ✌️ Express loaded
