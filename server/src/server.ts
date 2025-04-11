@@ -39,11 +39,8 @@ class Server {
       config.mongo.user!
     ).replace("<PASSWORD>", config.mongo.pass!) as string;
 
-    const siteIds = ["cm9a0ecd20003v9544an1zilr", "cm9a0fhgo0005v954tj6mu4v4"];
-    const goldenAgentIds = [
-      "cm9a2ayl90001v9josyfnqcyn",
-      "cm9a2eogt0005v9jod5l0gefx",
-    ];
+    const siteIds = ["cm9cf98v90000v9y824jf7qo9"];
+    const goldenAgentIds = ["cm9cfsmfn000kv9y87pyibbrn"];
 
     const getRandom = (arr: string[]) =>
       arr[Math.floor(Math.random() * arr.length)];

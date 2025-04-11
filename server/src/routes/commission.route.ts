@@ -46,4 +46,18 @@ export default (app: Router) => {
       res.status(200).json(response);
     }) as any
   );
+
+  route.get(
+    "/getTotalCommissionByUser",
+    // celebrate({}),
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await CommissionController.getTotalCommissionByUser(
+        req,
+        res,
+        next
+      );
+
+      res.status(200).json(response);
+    }) as any
+  );
 };
