@@ -10,7 +10,7 @@ model CommissionSummary {
   grossCommission              Float  @default(0)
   paymentGatewayFee            Float  @default(0)
   netCommissionAvailablePayout Float  @default(0)
-  settledStatus String?
+  settledStatus                String?
 
   // Relations
   user     User     @relation(fields: [userId], references: [id])
@@ -19,7 +19,7 @@ model CommissionSummary {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  settledAt DateTime @default(now())
+  settledAt DateTime? @default(now())
 
   Site      Site?    @relation(fields: [siteId], references: [id])
   siteId    String?

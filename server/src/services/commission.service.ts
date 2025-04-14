@@ -4,6 +4,20 @@ import { CommissionDao } from "../daos/commission.dao";
 import { RoleDao } from "../daos/role.dao";
 import { GenerateCommission } from "../daos/generateCommission";
 import { prisma } from "../server";
+import {
+  CommissionComputationPeriod,
+  DEFAULT_COMMISSION_COMPUTATION_PERIOD,
+} from "../common/config/constants";
+
+import {
+  endOfMonth,
+  format,
+  getDaysInMonth,
+  lastDayOfMonth,
+  setDate,
+  startOfMonth,
+  subMonths,
+} from "date-fns";
 
 @Service()
 class CommissionService {
@@ -321,41 +335,43 @@ class CommissionService {
       let cycleStartDate: Date;
       let cycleEndDate: Date;
 
-      if (currentDay <= 15) {
-        // We're in the first half of the month (1-15)
-        // Show previous month's second half (16-end)
-        const previousMonth = new Date(
+      if (DEFAULT_COMMISSION_COMPUTATION_PERIOD.toString() === "MONTHLY") {
+        // For monthly periods, show the previous complete month (March 1-31 if we're in April)
+
+        const prevMonth = new Date(
           currentDate.getFullYear(),
           currentDate.getMonth() - 1
-        );
-        cycleStartDate = new Date(
-          previousMonth.getFullYear(),
-          previousMonth.getMonth(),
-          16
-        );
+        ).valueOf();
+
+        cycleStartDate = new Date(format(prevMonth, "yyyy-MM-dd")); // March 1
         cycleEndDate = new Date(
-          previousMonth.getFullYear(),
-          previousMonth.getMonth() + 1,
-          0
-        ); // Last day of previous month
+          format(lastDayOfMonth(prevMonth), "yyyy-MM-dd")
+        ); // March 31
       } else {
-        // We're in the second half of the month (16-end)
-        // Show current month's first half (1-15)
-        cycleStartDate = new Date(
-          currentDate.getFullYear(),
-          currentDate.getMonth(),
-          1
-        );
-        cycleEndDate = new Date(
-          currentDate.getFullYear(),
-          currentDate.getMonth(),
-          15
-        );
+        // For bi-monthly periods
+        if (currentDay <= 15) {
+          // We're in the first half of the month (1-15)
+          // Show previous month's second half (16-end)
+          const previousMonth = subMonths(currentDate, 1);
+          cycleStartDate = setDate(previousMonth, 16);
+          cycleEndDate = endOfMonth(previousMonth);
+
+          // Handle February's varying end date
+          if (previousMonth.getMonth() === 1) {
+            const daysInFebruary = getDaysInMonth(previousMonth);
+            cycleEndDate = setDate(previousMonth, daysInFebruary);
+          }
+        } else {
+          // We're in the second half of the month (16-end)
+          // Show current month's first half (1-15)
+          cycleStartDate = startOfMonth(currentDate);
+          cycleEndDate = setDate(currentDate, 15);
+        }
       }
 
-      // Set time to start and end of day
-      cycleStartDate.setHours(0, 0, 0, 0);
-      cycleEndDate.setHours(23, 59, 59, 999);
+      // Use UTC dates to avoid timezone issues
+      cycleStartDate.setUTCHours(0, 0, 0, 0);
+      cycleEndDate.setUTCHours(23, 59, 59, 999);
 
       const { pendingSettlements, allTimeData, categories } =
         await this.commissionDao.getCommissionPayoutReport(
@@ -375,6 +391,7 @@ class CommissionService {
         netCommissionAvailablePayout: 0,
       };
 
+      // Format dates using UTC to ensure consistent date strings
       const pendingPeriod = {
         start: cycleStartDate.toISOString().split("T")[0],
         end: cycleEndDate.toISOString().split("T")[0],
