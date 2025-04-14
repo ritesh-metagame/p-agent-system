@@ -315,8 +315,55 @@ class CommissionService {
         netCommissionAvailablePayout: number;
       }
 
-      const { pendingSettlements, allTimeData, categories, periodInfo } =
-        await this.commissionDao.getCommissionPayoutReport(userId, categoryId);
+      // Calculate the date range for the previously completed cycle
+      const currentDate = new Date();
+      const currentDay = currentDate.getDate();
+      let cycleStartDate: Date;
+      let cycleEndDate: Date;
+
+      if (currentDay <= 15) {
+        // We're in the first half of the month (1-15)
+        // Show previous month's second half (16-end)
+        const previousMonth = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth() - 1
+        );
+        cycleStartDate = new Date(
+          previousMonth.getFullYear(),
+          previousMonth.getMonth(),
+          16
+        );
+        cycleEndDate = new Date(
+          previousMonth.getFullYear(),
+          previousMonth.getMonth() + 1,
+          0
+        ); // Last day of previous month
+      } else {
+        // We're in the second half of the month (16-end)
+        // Show current month's first half (1-15)
+        cycleStartDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          1
+        );
+        cycleEndDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          15
+        );
+      }
+
+      // Set time to start and end of day
+      cycleStartDate.setHours(0, 0, 0, 0);
+      cycleEndDate.setHours(23, 59, 59, 999);
+
+      const { pendingSettlements, allTimeData, categories } =
+        await this.commissionDao.getCommissionPayoutReport(
+          userId,
+          categoryId,
+          cycleStartDate,
+          cycleEndDate
+        );
 
       const initialTotal: SummaryTotal = {
         totalDeposit: 0,
@@ -329,8 +376,8 @@ class CommissionService {
       };
 
       const pendingPeriod = {
-        start: periodInfo.startDate.toISOString().split("T")[0],
-        end: periodInfo.endDate.toISOString().split("T")[0],
+        start: cycleStartDate.toISOString().split("T")[0],
+        end: cycleEndDate.toISOString().split("T")[0],
       };
 
       const response = {
@@ -612,11 +659,15 @@ class CommissionService {
         to: timestamp.toISOString(),
       };
 
-      console.log({ commissionSummaries})
+      console.log({ commissionSummaries });
 
       // Calculate totals for each game category
       commissionSummaries.forEach((summary) => {
-        if (summary.category.name === "egames" || summary.category.name === "E-Games" || summary.category.name === "eGames") {
+        if (
+          summary.category.name === "egames" ||
+          summary.category.name === "E-Games" ||
+          summary.category.name === "eGames"
+        ) {
           result.tally[0].eGames += Number(
             summary.netCommissionAvailablePayout || 0
           );

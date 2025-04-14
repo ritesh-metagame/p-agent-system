@@ -1,0 +1,13 @@
+info: 2025-04-14T05:32:09.040Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-14T05:32:09.065Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+http: 2025-04-14T05:32:29.031Z [logger\morgan.ts] POST /api/v1/auth/login 200 - - 4285.286 ms
+
+debug: 2025-04-14T05:32:54.037Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-14T05:32:54.041Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-14T05:32:54.041Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-14T05:32:54.041Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9bb265n0000jf44ndbz4wqh
+debug: 2025-04-14T05:32:54.042Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9bb3ljw0004jf44cyukmarj
+http: 2025-04-14T05:32:54.057Z [logger\morgan.ts] GET /api/v1/commission/payout-report 200 - - 22.624 ms
+
