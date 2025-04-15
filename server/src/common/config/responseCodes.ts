@@ -120,6 +120,11 @@ class ResponseCodes {
     code: "401",
     message: "Unauthorized access",
   } as const;
+
+  static readonly USER_ALREADY_EXISTS = {
+    code: "2005",
+    message: "User with this username already exists",
+  } as const;
 }
 
 export { ResponseCodes };

@@ -109,10 +109,24 @@ class UserService {
         lastName: userData.lastName,
         bankName: userData.bankName,
         accountNumber: userData.accountNumber,
+        mobileNumber: userData.mobileNumber,
         password: hashedPassword,
         roleId: role.id,
         parentId: user.id,
       };
+
+      // Put another check if user with username already exists return error message
+      const existingUser = await this.userDao.getUserByUsername(
+        userData.username
+      );
+
+      if (existingUser) {
+        return new Response(
+          ResponseCodes.USER_ALREADY_EXISTS.code,
+          ResponseCodes.USER_ALREADY_EXISTS.message,
+          null
+        );
+      }
 
       // Execute all operations in a transaction to ensure atomicity
       console.debug("[createUser] Starting transaction for user creation");
@@ -207,11 +221,11 @@ class UserService {
               }
 
               // Prepare commission data for specialtyGames if provided
-              if (userData.commissions.specialtyGames) {
+              if (userData.commissions.specialityGames) {
                 console.debug(
                   "[createUser] Preparing commission data for specialtyGames",
                   {
-                    userData: userData.commissions.specialtyGames,
+                    userData: userData.commissions.specialityGames,
                   }
                 );
                 const specialtyGamesCategory = findCategory("SpecialityGames");
@@ -222,7 +236,7 @@ class UserService {
                     siteId: siteId,
                     categoryId: specialtyGamesCategory.id,
                     commissionPercentage: toFloat(
-                      userData.commissions.specialtyGames
+                      userData.commissions.specialityGames
                     ),
                     settlementPeriod: userData.settlementDetails?.period,
                     settlementStartingFrom: userData.settlementDetails
@@ -422,6 +436,14 @@ class UserService {
         );
       }
 
+      console.log(
+        "___________________________________________________________"
+      );
+      console.log({ userData });
+      console.log(
+        "___________________________________________________________"
+      );
+
       // Start a transaction for atomic updates
       const result = await prisma.$transaction(async (tx) => {
         // Update basic user information
@@ -490,8 +512,9 @@ class UserService {
             }
 
             // Update specialtyGames commission
-            if (userData.commissions.specialtyGames !== undefined) {
+            if (userData.commissions.specialityGames !== undefined) {
               const specialtyGamesCategory = findCategory("SpecialityGames");
+
               if (specialtyGamesCategory) {
                 await this.updateCommission(tx, {
                   userId,
@@ -540,9 +563,9 @@ class UserService {
     // Try to find existing commission
     const existingCommission = await tx.commission.findFirst({
       where: {
-        userId: data.userId,
-        siteId: data.siteId,
-        categoryId: data.categoryId,
+        user: { id: data.userId },
+        site: { id: data.siteId },
+        category: { id: data.categoryId },
       },
     });
 
@@ -556,19 +579,44 @@ class UserService {
             commissionComputationPeriod: data.settlementPeriod,
           }),
           updatedBy: data.updatedBy,
+          site: {
+            connect: { id: data.siteId },
+          },
+          user: {
+            connect: { id: data.userId },
+          },
+          category: {
+            connect: { id: data.categoryId },
+          },
         },
       });
     } else {
       // Create new commission
       return await tx.commission.create({
         data: {
-          userId: data.userId,
-          siteId: data.siteId,
-          categoryId: data.categoryId,
           commissionPercentage: data.commissionPercentage,
           commissionComputationPeriod: data.settlementPeriod || "MONTHLY",
           updatedBy: data.updatedBy,
           createdBy: data.updatedBy,
+          site: {
+            connect: { id: data.siteId },
+          },
+          user: {
+            connect: { id: data.userId },
+          },
+          category: {
+            connect: { id: data.categoryId },
+          },
+          role: {
+            connect: {
+              id: (
+                await tx.user.findUnique({
+                  where: { id: data.userId },
+                  select: { roleId: true },
+                })
+              ).roleId,
+            },
+          },
         },
       });
     }
@@ -702,6 +750,10 @@ class UserService {
       // Basic user data update - use existing values if not provided
       const userUpdateData: any = {
         updatedBy: currentUser.id,
+        mobileNumber:
+          userData.mobileNumber !== undefined
+            ? userData.mobileNumber
+            : existingUser.mobileNumber,
         username:
           userData.username !== undefined
             ? userData.username
@@ -785,6 +837,14 @@ class UserService {
             {}
           );
 
+          console.log(
+            "___________________________________________________________"
+          );
+          console.log({ userData });
+          console.log(
+            "___________________________________________________________"
+          );
+
           // Process each site's commissions
           for (const siteId of siteIds) {
             // Handle eGames commission
@@ -838,24 +898,25 @@ class UserService {
 
             // Handle specialtyGames commission
             const specialtyGamesCategory = findCategory("SpecialityGames");
+            // console.log({ specialtyGamesCategory });
             if (specialtyGamesCategory) {
-              const existingSpecialtyGamesComm =
+              const existingSpecialityGamesComm =
                 existingCommissions["SpecialityGames"];
               if (
                 userData.commissions.specialtyGames !== undefined ||
-                existingSpecialtyGamesComm
+                existingSpecialityGamesComm
               ) {
                 await this.updateCommission(tx, {
                   userId: existingUser.id,
                   siteId,
                   categoryId: specialtyGamesCategory.id,
                   commissionPercentage:
-                    userData.commissions.specialtyGames !== undefined
-                      ? toFloat(userData.commissions.specialtyGames)
-                      : existingSpecialtyGamesComm?.commissionPercentage || 0,
+                    userData.commissions.specialityGames !== undefined
+                      ? toFloat(userData.commissions.specialityGames)
+                      : existingSpecialityGamesComm?.commissionPercentage || 0,
                   settlementPeriod:
                     userData.settlementDetails?.period ||
-                    existingSpecialtyGamesComm?.commissionComputationPeriod,
+                    existingSpecialityGamesComm?.commissionComputationPeriod,
                   updatedBy: currentUser.id,
                 });
               }
