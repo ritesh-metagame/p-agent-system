@@ -255,8 +255,6 @@ class UserDao {
   }
 
   public async createTransactionSummary(transactions: any[]) {
-    
-
     function getCommission(agent: any, categoryId: string): number {
       const match = agent?.commissions?.find(
         (c: any) => c.category.id === categoryId
@@ -444,6 +442,196 @@ class UserDao {
       return transactions;
     } catch (error) {
       throw new Error(`Error fetching grouped commissions: ${error.message}`);
+    }
+  }
+
+  public async getUserDetailsWithCommissions(userId: string) {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+          role: true,
+          userSites: {
+            include: {
+              site: true,
+            },
+          },
+          commissions: {
+            include: {
+              site: true,
+              category: true,
+              role: true,
+            },
+          },
+          parent: {
+            select: {
+              id: true,
+              username: true,
+              firstName: true,
+              lastName: true,
+              role: true,
+            },
+          },
+          children: {
+            include: {
+              role: true,
+              commissions: {
+                include: {
+                  category: true,
+                  site: true,
+                },
+              },
+            },
+          },
+          commissionSummaries: {
+            include: {
+              category: true,
+              Site: true,
+            },
+          },
+        },
+      });
+
+      if (!user) {
+        return null;
+      }
+
+      // Get commission totals
+      const commissionTotals = await prisma.commissionSummary.aggregate({
+        where: { userId },
+        _sum: {
+          totalDeposit: true,
+          totalWithdrawals: true,
+          totalBetAmount: true,
+          netGGR: true,
+          grossCommission: true,
+          paymentGatewayFee: true,
+          netCommissionAvailablePayout: true,
+        },
+      });
+
+      // Get pending vs settled commissions
+      const commissionSummaries = await prisma.commissionSummary.groupBy({
+        by: ["settledStatus"],
+        where: { userId },
+        _sum: {
+          netCommissionAvailablePayout: true,
+        },
+      });
+
+      const pendingAmount =
+        commissionSummaries.find((s) => s.settledStatus === "pending")?._sum
+          .netCommissionAvailablePayout || 0;
+      const settledAmount =
+        commissionSummaries.find((s) => s.settledStatus === "settled")?._sum
+          .netCommissionAvailablePayout || 0;
+
+      return {
+        user,
+        commissionTotals: commissionTotals._sum,
+        commissionStatus: {
+          pending: pendingAmount,
+          settled: settledAmount,
+          total: pendingAmount + settledAmount,
+        },
+      };
+    } catch (error) {
+      throw new Error(`Error fetching user details: ${error}`);
+    }
+  }
+
+  public async getUserDetailsWithCommissionsByUsername(username: string) {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { username },
+        include: {
+          role: true,
+          userSites: {
+            include: {
+              site: true,
+            },
+          },
+          commissions: {
+            include: {
+              site: true,
+              category: true,
+              role: true,
+            },
+          },
+          parent: {
+            select: {
+              id: true,
+              username: true,
+              firstName: true,
+              lastName: true,
+              role: true,
+            },
+          },
+          children: {
+            include: {
+              role: true,
+              commissions: {
+                include: {
+                  category: true,
+                  site: true,
+                },
+              },
+            },
+          },
+          commissionSummaries: {
+            include: {
+              category: true,
+              Site: true,
+            },
+          },
+        },
+      });
+
+      if (!user) {
+        return null;
+      }
+
+      // Get commission totals
+      const commissionTotals = await prisma.commissionSummary.aggregate({
+        where: { userId: user.id },
+        _sum: {
+          totalDeposit: true,
+          totalWithdrawals: true,
+          totalBetAmount: true,
+          netGGR: true,
+          grossCommission: true,
+          paymentGatewayFee: true,
+          netCommissionAvailablePayout: true,
+        },
+      });
+
+      // Get pending vs settled commissions
+      const commissionSummaries = await prisma.commissionSummary.groupBy({
+        by: ["settledStatus"],
+        where: { userId: user.id },
+        _sum: {
+          netCommissionAvailablePayout: true,
+        },
+      });
+
+      const pendingAmount =
+        commissionSummaries.find((s) => s.settledStatus === "pending")?._sum
+          .netCommissionAvailablePayout || 0;
+      const settledAmount =
+        commissionSummaries.find((s) => s.settledStatus === "settled")?._sum
+          .netCommissionAvailablePayout || 0;
+
+      return {
+        user,
+        commissionTotals: commissionTotals._sum,
+        commissionStatus: {
+          pending: pendingAmount,
+          settled: settledAmount,
+          total: pendingAmount + settledAmount,
+        },
+      };
+    } catch (error) {
+      throw new Error(`Error fetching user details: ${error}`);
     }
   }
 }

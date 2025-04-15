@@ -11,6 +11,7 @@ import { CategoryService } from "./category.service";
 import { SiteService } from "./site.service";
 import { CategoryDao } from "../daos/category.dao";
 import { toFloat } from "validator";
+import { prisma } from "../server";
 
 @Service()
 class UserService {
@@ -344,6 +345,537 @@ class UserService {
       return new Response(
         ResponseCodes.USERS_FETCHED_FAILED.code,
         `Error fetching all users: ${error.message}`,
+        null
+      );
+    }
+  }
+
+  public async getUserDetails(userId: string) {
+    try {
+      const userDetails =
+        await this.userDao.getUserDetailsWithCommissions(userId);
+
+      if (!userDetails) {
+        return new Response(
+          ResponseCodes.USERS_FETCHED_FAILED.code,
+          "User not found",
+          null
+        );
+      }
+
+      return new Response(
+        ResponseCodes.USERS_FETCHED_SUCCESSFULLY.code,
+        ResponseCodes.USERS_FETCHED_SUCCESSFULLY.message,
+        userDetails
+      );
+    } catch (error) {
+      return new Response(
+        ResponseCodes.USERS_FETCHED_FAILED.code,
+        `Error fetching user details: ${error.message}`,
+        null
+      );
+    }
+  }
+
+  public async updateUser(
+    userId: string,
+    userData: Record<string, any>,
+    currentUser: User
+  ) {
+    try {
+      // Fetch existing user to check role hierarchy and get current data
+      const existingUser = await prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+          role: true,
+          commissions: true,
+          userSites: true,
+        },
+      });
+
+      if (!existingUser) {
+        throw new Error("User not found");
+      }
+
+      // Get current user's role to check permissions
+      const currentUserRole = await this.roleDao.getRoleById(
+        currentUser.roleId
+      );
+      if (!currentUserRole) {
+        throw new Error("Current user role not found");
+      }
+
+      // Basic user data update
+      const userUpdateData: any = {
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        bankName: userData.bankName,
+        accountNumber: userData.accountNumber,
+        approved: userData.approved,
+        updatedBy: currentUser.id,
+      };
+
+      // If password is provided, hash it
+      if (userData.password) {
+        userUpdateData.password = await BcryptService.generateHash(
+          userData.password
+        );
+      }
+
+      // Start a transaction for atomic updates
+      const result = await prisma.$transaction(async (tx) => {
+        // Update basic user information
+        const updatedUser = await tx.user.update({
+          where: { id: userId },
+          data: userUpdateData,
+        });
+
+        // Update sites if provided
+        if (userData.siteIds) {
+          // Delete existing user-site relationships
+          await tx.userSite.deleteMany({
+            where: { userId: userId },
+          });
+
+          // Create new user-site relationships
+          for (const siteId of userData.siteIds) {
+            await tx.userSite.create({
+              data: {
+                userId: userId,
+                siteId: siteId,
+              },
+            });
+          }
+        }
+
+        // Update commissions if provided
+        if (userData.commissions) {
+          // Handle commission updates
+          const categories = await this.categoryDao.getAllCategories();
+          const findCategory = (name: string) =>
+            categories.find((category) => category.name === name);
+
+          // Process each site's commissions
+          for (const siteId of userData.siteIds || []) {
+            // Update eGames commission
+            if (userData.commissions.eGames !== undefined) {
+              const eGamesCategory = findCategory("eGames");
+              if (eGamesCategory) {
+                await this.updateCommission(tx, {
+                  userId,
+                  siteId,
+                  categoryId: eGamesCategory.id,
+                  commissionPercentage: toFloat(userData.commissions.eGames),
+                  settlementPeriod: userData.settlementDetails?.period,
+                  updatedBy: currentUser.id,
+                });
+              }
+            }
+
+            // Update sportsBetting commission
+            if (userData.commissions.sportsBetting !== undefined) {
+              const sportsBettingCategory = findCategory("Sports-Betting");
+              if (sportsBettingCategory) {
+                await this.updateCommission(tx, {
+                  userId,
+                  siteId,
+                  categoryId: sportsBettingCategory.id,
+                  commissionPercentage: toFloat(
+                    userData.commissions.sportsBetting
+                  ),
+                  settlementPeriod: userData.settlementDetails?.period,
+                  updatedBy: currentUser.id,
+                });
+              }
+            }
+
+            // Update specialtyGames commission
+            if (userData.commissions.specialtyGames !== undefined) {
+              const specialtyGamesCategory = findCategory("SpecialityGames");
+              if (specialtyGamesCategory) {
+                await this.updateCommission(tx, {
+                  userId,
+                  siteId,
+                  categoryId: specialtyGamesCategory.id,
+                  commissionPercentage: toFloat(
+                    userData.commissions.specialtyGames
+                  ),
+                  settlementPeriod: userData.settlementDetails?.period,
+                  updatedBy: currentUser.id,
+                });
+              }
+            }
+          }
+        }
+
+        return updatedUser;
+      });
+
+      return new Response(
+        ResponseCodes.USER_CREATED_SUCCESSFULLY.code,
+        "User updated successfully",
+        result
+      );
+    } catch (error) {
+      console.error("Error updating user:", error);
+      return new Response(
+        ResponseCodes.USERS_FETCHED_FAILED.code,
+        `Error updating user: ${error.message}`,
+        null
+      );
+    }
+  }
+
+  private async updateCommission(
+    tx: any,
+    data: {
+      userId: string;
+      siteId: string;
+      categoryId: string;
+      commissionPercentage: number;
+      settlementPeriod?: string;
+      updatedBy: string;
+    }
+  ) {
+    // Try to find existing commission
+    const existingCommission = await tx.commission.findFirst({
+      where: {
+        userId: data.userId,
+        siteId: data.siteId,
+        categoryId: data.categoryId,
+      },
+    });
+
+    if (existingCommission) {
+      // Update existing commission
+      return await tx.commission.update({
+        where: { id: existingCommission.id },
+        data: {
+          commissionPercentage: data.commissionPercentage,
+          ...(data.settlementPeriod && {
+            commissionComputationPeriod: data.settlementPeriod,
+          }),
+          updatedBy: data.updatedBy,
+        },
+      });
+    } else {
+      // Create new commission
+      return await tx.commission.create({
+        data: {
+          userId: data.userId,
+          siteId: data.siteId,
+          categoryId: data.categoryId,
+          commissionPercentage: data.commissionPercentage,
+          commissionComputationPeriod: data.settlementPeriod || "MONTHLY",
+          updatedBy: data.updatedBy,
+          createdBy: data.updatedBy,
+        },
+      });
+    }
+  }
+
+  public async updateProfile(
+    userId: string,
+    profileData: Record<string, any>,
+    currentUser: User
+  ) {
+    try {
+      // Verify the user exists
+      const existingUser = await prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!existingUser) {
+        throw new Error("User not found");
+      }
+
+      // Verify current user can only update their own profile
+      if (userId !== currentUser.id) {
+        throw new Error("You can only update your own profile");
+      }
+
+      // Prepare update data
+      const updateData: any = {
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
+        email: profileData.email,
+        mobileNumber: profileData.mobileNumber,
+        bankName: profileData.bankName,
+        accountNumber: profileData.accountNumber,
+        updatedBy: currentUser.id,
+      };
+
+      // If password is provided, hash it
+      if (profileData.password) {
+        updateData.password = await BcryptService.generateHash(
+          profileData.password
+        );
+      }
+
+      // Update user profile
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: updateData,
+        include: {
+          role: true,
+        },
+      });
+
+      // Remove sensitive information
+      const { password, ...userWithoutPassword } = updatedUser;
+
+      return new Response(
+        ResponseCodes.USERS_FETCHED_SUCCESSFULLY.code,
+        "Profile updated successfully",
+        userWithoutPassword
+      );
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      return new Response(
+        ResponseCodes.USERS_FETCHED_FAILED.code,
+        `Error updating profile: ${error.message}`,
+        null
+      );
+    }
+  }
+
+  public async getUserDetailsByUsername(username: string) {
+    try {
+      const userDetails =
+        await this.userDao.getUserDetailsWithCommissionsByUsername(username);
+
+      if (!userDetails) {
+        return new Response(
+          ResponseCodes.USERS_FETCHED_FAILED.code,
+          "User not found",
+          null
+        );
+      }
+
+      return new Response(
+        ResponseCodes.USERS_FETCHED_SUCCESSFULLY.code,
+        ResponseCodes.USERS_FETCHED_SUCCESSFULLY.message,
+        userDetails
+      );
+    } catch (error) {
+      return new Response(
+        ResponseCodes.USERS_FETCHED_FAILED.code,
+        `Error fetching user details: ${error.message}`,
+        null
+      );
+    }
+  }
+
+  public async updateUserByUsername(
+    username: string,
+    userData: Record<string, any>,
+    currentUser: User
+  ) {
+    console.log({ username, userData, currentUser });
+
+    try {
+      const existingUser = await prisma.user.findUnique({
+        where: { username },
+        include: {
+          role: true,
+          commissions: true,
+          userSites: {
+            include: {
+              site: true,
+            },
+          },
+        },
+      });
+
+      if (!existingUser) {
+        throw new Error("User not found");
+      }
+
+      // Get current user's role to check permissions
+      const currentUserRole = await this.roleDao.getRoleById(
+        currentUser.roleId
+      );
+      if (!currentUserRole) {
+        throw new Error("Current user role not found");
+      }
+
+      // Basic user data update - use existing values if not provided
+      const userUpdateData: any = {
+        updatedBy: currentUser.id,
+        username:
+          userData.username !== undefined
+            ? userData.username
+            : existingUser.username,
+        firstName:
+          userData.firstName !== undefined
+            ? userData.firstName
+            : existingUser.firstName,
+        lastName:
+          userData.lastName !== undefined
+            ? userData.lastName
+            : existingUser.lastName,
+        bankName:
+          userData.bankName !== undefined
+            ? userData.bankName
+            : existingUser.bankName,
+        accountNumber:
+          userData.accountNumber !== undefined
+            ? userData.accountNumber
+            : existingUser.accountNumber,
+        approved:
+          userData.approved !== undefined
+            ? userData.approved
+            : existingUser.approved,
+      };
+
+      // If password is provided, hash it
+      if (userData.password) {
+        userUpdateData.password = await BcryptService.generateHash(
+          userData.password
+        );
+      }
+
+      // Start a transaction for atomic updates
+      const result = await prisma.$transaction(async (tx) => {
+        // Update basic user information
+        const updatedUser = await tx.user.update({
+          where: { username },
+          data: userUpdateData,
+        });
+
+        // Handle sites - if not provided, keep existing sites
+        const siteIds =
+          userData.siteIds && Array.isArray(userData.siteIds)
+            ? userData.siteIds
+            : existingUser.userSites.map((us) => us.site.id);
+
+        // Update site relationships
+        if (siteIds.length > 0) {
+          // Delete existing user-site relationships
+          await tx.userSite.deleteMany({
+            where: { userId: existingUser.id },
+          });
+
+          // Create new user-site relationships
+          for (const siteId of siteIds) {
+            await tx.userSite.create({
+              data: {
+                userId: existingUser.id,
+                siteId: siteId,
+              },
+            });
+          }
+        }
+
+        // Handle commissions - if not provided, keep existing commissions
+        if (userData.commissions) {
+          const categories = await this.categoryDao.getAllCategories();
+          const findCategory = (name: string) =>
+            categories.find((category) => category.name === name);
+
+          // Get existing commissions mapped by category name for easy lookup
+          const existingCommissions = existingUser.commissions.reduce(
+            (acc, comm) => {
+              const category = categories.find((c) => c.id === comm.categoryId);
+              if (category) {
+                acc[category.name] = comm;
+              }
+              return acc;
+            },
+            {}
+          );
+
+          // Process each site's commissions
+          for (const siteId of siteIds) {
+            // Handle eGames commission
+            const eGamesCategory = findCategory("eGames");
+            if (eGamesCategory) {
+              const existingEGamesComm = existingCommissions["eGames"];
+              if (
+                userData.commissions.eGames !== undefined ||
+                existingEGamesComm
+              ) {
+                await this.updateCommission(tx, {
+                  userId: existingUser.id,
+                  siteId,
+                  categoryId: eGamesCategory.id,
+                  commissionPercentage:
+                    userData.commissions.eGames !== undefined
+                      ? toFloat(userData.commissions.eGames)
+                      : existingEGamesComm?.commissionPercentage || 0,
+                  settlementPeriod:
+                    userData.settlementDetails?.period ||
+                    existingEGamesComm?.commissionComputationPeriod,
+                  updatedBy: currentUser.id,
+                });
+              }
+            }
+
+            // Handle sportsBetting commission
+            const sportsBettingCategory = findCategory("Sports-Betting");
+            if (sportsBettingCategory) {
+              const existingSportsBettingComm =
+                existingCommissions["Sports-Betting"];
+              if (
+                userData.commissions.sportsBetting !== undefined ||
+                existingSportsBettingComm
+              ) {
+                await this.updateCommission(tx, {
+                  userId: existingUser.id,
+                  siteId,
+                  categoryId: sportsBettingCategory.id,
+                  commissionPercentage:
+                    userData.commissions.sportsBetting !== undefined
+                      ? toFloat(userData.commissions.sportsBetting)
+                      : existingSportsBettingComm?.commissionPercentage || 0,
+                  settlementPeriod:
+                    userData.settlementDetails?.period ||
+                    existingSportsBettingComm?.commissionComputationPeriod,
+                  updatedBy: currentUser.id,
+                });
+              }
+            }
+
+            // Handle specialtyGames commission
+            const specialtyGamesCategory = findCategory("SpecialityGames");
+            if (specialtyGamesCategory) {
+              const existingSpecialtyGamesComm =
+                existingCommissions["SpecialityGames"];
+              if (
+                userData.commissions.specialtyGames !== undefined ||
+                existingSpecialtyGamesComm
+              ) {
+                await this.updateCommission(tx, {
+                  userId: existingUser.id,
+                  siteId,
+                  categoryId: specialtyGamesCategory.id,
+                  commissionPercentage:
+                    userData.commissions.specialtyGames !== undefined
+                      ? toFloat(userData.commissions.specialtyGames)
+                      : existingSpecialtyGamesComm?.commissionPercentage || 0,
+                  settlementPeriod:
+                    userData.settlementDetails?.period ||
+                    existingSpecialtyGamesComm?.commissionComputationPeriod,
+                  updatedBy: currentUser.id,
+                });
+              }
+            }
+          }
+        }
+
+        return updatedUser;
+      });
+
+      return new Response(
+        ResponseCodes.USER_CREATED_SUCCESSFULLY.code,
+        "User updated successfully",
+        result
+      );
+    } catch (error) {
+      console.error("Error updating user:", error);
+      return new Response(
+        ResponseCodes.USERS_FETCHED_FAILED.code,
+        `Error updating user: ${error.message}`,
         null
       );
     }

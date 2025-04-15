@@ -3,6 +3,7 @@ import { catchAsync } from "../common/lib";
 import { celebrate } from "celebrate";
 import { UserController } from "../controllers/user.controller";
 import { convertBigIntToString } from "../common/lib/customeobj";
+import { updateProfileSchema } from "../common/interfaces/user.interface";
 
 const route = Router();
 
@@ -60,6 +61,65 @@ export default (app: Router) => {
         next
       );
       // const safeResponse = convertBigIntToString(response);
+      res.status(200).json(response);
+    })
+  );
+
+  route.get(
+    "/:userId",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await UserController.getUserDetails(req, res, next);
+      res.status(200).json(response);
+    })
+  );
+
+  // route.get(
+  //   "/:username",
+  //   catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  //     const response = await UserController.getUserDetails(req, res, next);
+  //     res.status(200).json(response);
+  //   })
+  // );
+
+  // route.put(
+  //   "/:username",
+  //   catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  //     const response = await UserController.updateUser(req, res, next);
+  //     res.status(200).json(response);
+  //   })
+  // );
+
+  route.put(
+    "/:userId/profile",
+    celebrate({
+      body: updateProfileSchema,
+    }),
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await UserController.updateProfile(req, res, next);
+      res.status(200).json(response);
+    })
+  );
+
+  route.get(
+    "/username/:username",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await UserController.getUserDetailsByUsername(
+        req,
+        res,
+        next
+      );
+      res.status(200).json(response);
+    })
+  );
+
+  route.put(
+    "/username/:username",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await UserController.updateUserByUsername(
+        req,
+        res,
+        next
+      );
       res.status(200).json(response);
     })
   );

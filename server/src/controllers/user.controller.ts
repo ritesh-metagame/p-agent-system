@@ -112,6 +112,102 @@ class UserController {
       next(error);
     }
   }
+
+  public static async getUserDetails(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.params.userId;
+      const userService = Container.get(UserService);
+      const response = await userService.getUserDetails(userId);
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async updateUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.params.userId;
+      const userData = req.body;
+      const currentUser = req.user;
+
+      const userService = Container.get(UserService);
+      const response = await userService.updateUser(
+        userId,
+        userData,
+        currentUser
+      );
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getUserDetailsByUsername(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const username = req.params.username;
+      const userService = Container.get(UserService);
+      const response = await userService.getUserDetailsByUsername(username);
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async updateUserByUsername(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const username = req.params.username;
+      const userData = req.body;
+      const currentUser = req.user;
+
+      const userService = Container.get(UserService);
+      const response = await userService.updateUserByUsername(
+        username,
+        userData,
+        currentUser
+      );
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async updateProfile(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.params.userId;
+      const profileData = req.body;
+      const currentUser = req.user;
+
+      const userService = Container.get(UserService);
+      const response = await userService.updateProfile(
+        userId,
+        profileData,
+        currentUser
+      );
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { UserController };

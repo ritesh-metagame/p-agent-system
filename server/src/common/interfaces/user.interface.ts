@@ -15,3 +15,13 @@ const createUserSchema = Joi.object({
     "any.required": `"password" is a required field`,
   }),
 });
+
+export const updateProfileSchema = Joi.object({
+  firstName: Joi.string().allow("").optional(),
+  lastName: Joi.string().allow("").optional(),
+  password: Joi.string().min(8).optional(),
+  email: Joi.string().email().optional(),
+  mobileNumber: Joi.string().optional(),
+  bankName: Joi.string().allow("").optional(),
+  accountNumber: Joi.string().allow("").optional(),
+});
