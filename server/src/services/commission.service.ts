@@ -374,7 +374,7 @@ class CommissionService {
           cycleStartDate = new Date(
             prevMonth.getFullYear(),
             prevMonth.getMonth(),
-            16
+            15
           );
           cycleEndDate = endOfMonth(prevMonth);
         }
