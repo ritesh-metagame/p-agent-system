@@ -390,9 +390,9 @@ class CommissionDao {
       totals.netCommissionAvailablePayout +=
         summary.netCommissionAvailablePayout;
 
-      if (summary.settledStatus === "pending") {
+      if (summary.settledStatus === "N") {
         totalPending += summary.netCommissionAvailablePayout;
-      } else if (summary.settledStatus === "settled") {
+      } else if (summary.settledStatus === "Y") {
         totalSettled += summary.netCommissionAvailablePayout;
       }
     }

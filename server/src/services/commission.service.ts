@@ -1014,7 +1014,7 @@ class CommissionService {
         by: ["categoryName"],
         where: {
           userId: { in: userIds },
-          settledStatus: "pending",
+          settledStatus: "N",
         },
         _sum: {
           totalDeposit: true,
@@ -1195,7 +1195,7 @@ class CommissionService {
       },
     });
 
-    console.log({ summaries });
+    // console.log({ summaries });
 
     // Calculate total fees and transaction amounts
     const totals = summaries.reduce(
@@ -1230,6 +1230,170 @@ class CommissionService {
         { type: "Withdrawal", amount: withdrawalFees },
         { type: "Total Payment Gateway Fees", amount: totals.totalFees },
       ],
+    };
+  }
+
+  public async getPendingSettlements(userId: string, roleName: string) {
+    // Calculate the date range for the last completed cycle
+    const currentDate = new Date();
+    const currentDay = currentDate.getDate();
+    let cycleStartDate: Date;
+    let cycleEndDate: Date;
+
+    // Set date range based on commission computation period
+    if (DEFAULT_COMMISSION_COMPUTATION_PERIOD.toString() === "MONTHLY") {
+      // For monthly periods, show the previous complete month
+      const prevMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - 1,
+        1
+      );
+      cycleStartDate = prevMonth;
+      cycleEndDate = endOfMonth(prevMonth);
+    } else {
+      // For bi-monthly periods
+      if (currentDay >= 16) {
+        // We're in the second half (16-31), so show first half (1-15)
+        cycleStartDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          1
+        );
+        cycleEndDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          15
+        );
+        cycleEndDate.setHours(23, 59, 59, 999);
+      } else {
+        // We're in first half (1-15), so show last month's second half (16-31)
+        const prevMonth = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth() - 1,
+          1
+        );
+        cycleStartDate = new Date(
+          prevMonth.getFullYear(),
+          prevMonth.getMonth(),
+          16
+        );
+        cycleEndDate = endOfMonth(prevMonth);
+      }
+    }
+
+    // Get user IDs based on role hierarchy
+    let userIds: string[] = [];
+    roleName = roleName.toLowerCase();
+
+    if (roleName === "superadmin") {
+      // Get all operators
+      const operators = await prisma.user.findMany({
+        where: {
+          role: { name: "operator" },
+        },
+        select: { id: true },
+      });
+      userIds = operators.map((op) => op.id);
+    } else if (roleName === "operator") {
+      // Get all platinum users under this operator
+      const platinums = await prisma.user.findMany({
+        where: {
+          parentId: userId,
+          role: { name: "platinum" },
+        },
+        select: { id: true },
+      });
+      userIds = platinums.map((p) => p.id);
+    } else {
+      return {
+        columns: [
+          "Network",
+          "Total Deposits",
+          "Total Withdrawals",
+          "Total Gross Commissions",
+          "Less: Payment Gateway Fees",
+          "Total Net Commissions for Settlement",
+          "Breakdown",
+          "Release Commissions",
+        ],
+        periodInfo: {
+          start: format(cycleStartDate, "yyyy-MM-dd"),
+          end: format(cycleEndDate, "yyyy-MM-dd"),
+        },
+        rows: [],
+      };
+    }
+
+    // Get summaries for unsettled commissions in the completed cycle
+    const commissionSummaries = await prisma.user.findMany({
+      where: {
+        id: { in: userIds },
+      },
+      include: {
+        commissionSummaries: {
+          where: {
+            createdAt: {
+              gte: cycleStartDate,
+              lte: cycleEndDate,
+            },
+            settledStatus: "N",
+          },
+        },
+      },
+    });
+
+    // Transform data into required format
+    const rows = commissionSummaries.map((user) => {
+      const summaries = user.commissionSummaries;
+      const totalDeposits = summaries.reduce(
+        (sum, s) => sum + (s.totalDeposit || 0),
+        0
+      );
+      const totalWithdrawals = summaries.reduce(
+        (sum, s) => sum + (s.totalWithdrawals || 0),
+        0
+      );
+      const grossCommissions = summaries.reduce(
+        (sum, s) => sum + (s.grossCommission || 0),
+        0
+      );
+      const paymentGatewayFees = summaries.reduce(
+        (sum, s) => sum + (s.paymentGatewayFee || 0),
+        0
+      );
+      const netCommissions = summaries.reduce(
+        (sum, s) => sum + (s.netCommissionAvailablePayout || 0),
+        0
+      );
+
+      return {
+        network: user.username || "Unknown",
+        totalDeposits,
+        totalWithdrawals,
+        grossCommissions,
+        paymentGatewayFees,
+        netCommissions,
+        breakdownAction: "view",
+        releaseAction: "release_comms",
+      };
+    });
+
+    return {
+      columns: [
+        "Network",
+        "Total Deposits",
+        "Total Withdrawals",
+        "Total Gross Commissions",
+        "Less: Payment Gateway Fees",
+        "Total Net Commissions for Settlement",
+        "Breakdown",
+        "Release Commissions",
+      ],
+      periodInfo: {
+        start: format(cycleStartDate, "yyyy-MM-dd"),
+        end: format(cycleEndDate, "yyyy-MM-dd"),
+      },
+      rows: rows,
     };
   }
 }

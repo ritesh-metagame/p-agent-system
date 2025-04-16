@@ -117,6 +117,20 @@ export default (app: Router) => {
   );
 
   route.get(
+    "/pending-settlements",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await CommissionController.getPendingSettlements(
+        req,
+        res,
+        next
+      );
+      if (response) {
+        res.status(200).json(response);
+      }
+    })
+  );
+
+  route.get(
     "/total-breakdown",
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {
       const response = await CommissionController.getTotalBreakdown(

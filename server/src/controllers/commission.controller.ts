@@ -314,6 +314,51 @@ class CommissionController {
       result
     );
   }
+
+  public static async getPendingSettlements(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = req.user;
+
+      if (!user || !user.roleId) {
+        return new ApiResponse(
+          ResponseCodes.UNAUTHORIZED.code,
+          "Unauthorized - User details not found",
+          null
+        );
+      }
+
+      const userWithRole = await prisma.user.findUnique({
+        where: { id: user.id },
+        include: { role: true },
+      });
+
+      if (!userWithRole || !userWithRole.role) {
+        return new ApiResponse(
+          ResponseCodes.UNAUTHORIZED.code,
+          "Unauthorized - User role not found",
+          null
+        );
+      }
+
+      const commissionService = Container.get(CommissionService);
+      const result = await commissionService.getPendingSettlements(
+        userWithRole.id,
+        userWithRole.role.name
+      );
+
+      return new ApiResponse(
+        "2006",
+        "Pending Settlements fetched successfully",
+        result
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { CommissionController };
