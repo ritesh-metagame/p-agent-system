@@ -651,3 +651,37 @@ info: 2025-04-16T08:51:13.201Z [loaders\index.ts] ✌️ Express loaded
 info: 2025-04-16T08:51:13.216Z [src\server.ts] 
 development Platform is running at http://localhost:8080 🛡️
       
+info: 2025-04-16T08:52:28.818Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-16T08:52:28.831Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-16T08:56:01.862Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-16T08:56:01.874Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-16T08:56:04.057Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-16T08:56:04.068Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+debug: 2025-04-16T08:56:50.790Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-16T08:56:50.805Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-16T08:56:50.805Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-16T08:56:50.806Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9bb265n0000jf44ndbz4wqh
+debug: 2025-04-16T08:56:50.806Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9bb3ljw0004jf44cyukmarj
+http: 2025-04-16T08:56:50.814Z [logger\morgan.ts] POST /api/v1/commission/running-tally 200 344 - 28.488 ms
+
+info: 2025-04-16T08:57:22.271Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-16T08:57:22.259Z [loaders\index.ts] ✌️ Express loaded
+debug: 2025-04-16T08:57:23.026Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-16T08:57:23.043Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-16T08:57:23.043Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-16T08:57:23.044Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9bb265n0000jf44ndbz4wqh
+debug: 2025-04-16T08:57:23.044Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9bb3ljw0004jf44cyukmarj
+http: 2025-04-16T08:57:23.057Z [logger\morgan.ts] POST /api/v1/commission/running-tally 200 377 - 35.210 ms
+
+info: 2025-04-16T08:57:41.528Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-16T08:57:41.538Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      

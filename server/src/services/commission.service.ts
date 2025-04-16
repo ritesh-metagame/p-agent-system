@@ -791,12 +791,45 @@ class CommissionService {
     timestamp: Date
   ) {
     try {
-      // Get start of current month
-      const startDate = new Date(
-        timestamp.getFullYear(),
-        timestamp.getMonth(),
-        1
-      );
+      const currentDate = new Date(timestamp);
+      const currentDay = currentDate.getDate();
+      let startDate: Date;
+
+      // Calculate the appropriate start date based on the commission computation period
+      if (DEFAULT_COMMISSION_COMPUTATION_PERIOD.toString() === "MONTHLY") {
+        // For monthly periods: start from 1st day of current month
+        startDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          1
+        );
+      } else {
+        // For bi-monthly periods
+        if (currentDay >= 16) {
+          // If we're in the second half of the month (16th onwards)
+          // Start date is the 16th of the current month
+          startDate = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth(),
+            16
+          );
+        } else {
+          // If we're in the first half of the month (1-15)
+          // Start date is the 1st of the current month
+          startDate = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth(),
+            1
+          );
+        }
+      }
+
+      console.log("Running tally date range:", {
+        startDate: startDate.toISOString(),
+        endDate: timestamp.toISOString(),
+        currentDay,
+        computationPeriod: DEFAULT_COMMISSION_COMPUTATION_PERIOD.toString(),
+      });
 
       // Get all commission records based on role
       let commissionSummaries;
