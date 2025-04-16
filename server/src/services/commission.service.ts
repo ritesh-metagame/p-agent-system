@@ -355,13 +355,13 @@ class CommissionService {
           cycleStartDate = new Date(
             currentDate.getFullYear(),
             currentDate.getMonth(),
-            2
+            1
           );
           // Make sure the date is exactly the 15th at 23:59:59.999
           cycleEndDate = new Date(
             currentDate.getFullYear(),
             currentDate.getMonth(),
-            14
+            15
           );
           cycleEndDate.setHours(23, 59, 59, 999);
         } else {
