@@ -57,8 +57,11 @@ class CommissionService {
   public async createCommissionCategory(date: string) {
     try {
       // Using the instance variable instead of creating a new instance
+      const newDate = new Date(date);
       const newCommission =
-        await this.commissionSummaryDao.generateCommissionSummaries(date);
+        await this.commissionSummaryDao.generateCommissionSummariesByDate(
+          newDate
+        );
       return newCommission;
     } catch (error) {
       throw new Error(`Error creating commission: ${error}`);

@@ -27,11 +27,6 @@ model User {
   commissionSummaries CommissionSummary[]
   agentSummaries      AgentSummary[]
 
-  transactionsAsAdmin  Transaction[] @relation("AdminToTransaction")
-  transactionsAsOwner  Transaction[] @relation("OwnerToTransaction")
-  transactionsAsMaster Transaction[] @relation("MasterToTransaction")
-  transactionsAsGolden Transaction[] @relation("GoldenToTransaction")
-
   // Relations with logs as creator
   categoryLogsCreated CategoryLog[] @relation("CategoryLogCreator")
   roleLogsCreated     RoleLog[]     @relation("RoleLogCreator")
@@ -48,7 +43,6 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  
-    createdBy String? @map("created_by") @default("system")
-    updatedBy String? @map("updated_by") @default("system")
+  createdBy String? @default("system") @map("created_by")
+  updatedBy String? @default("system") @map("updated_by")
 }
