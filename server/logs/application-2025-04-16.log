@@ -647,3 +647,7 @@ http: 2025-04-16T08:50:04.314Z [logger\morgan.ts] GET /api/v1/top-performers/rol
 
 http: 2025-04-16T08:50:04.330Z [logger\morgan.ts] GET /api/v1/commission/payout-report 304 - - 31.535 ms
 
+info: 2025-04-16T08:51:13.201Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-16T08:51:13.216Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
