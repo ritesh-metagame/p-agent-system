@@ -8,14 +8,28 @@ const route = Router();
 export default (app: Router) => {
   app.use("/commission", route);
 
-  route.post(
-    "/topPerformer",
-    // celebrate({}),
-    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-      const response = await CommissionController.topPerformer(req, res, next);
+  // route.post(
+  //   "/topPerformer",
+  //   // celebrate({}),
+  //   catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  //     const response = await CommissionController.topPerformer(req, res, next);
 
-      res.status(200).json(response);
-    }) as any
+  //     res.status(200).json(response);
+  //   }) as any
+  // );
+
+  route.get(
+    "/payment-gateway-fees",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await CommissionController.getPaymentGatewayFees(
+        req,
+        res,
+        next
+      );
+      if (response) {
+        res.status(200).json(response);
+      }
+    })
   );
 
   route.post(
@@ -100,5 +114,19 @@ export default (app: Router) => {
 
       res.status(200).json(response);
     }) as any
+  );
+
+  route.get(
+    "/total-breakdown",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await CommissionController.getTotalBreakdown(
+        req,
+        res,
+        next
+      );
+      if (response) {
+        res.status(200).json(response);
+      }
+    })
   );
 };

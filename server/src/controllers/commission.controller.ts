@@ -193,23 +193,23 @@ class CommissionController {
     }
   }
 
-  public static async topPerformer(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const { date } = req.query as any;
+  // public static async topPerformer(
+  //   req: Request,
+  //   res: Response,
+  //   next: NextFunction
+  // ) {
+  //   try {
+  //     const { date } = req.query as any;
 
-      const commissionService = Container.get(CommissionService);
+  //     const commissionService = Container.get(CommissionService);
 
-      const response = await commissionService.getTopPerformer(date);
+  //     const response = await commissionService.getTopPerformer(date);
 
-      return response;
-    } catch (error) {
-      next(error);
-    }
-  }
+  //     return response;
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // }
 
   public static async getTotalCommissionByUser(
     req: Request,
@@ -227,6 +227,92 @@ class CommissionController {
     } catch (error) {
       next(error);
     }
+  }
+
+  public static async getTotalBreakdown(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = req.user;
+
+      if (!user || !user.roleId) {
+        return new ApiResponse(
+          ResponseCodes.UNAUTHORIZED.code,
+          "Unauthorized - User details not found",
+          null
+        );
+      }
+
+      const userWithRole = await prisma.user.findUnique({
+        where: { id: user.id },
+        include: { role: true },
+      });
+
+      if (!userWithRole || !userWithRole.role) {
+        return new ApiResponse(
+          ResponseCodes.UNAUTHORIZED.code,
+          "Unauthorized - User role not found",
+          null
+        );
+      }
+
+      const commissionService = Container.get(CommissionService);
+      const result = await commissionService.getTotalBreakdown(
+        userWithRole.id,
+        userWithRole.role.name
+      );
+
+      return new ApiResponse(
+        "2004",
+        "Total Commission Payouts Breakdown fetched successfully",
+        result
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getPaymentGatewayFees(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const user = req.user;
+
+    if (!user || !user.roleId) {
+      return new ApiResponse(
+        ResponseCodes.UNAUTHORIZED.code,
+        "Unauthorized - User details not found",
+        null
+      );
+    }
+
+    const userWithRole = await prisma.user.findUnique({
+      where: { id: user.id },
+      include: { role: true },
+    });
+
+    if (!userWithRole || !userWithRole.role) {
+      return new ApiResponse(
+        ResponseCodes.UNAUTHORIZED.code,
+        "Unauthorized - User role not found",
+        null
+      );
+    }
+
+    const commissionService = Container.get(CommissionService);
+    const result = await commissionService.getPaymentGatewayFeesBreakdown(
+      userWithRole.id,
+      userWithRole.role.name
+    );
+
+    return new ApiResponse(
+      "2005",
+      "Payment Gateway Fees Breakdown fetched successfully",
+      result
+    );
   }
 }
 

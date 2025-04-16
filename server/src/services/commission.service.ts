@@ -974,6 +974,264 @@ class CommissionService {
       throw new Error(`Error creating commission: ${error}`);
     }
   }
+
+  public async getTotalBreakdown(userId: string, roleName: string) {
+    try {
+      let userIds = [userId];
+      roleName = roleName.toLowerCase();
+
+      // Handle hierarchy based access
+      if (roleName === "superadmin") {
+        const operators = await prisma.user.findMany({
+          where: {
+            role: { name: "operator" },
+          },
+          select: { id: true },
+        });
+        userIds = operators.map((op) => op.id);
+      } else if (roleName === "operator") {
+        const platinums = await prisma.user.findMany({
+          where: {
+            parentId: userId,
+            role: { name: "platinum" },
+          },
+          select: { id: true },
+        });
+        userIds = platinums.map((p) => p.id);
+      } else if (roleName === "platinum") {
+        const golds = await prisma.user.findMany({
+          where: {
+            parentId: userId,
+            role: { name: "gold" },
+          },
+          select: { id: true },
+        });
+        userIds = golds.map((g) => g.id);
+      }
+
+      // Get pending settlements
+      const pendingSettlements = await prisma.commissionSummary.groupBy({
+        by: ["categoryName"],
+        where: {
+          userId: { in: userIds },
+          settledStatus: "pending",
+        },
+        _sum: {
+          totalDeposit: true,
+          totalWithdrawals: true,
+          totalBetAmount: true,
+          netGGR: true,
+          grossCommission: true,
+          paymentGatewayFee: true,
+          netCommissionAvailablePayout: true,
+        },
+      });
+
+      // Get all-time data
+      const allTimeData = await prisma.commissionSummary.groupBy({
+        by: ["categoryName"],
+        where: {
+          userId: { in: userIds },
+        },
+        _sum: {
+          totalDeposit: true,
+          totalWithdrawals: true,
+          totalBetAmount: true,
+          netGGR: true,
+          grossCommission: true,
+          paymentGatewayFee: true,
+          netCommissionAvailablePayout: true,
+        },
+      });
+
+      const response = {
+        code: "2004",
+        message: "Total Commission Payouts Breakdown fetched successfully",
+        data: {
+          columns: [
+            "",
+            "Amount based on latest completed commission periods pending settlement",
+            "Settled All Time",
+          ],
+          overview: [] as any[],
+        },
+      };
+
+      // Transform the data into the required format
+      const metrics = [
+        { name: "Total EGames", category: "egames" },
+        { name: "Total Sports Betting", category: "sports-betting" },
+        { name: "Total Specialty Games", category: "specialty" },
+      ];
+
+      // Calculate aggregates for each metric
+      metrics.forEach((metric) => {
+        const pending =
+          pendingSettlements.find(
+            (s) => s.categoryName.toLowerCase() === metric.category
+          )?._sum?.netCommissionAvailablePayout || 0;
+
+        const allTime =
+          allTimeData.find(
+            (s) => s.categoryName.toLowerCase() === metric.category
+          )?._sum?.netCommissionAvailablePayout || 0;
+
+        response.data.overview.push({
+          metric: metric.name,
+          pendingSettlement: pending,
+          allTime: allTime,
+        });
+      });
+
+      // Calculate gross commissions (sum of all categories)
+      const grossPending = response.data.overview.reduce(
+        (sum, item) => sum + item.pendingSettlement,
+        0
+      );
+      const grossAllTime = response.data.overview.reduce(
+        (sum, item) => sum + item.allTime,
+        0
+      );
+
+      response.data.overview.push({
+        metric: "Gross Commissions",
+        pendingSettlement: grossPending,
+        allTime: grossAllTime,
+      });
+
+      // Add payment gateway fees
+      const pendingFees = pendingSettlements.reduce(
+        (sum, item) => sum + (item._sum?.paymentGatewayFee || 0),
+        0
+      );
+      const allTimeFees = allTimeData.reduce(
+        (sum, item) => sum + (item._sum?.paymentGatewayFee || 0),
+        0
+      );
+
+      response.data.overview.push({
+        metric: "Less: Total Payment Gateway Fees",
+        pendingSettlement: pendingFees,
+        allTime: allTimeFees,
+      });
+
+      // Calculate net commission
+      response.data.overview.push({
+        metric: "Net Commission Available for Payout",
+        pendingSettlement: grossPending - pendingFees,
+        allTime: grossAllTime - allTimeFees,
+      });
+
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error generating total commission breakdown: ${error}`);
+    }
+  }
+
+  public async getPaymentGatewayFeesBreakdown(
+    userId: string,
+    roleName: string
+  ) {
+    // Get all users under this user based on role hierarchy
+    let userIds = [userId];
+
+    if (roleName.toLowerCase() === "operator") {
+      // Get all platinum and gold users under this operator
+      const platinums = await prisma.user.findMany({
+        where: {
+          parentId: userId,
+          role: { name: "platinum" },
+        },
+        select: { id: true },
+      });
+      userIds = [...userIds, ...platinums.map((p) => p.id)];
+
+      // Get all gold users under these platinums
+      const golds = await prisma.user.findMany({
+        where: {
+          parentId: { in: platinums.map((p) => p.id) },
+          role: { name: "gold" },
+        },
+        select: { id: true },
+      });
+      userIds = [...userIds, ...golds.map((g) => g.id)];
+    } else if (roleName.toLowerCase() === "platinum") {
+      // Get all gold users under this platinum
+      const golds = await prisma.user.findMany({
+        where: {
+          parentId: userId,
+          role: { name: "gold" },
+        },
+        select: { id: true },
+      });
+      userIds = [...userIds, ...golds.map((g) => g.id)];
+    }
+
+    // Get fees from commission_summary where deposits and withdrawals are not null
+    const summaries = await prisma.commissionSummary.findMany({
+      where: {
+        // userId: { in: userIds },
+        NOT: {
+          categoryName: {
+            in: [
+              "egames",
+              "sports-betting",
+              "eGames",
+              "e-games",
+              "sportsbet",
+              "sports betting",
+            ],
+          },
+        },
+        OR: [{ totalDeposit: { gt: 0 } }, { totalWithdrawals: { gt: 0 } }],
+        paymentGatewayFee: {
+          gt: 0,
+        },
+      },
+      select: {
+        totalDeposit: true,
+        totalWithdrawals: true,
+        paymentGatewayFee: true,
+      },
+    });
+
+    console.log({ summaries });
+
+    // Calculate total fees and transaction amounts
+    const totals = summaries.reduce(
+      (acc, curr) => ({
+        totalDeposit: acc.totalDeposit + (curr.totalDeposit || 0),
+        totalWithdrawals: acc.totalWithdrawals + (curr.totalWithdrawals || 0),
+        totalFees: acc.totalFees + (curr.paymentGatewayFee || 0),
+      }),
+      {
+        totalDeposit: 0,
+        totalWithdrawals: 0,
+        totalFees: 0,
+      }
+    );
+
+    // Calculate proportional fees for deposits and withdrawals
+    const totalTransactions = totals.totalDeposit + totals.totalWithdrawals;
+    let depositFees = 0;
+    let withdrawalFees = 0;
+
+    if (totalTransactions > 0) {
+      depositFees =
+        totals.totalFees * (totals.totalDeposit / totalTransactions);
+      withdrawalFees =
+        totals.totalFees * (totals.totalWithdrawals / totalTransactions);
+    }
+
+    return {
+      columns: ["", "Amount"],
+      fees: [
+        { type: "Deposit", amount: depositFees },
+        { type: "Withdrawal", amount: withdrawalFees },
+        { type: "Total Payment Gateway Fees", amount: totals.totalFees },
+      ],
+    };
+  }
 }
 
 export { CommissionService };
