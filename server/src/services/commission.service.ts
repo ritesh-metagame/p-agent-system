@@ -10,6 +10,8 @@ import {
 } from "../common/config/constants";
 
 import {
+  addDays,
+  differenceInDays,
   endOfMonth,
   format,
   getDaysInMonth,
@@ -18,6 +20,16 @@ import {
   startOfMonth,
   subMonths,
 } from "date-fns";
+
+interface SummaryTotal {
+  totalDeposit: number;
+  totalWithdrawals: number;
+  totalBetAmount: number;
+  netGGR: number;
+  grossCommission: number;
+  paymentGatewayFee: number;
+  netCommissionAvailablePayout: number;
+}
 
 @Service()
 class CommissionService {
@@ -311,24 +323,12 @@ class CommissionService {
     }
   }
 
-  public async getCommissionPayoutReport(userId: string, categoryId?: string) {
+  public async getCommissionPayoutReport(
+    userId: string,
+    categoryId?: string,
+    userRole?: string
+  ) {
     try {
-      interface CommissionMetrics {
-        metric: string;
-        pendingSettlement: number;
-        allTime: number;
-      }
-
-      interface SummaryTotal {
-        totalDeposit: number;
-        totalWithdrawals: number;
-        totalBetAmount: number;
-        netGGR: number;
-        grossCommission: number;
-        paymentGatewayFee: number;
-        netCommissionAvailablePayout: number;
-      }
-
       // Calculate the date range for the previously completed cycle
       const currentDate = new Date();
       const currentDay = currentDate.getDate();
@@ -336,52 +336,256 @@ class CommissionService {
       let cycleEndDate: Date;
 
       if (DEFAULT_COMMISSION_COMPUTATION_PERIOD.toString() === "MONTHLY") {
-        // For monthly periods, show the previous complete month (March 1-31 if we're in April)
-
+        // For monthly periods, show the previous complete month
         const prevMonth = new Date(
           currentDate.getFullYear(),
-          currentDate.getMonth() - 1
-        ).valueOf();
-
-        cycleStartDate = new Date(format(prevMonth, "yyyy-MM-dd")); // March 1
-        cycleEndDate = new Date(
-          format(lastDayOfMonth(prevMonth), "yyyy-MM-dd")
-        ); // March 31
+          currentDate.getMonth() - 1,
+          1
+        );
+        cycleStartDate = new Date(
+          prevMonth.getFullYear(),
+          prevMonth.getMonth(),
+          1
+        );
+        cycleEndDate = endOfMonth(prevMonth);
       } else {
         // For bi-monthly periods
-        if (currentDay <= 15) {
-          // We're in the first half of the month (1-15)
-          // Show previous month's second half (16-end)
-          const previousMonth = subMonths(currentDate, 1);
-          cycleStartDate = setDate(previousMonth, 16);
-          cycleEndDate = endOfMonth(previousMonth);
-
-          // Handle February's varying end date
-          if (previousMonth.getMonth() === 1) {
-            const daysInFebruary = getDaysInMonth(previousMonth);
-            cycleEndDate = setDate(previousMonth, daysInFebruary);
-          }
+        if (currentDay >= 16) {
+          // On or after the 16th, show the first half of the current month (1-15)
+          cycleStartDate = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth(),
+            2
+          );
+          // Make sure the date is exactly the 15th at 23:59:59.999
+          cycleEndDate = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth(),
+            14
+          );
+          cycleEndDate.setHours(23, 59, 59, 999);
         } else {
-          // We're in the second half of the month (16-end)
-          // Show current month's first half (1-15)
-          cycleStartDate = startOfMonth(currentDate);
-          cycleEndDate = setDate(currentDate, 15);
+          // Before the 16th, show the second half of the previous month (16-end)
+          const prevMonth = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth() - 1,
+            1
+          );
+          cycleStartDate = new Date(
+            prevMonth.getFullYear(),
+            prevMonth.getMonth(),
+            16
+          );
+          cycleEndDate = endOfMonth(prevMonth);
         }
+
+        console.log("Bi-monthly cycle calculation details:", {
+          currentDay,
+          isSecondHalf: currentDay >= 16,
+          cycleStartDate: cycleStartDate.toISOString(),
+          cycleEndDate: cycleEndDate.toISOString(),
+          cycleStartDateLocalString: cycleStartDate.toString(),
+          cycleEndDateLocalString: cycleEndDate.toString(),
+        });
       }
 
-      // Use UTC dates to avoid timezone issues
+      // Use UTC hours for consistent date comparison
       cycleStartDate.setUTCHours(0, 0, 0, 0);
       cycleEndDate.setUTCHours(23, 59, 59, 999);
 
-      const { pendingSettlements, allTimeData, categories } =
-        await this.commissionDao.getCommissionPayoutReport(
-          userId,
-          categoryId,
-          cycleStartDate,
-          cycleEndDate
+      console.log("Date range being used:", {
+        cycleStartDate: cycleStartDate.toISOString(),
+        cycleEndDate: cycleEndDate.toISOString(),
+        currentDay,
+        userRole,
+      });
+
+      // Get user and role information
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: { role: true },
+      });
+
+      if (!user || !user.role) {
+        throw new Error("User or role information not found");
+      }
+
+      const roleName = userRole || user.role.name.toLowerCase();
+      console.log(`Processing report for user ${userId} with role ${roleName}`);
+
+      // Format dates for response
+      const pendingPeriod = {
+        start: format(cycleStartDate, "yyyy-MM-dd"),
+        end: format(cycleEndDate, "yyyy-MM-dd"),
+      };
+
+      // Handle different roles and their hierarchical data access
+      let commissionData;
+      let userIds = [userId]; // Default to just the current user
+
+      if (roleName === "superadmin") {
+        // For superadmin, find all operators
+        const operators = await prisma.user.findMany({
+          where: {
+            role: {
+              name: {
+                equals: "operator",
+                // mode: 'insensitive'
+              },
+            },
+          },
+          select: { id: true },
+        });
+
+        userIds = operators.map((op) => op.id);
+        console.log(
+          `Superadmin: Found ${userIds.length} operators to include in report`
+        );
+      } else if (roleName === "operator") {
+        // For operator, find all platinum users under them
+        const platinums = await prisma.user.findMany({
+          where: {
+            parentId: userId,
+            role: {
+              name: {
+                equals: "platinum",
+                // mode: "insensitive",
+              },
+            },
+          },
+          select: { id: true },
+        });
+
+        userIds = platinums.map((p) => p.id);
+        console.log(
+          `Operator: Found ${userIds.length} platinum users to include in report`
+        );
+      }
+
+      // Check if any data exists for these users
+      const anyData = await prisma.commissionSummary.findFirst({
+        where: {
+          userId: {
+            in: userIds,
+          },
+          createdAt: {
+            gte: cycleStartDate,
+            lte: cycleEndDate,
+          },
+        },
+      });
+
+      console.log(`Data check for role ${roleName}: Found data = ${!!anyData}`);
+
+      // If no data found, return empty report with message
+      if (!anyData && userIds.length > 0) {
+        console.log(
+          `No commission data found for the ${roleName} role during this period`
         );
 
-      const initialTotal: SummaryTotal = {
+        return {
+          columns: [
+            "",
+            "Amount based on latest completed commission periods pending settlement",
+            "All Time",
+          ],
+          periodInfo: {
+            pendingPeriod,
+            noDataMessage: `No commission data available for this period (${pendingPeriod.start} to ${pendingPeriod.end})`,
+          },
+          overview: [
+            {
+              metric: "Total Deposits",
+              pendingSettlement: 0,
+              allTime: 0,
+            },
+            {
+              metric: "Total Withdrawals",
+              pendingSettlement: 0,
+              allTime: 0,
+            },
+            {
+              metric: "Total Bet Amount (Turnover)",
+              pendingSettlement: 0,
+              allTime: 0,
+            },
+            {
+              metric: "Net GGR",
+              pendingSettlement: 0,
+              allTime: 0,
+            },
+            {
+              metric: "Gross Commission (% of Net GGR)",
+              pendingSettlement: 0,
+              allTime: 0,
+            },
+            {
+              metric: "Payment Gateway Fees",
+              pendingSettlement: 0,
+              allTime: 0,
+            },
+            {
+              metric: "Net Commission Available for Payout",
+              pendingSettlement: 0,
+              allTime: 0,
+            },
+          ],
+          breakdownPerGame: {
+            eGames: [
+              // ... same metrics as overview
+            ],
+            "Sports-Betting": [
+              // ... same metrics as overview
+            ],
+          },
+        };
+      }
+
+      // Get commission data for the applicable users
+      // This replaces the call to this.commissionDao.getCommissionPayoutReport
+      const pendingSettlements = await prisma.commissionSummary.groupBy({
+        by: ["categoryId"],
+        where: {
+          userId: { in: userIds },
+          createdAt: {
+            gte: cycleStartDate,
+            lte: cycleEndDate,
+          },
+        },
+        _sum: {
+          totalDeposit: true,
+          totalWithdrawals: true,
+          totalBetAmount: true,
+          netGGR: true,
+          grossCommission: true,
+          paymentGatewayFee: true,
+          netCommissionAvailablePayout: true,
+        },
+      });
+
+      // Get all-time data
+      const allTimeData = await prisma.commissionSummary.groupBy({
+        by: ["categoryId"],
+        where: {
+          userId: { in: userIds },
+        },
+        _sum: {
+          totalDeposit: true,
+          totalWithdrawals: true,
+          totalBetAmount: true,
+          netGGR: true,
+          grossCommission: true,
+          paymentGatewayFee: true,
+          netCommissionAvailablePayout: true,
+        },
+      });
+
+      const categories = await prisma.category.findMany();
+
+      console.log("Found pending settlements:", pendingSettlements.length);
+      console.log("Found all-time data entries:", allTimeData.length);
+
+      const initialTotal = {
         totalDeposit: 0,
         totalWithdrawals: 0,
         totalBetAmount: 0,
@@ -389,12 +593,6 @@ class CommissionService {
         grossCommission: 0,
         paymentGatewayFee: 0,
         netCommissionAvailablePayout: 0,
-      };
-
-      // Format dates using UTC to ensure consistent date strings
-      const pendingPeriod = {
-        start: cycleStartDate.toISOString().split("T")[0],
-        end: cycleEndDate.toISOString().split("T")[0],
       };
 
       const response = {
@@ -406,8 +604,8 @@ class CommissionService {
         periodInfo: {
           pendingPeriod,
         },
-        overview: [] as CommissionMetrics[],
-        breakdownPerGame: {} as Record<string, CommissionMetrics[]>,
+        overview: [] as any[],
+        breakdownPerGame: {} as Record<string, any[]>,
       };
 
       // Calculate totals for pending settlements
@@ -491,17 +689,53 @@ class CommissionService {
       if (!categoryId) {
         const gameCategories = ["eGames", "Sports-Betting"];
         const categoryMap = new Map(categories.map((c) => [c.id, c.name]));
-        const categoryIdMap = new Map(categories.map((c) => [c.name, c.id]));
+        const categoryIdMap = new Map();
+
+        // Log all categories available to help diagnose any mismatch
+        console.log(
+          "Available categories:",
+          categories.map((c) => ({ id: c.id, name: c.name }))
+        );
+
+        // Build a more flexible category map that can handle different case formats
+        for (const category of categories) {
+          // Store multiple variations of category names to handle case differences
+          if (
+            category.name.toLowerCase().includes("egames") ||
+            category.name.toLowerCase().includes("e-games") ||
+            category.name.toLowerCase() === "egames"
+          ) {
+            categoryIdMap.set("eGames", category.id);
+          } else if (
+            category.name.toLowerCase().includes("sports") ||
+            category.name.toLowerCase().includes("betting") ||
+            category.name.toLowerCase() === "sports-betting"
+          ) {
+            categoryIdMap.set("Sports-Betting", category.id);
+          }
+        }
+
+        console.log("Category ID mapping:", Object.fromEntries(categoryIdMap));
 
         // Process each game category
         for (const categoryName of gameCategories) {
           const categoryId = categoryIdMap.get(categoryName);
+
+          console.log(
+            `Looking for data for category: ${categoryName}, ID: ${categoryId}`
+          );
+
           const pendingData = categoryId
             ? pendingSettlements.find((s) => s.categoryId === categoryId)?._sum
             : undefined;
           const allTimeDataForCategory = categoryId
             ? allTimeData.find((s) => s.categoryId === categoryId)?._sum
             : undefined;
+
+          console.log(`Found data for ${categoryName}:`, {
+            pendingData: pendingData || "none",
+            allTimeData: allTimeDataForCategory || "none",
+          });
 
           // Initialize each category with same metrics structure
           response.breakdownPerGame[categoryName] = [
