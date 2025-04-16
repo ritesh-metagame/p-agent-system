@@ -547,7 +547,7 @@ class CommissionService {
       // Get commission data for the applicable users
       // This replaces the call to this.commissionDao.getCommissionPayoutReport
       const pendingSettlements = await prisma.commissionSummary.groupBy({
-        by: ["categoryId"],
+        by: ["categoryName"],
         where: {
           userId: { in: userIds },
           createdAt: {
@@ -568,7 +568,7 @@ class CommissionService {
 
       // Get all-time data
       const allTimeData = await prisma.commissionSummary.groupBy({
-        by: ["categoryId"],
+        by: ["categoryName"],
         where: {
           userId: { in: userIds },
         },
@@ -691,49 +691,21 @@ class CommissionService {
       // If no specific category was requested, include per-game breakdown
       if (!categoryId) {
         const gameCategories = ["eGames", "Sports-Betting"];
-        const categoryMap = new Map(categories.map((c) => [c.id, c.name]));
-        const categoryIdMap = new Map();
-
-        // Log all categories available to help diagnose any mismatch
-        console.log(
-          "Available categories:",
-          categories.map((c) => ({ id: c.id, name: c.name }))
+        const gameCategoryMap = new Map(
+          categories.map((c) => [c.name.toLowerCase(), c.name])
         );
-
-        // Build a more flexible category map that can handle different case formats
-        for (const category of categories) {
-          // Store multiple variations of category names to handle case differences
-          if (
-            category.name.toLowerCase().includes("egames") ||
-            category.name.toLowerCase().includes("e-games") ||
-            category.name.toLowerCase() === "egames"
-          ) {
-            categoryIdMap.set("eGames", category.id);
-          } else if (
-            category.name.toLowerCase().includes("sports") ||
-            category.name.toLowerCase().includes("betting") ||
-            category.name.toLowerCase() === "sports-betting"
-          ) {
-            categoryIdMap.set("Sports-Betting", category.id);
-          }
-        }
-
-        console.log("Category ID mapping:", Object.fromEntries(categoryIdMap));
 
         // Process each game category
         for (const categoryName of gameCategories) {
-          const categoryId = categoryIdMap.get(categoryName);
+          console.log(`Looking for data for category: ${categoryName}`);
 
-          console.log(
-            `Looking for data for category: ${categoryName}, ID: ${categoryId}`
-          );
+          const pendingData = pendingSettlements.find(
+            (s) => s.categoryName.toLowerCase() === categoryName.toLowerCase()
+          )?._sum;
 
-          const pendingData = categoryId
-            ? pendingSettlements.find((s) => s.categoryId === categoryId)?._sum
-            : undefined;
-          const allTimeDataForCategory = categoryId
-            ? allTimeData.find((s) => s.categoryId === categoryId)?._sum
-            : undefined;
+          const allTimeDataForCategory = allTimeData.find(
+            (s) => s.categoryName.toLowerCase() === categoryName.toLowerCase()
+          )?._sum;
 
           console.log(`Found data for ${categoryName}:`, {
             pendingData: pendingData || "none",
@@ -850,10 +822,9 @@ class CommissionService {
                 name: "operator",
               },
             },
-            include: {
-              user: true,
-              role: true,
-              category: true,
+            select: {
+              netCommissionAvailablePayout: true,
+              categoryName: true,
             },
           });
           break;
@@ -876,7 +847,6 @@ class CommissionService {
             include: {
               user: true,
               role: true,
-              category: true,
             },
           });
           break;
@@ -899,7 +869,6 @@ class CommissionService {
             include: {
               user: true,
               role: true,
-              category: true,
             },
           });
           break;
@@ -917,7 +886,6 @@ class CommissionService {
             include: {
               user: true,
               role: true,
-              category: true,
             },
           });
           break;
@@ -951,14 +919,13 @@ class CommissionService {
       // Calculate totals for each game category
       commissionSummaries.forEach((summary) => {
         if (
-          summary.category.name === "egames" ||
-          summary.category.name === "E-Games" ||
-          summary.category.name === "eGames"
+          summary.categoryName.toLowerCase() === "egames" ||
+          summary.categoryName.toLowerCase() === "e-games"
         ) {
           result.tally[0].eGames += Number(
             summary.netCommissionAvailablePayout || 0
           );
-        } else if (summary.category.name === "Sports-Betting") {
+        } else if (summary.categoryName.toLowerCase() === "sports-betting") {
           result.tally[0].sportsBetting += Number(
             summary.netCommissionAvailablePayout || 0
           );
@@ -986,16 +953,16 @@ class CommissionService {
     }
   }
 
-  public async getTopPerformer(date: string) {
-    try {
-      // Using the instance variable instead of creating a new instance
-      const newCommission =
-        await this.commissionSummaryDao.generateTopPerformers(date);
-      return newCommission;
-    } catch (error) {
-      throw new Error(`Error creating commission: ${error}`);
-    }
-  }
+  // public async getTopPerformer(date: string) {
+  //   try {
+  //     // Using the instance variable instead of creating a new instance
+  //     const newCommission =
+  //       await this.commissionSummaryDao.generateTopPerformers(date);
+  //     return newCommission;
+  //   } catch (error) {
+  //     throw new Error(`Error creating commission: ${error}`);
+  //   }
+  // }
 
   public async getTotalCommissionByUser(date: string) {
     try {

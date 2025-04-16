@@ -29,7 +29,6 @@ class CommissionDao {
                   role: true,
                   commissionSummaries: {
                     include: {
-                      category: true,
                       Site: true,
                     },
                   },
@@ -38,7 +37,6 @@ class CommissionDao {
             },
           },
           role: true,
-          category: true,
           Site: true,
         },
       });
@@ -64,7 +62,6 @@ class CommissionDao {
             },
           },
           role: true,
-          category: true,
           Site: true,
         },
       });
@@ -120,7 +117,6 @@ class CommissionDao {
             },
           },
           role: true,
-          category: true,
           Site: true,
         },
       });
@@ -140,7 +136,6 @@ class CommissionDao {
         include: {
           user: true,
           role: true,
-          category: true,
           Site: true,
         },
       });
@@ -171,7 +166,6 @@ class CommissionDao {
         include: {
           user: true,
           role: true,
-          category: true,
           Site: true,
         },
       });
@@ -192,7 +186,6 @@ class CommissionDao {
         include: {
           user: true,
           role: true,
-          category: true,
           Site: true,
         },
       });
@@ -233,7 +226,6 @@ class CommissionDao {
             },
           },
           role: true,
-          category: true,
           Site: true,
         },
       });
@@ -244,108 +236,29 @@ class CommissionDao {
 
   public async getCommissionPayoutReport(
     userId: string,
-    categoryId?: string,
+    categoryName?: string,
     startDate?: Date,
     endDate?: Date
   ) {
     try {
-      // Get user details with role
-      const user = await prisma.user.findUnique({
-        where: {
-          id: userId,
-        },
-        include: {
-          role: true,
-        },
-      });
-
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      // const today = new Date();
-      // const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-      // const endDate = today;
-
-      // Base where clause
-      const baseWhereClause: any = {
-        createdAt: {
-          gte: startDate,
-          lte: endDate,
-        },
-        ...(categoryId ? { categoryId } : {}),
+      const whereClause: any = {
+        userId,
       };
 
-      // Add role-specific filters
-      switch (user.role.name.toLowerCase()) {
-        case "operator":
-          baseWhereClause.OR = [
-            { userId: user.id }, // Operator's own data
-            {
-              user: {
-                parentId: user.id,
-                role: { name: "platinum" },
-              },
-            }, // Platinum children
-            {
-              user: {
-                parent: {
-                  parentId: user.id,
-                  role: { name: "platinum" },
-                },
-                role: { name: "gold" },
-              },
-            }, // Gold grandchildren
-          ];
-          break;
-
-        case "platinum":
-          baseWhereClause.OR = [
-            { userId: user.id }, // Platinum's own data
-            {
-              user: {
-                parentId: user.id,
-                role: { name: "gold" },
-              },
-            }, // Gold children
-          ];
-          break;
-
-        case "gold":
-          baseWhereClause.userId = user.id; // Only their own data
-          break;
-
-        case "superadmin":
-          baseWhereClause.OR = [
-            // Get all operator data
-            {
-              user: {
-                role: { name: "operator" },
-              },
-            },
-            // Get all platinum data
-            {
-              user: {
-                role: { name: "platinum" },
-              },
-            },
-            // Get all gold data
-            {
-              user: {
-                role: { name: "gold" },
-              },
-            },
-          ];
-          break;
-
-        default:
-          throw new Error("Invalid user role");
+      if (categoryName) {
+        whereClause.categoryName = categoryName;
       }
 
-      // Fetch current cycle data with role-based filtering
+      if (startDate && endDate) {
+        whereClause.createdAt = {
+          gte: startDate,
+          lte: endDate,
+        };
+      }
+
       const pendingSettlements = await prisma.commissionSummary.groupBy({
-        by: ["categoryId"],
-        where: baseWhereClause,
+        by: ["categoryName"],
+        where: whereClause,
         _sum: {
           totalDeposit: true,
           totalWithdrawals: true,
@@ -357,15 +270,13 @@ class CommissionDao {
         },
       });
 
-      // Fetch all-time data with the same role-based filtering
+      // For all-time data, we don't apply the date filter
+      const allTimeWhereClause = { ...whereClause };
+      delete allTimeWhereClause.createdAt;
+
       const allTimeData = await prisma.commissionSummary.groupBy({
-        by: ["categoryId"],
-        where: {
-          ...(categoryId ? { categoryId } : {}),
-          ...baseWhereClause,
-          // Remove date range for all-time data
-          createdAt: undefined,
-        },
+        by: ["categoryName"],
+        where: allTimeWhereClause,
         _sum: {
           totalDeposit: true,
           totalWithdrawals: true,
@@ -376,37 +287,13 @@ class CommissionDao {
           netCommissionAvailablePayout: true,
         },
       });
-
-      // Get category details if we're fetching all categories
-      const categories = categoryId
-        ? []
-        : await prisma.category.findMany({
-            where: {
-              name: {
-                in: ["eGames", "Sports-Betting"],
-              },
-            },
-            select: {
-              id: true,
-              name: true,
-            },
-            orderBy: {
-              name: "asc",
-            },
-          });
 
       return {
         pendingSettlements,
         allTimeData,
-        categories,
-        periodInfo: {
-          startDate,
-          endDate,
-        },
-        userRole: user.role.name,
       };
     } catch (error) {
-      throw new Error(`Error fetching commission payout report: ${error}`);
+      throw new Error(`Error generating commission payout report: ${error}`);
     }
   }
 
@@ -473,7 +360,6 @@ class CommissionDao {
           },
         },
         role: true,
-        category: true,
         Site: {
           select: {
             id: true,

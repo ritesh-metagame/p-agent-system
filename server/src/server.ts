@@ -41,9 +41,18 @@ class Server {
     ).replace("<PASSWORD>", config.mongo.pass!) as string;
 
     const siteIds = ["cm9jkon7w0001v9g86q7jdvc7"];
-    const GAIDS = ["cm9jlilb8000uv9g888vbp3ff", "cm9jkx0ux000sv9g86vflqf1p"];
-    const MAIDS = ["cm9jkvej9000lv9g8ors2pnqe", "cm9jkuhko000jv9g8kpjctu95"];
-    const OWNERIDS = ["cm9jkt0lt0005v9g815olsae3", "cm9jkroaw0003v9g87gu6q5mp"];
+    const GAIDS = [
+      "cm9jvn4rd003ejf8g33j134he",
+      "cm9jvnun3003kjf8gmbtm7wvh",
+      "cm9jvp04j004mjf8gcbtfgasf",
+      "cm9jvpw4i004wjf8gshbl5h5i",
+    ];
+    const MAIDS = [
+      "cm9jvlj0g001sjf8g6b84k34b",
+      "cm9jvknlf001ijf8grhz4covw",
+      "cm9jvjkdn0018jf8g3p3gknz3",
+    ];
+    const OWNERIDS = ["cm9jvi2ct000ijf8gjrzikjpo", "cm9jvf4t20004jf8g24j83ytf"];
 
     const getRandom = (arr: string[]) =>
       arr[Math.floor(Math.random() * arr.length)];
