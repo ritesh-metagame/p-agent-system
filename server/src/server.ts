@@ -4,17 +4,16 @@ import path from "path";
 import logger from "./common/logger";
 import config from "./common/config";
 import AppLoader from "./common/loaders";
-import cron from "node-cron";
-import { PrismaClient, TransactionType } from "./../prisma/generated/prisma";
+import xlsx from "xlsx";
+
+import { PrismaClient } from "./../prisma/generated/prisma";
 import "./main";
 import { Decimal } from "../prisma/generated/prisma/runtime/library";
 import fs from "fs";
 import csv from "csv-parser"; // install with: npm install csv-parser
-import { GenerateCommission } from "./daos/generateCommission";
 
-const filePath = path.join(__dirname, "./data/data1.csv");
+const filePath = path.join(__dirname, "./data/sampledata.xlsx");
 // import { redisService } from "./core/services/redis.service";
-const generateCommission = new GenerateCommission();
 
 const log = logger(module);
 const prisma = new PrismaClient();
@@ -41,95 +40,90 @@ class Server {
       config.mongo.user!
     ).replace("<PASSWORD>", config.mongo.pass!) as string;
 
-    const siteIds = ["cm9cf98v90000v9y824jf7qo9"];
-    const goldenAgentIds = ["cm9cfsmfn000kv9y87pyibbrn"];
+    const siteIds = ["cm9jkon7w0001v9g86q7jdvc7"];
+    const GAIDS = ["cm9jlilb8000uv9g888vbp3ff", "cm9jkx0ux000sv9g86vflqf1p"];
+    const MAIDS = ["cm9jkvej9000lv9g8ors2pnqe", "cm9jkuhko000jv9g8kpjctu95"];
+    const OWNERIDS = ["cm9jkt0lt0005v9g815olsae3", "cm9jkroaw0003v9g87gu6q5mp"];
 
     const getRandom = (arr: string[]) =>
       arr[Math.floor(Math.random() * arr.length)];
 
     const getRandomSettledStatus = () => (Math.random() < 0.5 ? "Y" : "N");
 
-    // async function insertTransactionsFromCSV(filePath: string) {
-    //   const transactions: any[] = [];
+    function parseExcelDate(excelDate: number): Date | null {
+      if (!excelDate || isNaN(excelDate)) return null;
+      return new Date((excelDate - 25569) * 86400 * 1000);
+    }
 
-    //   return new Promise<void>((resolve, reject) => {
-    //     fs.createReadStream(filePath)
-    //       .pipe(csv({ separator: "\t" }))
-    //       .on("data", (row) => {
-    //         console.log("Row:", row);
-    //         // Construct the transaction object, map/parse types as needed
-    //         const transaction = {
-    //           id: row.id,
-    //           betAmount: row.bet_amount || null,
-    //           betId: row.bet_id,
-    //           brand: row.brand || null,
-    //           channelType: row.channel_type || null,
-    //           gameId: row.game_id || null,
-    //           gameName: row.game_name || null,
-    //           gameProvider: row.game_provider || null,
-    //           gameStatusId: row.game_status_id || null,
-    //           gameType: row.game_type || null,
-    //           jackpotContribution: row.jackpot_contribution || null,
-    //           jackpotDetails: row.jackpot_details || null,
-    //           jackpotPayout: row.jackpot_payout || null,
-    //           jackpotType: row.jackpot_type || null,
-    //           kioskTerminal: row.kiosk_terminal || null,
-    //           machineId: row.machine_id || null,
-    //           outletId: row.outlet_id || null,
-    //           payoutAmount: row.payout_amount
-    //             ? new Decimal(row.payout_amount)
-    //             : null,
-    //           platformCode: row.platform_code
-    //             ? parseInt(row.platform_code)
-    //             : null,
-    //           platformName: row.platform_name || null,
-    //           playerId: row.player_id || null,
-    //           prematchLive: row.prematch_live || null,
-    //           refundAmount: row.refund_amount
-    //             ? new Decimal(row.refund_amount)
-    //             : null,
-    //           roundId: row.round_id || null,
-    //           seedContriAmount: row.seed_contri_amount || null,
-    //           settlementTime: row.settlement_time
-    //             ? new Date(row.settlement_time)
-    //             : null,
-    //           siteId: getRandom(siteIds),
-    //           sport: row.sport || null,
-    //           status: row.status || null,
-    //           ticketStatus: row.ticket_status || null,
-    //           timeOfBet: row.time_of_bet ? new Date(row.time_of_bet) : null,
-    //           timestamp: row.timestamp ? new Date(row.timestamp) : null,
-    //           transactionId: row.transaction_id,
-    //           transactionType: TransactionType.bet, // default as bet, override if needed
-    //           depositAmount: new Decimal(0), // default to 0
-    //           withdrawAmount: new Decimal(0), // default to 0
-    //           depositCommission: new Decimal(0),
-    //           withdrawCommission: new Decimal(0),
-    //           settled: getRandomSettledStatus(),
-    //           agentGoldenId: getRandom(goldenAgentIds),
-    //         };
-    //         console.log("Transaction:", transaction);
+    function cleanRowKeys(row: Record<string, any>): Record<string, any> {
+      const cleaned: Record<string, any> = {};
+      for (const key in row) {
+        cleaned[key.trim()] = row[key];
+      }
+      return cleaned;
+    }
 
-    //         transactions.push(transaction);
-    //       })
-    //       .on("end", async () => {
-    //         try {
-    //           for (const tx of transactions) {
-    //             await prisma.transaction.create({
-    //               data: tx,
-    //             });
-    //           }
-    //           console.log("✅ All transactions inserted successfully");
-    //           resolve();
-    //         } catch (err) {
-    //           console.error("❌ Error inserting transactions:", err);
-    //           reject(err);
-    //         }
-    //       });
-    //   });
-    // }
+    async function insertTransactionsFromXLSX(filePath: string) {
+      const workbook = xlsx.readFile(filePath);
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const rawRows = xlsx.utils.sheet_to_json(sheet);
 
-    // insertTransactionsFromCSV(filePath)
+      const transactions = rawRows.map((rawRow: any) => {
+        const row = cleanRowKeys(rawRow);
+
+        return {
+          transactionId: String(row["Trans ID"]),
+          betTime: parseExcelDate(row["Bet Time"]),
+          userId: row["User Id"],
+          playerName: row["Player Name"],
+          platformType: row["Platform Type"] || null,
+          transactionType: row["Transaction Type"] || "bet",
+
+          deposit: new Decimal(row["Deposit"] || 0),
+          withdrawal: new Decimal(row["Withdraw"] || 0),
+          betAmount: new Decimal(row["Bet Amount"] || 0),
+          payoutAmount: new Decimal(row["Payout Amount"] || 0),
+          refundAmount: new Decimal(row["Refund Amount"] || 0),
+          revenue: new Decimal(row["Revenue"] || 0),
+          pgFeeCommission: new Decimal(row["PG Fee Commission"] || 0),
+
+          status: row["Status"] || null,
+          settled: getRandomSettledStatus(),
+
+          ownerId: getRandom(OWNERIDS),
+          ownerName: row["Owner Name"] || null,
+          ownerPercentage: new Decimal(row["Owner Percentage"] || 0),
+          ownerCommission: new Decimal(row["Owner Commission"] || 0),
+
+          maId: getRandom(MAIDS),
+          maName: row["MA Name"] || null,
+          maPercentage: new Decimal(row["MA Percentage"] || 0),
+          maCommission: new Decimal(row["MA Commission"] || 0),
+
+          gaId: getRandom(GAIDS),
+          gaName: row["GA Name"] || null,
+          gaPercentage: new Decimal(row["GA Percentage"] || 0),
+          gaCommission: new Decimal(row["GA Commission"] || 0),
+        };
+      });
+
+      for (const tx of transactions) {
+        try {
+          await prisma.transaction.create({ data: tx });
+        } catch (err) {
+          console.error(
+            "❌ Error inserting transaction:",
+            tx.transactionId,
+            err
+          );
+        }
+      }
+
+      console.log("✅ All transactions inserted successfully");
+    }
+
+    // insertTransactionsFromXLSX(filePath)
     //   .then(() => {
     //     console.log("Import complete.");
     //   })
@@ -148,39 +142,6 @@ ${process.env.NODE_ENV} Platform is running at http://localhost:${config.port} �
         log.error(err);
         process.exit(1);
       });
-
-    // code for run crone according to philippines time zone
-    // cron.schedule(
-    //   "59 59 23 * * *", // 11:59:59 PM every day
-    //   async () => {
-    //     try {
-    //       const datePH = moment().tz("Asia/Manila").format("YYYY-MM-DD");
-    //       console.log(`🔁 Generating commission summaries for ${datePH} (Asia/Manila)...`);
-    //       await generateCommission.generateCommissionSummaries(datePH);
-    //       console.log("✅ Commission summaries generated successfully.");
-    //     } catch (error) {
-    //       console.error("❌ Failed to generate commission summaries:", error);
-    //     }
-    //   },
-    //   {
-    //     timezone: "Asia/Manila",
-    //   }
-    // );
-
-    // ⏰ Schedule daily commission summary generation
-    cron.schedule("59 59 23 * * *", async () => {
-      try {
-        const today = new Date();
-        const formattedDate = today.toISOString().split("T")[0]; // 'YYYY-MM-DD'
-        console.log(
-          `🔁 Running commission summary generation for ${formattedDate}...`
-        );
-        await generateCommission.generateCommissionSummaries(formattedDate);
-        console.log("✅ Commission summaries generated successfully.");
-      } catch (error) {
-        console.error("❌ Failed to generate commission summaries:", error);
-      }
-    });
   }
 
   public async initialize(): Promise<void> {

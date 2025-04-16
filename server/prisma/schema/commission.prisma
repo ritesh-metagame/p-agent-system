@@ -1,19 +1,22 @@
 model Commission {
-  id                     String           @id @default(cuid())
-  siteId                 String           @map("site_id")
-  site                   Site             @relation(fields: [siteId], references: [id])
-  userId                 String           @map("user_id")
-  user                   User             @relation(fields: [userId], references: [id])
-  settlementPeriod       SettlementPeriod @default(MONTHLY) @map("settlement_period")
-  settlementStartingFrom DateTime         @default(now()) @map("settlement_starting_from")
-  settlementEndingAt     DateTime         @default(now()) @map("settlement_ending_at")
-  roleId                 String           @map("role_id")
-  role                   Role             @relation(fields: [roleId], references: [id])
-  categoryId             String           @map("category_id")
-  category               Category         @relation(fields: [categoryId], references: [id])
-  commissionPercentage   Float            @map("commission_percentage")
-  createdAt              DateTime         @default(now())
-  updatedAt              DateTime         @updatedAt
+  id                          String           @id @default(cuid())
+  siteId                      String           @map("site_id")
+  site                        Site             @relation(fields: [siteId], references: [id])
+  userId                      String           @map("user_id")
+  user                        User             @relation(fields: [userId], references: [id])
+  commissionComputationPeriod SettlementPeriod @default(BI_MONTHLY) @map("settlement_period")
+  // settlementStartingFrom DateTime @map("settlement_starting_from") @default(now())
+  // settlementEndingAt DateTime @map("settlement_ending_at") @default(now())
+  roleId                      String           @map("role_id")
+  role                        Role             @relation(fields: [roleId], references: [id])
+  categoryId                  String           @map("category_id")
+  category                    Category         @relation(fields: [categoryId], references: [id])
+  commissionPercentage        Float            @map("commission_percentage")
+  createdAt                   DateTime         @default(now())
+  updatedAt                   DateTime         @default(now())
+
+  createdBy String? @default("system") @map("created_by")
+  updatedBy String? @default("system") @map("updated_by")
 
   @@unique([siteId, userId, roleId, categoryId])
   @@index([siteId])
@@ -23,7 +26,6 @@ model Commission {
 }
 
 enum SettlementPeriod {
-  WEEKLY
-  BI_WEEKLY
+  BI_MONTHLY
   MONTHLY
 }

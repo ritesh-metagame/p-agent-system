@@ -7,6 +7,8 @@ model BetSummary {
   date        DateTime @db.Date
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  createdBy   String?  @default("system") @map("created_by")
+  updatedBy   String?  @default("system") @map("updated_by")
 
   @@unique([siteId, date])
   @@index([siteId])
@@ -55,6 +57,9 @@ model CategorySummary {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
+  createdBy String? @default("system") @map("created_by")
+  updatedBy String? @default("system") @map("updated_by")
+
   @@unique([categoryId, date])
   @@index([categoryId])
   @@index([date])
@@ -70,6 +75,9 @@ model AgentSummary {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
+  createdBy String? @default("system") @map("created_by")
+  updatedBy String? @default("system") @map("updated_by")
+
   @@unique([agentId, date])
   @@index([agentId])
   @@index([date])
@@ -80,16 +88,35 @@ model NetworkStatistics {
   roleId String @map("role_id")
   role   Role   @relation(fields: [roleId], references: [id])
 
-  approvedCount  Int @default(0) @map("approved_count")
-  pendingCount   Int @default(0) @map("pending_count")
-  declinedCount  Int @default(0) @map("declined_count")
-  suspendedCount Int @default(0) @map("suspended_count")
-  totalCount     Int @default(0) @map("total_count")
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
+  operatorUserApprovedCount  Int @default(0) @map("operator_user_approved_count")
+  operatorUserPendingCount   Int @default(0) @map("operator_user_pending_count")
+  operatorUserDeclinedCount  Int @default(0) @map("operator_user_declined_count")
+  operatorUserSuspendedCount Int @default(0) @map("operator_user_suspended_count")
+  operatorUserTotalCount     Int @default(0) @map("operator_user_total_count")
+
+  platinumUserApprovedCount  Int @default(0) @map("platinum_user_approved_count")
+  platinumUserPendingCount   Int @default(0) @map("platinum_user_pending_count")
+  platinumUserDeclinedCount  Int @default(0) @map("platinum_user_declined_count")
+  platinumUserSuspendedCount Int @default(0) @map("platinum_user_suspended_count")
+  platinumUserTotalCount     Int @default(0) @map("platinum_user_total_count")
+
+  goldUserApprovedCount  Int @default(0) @map("gold_user_approved_count")
+  goldUserPendingCount   Int @default(0) @map("gold_user_pending_count")
+  goldUserDeclinedCount  Int @default(0) @map("gold_user_declined_count")
+  goldUserSuspendedCount Int @default(0) @map("gold_user_suspended_count")
+  goldUserTotalCount     Int @default(0) @map("gold_user_total_count")
 
   calculationDate DateTime @default(now()) @map("calculation_date")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  @@unique([roleId, calculationDate], name: "roleId_calculationDate")
+  createdBy String? @default("system") @map("created_by")
+  updatedBy String? @default("system") @map("updated_by")
+
+  @@unique([roleId, userId, calculationDate], name: "roleId_userId_calculationDate")
   @@index([roleId])
+  @@index([userId])
 }

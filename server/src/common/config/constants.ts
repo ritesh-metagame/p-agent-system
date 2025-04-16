@@ -6,4 +6,16 @@ enum UserRole {
   PLAYER = "player",
 }
 
-export { UserRole };
+enum CommissionComputationPeriod {
+  MONTHLY = "MONTHLY",
+  BI_MONTHLY = "BI_MONTHLY",
+}
+
+const DEFAULT_COMMISSION_COMPUTATION_PERIOD =
+  CommissionComputationPeriod.BI_MONTHLY;
+
+export {
+  UserRole,
+  CommissionComputationPeriod,
+  DEFAULT_COMMISSION_COMPUTATION_PERIOD,
+};

@@ -20,31 +20,72 @@ export default (app: Router) => {
 
   route.post(
     "/commissionByCategory",
-    // celebrate({}),
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {
       const response = await CommissionController.commissionByCategory(
         req,
         res,
         next
       );
-
-      res.status(200).json(response);
-    }) as any
+      if (response) {
+        res.status(200).json(response);
+      }
+    })
   );
 
-  // Define your routes here
   route.post(
     "/create",
-    // celebrate({}),
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {
       const response = await CommissionController.createCommission(
         req,
         res,
         next
       );
+      if (response) {
+        res.status(200).json(response);
+      }
+    })
+  );
 
-      res.status(200).json(response);
-    }) as any
+  route.get(
+    "/summaries",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await CommissionController.getCommissionSummaries(
+        req,
+        res,
+        next
+      );
+      if (response) {
+        res.status(200).json(response);
+      }
+    })
+  );
+
+  route.get(
+    "/payout-report",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await CommissionController.getCommissionPayoutReport(
+        req,
+        res,
+        next
+      );
+      if (response) {
+        res.status(200).json(response);
+      }
+    })
+  );
+
+  route.post(
+    "/running-tally",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await CommissionController.getRunningTally(
+        req,
+        res,
+        next
+      );
+      if (response) {
+        res.status(200).json(response);
+      }
+    })
   );
 
   route.get(

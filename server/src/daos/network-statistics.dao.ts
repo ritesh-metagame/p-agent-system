@@ -6,22 +6,34 @@ export class NetworkStatisticsDao {
   async createOrUpdate(
     data: Partial<NetworkStatistics>
   ): Promise<NetworkStatistics> {
-    const { roleId, calculationDate = new Date(), ...rest } = data;
+    const { roleId, calculationDate = new Date(), userId, ...rest } = data;
 
-    return prisma.networkStatistics.upsert({
-      where: {
-        roleId_calculationDate: {
+    try {
+      // First, delete any existing records that might conflict with unique constraints
+      await prisma.networkStatistics.deleteMany({
+        where: {
           roleId,
-          calculationDate: calculationDate,
+          calculationDate,
         },
-      },
-      update: { ...rest },
-      create: {
-        roleId,
-        calculationDate,
-        ...rest,
-      },
-    });
+      });
+
+      // Then create a fresh record
+      return await prisma.networkStatistics.create({
+        data: {
+          role: {
+            connect: { id: roleId },
+          },
+          user: {
+            connect: { id: userId },
+          },
+          calculationDate,
+          ...rest,
+        },
+      });
+    } catch (error) {
+      console.error("Error in createOrUpdate:", error);
+      throw error;
+    }
   }
 
   async getNetworkStatisticsByRole(
@@ -64,80 +76,170 @@ export class NetworkStatisticsDao {
     });
   }
 
+  async getLatestNetworkStatisticsByUserId(
+    userId: string
+  ): Promise<NetworkStatistics[]> {
+    // Get the latest calculation date for the user
+    const latestEntry = await prisma.networkStatistics.findFirst({
+      where: {
+        userId: userId,
+      },
+      orderBy: {
+        calculationDate: "desc",
+      },
+    });
+
+    if (!latestEntry) {
+      return [];
+    }
+
+    // Get all statistics for this user on the latest calculation date
+    return prisma.networkStatistics.findMany({
+      where: {
+        userId: userId,
+        calculationDate: latestEntry.calculationDate,
+      },
+      include: {
+        role: true,
+      },
+      orderBy: {
+        role: {
+          name: "asc",
+        },
+      },
+    });
+  }
+
   async calculateAndUpdateNetworkStatistics(): Promise<void> {
-    const roles = await prisma.role.findMany();
+    const users = await prisma.user.findMany({
+      include: {
+        role: true,
+        children: {
+          include: {
+            role: true,
+            children: {
+              include: {
+                role: true,
+                children: {
+                  include: {
+                    role: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
 
-    // Log the roles found in the database
-    console.log(
-      "Found roles:",
-      roles.map((r) => ({ id: r.id, name: r.name }))
-    );
+    // Use a single calculation date for all records
+    const calculationDate = new Date();
 
-    // Find the specific roles we need for values
-    const operatorRole = roles.find(
-      (r) => r.name.toLowerCase() === UserRole.OPERATOR.toLowerCase()
-    );
-    const platinumRole = roles.find(
-      (r) => r.name.toLowerCase() === UserRole.PLATINUM.toLowerCase()
-    );
-    const goldenRole = roles.find(
-      (r) => r.name.toLowerCase() === UserRole.GOLDEN.toLowerCase()
-    );
-    const superAdminRole = roles.find(
-      (r) => r.name.toLowerCase() === UserRole.SUPER_ADMIN.toLowerCase()
-    );
+    // Process users sequentially to avoid race conditions
+    for (const user of users) {
+      const stats = {
+        operatorUserApprovedCount: 0,
+        operatorUserPendingCount: 0,
+        operatorUserDeclinedCount: 0,
+        operatorUserSuspendedCount: 0,
+        operatorUserTotalCount: 0,
 
-    console.log("Operator role:", operatorRole);
-    console.log("Platinum role:", platinumRole);
-    console.log("Golden role:", goldenRole);
-    console.log("SuperAdmin role:", superAdminRole);
+        platinumUserApprovedCount: 0,
+        platinumUserPendingCount: 0,
+        platinumUserDeclinedCount: 0,
+        platinumUserSuspendedCount: 0,
+        platinumUserTotalCount: 0,
 
-    // Process specific roles with hardcoded values
-    if (operatorRole) {
-      console.log(`Setting statistics for ${operatorRole.name} role`);
-      await this.createOrUpdate({
-        roleId: operatorRole.id,
-        approvedCount: 1, // 1 approved as specified
-        pendingCount: 0,
-        declinedCount: 0,
-        suspendedCount: 0,
-        totalCount: 1,
-        calculationDate: new Date(),
-      });
+        goldUserApprovedCount: 0,
+        goldUserPendingCount: 0,
+        goldUserDeclinedCount: 0,
+        goldUserSuspendedCount: 0,
+        goldUserTotalCount: 0,
+      };
+
+      const countUsersInChain = (children: any[]) => {
+        for (const child of children) {
+          switch (child.role.name.toLowerCase()) {
+            case "operator":
+              stats.operatorUserTotalCount++;
+              if (child.approved) stats.operatorUserApprovedCount++;
+              else if (child.declined) stats.operatorUserDeclinedCount++;
+              else if (child.suspended) stats.operatorUserSuspendedCount++;
+              else stats.operatorUserPendingCount++;
+              break;
+
+            case "platinum":
+              stats.platinumUserTotalCount++;
+              if (child.approved) stats.platinumUserApprovedCount++;
+              else if (child.declined) stats.platinumUserDeclinedCount++;
+              else if (child.suspended) stats.platinumUserSuspendedCount++;
+              else stats.platinumUserPendingCount++;
+              break;
+
+            case "gold":
+              stats.goldUserTotalCount++;
+              if (child.approved) stats.goldUserApprovedCount++;
+              else if (child.declined) stats.goldUserDeclinedCount++;
+              else if (child.suspended) stats.goldUserSuspendedCount++;
+              else stats.goldUserPendingCount++;
+              break;
+          }
+
+          if (child.children?.length > 0) {
+            countUsersInChain(child.children);
+          }
+        }
+      };
+
+      if (user.children?.length > 0) {
+        countUsersInChain(user.children);
+      }
+
+      const roleStats: any = {};
+      switch (user.role.name.toLowerCase()) {
+        case "superadmin":
+          Object.assign(roleStats, stats);
+          break;
+        case "operator":
+          Object.assign(roleStats, {
+            platinumUserApprovedCount: stats.platinumUserApprovedCount,
+            platinumUserPendingCount: stats.platinumUserPendingCount,
+            platinumUserDeclinedCount: stats.platinumUserDeclinedCount,
+            platinumUserSuspendedCount: stats.platinumUserSuspendedCount,
+            platinumUserTotalCount: stats.platinumUserTotalCount,
+
+            goldUserApprovedCount: stats.goldUserApprovedCount,
+            goldUserPendingCount: stats.goldUserPendingCount,
+            goldUserDeclinedCount: stats.goldUserDeclinedCount,
+            goldUserSuspendedCount: stats.goldUserSuspendedCount,
+            goldUserTotalCount: stats.goldUserTotalCount,
+          });
+          break;
+        case "platinum":
+          Object.assign(roleStats, {
+            goldUserApprovedCount: stats.goldUserApprovedCount,
+            goldUserPendingCount: stats.goldUserPendingCount,
+            goldUserDeclinedCount: stats.goldUserDeclinedCount,
+            goldUserSuspendedCount: stats.goldUserSuspendedCount,
+            goldUserTotalCount: stats.goldUserTotalCount,
+          });
+          break;
+        case "gold":
+          // Gold users don't see any counts
+          break;
+      }
+
+      try {
+        await this.createOrUpdate({
+          roleId: user.roleId,
+          userId: user.id,
+          calculationDate,
+          ...roleStats,
+        });
+      } catch (error) {
+        console.error(`Error updating stats for user ${user.id}:`, error);
+        throw error;
+      }
     }
-
-    if (platinumRole) {
-      console.log(`Setting statistics for ${platinumRole.name} role`);
-      await this.createOrUpdate({
-        roleId: platinumRole.id,
-        approvedCount: 2, // 2 approved as specified
-        pendingCount: 0,
-        declinedCount: 0,
-        suspendedCount: 0,
-        totalCount: 2,
-        calculationDate: new Date(),
-      });
-    }
-
-    if (goldenRole) {
-      console.log(`Setting statistics for ${goldenRole.name} role`);
-      await this.createOrUpdate({
-        roleId: goldenRole.id,
-        approvedCount: 2, // 2 approved as specified
-        pendingCount: 0,
-        declinedCount: 0,
-        suspendedCount: 0,
-        totalCount: 2,
-        calculationDate: new Date(),
-      });
-    }
-
-    // SuperAdmin role doesn't get an entry in the database as specified
-    console.log(
-      "SuperAdmin role will not have an entry in database as specified"
-    );
-
-    // We'll skip player role as specified
-    console.log("Skipping player role as specified");
   }
 }

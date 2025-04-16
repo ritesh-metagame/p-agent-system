@@ -6,8 +6,9 @@ model Category {
   categorySummaries   CategorySummary[]
   categoryLogs        CategoryLog[]
   createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
-  commissionSummaries CommissionSummary[]
+  updatedAt           DateTime            @default(now()) @updatedAt
+  createdBy           String              @default("system") @map("created_by")
+  updatedBy           String              @default("system") @map("updated_by")
 }
 
 model Role {
@@ -21,7 +22,10 @@ model Role {
   networkStatistics     NetworkStatistics[]
   roleLogs              RoleLog[]
   createdAt             DateTime              @default(now())
-  updatedAt             DateTime              @updatedAt
+  updatedAt             DateTime              @default(now())
+
+  createdBy String @default("system") @map("created_by")
+  updatedBy String @default("system") @map("updated_by")
 }
 
 model Site {
@@ -36,9 +40,11 @@ model Site {
   topPerformerSummaries TopPerformerSummary[]
   // networkStatistics NetworkStatistics[]
   siteLogs              SiteLog[]
-  transactions          Transaction[]
   createdAt             DateTime              @default(now())
-  updatedAt             DateTime              @updatedAt
+  updatedAt             DateTime              @default(now()) @updatedAt
+
+  createdBy String @default("system") @map("created_by")
+  updatedBy String @default("system") @map("updated_by")
 }
 
 model UserSite {
@@ -47,6 +53,12 @@ model UserSite {
   site       Site     @relation(fields: [siteId], references: [id])
   siteId     String   @map("site_id")
   assignedAt DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  createdBy String @default("system") @map("created_by")
+  updatedBy String @default("system") @map("updated_by")
 
   @@id([userId, siteId])
   @@index([userId])
@@ -64,7 +76,7 @@ model CategoryLog {
   updatedById String?  @map("updated_by_id")
   updatedBy   User?    @relation("CategoryLogUpdater", fields: [updatedById], references: [id])
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime @default(now())
 
   @@index([categoryId])
   @@index([createdById])

@@ -37,10 +37,20 @@ export class NetworkStatisticsController {
   public getNetworkStatistics = async (req: Request, res: Response) => {
     try {
       const roleId = req.role;
+      const userId = req.user?.id;
+
+      if (!userId) {
+        return res.status(400).json({
+          code: 400,
+          message: "User ID is required",
+          data: null,
+        });
+      }
 
       const result =
         await this.networkStatisticsService.getNetworkStatisticsByUserRole(
-          roleId
+          roleId,
+          userId
         );
 
       return res.status(200).json(result);

@@ -95,8 +95,31 @@ class ResponseCodes {
     code: "1017",
     message: "Network statistics fetched successfully",
   } as const;
+
+  static readonly COMMISSION_CREATED_SUCCESSFULLY = {
+    code: "2001",
+    message: "Commission created successfully",
+  } as const;
+
+  static readonly COMMISSION_CREATION_FAILED = {
+    code: "2002",
+    message: "Commission creation failed",
+  } as const;
+
+  static readonly COMMISSION_FETCHED_SUCCESSFULLY = {
+    code: "2003",
+    message: "Commission fetched successfully",
+  } as const;
+
+  static readonly COMMISSION_FETCH_FAILED = {
+    code: "2004",
+    message: "Commission fetch failed",
+  } as const;
+
+  static readonly UNAUTHORIZED = {
+    code: "401",
+    message: "Unauthorized access",
+  } as const;
 }
 
 export { ResponseCodes };
-
-// Add this to the ResponseCodes class:

@@ -8,7 +8,8 @@
     "nodemon": "nodemon",
     "start:studio": "npx prisma studio",
     "start:prod": "pm2 start dist/server.js --name server",
-    "seed:transactions": "ts-node ./src/seed-transactions.ts"
+    "seed:transactions": "ts-node ./src/seed-transactions.ts",
+    "start:pm2": "pm2 start node_modules/.bin/nodemon --name "
   },
   "devDependencies": {
     "@types/axios": "^0.14.4",
@@ -83,6 +84,7 @@
     "validator": "^13.11.0",
     "winston": "^3.13.0",
     "winston-daily-rotate-file": "^5.0.0",
-    "ws": "^8.17.0"
+    "ws": "^8.17.0",
+    "xlsx": "^0.18.5"
   }
 }

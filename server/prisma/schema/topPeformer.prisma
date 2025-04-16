@@ -1,5 +1,5 @@
 model TopPerformer {
-  id             String   @id @default(cuid())
+  id             String @id @default(cuid())
   userId         String
   playerId       String
   userRole       String
@@ -7,6 +7,6 @@ model TopPerformer {
   totalBetAmount Float
   GGR            Float
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
