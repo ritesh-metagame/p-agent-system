@@ -111,135 +111,114 @@ export class NetworkStatisticsDao {
   }
 
   async calculateAndUpdateNetworkStatistics(): Promise<void> {
-    const users = await prisma.user.findMany({
-      include: {
-        role: true,
-        children: {
-          include: {
-            role: true,
-            children: {
-              include: {
-                role: true,
-                children: {
-                  include: {
-                    role: true,
-                  },
-                },
-              },
+    try {
+      // Get all users with their roles and parent/child relationships
+      const users = await prisma.user.findMany({
+        include: {
+          role: true,
+          parent: {
+            include: {
+              role: true,
             },
           },
         },
-      },
-    });
+      });
 
-    // Use a single calculation date for all records
-    const calculationDate = new Date();
-
-    // Process users sequentially to avoid race conditions
-    for (const user of users) {
-      const stats = {
-        operatorUserApprovedCount: 0,
-        operatorUserPendingCount: 0,
-        operatorUserDeclinedCount: 0,
-        operatorUserSuspendedCount: 0,
-        operatorUserTotalCount: 0,
-
-        platinumUserApprovedCount: 0,
-        platinumUserPendingCount: 0,
-        platinumUserDeclinedCount: 0,
-        platinumUserSuspendedCount: 0,
-        platinumUserTotalCount: 0,
-
-        goldUserApprovedCount: 0,
-        goldUserPendingCount: 0,
-        goldUserDeclinedCount: 0,
-        goldUserSuspendedCount: 0,
-        goldUserTotalCount: 0,
-      };
-
-      const countUsersInChain = (children: any[]) => {
-        for (const child of children) {
-          switch (child.role.name.toLowerCase()) {
-            case "operator":
-              stats.operatorUserTotalCount++;
-              if (child.approved) stats.operatorUserApprovedCount++;
-              else if (child.declined) stats.operatorUserDeclinedCount++;
-              else if (child.suspended) stats.operatorUserSuspendedCount++;
-              else stats.operatorUserPendingCount++;
-              break;
-
-            case "platinum":
-              stats.platinumUserTotalCount++;
-              if (child.approved) stats.platinumUserApprovedCount++;
-              else if (child.declined) stats.platinumUserDeclinedCount++;
-              else if (child.suspended) stats.platinumUserSuspendedCount++;
-              else stats.platinumUserPendingCount++;
-              break;
-
-            case "gold":
-              stats.goldUserTotalCount++;
-              if (child.approved) stats.goldUserApprovedCount++;
-              else if (child.declined) stats.goldUserDeclinedCount++;
-              else if (child.suspended) stats.goldUserSuspendedCount++;
-              else stats.goldUserPendingCount++;
-              break;
+      // Group users by their parent
+      const usersByParent = users.reduce(
+        (acc, user) => {
+          if (user.parentId) {
+            if (!acc[user.parentId]) {
+              acc[user.parentId] = [];
+            }
+            acc[user.parentId].push(user);
           }
+          return acc;
+        },
+        {} as Record<string, any[]>
+      );
 
-          if (child.children?.length > 0) {
-            countUsersInChain(child.children);
+      // Calculate statistics for each non-gold user
+      for (const user of users) {
+        if (user.role.name.toLowerCase() === "gold") continue;
+
+        // Initialize statistics object
+        const stats: any = {
+          operatorUserApprovedCount: 0,
+          operatorUserPendingCount: 0,
+          operatorUserDeclinedCount: 0,
+          operatorUserSuspendedCount: 0,
+          operatorUserTotalCount: 0,
+          platinumUserApprovedCount: 0,
+          platinumUserPendingCount: 0,
+          platinumUserDeclinedCount: 0,
+          platinumUserSuspendedCount: 0,
+          platinumUserTotalCount: 0,
+          goldUserApprovedCount: 0,
+          goldUserPendingCount: 0,
+          goldUserDeclinedCount: 0,
+          goldUserSuspendedCount: 0,
+          goldUserTotalCount: 0,
+        };
+
+        // Helper function to update counts based on user status
+        const updateCounts = (user: any, rolePrefix: string) => {
+          stats[`${rolePrefix}UserTotalCount`]++;
+          if (user.approved) {
+            stats[`${rolePrefix}UserApprovedCount`]++;
+          } else {
+            stats[`${rolePrefix}UserPendingCount`]++;
           }
+        };
+
+        // Recursive function to count all descendants
+        const countDescendants = (
+          currentUserId: string,
+          parentRole: string
+        ) => {
+          const children = usersByParent[currentUserId] || [];
+
+          for (const child of children) {
+            const childRoleName = child.role.name.toLowerCase();
+
+            if (parentRole === "superadmin" && childRoleName === "operator") {
+              updateCounts(child, "operator");
+              // Count platinum and gold under this operator
+              countDescendants(child.id, "operator");
+            } else if (
+              parentRole === "operator" &&
+              childRoleName === "platinum"
+            ) {
+              updateCounts(child, "platinum");
+              // Count gold under this platinum
+              countDescendants(child.id, "platinum");
+            } else if (parentRole === "platinum" && childRoleName === "gold") {
+              updateCounts(child, "gold");
+            }
+          }
+        };
+
+        // Start counting based on user's role
+        const userRole = user.role.name.toLowerCase();
+        if (userRole === "superadmin") {
+          countDescendants(user.id, "superadmin");
+        } else if (userRole === "operator") {
+          countDescendants(user.id, "operator");
+        } else if (userRole === "platinum") {
+          countDescendants(user.id, "platinum");
         }
-      };
 
-      if (user.children?.length > 0) {
-        countUsersInChain(user.children);
-      }
-
-      const roleStats: any = {};
-      switch (user.role.name.toLowerCase()) {
-        case "superadmin":
-          Object.assign(roleStats, stats);
-          break;
-        case "operator":
-          Object.assign(roleStats, {
-            platinumUserApprovedCount: stats.platinumUserApprovedCount,
-            platinumUserPendingCount: stats.platinumUserPendingCount,
-            platinumUserDeclinedCount: stats.platinumUserDeclinedCount,
-            platinumUserSuspendedCount: stats.platinumUserSuspendedCount,
-            platinumUserTotalCount: stats.platinumUserTotalCount,
-
-            goldUserApprovedCount: stats.goldUserApprovedCount,
-            goldUserPendingCount: stats.goldUserPendingCount,
-            goldUserDeclinedCount: stats.goldUserDeclinedCount,
-            goldUserSuspendedCount: stats.goldUserSuspendedCount,
-            goldUserTotalCount: stats.goldUserTotalCount,
-          });
-          break;
-        case "platinum":
-          Object.assign(roleStats, {
-            goldUserApprovedCount: stats.goldUserApprovedCount,
-            goldUserPendingCount: stats.goldUserPendingCount,
-            goldUserDeclinedCount: stats.goldUserDeclinedCount,
-            goldUserSuspendedCount: stats.goldUserSuspendedCount,
-            goldUserTotalCount: stats.goldUserTotalCount,
-          });
-          break;
-        case "gold":
-          // Gold users don't see any counts
-          break;
-      }
-
-      try {
+        // Create or update statistics entry
         await this.createOrUpdate({
           roleId: user.roleId,
           userId: user.id,
-          calculationDate,
-          ...roleStats,
+          calculationDate: new Date(),
+          ...stats,
         });
-      } catch (error) {
-        console.error(`Error updating stats for user ${user.id}:`, error);
-        throw error;
       }
+    } catch (error) {
+      console.error("Error calculating network statistics:", error);
+      throw error;
     }
   }
 }

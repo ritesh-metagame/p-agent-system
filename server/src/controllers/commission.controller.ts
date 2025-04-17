@@ -349,6 +349,8 @@ class CommissionController {
         userWithRole.role.name
       );
 
+      console.log({ result });
+
       return new ApiResponse(
         "2006",
         "Pending Settlements fetched successfully",
