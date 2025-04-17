@@ -1,0 +1,57 @@
+info: 2025-04-17T04:40:36.577Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-17T04:40:36.661Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-17T04:42:46.183Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-17T04:42:46.196Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+debug: 2025-04-17T04:43:11.468Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-17T04:43:11.591Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-17T04:43:11.592Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-17T04:43:11.592Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jv954z0000jfy8um1pz2de
+debug: 2025-04-17T04:43:11.592Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jvbgea0007jfy8lcubkd8a
+http: 2025-04-17T04:43:11.649Z [logger\morgan.ts] GET /api/v1/commission/breakdown?id=cm9jvf4t20004jf8g24j83ytf 200 - - 176.015 ms
+
+info: 2025-04-17T04:44:00.228Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-17T04:44:00.239Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-17T04:44:34.612Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-17T04:44:34.623Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+debug: 2025-04-17T04:44:35.347Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-17T04:44:35.366Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-17T04:44:35.366Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-17T04:44:35.366Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jv954z0000jfy8um1pz2de
+debug: 2025-04-17T04:44:35.366Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jvbgea0007jfy8lcubkd8a
+http: 2025-04-17T04:44:35.385Z [logger\morgan.ts] GET /api/v1/commission/breakdown?id=cm9jvf4t20004jf8g24j83ytf 200 - - 41.542 ms
+
+info: 2025-04-17T04:46:13.609Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-17T04:46:13.623Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-17T04:47:14.285Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-17T04:47:14.274Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-17T04:47:39.602Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-17T04:47:39.613Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-17T04:48:01.227Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-17T04:48:01.217Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-17T04:49:21.443Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-17T04:49:21.431Z [loaders\index.ts] ✌️ Express loaded
+debug: 2025-04-17T04:49:25.233Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-17T04:49:25.252Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-17T04:49:25.252Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-17T04:49:25.253Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jv954z0000jfy8um1pz2de
+debug: 2025-04-17T04:49:25.253Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jvbgea0007jfy8lcubkd8a
+http: 2025-04-17T04:49:25.275Z [logger\morgan.ts] GET /api/v1/commission/breakdown?id=cm9jvf4t20004jf8g24j83ytf 200 - - 46.198 ms
+
