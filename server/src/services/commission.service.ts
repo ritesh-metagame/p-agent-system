@@ -906,7 +906,7 @@ class CommissionService {
           result.tally[0].eGames += Number(
             summary.netCommissionAvailablePayout || 0
           );
-        } else if (summary.categoryName.toLowerCase() === "sports-betting") {
+        } else if (summary.categoryName.toLowerCase() === "sportsbet") {
           result.tally[0].sportsBetting += Number(
             summary.netCommissionAvailablePayout || 0
           );
@@ -990,8 +990,12 @@ class CommissionService {
         userIds = golds.map((g) => g.id);
       }
 
-      // Get pending settlements
-      const pendingSettlements = await prisma.commissionSummary.groupBy({
+      // Get cycle dates
+      const { cycleStartDate, cycleEndDate } =
+        await this.getPreviousCompletedCycleDates();
+
+      // Get pending settlement data (all unsettled transactions)
+      const pendingData = await prisma.commissionSummary.groupBy({
         by: ["categoryName"],
         where: {
           userId: { in: userIds },
@@ -1008,11 +1012,12 @@ class CommissionService {
         },
       });
 
-      // Get all-time data
+      // Get settled data
       const allTimeData = await prisma.commissionSummary.groupBy({
         by: ["categoryName"],
         where: {
           userId: { in: userIds },
+          settledStatus: "Y",
         },
         _sum: {
           totalDeposit: true,
@@ -1026,81 +1031,50 @@ class CommissionService {
       });
 
       const response = {
-        code: "2004",
-        message: "Total Commission Payouts Breakdown fetched successfully",
+        code: "2003",
+        message: "Commission fetched successfully",
         data: {
           columns: [
             "",
             "Amount based on latest completed commission periods pending settlement",
-            "Settled All Time",
+            "All Time",
           ],
+          periodInfo: {
+            pendingPeriod: {
+              start: cycleStartDate.toISOString().split("T")[0],
+              end: cycleEndDate.toISOString().split("T")[0],
+            },
+            noDataMessage: `No commission data available for this period (${cycleStartDate.toISOString().split("T")[0]} to ${cycleEndDate.toISOString().split("T")[0]})`,
+          },
           overview: [] as any[],
         },
       };
 
-      // Transform the data into the required format
+      // Helper function to get sum value or 0
+      const getSumValue = (data: any[], metric: string) => {
+        return data.reduce((sum, item) => sum + (item._sum?.[metric] || 0), 0);
+      };
+
+      // Build overview metrics
       const metrics = [
-        { name: "Total EGames", category: "egames" },
-        { name: "Total Sports Betting", category: "sports-betting" },
-        { name: "Total Specialty Games", category: "specialty" },
+        { name: "Total Deposits", field: "totalDeposit" },
+        { name: "Total Withdrawals", field: "totalWithdrawals" },
+        { name: "Total Bet Amount (Turnover)", field: "totalBetAmount" },
+        { name: "Net GGR", field: "netGGR" },
+        { name: "Gross Commission (% of Net GGR)", field: "grossCommission" },
+        { name: "Payment Gateway Fees", field: "paymentGatewayFee" },
+        {
+          name: "Net Commission Available for Payout",
+          field: "netCommissionAvailablePayout",
+        },
       ];
 
-      // Calculate aggregates for each metric
-      metrics.forEach((metric) => {
-        const pending =
-          pendingSettlements.find(
-            (s) => s.categoryName.toLowerCase() === metric.category
-          )?._sum?.netCommissionAvailablePayout || 0;
-
-        const allTime =
-          allTimeData.find(
-            (s) => s.categoryName.toLowerCase() === metric.category
-          )?._sum?.netCommissionAvailablePayout || 0;
-
+      metrics.forEach(({ name, field }) => {
         response.data.overview.push({
-          metric: metric.name,
-          pendingSettlement: pending,
-          allTime: allTime,
+          metric: name,
+          pendingSettlement: getSumValue(pendingData, field),
+          allTime: getSumValue(allTimeData, field),
         });
-      });
-
-      // Calculate gross commissions (sum of all categories)
-      const grossPending = response.data.overview.reduce(
-        (sum, item) => sum + item.pendingSettlement,
-        0
-      );
-      const grossAllTime = response.data.overview.reduce(
-        (sum, item) => sum + item.allTime,
-        0
-      );
-
-      response.data.overview.push({
-        metric: "Gross Commissions",
-        pendingSettlement: grossPending,
-        allTime: grossAllTime,
-      });
-
-      // Add payment gateway fees
-      const pendingFees = pendingSettlements.reduce(
-        (sum, item) => sum + (item._sum?.paymentGatewayFee || 0),
-        0
-      );
-      const allTimeFees = allTimeData.reduce(
-        (sum, item) => sum + (item._sum?.paymentGatewayFee || 0),
-        0
-      );
-
-      response.data.overview.push({
-        metric: "Less: Total Payment Gateway Fees",
-        pendingSettlement: pendingFees,
-        allTime: allTimeFees,
-      });
-
-      // Calculate net commission
-      response.data.overview.push({
-        metric: "Net Commission Available for Payout",
-        pendingSettlement: grossPending - pendingFees,
-        allTime: grossAllTime - allTimeFees,
       });
 
       return response.data;
@@ -2174,7 +2148,10 @@ class CommissionService {
             license,
             fields: [
               {
-                label: data.type === "egames" || data.type === "specialityGamesRNG" ? "GGR" : "Total Bet Amount",
+                label:
+                  data.type === "egames" || data.type === "specialityGamesRNG"
+                    ? "GGR"
+                    : "Total Bet Amount",
                 pendingSettlement:
                   data.type === "egames" || data.type === "specialityGamesRNG"
                     ? data.ggr.pending
