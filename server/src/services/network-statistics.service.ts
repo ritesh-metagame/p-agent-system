@@ -84,38 +84,74 @@ export class NetworkStatisticsService {
     // Convert role names to lowercase for case-insensitive comparison
     const lowerUserRoleName = userRoleName.toLowerCase();
 
-    // Helper function to format counts for a role
-    const formatRoleCounts = (stat: any, rolePrefix: string) => ({
-      approved: stat[`${rolePrefix}UserApprovedCount`] || 0,
-      pending: stat[`${rolePrefix}UserPendingCount`] || 0,
-      declined: stat[`${rolePrefix}UserDeclinedCount`] || 0,
-      suspended: stat[`${rolePrefix}UserSuspendedCount`] || 0,
-      total: stat[`${rolePrefix}UserTotalCount`] || 0,
-    });
+    // Check if statistics array is empty or invalid
+    if (
+      !Array.isArray(statistics) ||
+      statistics.length === 0 ||
+      !statistics[0]
+    ) {
+      console.log("No statistics data available");
+      return new Response(
+        ResponseCodes.NETWORK_STATISTICS_FETCHED_SUCCESSFULLY.code,
+        ResponseCodes.NETWORK_STATISTICS_FETCHED_SUCCESSFULLY.message,
+        { message: "No statistics available" }
+      );
+    }
+
+    // Helper function to safely format counts for a role
+    const formatRoleCounts = (stat: any, rolePrefix: string) => {
+      // Add null checks and default to 0 if properties don't exist
+      const data = {
+        approved: 0,
+        pending: 0,
+        declined: 0,
+        suspended: 0,
+        total: 0,
+      };
+
+      try {
+        if (stat) {
+          data.approved = parseInt(stat[`${rolePrefix}UserApprovedCount`]) || 0;
+          data.pending = parseInt(stat[`${rolePrefix}UserPendingCount`]) || 0;
+          data.declined = parseInt(stat[`${rolePrefix}UserDeclinedCount`]) || 0;
+          data.suspended =
+            parseInt(stat[`${rolePrefix}UserSuspendedCount`]) || 0;
+          data.total = parseInt(stat[`${rolePrefix}UserTotalCount`]) || 0;
+        }
+      } catch (error) {
+        console.error(`Error formatting ${rolePrefix} counts:`, error);
+      }
+
+      return data;
+    };
 
     // Add statistics based on user role
-    switch (lowerUserRoleName) {
-      case "superadmin":
-        // SuperAdmin sees all roles
-        formattedStats.operator = formatRoleCounts(statistics[0], "operator");
-        formattedStats.platinum = formatRoleCounts(statistics[0], "platinum");
-        formattedStats.gold = formatRoleCounts(statistics[0], "gold");
-        break;
+    try {
+      switch (lowerUserRoleName) {
+        case "superadmin":
+          // SuperAdmin sees all roles
+          formattedStats.operator = formatRoleCounts(statistics[0], "operator");
+          formattedStats.platinum = formatRoleCounts(statistics[0], "platinum");
+          formattedStats.gold = formatRoleCounts(statistics[0], "gold");
+          break;
 
-      case "operator":
-        // Operator sees platinum and gold
-        formattedStats.platinum = formatRoleCounts(statistics[0], "platinum");
-        formattedStats.gold = formatRoleCounts(statistics[0], "gold");
-        break;
+        case "operator":
+          // Operator sees platinum and gold
+          formattedStats.platinum = formatRoleCounts(statistics[0], "platinum");
+          formattedStats.gold = formatRoleCounts(statistics[0], "gold");
+          break;
 
-      case "platinum":
-        // Platinum sees only gold
-        formattedStats.gold = formatRoleCounts(statistics[0], "gold");
-        break;
+        case "platinum":
+          // Platinum sees only gold
+          formattedStats.gold = formatRoleCounts(statistics[0], "gold");
+          break;
 
-      case "gold":
-        // Gold sees nothing
-        break;
+        case "gold":
+          // Gold sees nothing
+          break;
+      }
+    } catch (error) {
+      console.error("Error processing statistics:", error);
     }
 
     return new Response(

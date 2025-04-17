@@ -392,11 +392,7 @@ class CommissionService {
           cycleEndDate = new Date(
             currentDate.getFullYear(),
             currentDate.getMonth(),
-            15,
-            23,
-            59,
-            59,
-            999
+            15
           );
         } else {
           const prevMonth = new Date(
@@ -417,91 +413,181 @@ class CommissionService {
       cycleStartDate.setUTCHours(0, 0, 0, 0);
       cycleEndDate.setUTCHours(23, 59, 59, 999);
 
-      // Get user and role information
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        include: { role: true },
-      });
-
-      if (!user || !user.role) {
-        throw new Error("User or role information not found");
-      }
-
-      const roleName = user.role.name.toLowerCase();
       const pendingPeriod = {
         start: format(cycleStartDate, "yyyy-MM-dd"),
         end: format(cycleEndDate, "yyyy-MM-dd"),
       };
 
-      // Initialize array to store all relevant user IDs
-      let userIds = [userId];
+      // Get commission data by category for the specified user only
+      const categories = ["egames", "sportsbet"];
+      const categoryData: any = {};
 
-      // Fetch child users based on role hierarchy
-      switch (roleName) {
-        case "superadmin":
-          // Get all operators
-          const operators = await prisma.user.findMany({
-            where: {
-              role: {
-                name: {
-                  equals: "operator",
-                },
-              },
+      for (const category of categories) {
+        console.log({ cycleStartDate, cycleEndDate });
+        // Get commission data for pending settlements
+        const pendingSettlements = await prisma.commissionSummary.findMany({
+          where: {
+            userId: userId,
+            categoryName: category,
+            createdAt: {
+              gte: cycleStartDate,
+              lte: cycleEndDate,
             },
-            select: { id: true },
-          });
-          userIds = userIds.concat(operators.map((op) => op.id));
-          break;
+            settledStatus: "N",
+          },
+          select: {
+            totalDeposit: true,
+            totalWithdrawals: true,
+            totalBetAmount: true,
+            netGGR: true,
+            grossCommission: true,
+            paymentGatewayFee: true,
+            netCommissionAvailablePayout: true,
+            createdAt: true,
+          },
+        });
 
-        case "operator":
-          // Get all platinum users under this operator
-          const platinums = await prisma.user.findMany({
-            where: {
-              parentId: userId,
-              role: {
-                name: {
-                  equals: "platinum",
-                },
-              },
-            },
-            select: { id: true },
-          });
-          userIds = userIds.concat(platinums.map((p) => p.id));
-          break;
+        console.log({ pendingSettlements });
 
-        case "platinum":
-          // Get all gold users under this platinum
-          const golds = await prisma.user.findMany({
-            where: {
-              parentId: userId,
-              role: {
-                name: {
-                  equals: "gold",
-                },
-              },
-            },
-            select: { id: true },
-          });
-          userIds = userIds.concat(golds.map((g) => g.id));
-          break;
+        // Get all-time data for the category
+        const allTimeData = await prisma.commissionSummary.findMany({
+          where: {
+            userId: userId,
+            categoryName: category,
+            settledStatus: "Y",
+          },
+          select: {
+            totalDeposit: true,
+            totalWithdrawals: true,
+            totalBetAmount: true,
+            netGGR: true,
+            grossCommission: true,
+            paymentGatewayFee: true,
+            netCommissionAvailablePayout: true,
+          },
+        });
+
+        // Calculate totals for pending settlements
+        const pendingTotals = pendingSettlements.reduce(
+          (acc, curr) => ({
+            totalDeposit: acc.totalDeposit + (curr.totalDeposit || 0),
+            totalWithdrawals:
+              acc.totalWithdrawals + (curr.totalWithdrawals || 0),
+            totalBetAmount: acc.totalBetAmount + (curr.totalBetAmount || 0),
+            netGGR: acc.netGGR + (curr.netGGR || 0),
+            grossCommission: acc.grossCommission + (curr.grossCommission || 0),
+            paymentGatewayFee:
+              acc.paymentGatewayFee + (curr.paymentGatewayFee || 0),
+            netCommissionAvailablePayout:
+              acc.netCommissionAvailablePayout +
+              (curr.netCommissionAvailablePayout || 0),
+          }),
+          {
+            totalDeposit: 0,
+            totalWithdrawals: 0,
+            totalBetAmount: 0,
+            netGGR: 0,
+            grossCommission: 0,
+            paymentGatewayFee: 0,
+            netCommissionAvailablePayout: 0,
+          }
+        );
+
+        // Calculate totals for all-time data
+        const allTimeTotals = allTimeData.reduce(
+          (acc, curr) => ({
+            totalDeposit: acc.totalDeposit + (curr.totalDeposit || 0),
+            totalWithdrawals:
+              acc.totalWithdrawals + (curr.totalWithdrawals || 0),
+            totalBetAmount: acc.totalBetAmount + (curr.totalBetAmount || 0),
+            netGGR: acc.netGGR + (curr.netGGR || 0),
+            grossCommission: acc.grossCommission + (curr.grossCommission || 0),
+            paymentGatewayFee:
+              acc.paymentGatewayFee + (curr.paymentGatewayFee || 0),
+            netCommissionAvailablePayout:
+              acc.netCommissionAvailablePayout +
+              (curr.netCommissionAvailablePayout || 0),
+          }),
+          {
+            totalDeposit: 0,
+            totalWithdrawals: 0,
+            totalBetAmount: 0,
+            netGGR: 0,
+            grossCommission: 0,
+            paymentGatewayFee: 0,
+            netCommissionAvailablePayout: 0,
+          }
+        );
+
+        categoryData[category] = {
+          pending: pendingTotals,
+          allTime: allTimeTotals,
+        };
       }
 
-      // Check if any data exists for these users
-      const anyData = await prisma.commissionSummary.findFirst({
-        where: {
-          userId: {
-            in: userIds,
-          },
-          createdAt: {
-            gte: cycleStartDate,
-            lte: cycleEndDate,
-          },
-        },
-      });
+      // Check if any data exists
+      const hasData = Object.values(categoryData).some(
+        (catData: any) =>
+          catData.pending.totalDeposit > 0 ||
+          catData.pending.totalWithdrawals > 0 ||
+          catData.pending.totalBetAmount > 0 ||
+          catData.pending.netGGR > 0 ||
+          catData.pending.netCommissionAvailablePayout > 0 ||
+          catData.allTime.totalDeposit > 0 ||
+          catData.allTime.totalWithdrawals > 0 ||
+          catData.allTime.totalBetAmount > 0 ||
+          catData.allTime.netGGR > 0 ||
+          catData.allTime.netCommissionAvailablePayout > 0
+      );
 
       // If no data found, return empty report with message
-      if (!anyData && userIds.length > 0) {
+      if (!hasData) {
         return {
+          code: "2003",
+          message: "Commission fetched successfully",
+          data: {
+            columns: [
+              "",
+              "Amount based on latest completed commission periods pending settlement",
+              "All Time",
+            ],
+            periodInfo: {
+              pendingPeriod,
+              noDataMessage: `No commission data available for this period (${pendingPeriod.start} to ${pendingPeriod.end})`,
+            },
+            overview: this.getEmptyOverview(),
+            categories: {
+              "E-GAMES": this.getEmptyOverview(),
+              "SPORTS BETTING": this.getEmptyOverview(),
+            },
+          },
+        };
+      }
+
+      // Generate the overview metrics for each category
+      const eGamesOverview = this.generateOverviewMetrics(
+        categoryData.egames.pending,
+        categoryData.egames.allTime
+      );
+
+      const sportsBettingOverview = this.generateOverviewMetrics(
+        categoryData.sportsbet.pending,
+        categoryData.sportsbet.allTime
+      );
+
+      // Combine the overviews to get total overview
+      const totalOverview = eGamesOverview.map((metric, index) => ({
+        metric: metric.metric,
+        pendingSettlement:
+          metric.pendingSettlement +
+          sportsBettingOverview[index].pendingSettlement,
+        allTime: metric.allTime + sportsBettingOverview[index].allTime,
+      }));
+
+      return {
+        code: "2003",
+        message: "Commission fetched successfully",
+        data: {
           columns: [
             "",
             "Amount based on latest completed commission periods pending settlement",
@@ -509,56 +595,17 @@ class CommissionService {
           ],
           periodInfo: {
             pendingPeriod,
-            noDataMessage: `No commission data available for this period (${pendingPeriod.start} to ${pendingPeriod.end})`,
+            noDataMessage: hasData
+              ? undefined
+              : `No commission data available for this period (${pendingPeriod.start} to ${pendingPeriod.end})`,
           },
-          overview: this.getEmptyOverview(),
-        };
-      }
-
-      // Get commission data for all users
-      const pendingSettlements = await prisma.commissionSummary.groupBy({
-        by: ["categoryName"],
-        where: {
-          userId: { in: userIds },
-          createdAt: {
-            gte: cycleStartDate,
-            lte: cycleEndDate,
+          overview: totalOverview,
+          categories: {
+            "E-GAMES": eGamesOverview,
+            "SPORTS BETTING": sportsBettingOverview,
           },
         },
-        _sum: {
-          totalDeposit: true,
-          totalWithdrawals: true,
-          totalBetAmount: true,
-          netGGR: true,
-          grossCommission: true,
-          paymentGatewayFee: true,
-          netCommissionAvailablePayout: true,
-        },
-      });
-
-      // Get all-time data
-      const allTimeData = await prisma.commissionSummary.groupBy({
-        by: ["categoryName"],
-        where: {
-          userId: { in: userIds },
-        },
-        _sum: {
-          totalDeposit: true,
-          totalWithdrawals: true,
-          totalBetAmount: true,
-          netGGR: true,
-          grossCommission: true,
-          paymentGatewayFee: true,
-          netCommissionAvailablePayout: true,
-        },
-      });
-
-      return this.generateReportResponse(
-        pendingSettlements,
-        allTimeData,
-        pendingPeriod,
-        categoryId
-      );
+      };
     } catch (error) {
       throw new Error(`Error generating commission payout report: ${error}`);
     }
@@ -1259,6 +1306,16 @@ class CommissionService {
         select: { id: true },
       });
       userIds = platinums.map((p) => p.id);
+    } else if (roleName === "platinum") {
+      // Get all gold users under this platinum
+      const golds = await prisma.user.findMany({
+        where: {
+          parentId: userId,
+          role: { name: "gold" },
+        },
+        select: { id: true },
+      });
+      userIds = golds.map((g) => g.id);
     } else {
       return {
         columns: [
@@ -1296,6 +1353,8 @@ class CommissionService {
         },
       },
     });
+
+    // console.log({ commissionSummaries });
 
     // Transform data into required format
     const rows = commissionSummaries.map((user) => {
@@ -1678,125 +1737,52 @@ class CommissionService {
         effectiveUserId = targetUserId;
       }
 
-      // Determine which role's data to show based on the target role
-      let childRole;
-      switch (targetRole) {
-        case "superadmin":
-          childRole = "operator";
-          break;
-        case "operator":
-          childRole = "platinum";
-          break;
-        case "platinum":
-          childRole = "gold";
-          break;
-        default:
-          throw new Error(`Invalid role: ${targetRole}`);
-      }
-
-      // Get the hierarchical data
-      const data = await this.getHierarchicalBreakdown(
-        childRole,
-        effectiveUserId,
-        cycleStartDate,
-        cycleEndDate
-      );
-
-      // Set appropriate message based on the role
-      let message;
-      let code;
-      switch (childRole) {
-        case "operator":
-          message = "Complete Commission Breakdown fetched successfully";
-          code = "2007";
-          break;
-        case "platinum":
-          message =
-            "Platinum and Gold Partner Commission Breakdown fetched successfully";
-          code = "2008";
-          break;
-        case "gold":
-          message = "Golden Partner Commission Breakdown fetched successfully";
-          code = "2009";
-          break;
-      }
-
-      breakdownData = {
-        code,
-        message,
-        data,
-      };
-
-      return breakdownData;
-    } catch (error) {
-      throw new Error(`Error getting commission breakdown: ${error}`);
-    }
-  }
-
-  // Helper method to get hierarchical breakdown data
-  private async getHierarchicalBreakdown(
-    targetRole: string,
-    parentId: string | null,
-    _startDate: Date,
-    _endDate: Date
-  ) {
-    // Build the where condition for the main target role
-    const whereCondition: any = {
-      settledStatus: "N",
-      user: {
-        role: {
-          name: targetRole,
-        },
-      },
-    };
-
-    if (parentId) {
-      whereCondition.user.parentId = parentId;
-    }
-
-    const summaries = await prisma.commissionSummary.findMany({
-      where: whereCondition,
-      include: {
-        user: {
-          select: {
-            id: true,
-            username: true,
-            firstName: true,
-            lastName: true,
-          },
-        },
-      },
-    });
-
-    // Get unique user IDs from summaries and aggregate their data
-    const userSummariesMap = new Map();
-    summaries.forEach((summary) => {
-      const userId = summary.user.id;
-      if (!userSummariesMap.has(userId)) {
-        userSummariesMap.set(userId, {
-          user: summary.user,
-          summaries: [],
-        });
-      }
-      userSummariesMap.get(userId).summaries.push(summary);
-    });
-
-    // For operator requests, also get gold data for each platinum
-    let goldSummaries: any[] = [];
-    if (targetRole.toLowerCase() === "platinum") {
-      goldSummaries = await prisma.commissionSummary.findMany({
+      // Get summaries for platinums
+      const platinumSummaries = await prisma.commissionSummary.findMany({
         where: {
           settledStatus: "N",
+          createdAt: {
+            gte: cycleStartDate,
+            lte: cycleEndDate,
+          },
+          role: {
+            name: "platinum",
+          },
           user: {
-            role: {
-              name: "gold",
-            },
-            parent: {
-              id: {
-                in: Array.from(userSummariesMap.keys()),
-              },
+            parentId: effectiveUserId,
+          },
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              firstName: true,
+              lastName: true,
             },
           },
+        },
+      });
+
+      // Get summaries for golds
+      const goldSummaries = await prisma.commissionSummary.findMany({
+        where: {
+          settledStatus: "N",
+          createdAt: {
+            gte: cycleStartDate,
+            lte: cycleEndDate,
+          },
+          role: {
+            name: "gold",
+          },
+          user: {
+            parentId: effectiveUserId,
+          },
+          // user: {
+          //   parent: {
+          //     parentId: effectiveUserId, // This ensures we get golds under the platinums of the operator
+          //   },
+          // },
         },
         include: {
           user: {
@@ -1810,180 +1796,192 @@ class CommissionService {
           },
         },
       });
-    }
 
-    // Transform and organize data by role
-    const platinumRows = [];
-    const goldRows = [];
+      // Process platinum data
+      const platinumRows = [];
+      const platinumUserMap = new Map();
 
-    // Process platinum users
-    for (const [userId, data] of userSummariesMap) {
-      const { user, summaries } = data;
+      platinumSummaries.forEach((summary) => {
+        if (!platinumUserMap.has(summary.user.id)) {
+          platinumUserMap.set(summary.user.id, {
+            network: summary.user.username,
+            name: `${summary.user.firstName} ${summary.user.lastName}`,
+            egamesCommission: 0,
+            sportsCommission: 0,
+            paymentGatewayFee: 0,
+            totalNetCommission: 0,
+            deductionsFromGross: 0,
+            finalNetCommission: 0,
+            userId: summary.user.id,
+            isPlatinum: true,
+          });
+        }
 
-      // Calculate aggregated values for the platinum user
-      const platRow = {
-        network: user.username,
-        name: `${user.firstName} ${user.lastName}`,
-        egamesCommission: summaries
-          .filter((s) => s.categoryName.toLowerCase().includes("egames"))
-          .reduce((sum, s) => sum + (s.netGGR || 0), 0),
-        sportsCommission: summaries
-          .filter((s) => s.categoryName.toLowerCase().includes("sportsbet"))
-          .reduce((sum, s) => sum + (s.netGGR || 0), 0),
-        paymentGatewayFee: summaries.reduce(
-          (sum, s) => sum + (s.paymentGatewayFee || 0),
-          0
-        ),
-        totalNetCommission: summaries.reduce(
-          (sum, s) => sum + (s.netCommissionAvailablePayout || 0),
-          0
-        ),
-        deductionsFromGross: summaries.reduce(
-          (sum, s) => sum + (s.paymentGatewayFee || 0),
-          0
-        ),
-        finalNetCommission: summaries.reduce(
-          (sum, s) => sum + (s.netCommissionAvailablePayout || 0),
-          0
-        ),
-        userId: user.id,
-        isPlatinum: true,
-      };
-      platinumRows.push(platRow);
-    }
+        const userData = platinumUserMap.get(summary.user.id);
+        if (summary.categoryName.toLowerCase().includes("egames")) {
+          userData.egamesCommission += summary.netGGR || 0;
+        } else if (summary.categoryName.toLowerCase().includes("sports")) {
+          userData.sportsCommission += summary.netGGR || 0;
+        }
+        userData.paymentGatewayFee += summary.paymentGatewayFee || 0;
+        userData.totalNetCommission +=
+          summary.netCommissionAvailablePayout || 0;
+        userData.deductionsFromGross += summary.paymentGatewayFee || 0;
+        userData.finalNetCommission +=
+          summary.netCommissionAvailablePayout || 0;
+      });
 
-    // Add platinum total
-    if (platinumRows.length > 0) {
-      const platinumTotal = {
-        network: "",
-        name: "PLATINUM PARTNER TOTAL",
-        egamesCommission: platinumRows.reduce(
-          (sum, row) => sum + row.egamesCommission,
-          0
-        ),
-        sportsCommission: platinumRows.reduce(
-          (sum, row) => sum + row.sportsCommission,
-          0
-        ),
-        paymentGatewayFee: platinumRows.reduce(
-          (sum, row) => sum + row.paymentGatewayFee,
-          0
-        ),
-        totalNetCommission: platinumRows.reduce(
-          (sum, row) => sum + row.totalNetCommission,
-          0
-        ),
-        deductionsFromGross: platinumRows.reduce(
-          (sum, row) => sum + row.deductionsFromGross,
-          0
-        ),
-        finalNetCommission: platinumRows.reduce(
-          (sum, row) => sum + row.finalNetCommission,
-          0
-        ),
-        userId: "platinum-total",
-        isPlatinumTotal: true,
-      };
-      platinumRows.push(platinumTotal);
-    }
+      platinumRows.push(...platinumUserMap.values());
 
-    // Group gold summaries by user and aggregate their data
-    const goldUsersMap = new Map();
-    goldSummaries.forEach((gold) => {
-      if (!goldUsersMap.has(gold.user.id)) {
-        goldUsersMap.set(gold.user.id, {
-          user: gold.user,
-          egamesCommission: 0,
-          sportsCommission: 0,
-          paymentGatewayFee: 0,
-          totalNetCommission: 0,
-          deductionsFromGross: 0,
-          finalNetCommission: 0,
-        });
+      // Add platinum total if there are platinum rows
+      if (platinumRows.length > 0) {
+        const platinumTotal = {
+          network: "",
+          name: "PLATINUM PARTNER TOTAL",
+          egamesCommission: platinumRows.reduce(
+            (sum, row) => sum + row.egamesCommission,
+            0
+          ),
+          sportsCommission: platinumRows.reduce(
+            (sum, row) => sum + row.sportsCommission,
+            0
+          ),
+          paymentGatewayFee: platinumRows.reduce(
+            (sum, row) => sum + row.paymentGatewayFee,
+            0
+          ),
+          totalNetCommission: platinumRows.reduce(
+            (sum, row) => sum + row.totalNetCommission,
+            0
+          ),
+          deductionsFromGross: platinumRows.reduce(
+            (sum, row) => sum + row.deductionsFromGross,
+            0
+          ),
+          finalNetCommission: platinumRows.reduce(
+            (sum, row) => sum + row.finalNetCommission,
+            0
+          ),
+          userId: "platinum-total",
+          isPlatinumTotal: true,
+        };
+        platinumRows.push(platinumTotal);
       }
 
-      const goldData = goldUsersMap.get(gold.user.id);
-      if (gold.categoryName.toLowerCase().includes("egames")) {
-        goldData.egamesCommission += gold.netGGR || 0;
+      // Process gold data
+      const goldRows = [];
+      const goldUserMap = new Map();
+
+      goldSummaries.forEach((summary) => {
+        if (!goldUserMap.has(summary.user.id)) {
+          goldUserMap.set(summary.user.id, {
+            network: summary.user.username,
+            name: `${summary.user.firstName} ${summary.user.lastName}`,
+            egamesCommission: 0,
+            sportsCommission: 0,
+            paymentGatewayFee: 0,
+            totalNetCommission: 0,
+            deductionsFromGross: 0,
+            finalNetCommission: 0,
+            userId: summary.user.id,
+            parentId: summary.user.parentId,
+            isGold: true,
+          });
+        }
+
+        const userData = goldUserMap.get(summary.user.id);
+        if (summary.categoryName.toLowerCase().includes("egames")) {
+          userData.egamesCommission += summary.netGGR || 0;
+        } else if (summary.categoryName.toLowerCase().includes("sports")) {
+          userData.sportsCommission += summary.netGGR || 0;
+        }
+        userData.paymentGatewayFee += summary.paymentGatewayFee || 0;
+        userData.totalNetCommission +=
+          summary.netCommissionAvailablePayout || 0;
+        userData.deductionsFromGross += summary.paymentGatewayFee || 0;
+        userData.finalNetCommission +=
+          summary.netCommissionAvailablePayout || 0;
+      });
+
+      goldRows.push(...goldUserMap.values());
+
+      // Add gold total if there are gold rows
+      if (goldRows.length > 0) {
+        const goldTotal = {
+          network: "",
+          name: "GOLD PARTNER TOTAL",
+          egamesCommission: goldRows.reduce(
+            (sum, row) => sum + row.egamesCommission,
+            0
+          ),
+          sportsCommission: goldRows.reduce(
+            (sum, row) => sum + row.sportsCommission,
+            0
+          ),
+          paymentGatewayFee: goldRows.reduce(
+            (sum, row) => sum + row.paymentGatewayFee,
+            0
+          ),
+          totalNetCommission: goldRows.reduce(
+            (sum, row) => sum + row.totalNetCommission,
+            0
+          ),
+          deductionsFromGross: goldRows.reduce(
+            (sum, row) => sum + row.deductionsFromGross,
+            0
+          ),
+          finalNetCommission: goldRows.reduce(
+            (sum, row) => sum + row.finalNetCommission,
+            0
+          ),
+          userId: "gold-total",
+          isGoldTotal: true,
+        };
+        goldRows.push(goldTotal);
       }
-      if (gold.categoryName.toLowerCase().includes("sports")) {
-        goldData.sportsCommission += gold.netGGR || 0;
+
+      // Set appropriate message based on the role
+      let message;
+      let code;
+      switch (targetRole) {
+        case "superadmin":
+          message = "Complete Commission Breakdown fetched successfully";
+          code = "2007";
+          break;
+        case "operator":
+          message =
+            "Platinum and Gold Partner Commission Breakdown fetched successfully";
+          code = "2008";
+          break;
+        case "platinum":
+          message = "Golden Partner Commission Breakdown fetched successfully";
+          code = "2009";
+          break;
       }
-      goldData.paymentGatewayFee += gold.paymentGatewayFee || 0;
-      goldData.totalNetCommission += gold.netCommissionAvailablePayout || 0;
-      goldData.deductionsFromGross += gold.paymentGatewayFee || 0;
-      goldData.finalNetCommission += gold.netCommissionAvailablePayout || 0;
-    });
 
-    // Add gold rows
-    for (const [goldId, goldData] of goldUsersMap) {
-      const goldRow = {
-        network: goldData.user.username,
-        name: `${goldData.user.firstName} ${goldData.user.lastName}`,
-        egamesCommission: goldData.egamesCommission,
-        sportsCommission: goldData.sportsCommission,
-        paymentGatewayFee: goldData.paymentGatewayFee,
-        totalNetCommission: goldData.totalNetCommission,
-        deductionsFromGross: goldData.deductionsFromGross,
-        finalNetCommission: goldData.finalNetCommission,
-        userId: goldId,
-        parentId: goldData.user.parentId,
-        isGold: true,
+      return {
+        code,
+        message,
+        data: {
+          columns: [
+            "Network",
+            "Name",
+            "Total EGames Gross Commissions",
+            "Total Sports Gross Commissions",
+            "Less: Payment Gateway Fees",
+            "Total Net Commissions",
+            "Total Deductions",
+            "Final Net Commission",
+          ],
+          data: {
+            platinum: platinumRows,
+            gold: goldRows,
+          },
+        },
       };
-      goldRows.push(goldRow);
+    } catch (error) {
+      throw new Error(`Error getting commission breakdown: ${error}`);
     }
-
-    // Add gold total
-    if (goldRows.length > 0) {
-      const goldTotal = {
-        network: "",
-        name: "GOLD PARTNER TOTAL",
-        egamesCommission: goldRows.reduce(
-          (sum, row) => sum + row.egamesCommission,
-          0
-        ),
-        sportsCommission: goldRows.reduce(
-          (sum, row) => sum + row.sportsCommission,
-          0
-        ),
-        paymentGatewayFee: goldRows.reduce(
-          (sum, row) => sum + row.paymentGatewayFee,
-          0
-        ),
-        totalNetCommission: goldRows.reduce(
-          (sum, row) => sum + row.totalNetCommission,
-          0
-        ),
-        deductionsFromGross: goldRows.reduce(
-          (sum, row) => sum + row.deductionsFromGross,
-          0
-        ),
-        finalNetCommission: goldRows.reduce(
-          (sum, row) => sum + row.finalNetCommission,
-          0
-        ),
-        userId: "gold-total",
-        isGoldTotal: true,
-      };
-      goldRows.push(goldTotal);
-    }
-
-    return {
-      columns: [
-        "Network",
-        "Name",
-        "Total EGames Gross Commissions",
-        "Total Sports Gross Commissions",
-        "Less: Payment Gateway Fees",
-        "Total Net Commissions",
-        "Total Deductions",
-        "Final Net Commission",
-      ],
-      data: {
-        platinum: platinumRows,
-        gold: goldRows,
-      },
-    };
   }
 
   public async getLicenseBreakdown(userId: string, roleName: string) {

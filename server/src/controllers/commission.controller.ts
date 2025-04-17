@@ -140,11 +140,7 @@ class CommissionController {
         categoryId as string | undefined
       );
 
-      return new ApiResponse(
-        ResponseCodes.COMMISSION_FETCHED_SUCCESSFULLY.code,
-        ResponseCodes.COMMISSION_FETCHED_SUCCESSFULLY.message,
-        result
-      );
+      return result;
     } catch (error) {
       next(error);
     }
@@ -352,6 +348,8 @@ class CommissionController {
         userWithRole.id,
         userWithRole.role.name
       );
+
+      console.log({ result });
 
       return new ApiResponse(
         "2006",
