@@ -359,6 +359,101 @@ class CommissionController {
       next(error);
     }
   }
+
+  public static async getOperatorBreakdown(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const commissionService = Container.get(CommissionService);
+      const breakdown = await commissionService.getOperatorBreakdown(
+        req.user.id
+      );
+
+      return res.json(breakdown);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getPlatinumBreakdown(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const operatorId = req.params.operatorId;
+      const commissionService = Container.get(CommissionService);
+      const breakdown =
+        await commissionService.getPlatinumBreakdown(operatorId);
+
+      return res.json(breakdown);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getGoldenBreakdown(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const platinumId = req.params.platinumId;
+      const commissionService = Container.get(CommissionService);
+      const breakdown = await commissionService.getGoldenBreakdown(platinumId);
+
+      return res.json(breakdown);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getBreakdown(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = req.user;
+      const { startDate, endDate, id } = req.query;
+
+      if (!user || !user.roleId) {
+        return new ApiResponse(
+          ResponseCodes.UNAUTHORIZED.code,
+          "Unauthorized - User details not found",
+          null
+        );
+      }
+
+      const userWithRole = await prisma.user.findUnique({
+        where: { id: user.id },
+        include: { role: true },
+      });
+
+      if (!userWithRole || !userWithRole.role) {
+        return new ApiResponse(
+          ResponseCodes.UNAUTHORIZED.code,
+          "Unauthorized - User role not found",
+          null
+        );
+      }
+
+      const commissionService = Container.get(CommissionService);
+      const result = await commissionService.getCommissionBreakdown(
+        userWithRole.id,
+        userWithRole.role.name,
+        startDate ? new Date(startDate as string) : undefined,
+        endDate ? new Date(endDate as string) : undefined,
+        id as string
+      );
+
+      return res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { CommissionController };

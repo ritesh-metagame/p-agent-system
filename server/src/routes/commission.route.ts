@@ -63,13 +63,19 @@ export default (app: Router) => {
   route.get(
     "/summaries",
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-      const response = await CommissionController.getCommissionSummaries(
-        req,
-        res,
-        next
-      );
-      if (response) {
-        res.status(200).json(response);
+      try {
+        const response = await CommissionController.getCommissionSummaries(
+          req,
+          res,
+          next
+        );
+        if (!res.headersSent && response) {
+          return res.status(200).json(response);
+        }
+      } catch (error) {
+        if (!res.headersSent) {
+          next(error);
+        }
       }
     })
   );
@@ -77,13 +83,19 @@ export default (app: Router) => {
   route.get(
     "/payout-report",
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-      const response = await CommissionController.getCommissionPayoutReport(
-        req,
-        res,
-        next
-      );
-      if (response) {
-        res.status(200).json(response);
+      try {
+        const response = await CommissionController.getCommissionPayoutReport(
+          req,
+          res,
+          next
+        );
+        if (!res.headersSent && response) {
+          return res.status(200).json(response);
+        }
+      } catch (error) {
+        if (!res.headersSent) {
+          next(error);
+        }
       }
     })
   );
@@ -119,13 +131,19 @@ export default (app: Router) => {
   route.get(
     "/pending-settlements",
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-      const response = await CommissionController.getPendingSettlements(
-        req,
-        res,
-        next
-      );
-      if (response) {
-        res.status(200).json(response);
+      try {
+        const response = await CommissionController.getPendingSettlements(
+          req,
+          res,
+          next
+        );
+        if (!res.headersSent && response) {
+          return res.status(200).json(response);
+        }
+      } catch (error) {
+        if (!res.headersSent) {
+          next(error);
+        }
       }
     })
   );
@@ -133,13 +151,37 @@ export default (app: Router) => {
   route.get(
     "/total-breakdown",
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-      const response = await CommissionController.getTotalBreakdown(
-        req,
-        res,
-        next
-      );
-      if (response) {
-        res.status(200).json(response);
+      try {
+        const response = await CommissionController.getTotalBreakdown(
+          req,
+          res,
+          next
+        );
+        if (!res.headersSent && response) {
+          return res.status(200).json(response);
+        }
+      } catch (error) {
+        if (!res.headersSent) {
+          next(error);
+        }
+      }
+    })
+  );
+
+  // Replace the separate breakdown routes with a single unified endpoint
+  route.get(
+    "/breakdown",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const result = await CommissionController.getBreakdown(req, res, next);
+        // Only send response if one hasn't been sent already
+        if (!res.headersSent) {
+          return res.json(result);
+        }
+      } catch (error) {
+        if (!res.headersSent) {
+          next(error);
+        }
       }
     })
   );
