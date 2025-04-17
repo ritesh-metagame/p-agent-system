@@ -84,6 +84,7 @@ export default (app: Router) => {
     "/payout-report",
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {
       try {
+        const { categoryId, userId } = req.query;
         const response = await CommissionController.getCommissionPayoutReport(
           req,
           res,

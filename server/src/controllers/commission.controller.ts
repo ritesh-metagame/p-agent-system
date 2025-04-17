@@ -120,10 +120,10 @@ class CommissionController {
     next: NextFunction
   ) {
     try {
-      const { categoryId } = req.query;
-      const user = req.user;
+      const { categoryId, userId } = req.query;
+      const requestingUser = req.user;
 
-      if (!user) {
+      if (!requestingUser) {
         return new ApiResponse(
           ResponseCodes.UNAUTHORIZED.code,
           "Unauthorized - User details not found",
@@ -131,9 +131,12 @@ class CommissionController {
         );
       }
 
+      // If userId is provided, use it, otherwise use requesting user's id
+      const targetUserId = (userId as string) || requestingUser.id;
+
       const commissionService = Container.get(CommissionService);
       const result = await commissionService.getCommissionPayoutReport(
-        user.id,
+        targetUserId,
         categoryId as string | undefined
       );
 

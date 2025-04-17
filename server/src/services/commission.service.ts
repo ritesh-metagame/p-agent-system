@@ -326,11 +326,7 @@ class CommissionService {
     }
   }
 
-  public async getCommissionPayoutReport(
-    userId: string,
-    categoryId?: string,
-    userRole?: string
-  ) {
+  public async getCommissionPayoutReport(userId: string, categoryId?: string) {
     try {
       // Calculate the date range for the previously completed cycle
       const currentDate = new Date();
@@ -354,21 +350,21 @@ class CommissionService {
       } else {
         // For bi-monthly periods
         if (currentDay >= 16) {
-          // On or after the 16th, show the first half of the current month (1-15)
           cycleStartDate = new Date(
             currentDate.getFullYear(),
             currentDate.getMonth(),
             1
           );
-          // Make sure the date is exactly the 15th at 23:59:59.999
           cycleEndDate = new Date(
             currentDate.getFullYear(),
             currentDate.getMonth(),
-            15
+            15,
+            23,
+            59,
+            59,
+            999
           );
-          cycleEndDate.setHours(23, 59, 59, 999);
         } else {
-          // Before the 16th, show the second half of the previous month (16-end)
           const prevMonth = new Date(
             currentDate.getFullYear(),
             currentDate.getMonth() - 1,
@@ -377,31 +373,15 @@ class CommissionService {
           cycleStartDate = new Date(
             prevMonth.getFullYear(),
             prevMonth.getMonth(),
-            15
+            16
           );
           cycleEndDate = endOfMonth(prevMonth);
         }
-
-        console.log("Bi-monthly cycle calculation details:", {
-          currentDay,
-          isSecondHalf: currentDay >= 16,
-          cycleStartDate: cycleStartDate.toISOString(),
-          cycleEndDate: cycleEndDate.toISOString(),
-          cycleStartDateLocalString: cycleStartDate.toString(),
-          cycleEndDateLocalString: cycleEndDate.toString(),
-        });
       }
 
       // Use UTC hours for consistent date comparison
       cycleStartDate.setUTCHours(0, 0, 0, 0);
       cycleEndDate.setUTCHours(23, 59, 59, 999);
-
-      console.log("Date range being used:", {
-        cycleStartDate: cycleStartDate.toISOString(),
-        cycleEndDate: cycleEndDate.toISOString(),
-        currentDay,
-        userRole,
-      });
 
       // Get user and role information
       const user = await prisma.user.findUnique({
@@ -413,56 +393,63 @@ class CommissionService {
         throw new Error("User or role information not found");
       }
 
-      const roleName = userRole || user.role.name.toLowerCase();
-      console.log(`Processing report for user ${userId} with role ${roleName}`);
-
-      // Format dates for response
+      const roleName = user.role.name.toLowerCase();
       const pendingPeriod = {
         start: format(cycleStartDate, "yyyy-MM-dd"),
         end: format(cycleEndDate, "yyyy-MM-dd"),
       };
 
-      // Handle different roles and their hierarchical data access
-      let commissionData;
-      let userIds = [userId]; // Default to just the current user
+      // Initialize array to store all relevant user IDs
+      let userIds = [userId];
 
-      if (roleName === "superadmin") {
-        // For superadmin, find all operators
-        const operators = await prisma.user.findMany({
-          where: {
-            role: {
-              name: {
-                equals: "operator",
-                // mode: 'insensitive'
+      // Fetch child users based on role hierarchy
+      switch (roleName) {
+        case "superadmin":
+          // Get all operators
+          const operators = await prisma.user.findMany({
+            where: {
+              role: {
+                name: {
+                  equals: "operator",
+                },
               },
             },
-          },
-          select: { id: true },
-        });
+            select: { id: true },
+          });
+          userIds = userIds.concat(operators.map((op) => op.id));
+          break;
 
-        userIds = operators.map((op) => op.id);
-        console.log(
-          `Superadmin: Found ${userIds.length} operators to include in report`
-        );
-      } else if (roleName === "operator") {
-        // For operator, find all platinum users under them
-        const platinums = await prisma.user.findMany({
-          where: {
-            parentId: userId,
-            role: {
-              name: {
-                equals: "platinum",
-                // mode: "insensitive",
+        case "operator":
+          // Get all platinum users under this operator
+          const platinums = await prisma.user.findMany({
+            where: {
+              parentId: userId,
+              role: {
+                name: {
+                  equals: "platinum",
+                },
               },
             },
-          },
-          select: { id: true },
-        });
+            select: { id: true },
+          });
+          userIds = userIds.concat(platinums.map((p) => p.id));
+          break;
 
-        userIds = platinums.map((p) => p.id);
-        console.log(
-          `Operator: Found ${userIds.length} platinum users to include in report`
-        );
+        case "platinum":
+          // Get all gold users under this platinum
+          const golds = await prisma.user.findMany({
+            where: {
+              parentId: userId,
+              role: {
+                name: {
+                  equals: "gold",
+                },
+              },
+            },
+            select: { id: true },
+          });
+          userIds = userIds.concat(golds.map((g) => g.id));
+          break;
       }
 
       // Check if any data exists for these users
@@ -478,14 +465,8 @@ class CommissionService {
         },
       });
 
-      console.log(`Data check for role ${roleName}: Found data = ${!!anyData}`);
-
       // If no data found, return empty report with message
       if (!anyData && userIds.length > 0) {
-        console.log(
-          `No commission data found for the ${roleName} role during this period`
-        );
-
         return {
           columns: [
             "",
@@ -496,56 +477,11 @@ class CommissionService {
             pendingPeriod,
             noDataMessage: `No commission data available for this period (${pendingPeriod.start} to ${pendingPeriod.end})`,
           },
-          overview: [
-            {
-              metric: "Total Deposits",
-              pendingSettlement: 0,
-              allTime: 0,
-            },
-            {
-              metric: "Total Withdrawals",
-              pendingSettlement: 0,
-              allTime: 0,
-            },
-            {
-              metric: "Total Bet Amount (Turnover)",
-              pendingSettlement: 0,
-              allTime: 0,
-            },
-            {
-              metric: "Net GGR",
-              pendingSettlement: 0,
-              allTime: 0,
-            },
-            {
-              metric: "Gross Commission (% of Net GGR)",
-              pendingSettlement: 0,
-              allTime: 0,
-            },
-            {
-              metric: "Payment Gateway Fees",
-              pendingSettlement: 0,
-              allTime: 0,
-            },
-            {
-              metric: "Net Commission Available for Payout",
-              pendingSettlement: 0,
-              allTime: 0,
-            },
-          ],
-          breakdownPerGame: {
-            eGames: [
-              // ... same metrics as overview
-            ],
-            "Sports-Betting": [
-              // ... same metrics as overview
-            ],
-          },
+          overview: this.getEmptyOverview(),
         };
       }
 
-      // Get commission data for the applicable users
-      // This replaces the call to this.commissionDao.getCommissionPayoutReport
+      // Get commission data for all users
       const pendingSettlements = await prisma.commissionSummary.groupBy({
         by: ["categoryName"],
         where: {
@@ -583,181 +519,192 @@ class CommissionService {
         },
       });
 
-      const categories = await prisma.category.findMany();
-
-      console.log("Found pending settlements:", pendingSettlements.length);
-      console.log("Found all-time data entries:", allTimeData.length);
-
-      const initialTotal = {
-        totalDeposit: 0,
-        totalWithdrawals: 0,
-        totalBetAmount: 0,
-        netGGR: 0,
-        grossCommission: 0,
-        paymentGatewayFee: 0,
-        netCommissionAvailablePayout: 0,
-      };
-
-      const response = {
-        columns: [
-          "",
-          "Amount based on latest completed commission periods pending settlement",
-          "All Time",
-        ],
-        periodInfo: {
-          pendingPeriod,
-        },
-        overview: [] as any[],
-        breakdownPerGame: {} as Record<string, any[]>,
-      };
-
-      // Calculate totals for pending settlements
-      const pendingTotal = pendingSettlements.reduce<SummaryTotal>(
-        (acc, curr) => ({
-          totalDeposit: acc.totalDeposit + (curr._sum?.totalDeposit || 0),
-          totalWithdrawals:
-            acc.totalWithdrawals + (curr._sum?.totalWithdrawals || 0),
-          totalBetAmount: acc.totalBetAmount + (curr._sum?.totalBetAmount || 0),
-          netGGR: acc.netGGR + (curr._sum?.netGGR || 0),
-          grossCommission:
-            acc.grossCommission + (curr._sum?.grossCommission || 0),
-          paymentGatewayFee:
-            acc.paymentGatewayFee + (curr._sum?.paymentGatewayFee || 0),
-          netCommissionAvailablePayout:
-            acc.netCommissionAvailablePayout +
-            (curr._sum?.netCommissionAvailablePayout || 0),
-        }),
-        initialTotal
+      return this.generateReportResponse(
+        pendingSettlements,
+        allTimeData,
+        pendingPeriod,
+        categoryId
       );
-
-      // Calculate all-time totals
-      const allTimeTotal = allTimeData.reduce<SummaryTotal>(
-        (acc, curr) => ({
-          totalDeposit: acc.totalDeposit + (curr._sum?.totalDeposit || 0),
-          totalWithdrawals:
-            acc.totalWithdrawals + (curr._sum?.totalWithdrawals || 0),
-          totalBetAmount: acc.totalBetAmount + (curr._sum?.totalBetAmount || 0),
-          netGGR: acc.netGGR + (curr._sum?.netGGR || 0),
-          grossCommission:
-            acc.grossCommission + (curr._sum?.grossCommission || 0),
-          paymentGatewayFee:
-            acc.paymentGatewayFee + (curr._sum?.paymentGatewayFee || 0),
-          netCommissionAvailablePayout:
-            acc.netCommissionAvailablePayout +
-            (curr._sum?.netCommissionAvailablePayout || 0),
-        }),
-        initialTotal
-      );
-
-      // Add overview metrics
-      response.overview = [
-        {
-          metric: "Total Deposits",
-          pendingSettlement: pendingTotal.totalDeposit,
-          allTime: allTimeTotal.totalDeposit,
-        },
-        {
-          metric: "Total Withdrawals",
-          pendingSettlement: pendingTotal.totalWithdrawals,
-          allTime: allTimeTotal.totalWithdrawals,
-        },
-        {
-          metric: "Total Bet Amount (Turnover)",
-          pendingSettlement: pendingTotal.totalBetAmount,
-          allTime: allTimeTotal.totalBetAmount,
-        },
-        {
-          metric: "Net GGR",
-          pendingSettlement: pendingTotal.netGGR,
-          allTime: allTimeTotal.netGGR,
-        },
-        {
-          metric: "Gross Commission (% of Net GGR)",
-          pendingSettlement: pendingTotal.grossCommission,
-          allTime: allTimeTotal.grossCommission,
-        },
-        {
-          metric: "Payment Gateway Fees",
-          pendingSettlement: pendingTotal.paymentGatewayFee,
-          allTime: allTimeTotal.paymentGatewayFee,
-        },
-        {
-          metric: "Net Commission Available for Payout",
-          pendingSettlement: pendingTotal.netCommissionAvailablePayout,
-          allTime: allTimeTotal.netCommissionAvailablePayout,
-        },
-      ];
-
-      // If no specific category was requested, include per-game breakdown
-      if (!categoryId) {
-        const gameCategories = ["eGames", "Sports-Betting"];
-        const gameCategoryMap = new Map(
-          categories.map((c) => [c.name.toLowerCase(), c.name])
-        );
-
-        // Process each game category
-        for (const categoryName of gameCategories) {
-          console.log(`Looking for data for category: ${categoryName}`);
-
-          const pendingData = pendingSettlements.find(
-            (s) => s.categoryName.toLowerCase() === categoryName.toLowerCase()
-          )?._sum;
-
-          const allTimeDataForCategory = allTimeData.find(
-            (s) => s.categoryName.toLowerCase() === categoryName.toLowerCase()
-          )?._sum;
-
-          console.log(`Found data for ${categoryName}:`, {
-            pendingData: pendingData || "none",
-            allTimeData: allTimeDataForCategory || "none",
-          });
-
-          // Initialize each category with same metrics structure
-          response.breakdownPerGame[categoryName] = [
-            {
-              metric: "Total Deposits",
-              pendingSettlement: pendingData?.totalDeposit || 0,
-              allTime: allTimeDataForCategory?.totalDeposit || 0,
-            },
-            {
-              metric: "Total Withdrawals",
-              pendingSettlement: pendingData?.totalWithdrawals || 0,
-              allTime: allTimeDataForCategory?.totalWithdrawals || 0,
-            },
-            {
-              metric: "Total Bet Amount (Turnover)",
-              pendingSettlement: pendingData?.totalBetAmount || 0,
-              allTime: allTimeDataForCategory?.totalBetAmount || 0,
-            },
-            {
-              metric: "Net GGR",
-              pendingSettlement: pendingData?.netGGR || 0,
-              allTime: allTimeDataForCategory?.netGGR || 0,
-            },
-            {
-              metric: "Gross Commission (% of Net GGR)",
-              pendingSettlement: pendingData?.grossCommission || 0,
-              allTime: allTimeDataForCategory?.grossCommission || 0,
-            },
-            {
-              metric: "Payment Gateway Fees",
-              pendingSettlement: pendingData?.paymentGatewayFee || 0,
-              allTime: allTimeDataForCategory?.paymentGatewayFee || 0,
-            },
-            {
-              metric: "Net Commission Available for Payout",
-              pendingSettlement: pendingData?.netCommissionAvailablePayout || 0,
-              allTime:
-                allTimeDataForCategory?.netCommissionAvailablePayout || 0,
-            },
-          ];
-        }
-      }
-
-      return response;
     } catch (error) {
       throw new Error(`Error generating commission payout report: ${error}`);
     }
+  }
+
+  private getEmptyOverview() {
+    return [
+      {
+        metric: "Total Deposits",
+        pendingSettlement: 0,
+        allTime: 0,
+      },
+      {
+        metric: "Total Withdrawals",
+        pendingSettlement: 0,
+        allTime: 0,
+      },
+      {
+        metric: "Total Bet Amount (Turnover)",
+        pendingSettlement: 0,
+        allTime: 0,
+      },
+      {
+        metric: "Net GGR",
+        pendingSettlement: 0,
+        allTime: 0,
+      },
+      {
+        metric: "Gross Commission (% of Net GGR)",
+        pendingSettlement: 0,
+        allTime: 0,
+      },
+      {
+        metric: "Payment Gateway Fees",
+        pendingSettlement: 0,
+        allTime: 0,
+      },
+      {
+        metric: "Net Commission Available for Payout",
+        pendingSettlement: 0,
+        allTime: 0,
+      },
+    ];
+  }
+
+  private generateReportResponse(
+    pendingSettlements: any[],
+    allTimeData: any[],
+    pendingPeriod: { start: string; end: string },
+    categoryId?: string
+  ) {
+    const categories = prisma.category.findMany();
+    const initialTotal = {
+      totalDeposit: 0,
+      totalWithdrawals: 0,
+      totalBetAmount: 0,
+      netGGR: 0,
+      grossCommission: 0,
+      paymentGatewayFee: 0,
+      netCommissionAvailablePayout: 0,
+    };
+
+    const response = {
+      columns: [
+        "",
+        "Amount based on latest completed commission periods pending settlement",
+        "All Time",
+      ],
+      periodInfo: {
+        pendingPeriod,
+      },
+      overview: [] as any[],
+      breakdownPerGame: {} as Record<string, any[]>,
+    };
+
+    // Calculate totals for pending settlements and all time
+    const pendingTotal = this.calculateTotals(pendingSettlements, initialTotal);
+    const allTimeTotal = this.calculateTotals(allTimeData, initialTotal);
+
+    // Generate overview metrics
+    response.overview = this.generateOverviewMetrics(
+      pendingTotal,
+      allTimeTotal
+    );
+
+    // Generate per-game breakdown if no specific category was requested
+    if (!categoryId) {
+      response.breakdownPerGame = this.generateGameBreakdown(
+        pendingSettlements,
+        allTimeData,
+        ["eGames", "Sports-Betting"]
+      );
+    }
+
+    return response;
+  }
+
+  private calculateTotals(data: any[], initial: any) {
+    return data.reduce(
+      (acc, curr) => ({
+        totalDeposit: acc.totalDeposit + (curr._sum?.totalDeposit || 0),
+        totalWithdrawals:
+          acc.totalWithdrawals + (curr._sum?.totalWithdrawals || 0),
+        totalBetAmount: acc.totalBetAmount + (curr._sum?.totalBetAmount || 0),
+        netGGR: acc.netGGR + (curr._sum?.netGGR || 0),
+        grossCommission:
+          acc.grossCommission + (curr._sum?.grossCommission || 0),
+        paymentGatewayFee:
+          acc.paymentGatewayFee + (curr._sum?.paymentGatewayFee || 0),
+        netCommissionAvailablePayout:
+          acc.netCommissionAvailablePayout +
+          (curr._sum?.netCommissionAvailablePayout || 0),
+      }),
+      initial
+    );
+  }
+
+  private generateOverviewMetrics(pendingTotal: any, allTimeTotal: any) {
+    return [
+      {
+        metric: "Total Deposits",
+        pendingSettlement: pendingTotal.totalDeposit,
+        allTime: allTimeTotal.totalDeposit,
+      },
+      {
+        metric: "Total Withdrawals",
+        pendingSettlement: pendingTotal.totalWithdrawals,
+        allTime: allTimeTotal.totalWithdrawals,
+      },
+      {
+        metric: "Total Bet Amount (Turnover)",
+        pendingSettlement: pendingTotal.totalBetAmount,
+        allTime: allTimeTotal.totalBetAmount,
+      },
+      {
+        metric: "Net GGR",
+        pendingSettlement: pendingTotal.netGGR,
+        allTime: allTimeTotal.netGGR,
+      },
+      {
+        metric: "Gross Commission (% of Net GGR)",
+        pendingSettlement: pendingTotal.grossCommission,
+        allTime: allTimeTotal.grossCommission,
+      },
+      {
+        metric: "Payment Gateway Fees",
+        pendingSettlement: pendingTotal.paymentGatewayFee,
+        allTime: allTimeTotal.paymentGatewayFee,
+      },
+      {
+        metric: "Net Commission Available for Payout",
+        pendingSettlement: pendingTotal.netCommissionAvailablePayout,
+        allTime: allTimeTotal.netCommissionAvailablePayout,
+      },
+    ];
+  }
+
+  private generateGameBreakdown(
+    pendingSettlements: any[],
+    allTimeData: any[],
+    gameCategories: string[]
+  ) {
+    const breakdown: Record<string, any[]> = {};
+
+    for (const categoryName of gameCategories) {
+      const pendingData = pendingSettlements.find(
+        (s) => s.categoryName.toLowerCase() === categoryName.toLowerCase()
+      )?._sum;
+
+      const allTimeDataForCategory = allTimeData.find(
+        (s) => s.categoryName.toLowerCase() === categoryName.toLowerCase()
+      )?._sum;
+
+      breakdown[categoryName] = this.generateOverviewMetrics(
+        pendingData || {},
+        allTimeDataForCategory || {}
+      );
+    }
+
+    return breakdown;
   }
 
   public async getRunningTally(
