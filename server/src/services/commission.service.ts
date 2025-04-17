@@ -31,6 +31,22 @@ interface SummaryTotal {
   netCommissionAvailablePayout: number;
 }
 
+interface EGamesLicenseData {
+  type: "egames";
+  ggr: { pending: number; allTime: number };
+  commission: { pending: number; allTime: number };
+  commissionRate: number;
+}
+
+interface SportsBettingLicenseData {
+  type: "sports";
+  betAmount: { pending: number; allTime: number };
+  commission: { pending: number; allTime: number };
+  commissionRate: number;
+}
+
+type LicenseData = EGamesLicenseData | SportsBettingLicenseData;
+
 @Service()
 class CommissionService {
   private commissionDao: CommissionDao;
@@ -1976,6 +1992,186 @@ class CommissionService {
         gold: goldRows,
       },
     };
+  }
+
+  public async getLicenseBreakdown(userId: string, roleName: string) {
+    try {
+      roleName = roleName.toLowerCase();
+
+      // Get all child users based on role hierarchy
+      let userIds = [userId];
+      const childrenIds = await this.getAllChildrenIds(userId, roleName);
+      userIds = [...userIds, ...childrenIds];
+
+      // Initialize license data structure
+      const licenseData: Record<string, LicenseData> = {
+        'E-Games': {
+          type: 'egames',
+          ggr: { pending: 0, allTime: 0 },
+          commission: { pending: 0, allTime: 0 },
+          commissionRate: 0.30
+        },
+        'Sports Betting': {
+          type: 'sports',
+          betAmount: { pending: 0, allTime: 0 },
+          commission: { pending: 0, allTime: 0 },
+          commissionRate: 0.02
+        }
+      };
+
+      // Get all commission summaries
+      const commissionSummaries = await prisma.commissionSummary.findMany({
+        where: {
+          userId: { in: userIds },
+          categoryName: {
+            in: ['egames', 'sportsbet']
+          }
+        }
+      });
+
+      // Split into pending and settled based on settledStatus
+      const pendingSummaries = commissionSummaries.filter(summary => summary.settledStatus !== 'Y');
+      const settledSummaries = commissionSummaries.filter(summary => summary.settledStatus === 'Y');
+
+      // Process pending summaries
+      pendingSummaries.forEach(summary => {
+        const isEgames = summary.categoryName.toLowerCase() === 'egames';
+        const data = licenseData[isEgames ? 'E-Games' : 'Sports Betting'];
+        
+        if (isEgames && data.type === 'egames') {
+          const ggr = summary.netGGR || 0;
+          const commission = ggr * data.commissionRate;
+          data.ggr.pending += ggr;
+          data.commission.pending += commission;
+        } else if (!isEgames && data.type === 'sports') {
+          const betAmount = summary.totalBetAmount || 0;
+          const commission = betAmount * data.commissionRate;
+          data.betAmount.pending += betAmount;
+          data.commission.pending += commission;
+        }
+      });
+
+      // Process settled summaries for allTime - only include settled transactions
+      settledSummaries.forEach(summary => {
+        const isEgames = summary.categoryName.toLowerCase() === 'egames';
+        const data = licenseData[isEgames ? 'E-Games' : 'Sports Betting'];
+        
+        if (isEgames && data.type === 'egames') {
+          const ggr = summary.netGGR || 0;
+          const commission = ggr * data.commissionRate;
+          data.ggr.allTime += ggr;
+          data.commission.allTime += commission;
+        } else if (!isEgames && data.type === 'sports') {
+          const betAmount = summary.totalBetAmount || 0;
+          const commission = betAmount * data.commissionRate;
+          data.betAmount.allTime += betAmount;
+          data.commission.allTime += commission;
+        }
+      });
+
+      // Format response
+      const response = {
+        code: "2010",
+        message: "License Commission Breakdown fetched successfully",
+        data: {
+          code: "2010", 
+          message: "License Commission Breakdown fetched successfully",
+          userId,
+          role: roleName,
+          data: Object.entries(licenseData)
+            .filter(([_, data]) => {
+              if (data.type === 'egames') {
+                return data.ggr.pending > 0 || data.ggr.allTime > 0;
+              } else {
+                return data.betAmount.pending > 0 || data.betAmount.allTime > 0;
+              }
+            })
+            .map(([license, data]) => ({
+              license,
+              fields: [
+                {
+                  label: data.type === 'egames' ? 'GGR' : 'Total Bet Amount',
+                  pendingSettlement: data.type === 'egames' ? 
+                    data.ggr.pending : 
+                    data.betAmount.pending,
+                  settledAllTime: data.type === 'egames' ? 
+                    data.ggr.allTime : 
+                    data.betAmount.allTime
+                },
+                {
+                  label: "Commission Rate",
+                  value: `${(data.commissionRate * 100).toFixed(1)}%`
+                },
+                {
+                  label: "Total Commission",
+                  pendingSettlement: data.commission.pending,
+                  settledAllTime: data.commission.allTime
+                }
+              ]
+            }))
+        }
+      };
+
+      return response;
+    } catch (error) {
+      throw new Error(`Error getting license breakdown: ${error}`);
+    }
+  }
+
+  // Helper method to recursively get all children IDs
+  private async getAllChildrenIds(
+    userId: string,
+    roleName: string
+  ): Promise<string[]> {
+    let childIds: string[] = [];
+    let directChildren: { id: string }[] = [];
+
+    // Get direct children based on role
+    switch (roleName) {
+      case "superadmin":
+        directChildren = await prisma.user.findMany({
+          where: { role: { name: "operator" } },
+          select: { id: true },
+        });
+        break;
+      case "operator":
+        directChildren = await prisma.user.findMany({
+          where: {
+            parentId: userId,
+            role: { name: "platinum" },
+          },
+          select: { id: true },
+        });
+        break;
+      case "platinum":
+        directChildren = await prisma.user.findMany({
+          where: {
+            parentId: userId,
+            role: { name: "gold" },
+          },
+          select: { id: true },
+        });
+        break;
+    }
+
+    // Add direct children IDs
+    childIds = directChildren.map((child) => child.id);
+
+    // Recursively get grandchildren for operator role
+    if (roleName === "operator") {
+      for (const child of directChildren) {
+        const grandChildren = await prisma.user.findMany({
+          where: {
+            parentId: child.id,
+            role: { name: "gold" },
+          },
+          select: { id: true },
+        });
+        childIds = [...childIds, ...grandChildren.map((gc) => gc.id)];
+      }
+    }
+
+    return childIds;
   }
 }
 

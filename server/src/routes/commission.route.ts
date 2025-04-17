@@ -186,4 +186,24 @@ export default (app: Router) => {
       }
     })
   );
+
+  route.get(
+    "/license-breakdown",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const response = await CommissionController.getLicenseBreakdown(
+          req,
+          res,
+          next
+        );
+        if (!res.headersSent && response) {
+          return res.status(200).json(response);
+        }
+      } catch (error) {
+        if (!res.headersSent) {
+          next(error);
+        }
+      }
+    })
+  );
 };
