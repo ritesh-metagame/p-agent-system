@@ -493,11 +493,7 @@ class CommissionController {
         userWithRole.role.name
       );
 
-      return new ApiResponse(
-        "2010",
-        "License Commission Breakdown fetched successfully",
-        result
-      );
+      return result
     } catch (error) {
       next(error);
     }

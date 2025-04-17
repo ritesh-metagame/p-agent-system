@@ -45,7 +45,25 @@ interface SportsBettingLicenseData {
   commissionRate: number;
 }
 
-type LicenseData = EGamesLicenseData | SportsBettingLicenseData;
+interface SpecialityGamesToteLicenseData {
+  type: "specialityGamesTote";
+  betAmount: { pending: number; allTime: number };
+  commission: { pending: number; allTime: number };
+  commissionRate: number;
+}
+
+interface SpecialityGamesRNGLicenseData {
+  type: "specialityGamesRNG";
+  ggr: { pending: number; allTime: number };
+  commission: { pending: number; allTime: number };
+  commissionRate: number;
+}
+
+type LicenseData =
+  | EGamesLicenseData
+  | SportsBettingLicenseData
+  | SpecialityGamesToteLicenseData
+  | SpecialityGamesRNGLicenseData;
 
 @Service()
 class CommissionService {
@@ -2005,18 +2023,30 @@ class CommissionService {
 
       // Initialize license data structure
       const licenseData: Record<string, LicenseData> = {
-        'E-Games': {
-          type: 'egames',
+        "E-Games": {
+          type: "egames",
           ggr: { pending: 0, allTime: 0 },
           commission: { pending: 0, allTime: 0 },
-          commissionRate: 0.30
+          commissionRate: 0.3,
         },
-        'Sports Betting': {
-          type: 'sports',
+        "Sports Betting": {
+          type: "sports",
           betAmount: { pending: 0, allTime: 0 },
           commission: { pending: 0, allTime: 0 },
-          commissionRate: 0.02
-        }
+          commissionRate: 0.02,
+        },
+        "Speciality Games - Tote": {
+          type: "specialityGamesTote",
+          betAmount: { pending: 0, allTime: 0 },
+          commission: { pending: 0, allTime: 0 },
+          commissionRate: 0.02,
+        },
+        "Speciality Games - RNG": {
+          type: "specialityGamesRNG",
+          ggr: { pending: 0, allTime: 0 },
+          commission: { pending: 0, allTime: 0 },
+          commissionRate: 0.3,
+        },
       };
 
       // Get all commission summaries
@@ -2024,95 +2054,149 @@ class CommissionService {
         where: {
           userId: { in: userIds },
           categoryName: {
-            in: ['egames', 'sportsbet']
-          }
-        }
+            in: ["egames", "sportsbet", "tote", "rng"],
+          },
+        },
       });
 
       // Split into pending and settled based on settledStatus
-      const pendingSummaries = commissionSummaries.filter(summary => summary.settledStatus !== 'Y');
-      const settledSummaries = commissionSummaries.filter(summary => summary.settledStatus === 'Y');
+      const pendingSummaries = commissionSummaries.filter(
+        (summary) => summary.settledStatus !== "Y"
+      );
+      const settledSummaries = commissionSummaries.filter(
+        (summary) => summary.settledStatus === "Y"
+      );
 
       // Process pending summaries
-      pendingSummaries.forEach(summary => {
-        const isEgames = summary.categoryName.toLowerCase() === 'egames';
-        const data = licenseData[isEgames ? 'E-Games' : 'Sports Betting'];
-        
-        if (isEgames && data.type === 'egames') {
-          const ggr = summary.netGGR || 0;
-          const commission = ggr * data.commissionRate;
-          data.ggr.pending += ggr;
-          data.commission.pending += commission;
-        } else if (!isEgames && data.type === 'sports') {
-          const betAmount = summary.totalBetAmount || 0;
-          const commission = betAmount * data.commissionRate;
-          data.betAmount.pending += betAmount;
-          data.commission.pending += commission;
+      pendingSummaries.forEach((summary) => {
+        const categoryName = summary.categoryName.toLowerCase();
+        let data;
+
+        switch (categoryName) {
+          case "egames":
+            data = licenseData["E-Games"];
+            if (data.type === "egames") {
+              const ggr = summary.netGGR || 0;
+              const commission = ggr * data.commissionRate;
+              data.ggr.pending += ggr;
+              data.commission.pending += commission;
+            }
+            break;
+
+          case "sportsbet":
+            data = licenseData["Sports Betting"];
+            if (data.type === "sports") {
+              const betAmount = summary.totalBetAmount || 0;
+              const commission = betAmount * data.commissionRate;
+              data.betAmount.pending += betAmount;
+              data.commission.pending += commission;
+            }
+            break;
+
+          case "tote":
+            data = licenseData["Speciality Games - Tote"];
+            if (data.type === "specialityGamesTote") {
+              const betAmount = summary.totalBetAmount || 0;
+              const commission = betAmount * data.commissionRate;
+              data.betAmount.pending += betAmount;
+              data.commission.pending += commission;
+            }
+            break;
+
+          case "rng":
+            data = licenseData["Speciality Games - RNG"];
+            if (data.type === "specialityGamesRNG") {
+              const ggr = summary.netGGR || 0;
+              const commission = ggr * data.commissionRate;
+              data.ggr.pending += ggr;
+              data.commission.pending += commission;
+            }
+            break;
         }
       });
 
-      // Process settled summaries for allTime - only include settled transactions
-      settledSummaries.forEach(summary => {
-        const isEgames = summary.categoryName.toLowerCase() === 'egames';
-        const data = licenseData[isEgames ? 'E-Games' : 'Sports Betting'];
-        
-        if (isEgames && data.type === 'egames') {
-          const ggr = summary.netGGR || 0;
-          const commission = ggr * data.commissionRate;
-          data.ggr.allTime += ggr;
-          data.commission.allTime += commission;
-        } else if (!isEgames && data.type === 'sports') {
-          const betAmount = summary.totalBetAmount || 0;
-          const commission = betAmount * data.commissionRate;
-          data.betAmount.allTime += betAmount;
-          data.commission.allTime += commission;
+      // Process settled summaries for allTime
+      settledSummaries.forEach((summary) => {
+        const categoryName = summary.categoryName.toLowerCase();
+        let data;
+
+        switch (categoryName) {
+          case "egames":
+            data = licenseData["E-Games"];
+            if (data.type === "egames") {
+              const ggr = summary.netGGR || 0;
+              const commission = ggr * data.commissionRate;
+              data.ggr.allTime += ggr;
+              data.commission.allTime += commission;
+            }
+            break;
+
+          case "sportsbet":
+            data = licenseData["Sports Betting"];
+            if (data.type === "sports") {
+              const betAmount = summary.totalBetAmount || 0;
+              const commission = betAmount * data.commissionRate;
+              data.betAmount.allTime += betAmount;
+              data.commission.allTime += commission;
+            }
+            break;
+
+          case "tote":
+            data = licenseData["Speciality Games - Tote"];
+            if (data.type === "specialityGamesTote") {
+              const betAmount = summary.totalBetAmount || 0;
+              const commission = betAmount * data.commissionRate;
+              data.betAmount.allTime += betAmount;
+              data.commission.allTime += commission;
+            }
+            break;
+
+          case "rng":
+            data = licenseData["Speciality Games - RNG"];
+            if (data.type === "specialityGamesRNG") {
+              const ggr = summary.netGGR || 0;
+              const commission = ggr * data.commissionRate;
+              data.ggr.allTime += ggr;
+              data.commission.allTime += commission;
+            }
+            break;
         }
       });
 
-      // Format response
-      const response = {
+      // Return flattened response structure
+      return {
         code: "2010",
         message: "License Commission Breakdown fetched successfully",
         data: {
-          code: "2010", 
-          message: "License Commission Breakdown fetched successfully",
           userId,
           role: roleName,
-          data: Object.entries(licenseData)
-            .filter(([_, data]) => {
-              if (data.type === 'egames') {
-                return data.ggr.pending > 0 || data.ggr.allTime > 0;
-              } else {
-                return data.betAmount.pending > 0 || data.betAmount.allTime > 0;
-              }
-            })
-            .map(([license, data]) => ({
-              license,
-              fields: [
-                {
-                  label: data.type === 'egames' ? 'GGR' : 'Total Bet Amount',
-                  pendingSettlement: data.type === 'egames' ? 
-                    data.ggr.pending : 
-                    data.betAmount.pending,
-                  settledAllTime: data.type === 'egames' ? 
-                    data.ggr.allTime : 
-                    data.betAmount.allTime
-                },
-                {
-                  label: "Commission Rate",
-                  value: `${(data.commissionRate * 100).toFixed(1)}%`
-                },
-                {
-                  label: "Total Commission",
-                  pendingSettlement: data.commission.pending,
-                  settledAllTime: data.commission.allTime
-                }
-              ]
-            }))
-        }
+          data: Object.entries(licenseData).map(([license, data]) => ({
+            license,
+            fields: [
+              {
+                label: data.type === "egames" || data.type === "specialityGamesRNG" ? "GGR" : "Total Bet Amount",
+                pendingSettlement:
+                  data.type === "egames" || data.type === "specialityGamesRNG"
+                    ? data.ggr.pending
+                    : data.betAmount.pending,
+                settledAllTime:
+                  data.type === "egames" || data.type === "specialityGamesRNG"
+                    ? data.ggr.allTime
+                    : data.betAmount.allTime,
+              },
+              {
+                label: "Commission Rate",
+                value: `${(data.commissionRate * 100).toFixed(1)}%`,
+              },
+              {
+                label: "Total Commission",
+                pendingSettlement: data.commission.pending,
+                settledAllTime: data.commission.allTime,
+              },
+            ],
+          })),
+        },
       };
-
-      return response;
     } catch (error) {
       throw new Error(`Error getting license breakdown: ${error}`);
     }
