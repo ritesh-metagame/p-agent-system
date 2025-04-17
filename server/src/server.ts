@@ -41,12 +41,7 @@ class Server {
     ).replace("<PASSWORD>", config.mongo.pass!) as string;
 
     const siteIds = ["cm9jkon7w0001v9g86q7jdvc7"];
-    const GAIDS = [
-      "cm9jvn4rd003ejf8g33j134he",
-      "cm9jvnun3003kjf8gmbtm7wvh",
-      "cm9jvp04j004mjf8gcbtfgasf",
-      "cm9jvpw4i004wjf8gshbl5h5i",
-    ];
+    const GAIDS = ["cm9ljw2ad001yv96gwdkch2mn"];
     const MAIDS = [
       "cm9jvlj0g001sjf8g6b84k34b",
       "cm9jvknlf001ijf8grhz4covw",
@@ -78,15 +73,70 @@ class Server {
       const sheet = workbook.Sheets[sheetName];
       const rawRows = xlsx.utils.sheet_to_json(sheet);
 
-      const transactions = rawRows.map((rawRow: any) => {
+      for (const rawRow of rawRows) {
         const row = cleanRowKeys(rawRow);
+        const platformType = row["Platform Type"];
+        const baseAmount = new Decimal(
+          platformType === "egames"
+            ? row["Revenue"] || 0
+            : row["Bet Amount"] || 0
+        );
 
-        return {
+        // Step 1: GA
+        const gaId = getRandom(GAIDS);
+        const gaCommissionRecord = await prisma.commission.findFirst({
+          where: { userId: gaId },
+        });
+        const gaPercentage = new Decimal(
+          gaCommissionRecord?.commissionPercentage || 0
+        );
+        const gaCommission = baseAmount.mul(gaPercentage).div(100);
+
+        // Step 2: MA (Parent of GA)
+        const gaUser = await prisma.user.findUnique({ where: { id: gaId } });
+        const maId = gaUser?.parentId || null;
+
+        let maPercentage = new Decimal(0);
+        let maCommission = new Decimal(0);
+        if (maId) {
+          const maCommissionRecord = await prisma.commission.findFirst({
+            where: { userId: maId },
+          });
+
+          maPercentage = new Decimal(
+            maCommissionRecord?.commissionPercentage || 0
+          );
+          maCommission = baseAmount.mul(maPercentage).div(100);
+        }
+
+        // Step 3: Owner (Parent of MA)
+        let ownerId = null;
+        let ownerPercentage = new Decimal(0);
+        let ownerCommission = new Decimal(0);
+
+        if (maId) {
+          const maUser = await prisma.user.findUnique({ where: { id: maId } });
+          ownerId = maUser?.parentId || null;
+
+          if (ownerId) {
+            const ownerCommissionRecord = await prisma.commission.findFirst({
+              where: { userId: ownerId },
+            });
+
+            ownerPercentage = new Decimal(
+              ownerCommissionRecord?.commissionPercentage || 0
+            );
+            ownerCommission = baseAmount.mul(ownerPercentage).div(100);
+          }
+        }
+
+        // Step 4: Build transaction object
+        const transaction = {
           transactionId: String(row["Trans ID"]),
           betTime: parseExcelDate(row["Bet Time"]),
           userId: row["User Id"],
           playerName: row["Player Name"],
-          platformType: row["Platform Type"] || null,
+          platformType,
           transactionType: row["Transaction Type"] || "bet",
 
           deposit: new Decimal(row["Deposit"] || 0),
@@ -100,36 +150,34 @@ class Server {
           status: row["Status"] || null,
           settled: getRandomSettledStatus(),
 
-          ownerId: getRandom(OWNERIDS),
-          ownerName: row["Owner Name"] || null,
-          ownerPercentage: new Decimal(row["Owner Percentage"] || 0),
-          ownerCommission: new Decimal(row["Owner Commission"] || 0),
-
-          maId: getRandom(MAIDS),
-          maName: row["MA Name"] || null,
-          maPercentage: new Decimal(row["MA Percentage"] || 0),
-          maCommission: new Decimal(row["MA Commission"] || 0),
-
-          gaId: getRandom(GAIDS),
+          gaId,
           gaName: row["GA Name"] || null,
-          gaPercentage: new Decimal(row["GA Percentage"] || 0),
-          gaCommission: new Decimal(row["GA Commission"] || 0),
-        };
-      });
+          gaPercentage,
+          gaCommission,
 
-      for (const tx of transactions) {
+          maId,
+          maName: row["MA Name"] || null,
+          maPercentage,
+          maCommission,
+
+          ownerId,
+          ownerName: row["Owner Name"] || null,
+          ownerPercentage,
+          ownerCommission,
+        };
+
         try {
-          await prisma.transaction.create({ data: tx });
+          await prisma.transaction.create({ data: transaction });
         } catch (err) {
           console.error(
             "❌ Error inserting transaction:",
-            tx.transactionId,
+            transaction.transactionId,
             err
           );
         }
-      }
 
-      console.log("✅ All transactions inserted successfully");
+        console.log("✅ All transactions inserted successfully");
+      }
     }
 
     // insertTransactionsFromXLSX(filePath)

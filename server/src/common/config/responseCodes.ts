@@ -101,6 +101,15 @@ class ResponseCodes {
     message: "Commission created successfully",
   } as const;
 
+  static readonly UNSETTLED_DATA_FETCH_SUCCESSFULLY = {
+    code: "210",
+    message: "Unsettled data fetched successfully",
+  } as const;
+  static readonly UNSETTLED_DATA_UPDATE_SUCCESSFULLY = {
+    code: "220",
+    message: "Unsettled data updated successfully",
+  } as const;
+
   static readonly COMMISSION_CREATION_FAILED = {
     code: "2002",
     message: "Commission creation failed",

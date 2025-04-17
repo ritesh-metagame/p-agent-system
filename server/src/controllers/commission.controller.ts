@@ -493,7 +493,47 @@ class CommissionController {
         userWithRole.role.name
       );
 
-      return result
+      return result;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async gteUnsettledCommission(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { date } = req.query as any;
+      const commissionService = Container.get(CommissionService);
+      const result = await commissionService.getAllUnSettledCommissionSummary();
+
+      return new ApiResponse(
+        ResponseCodes.UNSETTLED_DATA_FETCH_SUCCESSFULLY.code,
+        ResponseCodes.UNSETTLED_DATA_FETCH_SUCCESSFULLY.message,
+        result
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async markSettledCommission(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { id } = req.query as any;
+      const commissionService = Container.get(CommissionService);
+      const result = await commissionService.markCommissionSummaryStatus(id);
+
+      return new ApiResponse(
+        ResponseCodes.UNSETTLED_DATA_UPDATE_SUCCESSFULLY.code,
+        ResponseCodes.UNSETTLED_DATA_UPDATE_SUCCESSFULLY.message,
+        result
+      );
     } catch (error) {
       next(error);
     }

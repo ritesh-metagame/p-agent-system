@@ -406,6 +406,48 @@ class CommissionDao {
       totalSettled: totalSettled,
     };
   }
+
+  public async getUnsettledCommissionSummaries() {
+    try {
+      const summaries = await prisma.commissionSummary.findMany({
+        where: {
+          settledStatus: "N",
+        },
+        include: {
+          user: true,
+          role: true,
+          Site: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      return summaries;
+    } catch (error) {
+      console.error("Error fetching unsettled commission summaries:", error);
+      throw error;
+    }
+  }
+
+  public async markCommissionAsSettled(id: string) {
+    try {
+      const updatedSummary = await prisma.commissionSummary.update({
+        where: {
+          id: id,
+        },
+        data: {
+          settledStatus: "Y",
+          settledAt: new Date(),
+        },
+      });
+
+      return updatedSummary;
+    } catch (error) {
+      console.error("Error updating settledStatus:", error);
+      throw error;
+    }
+  }
 }
 
 export { CommissionDao };

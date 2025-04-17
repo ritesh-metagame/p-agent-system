@@ -2234,6 +2234,28 @@ class CommissionService {
 
     return childIds;
   }
+
+  public async getAllUnSettledCommissionSummary() {
+    try {
+      // Using the instance variable instead of creating a new instance
+      const commissionData =
+        await this.commissionDao.getUnsettledCommissionSummaries();
+      return commissionData;
+    } catch (error) {
+      throw new Error(`Error creating commission: ${error}`);
+    }
+  }
+
+  public async markCommissionSummaryStatus(id: string) {
+    try {
+      // Using the instance variable instead of creating a new instance
+      const commissionData =
+        await this.commissionDao.markCommissionAsSettled(id);
+      return commissionData;
+    } catch (error) {
+      throw new Error(`Error creating commission: ${error}`);
+    }
+  }
 }
 
 export { CommissionService };

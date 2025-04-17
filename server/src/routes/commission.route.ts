@@ -17,6 +17,33 @@ export default (app: Router) => {
   //     res.status(200).json(response);
   //   }) as any
   // );
+  route.put(
+    "/update-unsettled-commission",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await CommissionController.markSettledCommission(
+        req,
+        res,
+        next
+      );
+      if (response) {
+        res.status(200).json(response);
+      }
+    })
+  );
+
+  route.get(
+    "/unsettled-commission",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await CommissionController.gteUnsettledCommission(
+        req,
+        res,
+        next
+      );
+      if (response) {
+        res.status(200).json(response);
+      }
+    })
+  );
 
   route.get(
     "/payment-gateway-fees",
