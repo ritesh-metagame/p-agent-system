@@ -392,11 +392,7 @@ class CommissionService {
           cycleEndDate = new Date(
             currentDate.getFullYear(),
             currentDate.getMonth(),
-            15,
-            23,
-            59,
-            59,
-            999
+            15
           );
         } else {
           const prevMonth = new Date(
@@ -417,91 +413,181 @@ class CommissionService {
       cycleStartDate.setUTCHours(0, 0, 0, 0);
       cycleEndDate.setUTCHours(23, 59, 59, 999);
 
-      // Get user and role information
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        include: { role: true },
-      });
-
-      if (!user || !user.role) {
-        throw new Error("User or role information not found");
-      }
-
-      const roleName = user.role.name.toLowerCase();
       const pendingPeriod = {
         start: format(cycleStartDate, "yyyy-MM-dd"),
         end: format(cycleEndDate, "yyyy-MM-dd"),
       };
 
-      // Initialize array to store all relevant user IDs
-      let userIds = [userId];
+      // Get commission data by category for the specified user only
+      const categories = ["egames", "sportsbet"];
+      const categoryData: any = {};
 
-      // Fetch child users based on role hierarchy
-      switch (roleName) {
-        case "superadmin":
-          // Get all operators
-          const operators = await prisma.user.findMany({
-            where: {
-              role: {
-                name: {
-                  equals: "operator",
-                },
-              },
+      for (const category of categories) {
+        console.log({ cycleStartDate, cycleEndDate });
+        // Get commission data for pending settlements
+        const pendingSettlements = await prisma.commissionSummary.findMany({
+          where: {
+            userId: userId,
+            categoryName: category,
+            createdAt: {
+              gte: cycleStartDate,
+              lte: cycleEndDate,
             },
-            select: { id: true },
-          });
-          userIds = userIds.concat(operators.map((op) => op.id));
-          break;
+            settledStatus: "N",
+          },
+          select: {
+            totalDeposit: true,
+            totalWithdrawals: true,
+            totalBetAmount: true,
+            netGGR: true,
+            grossCommission: true,
+            paymentGatewayFee: true,
+            netCommissionAvailablePayout: true,
+            createdAt: true,
+          },
+        });
 
-        case "operator":
-          // Get all platinum users under this operator
-          const platinums = await prisma.user.findMany({
-            where: {
-              parentId: userId,
-              role: {
-                name: {
-                  equals: "platinum",
-                },
-              },
-            },
-            select: { id: true },
-          });
-          userIds = userIds.concat(platinums.map((p) => p.id));
-          break;
+        console.log({ pendingSettlements });
 
-        case "platinum":
-          // Get all gold users under this platinum
-          const golds = await prisma.user.findMany({
-            where: {
-              parentId: userId,
-              role: {
-                name: {
-                  equals: "gold",
-                },
-              },
-            },
-            select: { id: true },
-          });
-          userIds = userIds.concat(golds.map((g) => g.id));
-          break;
+        // Get all-time data for the category
+        const allTimeData = await prisma.commissionSummary.findMany({
+          where: {
+            userId: userId,
+            categoryName: category,
+            settledStatus: "Y",
+          },
+          select: {
+            totalDeposit: true,
+            totalWithdrawals: true,
+            totalBetAmount: true,
+            netGGR: true,
+            grossCommission: true,
+            paymentGatewayFee: true,
+            netCommissionAvailablePayout: true,
+          },
+        });
+
+        // Calculate totals for pending settlements
+        const pendingTotals = pendingSettlements.reduce(
+          (acc, curr) => ({
+            totalDeposit: acc.totalDeposit + (curr.totalDeposit || 0),
+            totalWithdrawals:
+              acc.totalWithdrawals + (curr.totalWithdrawals || 0),
+            totalBetAmount: acc.totalBetAmount + (curr.totalBetAmount || 0),
+            netGGR: acc.netGGR + (curr.netGGR || 0),
+            grossCommission: acc.grossCommission + (curr.grossCommission || 0),
+            paymentGatewayFee:
+              acc.paymentGatewayFee + (curr.paymentGatewayFee || 0),
+            netCommissionAvailablePayout:
+              acc.netCommissionAvailablePayout +
+              (curr.netCommissionAvailablePayout || 0),
+          }),
+          {
+            totalDeposit: 0,
+            totalWithdrawals: 0,
+            totalBetAmount: 0,
+            netGGR: 0,
+            grossCommission: 0,
+            paymentGatewayFee: 0,
+            netCommissionAvailablePayout: 0,
+          }
+        );
+
+        // Calculate totals for all-time data
+        const allTimeTotals = allTimeData.reduce(
+          (acc, curr) => ({
+            totalDeposit: acc.totalDeposit + (curr.totalDeposit || 0),
+            totalWithdrawals:
+              acc.totalWithdrawals + (curr.totalWithdrawals || 0),
+            totalBetAmount: acc.totalBetAmount + (curr.totalBetAmount || 0),
+            netGGR: acc.netGGR + (curr.netGGR || 0),
+            grossCommission: acc.grossCommission + (curr.grossCommission || 0),
+            paymentGatewayFee:
+              acc.paymentGatewayFee + (curr.paymentGatewayFee || 0),
+            netCommissionAvailablePayout:
+              acc.netCommissionAvailablePayout +
+              (curr.netCommissionAvailablePayout || 0),
+          }),
+          {
+            totalDeposit: 0,
+            totalWithdrawals: 0,
+            totalBetAmount: 0,
+            netGGR: 0,
+            grossCommission: 0,
+            paymentGatewayFee: 0,
+            netCommissionAvailablePayout: 0,
+          }
+        );
+
+        categoryData[category] = {
+          pending: pendingTotals,
+          allTime: allTimeTotals,
+        };
       }
 
-      // Check if any data exists for these users
-      const anyData = await prisma.commissionSummary.findFirst({
-        where: {
-          userId: {
-            in: userIds,
-          },
-          createdAt: {
-            gte: cycleStartDate,
-            lte: cycleEndDate,
-          },
-        },
-      });
+      // Check if any data exists
+      const hasData = Object.values(categoryData).some(
+        (catData: any) =>
+          catData.pending.totalDeposit > 0 ||
+          catData.pending.totalWithdrawals > 0 ||
+          catData.pending.totalBetAmount > 0 ||
+          catData.pending.netGGR > 0 ||
+          catData.pending.netCommissionAvailablePayout > 0 ||
+          catData.allTime.totalDeposit > 0 ||
+          catData.allTime.totalWithdrawals > 0 ||
+          catData.allTime.totalBetAmount > 0 ||
+          catData.allTime.netGGR > 0 ||
+          catData.allTime.netCommissionAvailablePayout > 0
+      );
 
       // If no data found, return empty report with message
-      if (!anyData && userIds.length > 0) {
+      if (!hasData) {
         return {
+          code: "2003",
+          message: "Commission fetched successfully",
+          data: {
+            columns: [
+              "",
+              "Amount based on latest completed commission periods pending settlement",
+              "All Time",
+            ],
+            periodInfo: {
+              pendingPeriod,
+              noDataMessage: `No commission data available for this period (${pendingPeriod.start} to ${pendingPeriod.end})`,
+            },
+            overview: this.getEmptyOverview(),
+            categories: {
+              "E-GAMES": this.getEmptyOverview(),
+              "SPORTS BETTING": this.getEmptyOverview(),
+            },
+          },
+        };
+      }
+
+      // Generate the overview metrics for each category
+      const eGamesOverview = this.generateOverviewMetrics(
+        categoryData.egames.pending,
+        categoryData.egames.allTime
+      );
+
+      const sportsBettingOverview = this.generateOverviewMetrics(
+        categoryData.sportsbet.pending,
+        categoryData.sportsbet.allTime
+      );
+
+      // Combine the overviews to get total overview
+      const totalOverview = eGamesOverview.map((metric, index) => ({
+        metric: metric.metric,
+        pendingSettlement:
+          metric.pendingSettlement +
+          sportsBettingOverview[index].pendingSettlement,
+        allTime: metric.allTime + sportsBettingOverview[index].allTime,
+      }));
+
+      return {
+        code: "2003",
+        message: "Commission fetched successfully",
+        data: {
           columns: [
             "",
             "Amount based on latest completed commission periods pending settlement",
@@ -509,56 +595,17 @@ class CommissionService {
           ],
           periodInfo: {
             pendingPeriod,
-            noDataMessage: `No commission data available for this period (${pendingPeriod.start} to ${pendingPeriod.end})`,
+            noDataMessage: hasData
+              ? undefined
+              : `No commission data available for this period (${pendingPeriod.start} to ${pendingPeriod.end})`,
           },
-          overview: this.getEmptyOverview(),
-        };
-      }
-
-      // Get commission data for all users
-      const pendingSettlements = await prisma.commissionSummary.groupBy({
-        by: ["categoryName"],
-        where: {
-          userId: { in: userIds },
-          createdAt: {
-            gte: cycleStartDate,
-            lte: cycleEndDate,
+          overview: totalOverview,
+          categories: {
+            "E-GAMES": eGamesOverview,
+            "SPORTS BETTING": sportsBettingOverview,
           },
         },
-        _sum: {
-          totalDeposit: true,
-          totalWithdrawals: true,
-          totalBetAmount: true,
-          netGGR: true,
-          grossCommission: true,
-          paymentGatewayFee: true,
-          netCommissionAvailablePayout: true,
-        },
-      });
-
-      // Get all-time data
-      const allTimeData = await prisma.commissionSummary.groupBy({
-        by: ["categoryName"],
-        where: {
-          userId: { in: userIds },
-        },
-        _sum: {
-          totalDeposit: true,
-          totalWithdrawals: true,
-          totalBetAmount: true,
-          netGGR: true,
-          grossCommission: true,
-          paymentGatewayFee: true,
-          netCommissionAvailablePayout: true,
-        },
-      });
-
-      return this.generateReportResponse(
-        pendingSettlements,
-        allTimeData,
-        pendingPeriod,
-        categoryId
-      );
+      };
     } catch (error) {
       throw new Error(`Error generating commission payout report: ${error}`);
     }

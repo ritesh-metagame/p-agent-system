@@ -140,11 +140,7 @@ class CommissionController {
         categoryId as string | undefined
       );
 
-      return new ApiResponse(
-        ResponseCodes.COMMISSION_FETCHED_SUCCESSFULLY.code,
-        ResponseCodes.COMMISSION_FETCHED_SUCCESSFULLY.message,
-        result
-      );
+      return result;
     } catch (error) {
       next(error);
     }
@@ -493,7 +489,7 @@ class CommissionController {
         userWithRole.role.name
       );
 
-      return result
+      return result;
     } catch (error) {
       next(error);
     }
