@@ -41,7 +41,12 @@ class Server {
     ).replace("<PASSWORD>", config.mongo.pass!) as string;
 
     const siteIds = ["cm9jkon7w0001v9g86q7jdvc7"];
-    const GAIDS = ["cm9ljw2ad001yv96gwdkch2mn"];
+    const GAIDS = [
+      "cm9ck1a06003liob9d02vyo69",
+      "cm9ck1vpb003ziob9rs6kufod",
+      "cm9ck2jr9004jiob9c7ik1uhy",
+      "cm9ck3zto0053iob97mzi7sgc",
+    ];
     const MAIDS = [
       "cm9jvlj0g001sjf8g6b84k34b",
       "cm9jvknlf001ijf8grhz4covw",
@@ -180,13 +185,13 @@ class Server {
       }
     }
 
-    // insertTransactionsFromXLSX(filePath)
-    //   .then(() => {
-    //     console.log("Import complete.");
-    //   })
-    //   .catch((err) => {
-    //     console.error("Import failed:", err);
-    //   });
+    insertTransactionsFromXLSX(filePath)
+      .then(() => {
+        console.log("Import complete.");
+      })
+      .catch((err) => {
+        console.error("Import failed:", err);
+      });
 
     this.app
       .listen(config.port, () => {
