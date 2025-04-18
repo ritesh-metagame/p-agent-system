@@ -1715,6 +1715,18 @@ class CommissionService {
   // Helper method to get date range for previous completed cycle
   private async getPreviousCompletedCycleDates() {
     const currentDate = new Date();
+
+    // If in test mode, return dates from 1 month back
+    if (process.env.VIEW_MODE === 'test') {
+      const oneMonthAgo = new Date(currentDate);
+      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+      return {
+        cycleStartDate: oneMonthAgo,
+        cycleEndDate: currentDate
+      };
+    }
+
+    // Production mode - use cycle-based dates
     const currentDay = currentDate.getDate();
     let cycleStartDate: Date;
     let cycleEndDate: Date;
