@@ -1049,6 +1049,10 @@ class CommissionService {
       const pendingData = await prisma.commissionSummary.findMany({
         where: {
           userId: { in: userIds },
+          createdAt: {
+            gte: cycleStartDate,
+            lte: cycleEndDate,
+          },
           settledStatus: "N",
         },
         select: {
@@ -1076,6 +1080,8 @@ class CommissionService {
           netCommissionAvailablePayout: true,
         },
       });
+
+      console.log({ allTimeData });
 
       // Initialize category totals
       const categoryTotals = {
@@ -1144,6 +1150,8 @@ class CommissionService {
         categoryTotals.settled.netCommissionPayout +=
           summary.netCommissionAvailablePayout || 0;
       });
+
+      // console.log({ categoryTotals: categoryTotals.settled });
 
       return {
         columns: [
@@ -2090,21 +2098,53 @@ class CommissionService {
       if (roleName === "superadmin") {
         // For superadmin, get all operators and their children
         const operators = await prisma.user.findMany({
-          where: { role: { name: "operator" } },
+          where: { parentId: userId },
           select: { id: true },
         });
         const operatorIds = operators.map((op) => op.id);
+
+        console.log({ operatorIds });
+
         userIds = [...userIds, ...operatorIds];
 
         // Get all platinums under these operators
         const platinums = await prisma.user.findMany({
           where: {
             parentId: { in: operatorIds },
+          },
+          select: { id: true },
+        });
+        const platinumIds = platinums.map((p) => p.id);
+
+        console.log({ platinumIds });
+
+        userIds = [...userIds, ...platinumIds];
+
+        // Get all golds under these platinums
+        const golds = await prisma.user.findMany({
+          where: {
+            parentId: { in: platinumIds },
+          },
+          select: { id: true },
+        });
+        const goldIds = golds.map((g) => g.id);
+
+        console.log({ goldIds });
+
+        userIds = [...userIds, ...goldIds];
+      } else if (roleName === "operator") {
+        // For operator, get all platinums and their children
+        const platinums = await prisma.user.findMany({
+          where: {
+            parentId: userId,
             role: { name: "platinum" },
           },
           select: { id: true },
         });
         const platinumIds = platinums.map((p) => p.id);
+
+        console.log({ platinumIds });
+
         userIds = [...userIds, ...platinumIds];
 
         // Get all golds under these platinums
@@ -2116,18 +2156,65 @@ class CommissionService {
           select: { id: true },
         });
         const goldIds = golds.map((g) => g.id);
+
+        console.log({ goldIds });
+
+        userIds = [...userIds, ...goldIds];
+      } else if (roleName === "platinum") {
+        // For platinum, get all golds under this platinum
+        const golds = await prisma.user.findMany({
+          where: {
+            parentId: userId,
+            role: { name: "gold" },
+          },
+          select: { id: true },
+        });
+        const goldIds = golds.map((g) => g.id);
+
+        console.log({ goldIds });
+
         userIds = [...userIds, ...goldIds];
       }
 
+      // Use provided date range or default to previous completed cycle
+      let cycleStartDate: Date;
+      let cycleEndDate: Date;
+
+      // // if (startDate && endDate) {
+      //   cycleStartDate = startDate;
+      //   cycleEndDate = endDate;
+      // } else {
+      const dates = await this.getPreviousCompletedCycleDates();
+      cycleStartDate = dates.cycleStartDate;
+      cycleEndDate = dates.cycleEndDate;
+      // }
+
       // Get commission records for all relevant users
-      const commissionSummaries = await prisma.commissionSummary.findMany({
+      const pendingCommissionSummaries =
+        await prisma.commissionSummary.findMany({
+          where: {
+            userId: { in: userIds },
+            createdAt: {
+              gte: cycleStartDate, // Adjust this date as needed
+              lte: cycleEndDate,
+            },
+            categoryName: {
+              in: ["egames", "sportsbet", "tote", "rng"],
+            },
+          },
+        });
+
+      const settledCommissions = await prisma.commissionSummary.findMany({
         where: {
           userId: { in: userIds },
+          settledStatus: "Y",
           categoryName: {
             in: ["egames", "sportsbet", "tote", "rng"],
           },
         },
       });
+
+      // console.log({ commissionSummaries });
 
       // Get default commission rates for superadmin
       if (roleName === "superadmin") {
@@ -2212,12 +2299,14 @@ class CommissionService {
       }
 
       // Split summaries into pending and settled
-      const pendingSummaries = commissionSummaries.filter(
+      const pendingSummaries = pendingCommissionSummaries.filter(
         (summary) => summary.settledStatus !== "Y"
       );
-      const settledSummaries = commissionSummaries.filter(
-        (summary) => summary.settledStatus === "Y"
-      );
+      // const settledSummaries = settledCommissions.filter(
+      //   (summary) => summary.settledStatus === "Y"
+      // );
+
+      // console.log({ settledSummaries });
 
       // Process pending summaries
       pendingSummaries.forEach((summary) => {
@@ -2263,7 +2352,7 @@ class CommissionService {
       });
 
       // Process settled summaries
-      settledSummaries.forEach((summary) => {
+      settledCommissions.forEach((summary) => {
         const categoryName = summary.categoryName.toLowerCase();
         switch (categoryName) {
           case "egames":
