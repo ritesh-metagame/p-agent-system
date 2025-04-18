@@ -368,55 +368,8 @@ class CommissionService {
   public async getCommissionPayoutReport(userId: string, categoryId?: string) {
     try {
       // Calculate the date range for the previously completed cycle
-      const currentDate = new Date();
-      const currentDay = currentDate.getDate();
-      let cycleStartDate: Date;
-      let cycleEndDate: Date;
-
-      if (DEFAULT_COMMISSION_COMPUTATION_PERIOD.toString() === "MONTHLY") {
-        // For monthly periods, show the previous complete month
-        const prevMonth = new Date(
-          currentDate.getFullYear(),
-          currentDate.getMonth() - 1,
-          1
-        );
-        cycleStartDate = new Date(
-          prevMonth.getFullYear(),
-          prevMonth.getMonth(),
-          1
-        );
-        cycleEndDate = endOfMonth(prevMonth);
-      } else {
-        // For bi-monthly periods
-        if (currentDay >= 16) {
-          cycleStartDate = new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth(),
-            1
-          );
-          cycleEndDate = new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth(),
-            15
-          );
-        } else {
-          const prevMonth = new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth() - 1,
-            1
-          );
-          cycleStartDate = new Date(
-            prevMonth.getFullYear(),
-            prevMonth.getMonth(),
-            15
-          );
-          cycleEndDate = endOfMonth(prevMonth);
-        }
-      }
-
-      // Use UTC hours for consistent date comparison
-      cycleStartDate.setUTCHours(0, 0, 0, 0);
-      cycleEndDate.setUTCHours(23, 59, 59, 999);
+      const { cycleStartDate, cycleEndDate } =
+        await this.getPreviousCompletedCycleDates();
 
       const pendingPeriod = {
         start: format(cycleStartDate, "yyyy-MM-dd"),
