@@ -5355,3 +5355,7 @@ debug: 2025-04-18T09:48:13.136Z [middlewares\checkAuthAndAttachCurrentUser.ts] U
 debug: 2025-04-18T09:48:13.136Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jvf4t20004jf8g24j83ytf
 http: 2025-04-18T09:48:13.156Z [logger\morgan.ts] GET /api/v1/commission/license-breakdown 304 - - 27.817 ms
 
+info: 2025-04-18T10:02:22.030Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-18T10:02:22.047Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
