@@ -1045,6 +1045,8 @@ class CommissionService {
       const { cycleStartDate, cycleEndDate } =
         await this.getPreviousCompletedCycleDates();
 
+      console.log({ cycleStartDate, cycleEndDate });
+
       // Get pending settlement data (all unsettled transactions)
       const pendingData = await prisma.commissionSummary.findMany({
         where: {
@@ -1717,12 +1719,12 @@ class CommissionService {
     const currentDate = new Date();
 
     // If in test mode, return dates from 1 month back
-    if (process.env.VIEW_MODE === 'test') {
+    if (process.env.VIEW_MODE === "test") {
       const oneMonthAgo = new Date(currentDate);
       oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
       return {
         cycleStartDate: oneMonthAgo,
-        cycleEndDate: currentDate
+        cycleEndDate: currentDate,
       };
     }
 
