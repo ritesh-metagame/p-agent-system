@@ -1770,3 +1770,7 @@ http: 2025-04-18T05:52:15.627Z [logger\morgan.ts] GET /api/v1/commission/payment
 
 http: 2025-04-18T05:52:15.640Z [logger\morgan.ts] GET /api/v1/commission/license-breakdown 304 - - 29.443 ms
 
+info: 2025-04-18T06:03:46.346Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-18T06:03:46.316Z [loaders\index.ts] ✌️ Express loaded

@@ -171,7 +171,7 @@ class CommissionService {
                 totalWithdrawals: summary.totalWithdrawals,
                 totalBetAmount: summary.totalBetAmount,
                 netGGR: summary.netGGR,
-                grossCommission: summary.grossCommission,
+                grossCommission: summary.netGGR,
                 netCommissionAvailablePayout:
                   summary.netCommissionAvailablePayout,
               });
@@ -184,8 +184,7 @@ class CommissionService {
               acc[platform]["ALL OPERATORS"].totalBetAmount +=
                 summary.totalBetAmount;
               acc[platform]["ALL OPERATORS"].netGGR += summary.netGGR;
-              acc[platform]["ALL OPERATORS"].grossCommission +=
-                summary.grossCommission;
+              acc[platform]["ALL OPERATORS"].grossCommission += summary.netGGR;
               acc[platform]["ALL OPERATORS"].netCommissionAvailablePayout +=
                 summary.netCommissionAvailablePayout;
             }
@@ -216,7 +215,7 @@ class CommissionService {
                 totalWithdrawals: summary.totalWithdrawals,
                 totalBetAmount: summary.totalBetAmount,
                 netGGR: summary.netGGR,
-                grossCommission: summary.grossCommission,
+                grossCommission: summary.netGGR,
                 netCommissionAvailablePayout:
                   summary.netCommissionAvailablePayout,
               };
@@ -233,7 +232,7 @@ class CommissionService {
                 totalWithdrawals: summary.totalWithdrawals,
                 totalBetAmount: summary.totalBetAmount,
                 netGGR: summary.netGGR,
-                grossCommission: summary.grossCommission,
+                grossCommission: summary.netGGR,
                 netCommissionAvailablePayout:
                   summary.netCommissionAvailablePayout,
                 children: [],
@@ -250,8 +249,7 @@ class CommissionService {
               acc[platform]["ALL PLATINUMS"].totalBetAmount +=
                 summary.totalBetAmount;
               acc[platform]["ALL PLATINUMS"].netGGR += summary.netGGR;
-              acc[platform]["ALL PLATINUMS"].grossCommission +=
-                summary.grossCommission;
+              acc[platform]["ALL PLATINUMS"].grossCommission += summary.netGGR;
               acc[platform]["ALL PLATINUMS"].netCommissionAvailablePayout +=
                 summary.netCommissionAvailablePayout;
             } else if (role === "gold" && summary.user.parent) {
@@ -269,7 +267,7 @@ class CommissionService {
                   totalWithdrawals: summary.totalWithdrawals,
                   totalBetAmount: summary.totalBetAmount,
                   netGGR: summary.netGGR,
-                  grossCommission: summary.grossCommission,
+                  grossCommission: summary.netGGR,
                   netCommissionAvailablePayout:
                     summary.netCommissionAvailablePayout,
                 });
@@ -302,7 +300,7 @@ class CommissionService {
                 totalWithdrawals: summary.totalWithdrawals,
                 totalBetAmount: summary.totalBetAmount,
                 netGGR: summary.netGGR,
-                grossCommission: summary.grossCommission,
+                grossCommission: summary.netGGR,
                 netCommissionAvailablePayout:
                   summary.netCommissionAvailablePayout,
               };
@@ -319,7 +317,7 @@ class CommissionService {
                 totalWithdrawals: summary.totalWithdrawals,
                 totalBetAmount: summary.totalBetAmount,
                 netGGR: summary.netGGR,
-                grossCommission: summary.grossCommission,
+                grossCommission: summary.netGGR,
                 netCommissionAvailablePayout:
                   summary.netCommissionAvailablePayout,
               };
@@ -333,8 +331,7 @@ class CommissionService {
               acc[platform]["ALL GOLDS"].totalBetAmount +=
                 summary.totalBetAmount;
               acc[platform]["ALL GOLDS"].netGGR += summary.netGGR;
-              acc[platform]["ALL GOLDS"].grossCommission +=
-                summary.grossCommission;
+              acc[platform]["ALL GOLDS"].grossCommission += summary.netGGR;
               acc[platform]["ALL GOLDS"].netCommissionAvailablePayout +=
                 summary.netCommissionAvailablePayout;
             }
@@ -351,7 +348,7 @@ class CommissionService {
               totalWithdrawals: summary.totalWithdrawals,
               totalBetAmount: summary.totalBetAmount,
               netGGR: summary.netGGR,
-              grossCommission: summary.grossCommission,
+              grossCommission: summary.netGGR,
               netCommissionAvailablePayout:
                 summary.netCommissionAvailablePayout,
             };
@@ -483,7 +480,7 @@ class CommissionService {
               acc.totalWithdrawals + (curr.totalWithdrawals || 0),
             totalBetAmount: acc.totalBetAmount + (curr.totalBetAmount || 0),
             netGGR: acc.netGGR + (curr.netGGR || 0),
-            grossCommission: acc.grossCommission + (curr.grossCommission || 0),
+            grossCommission: acc.grossCommission + (curr.netGGR || 0),
             paymentGatewayFee:
               acc.paymentGatewayFee + (curr.paymentGatewayFee || 0),
             netCommissionAvailablePayout:
@@ -509,7 +506,7 @@ class CommissionService {
               acc.totalWithdrawals + (curr.totalWithdrawals || 0),
             totalBetAmount: acc.totalBetAmount + (curr.totalBetAmount || 0),
             netGGR: acc.netGGR + (curr.netGGR || 0),
-            grossCommission: acc.grossCommission + (curr.grossCommission || 0),
+            grossCommission: acc.grossCommission + (curr.netGGR || 0),
             paymentGatewayFee:
               acc.paymentGatewayFee + (curr.paymentGatewayFee || 0),
             netCommissionAvailablePayout:
@@ -719,8 +716,7 @@ class CommissionService {
           acc.totalWithdrawals + (curr._sum?.totalWithdrawals || 0),
         totalBetAmount: acc.totalBetAmount + (curr._sum?.totalBetAmount || 0),
         netGGR: acc.netGGR + (curr._sum?.netGGR || 0),
-        grossCommission:
-          acc.grossCommission + (curr._sum?.grossCommission || 0),
+        grossCommission: acc.grossCommission + (curr._sum?.netGGR || 0),
         paymentGatewayFee:
           acc.paymentGatewayFee + (curr._sum?.paymentGatewayFee || 0),
         netCommissionAvailablePayout:
@@ -1106,22 +1102,19 @@ class CommissionService {
         const category = summary.categoryName.toLowerCase();
         if (category.includes("egames") || category.includes("e-games")) {
           categoryTotals.pending.egames.amount += summary.netGGR || 0;
-          categoryTotals.pending.egames.grossCommission +=
-            summary.grossCommission || 0;
+          categoryTotals.pending.egames.grossCommission += summary.netGGR || 0;
         } else if (
           category.includes("sports") ||
           category.includes("sportsbet")
         ) {
           categoryTotals.pending.sports.amount += summary.netGGR || 0;
-          categoryTotals.pending.sports.grossCommission +=
-            summary.grossCommission || 0;
+          categoryTotals.pending.sports.grossCommission += summary.netGGR || 0;
         } else if (category.includes("tote") || category.includes("rng")) {
           categoryTotals.pending.specialty.amount += summary.netGGR || 0;
           categoryTotals.pending.specialty.grossCommission +=
-            summary.grossCommission || 0;
+            summary.netGGR || 0;
         }
-        categoryTotals.pending.totalGrossCommission +=
-          summary.grossCommission || 0;
+        categoryTotals.pending.totalGrossCommission += summary.netGGR || 0;
         categoryTotals.pending.totalPaymentGatewayFees +=
           summary.paymentGatewayFee || 0;
         categoryTotals.pending.netCommissionPayout +=
@@ -1133,22 +1126,19 @@ class CommissionService {
         const category = summary.categoryName.toLowerCase();
         if (category.includes("egames") || category.includes("e-games")) {
           categoryTotals.settled.egames.amount += summary.netGGR || 0;
-          categoryTotals.settled.egames.grossCommission +=
-            summary.grossCommission || 0;
+          categoryTotals.settled.egames.grossCommission += summary.netGGR || 0;
         } else if (
           category.includes("sports") ||
           category.includes("sportsbet")
         ) {
           categoryTotals.settled.sports.amount += summary.netGGR || 0;
-          categoryTotals.settled.sports.grossCommission +=
-            summary.grossCommission || 0;
+          categoryTotals.settled.sports.grossCommission += summary.netGGR || 0;
         } else if (category.includes("tote") || category.includes("rng")) {
           categoryTotals.settled.specialty.amount += summary.netGGR || 0;
           categoryTotals.settled.specialty.grossCommission +=
-            summary.grossCommission || 0;
+            summary.netGGR || 0;
         }
-        categoryTotals.settled.totalGrossCommission +=
-          summary.grossCommission || 0;
+        categoryTotals.settled.totalGrossCommission += summary.netGGR || 0;
         categoryTotals.settled.totalPaymentGatewayFees +=
           summary.paymentGatewayFee || 0;
         categoryTotals.settled.netCommissionPayout +=
@@ -1444,7 +1434,7 @@ class CommissionService {
         0
       );
       const grossCommissions = summaries.reduce(
-        (sum, s) => sum + (s.grossCommission || 0),
+        (sum, s) => sum + (s.netGGR || 0),
         0
       );
       const paymentGatewayFees = summaries.reduce(
@@ -1519,10 +1509,10 @@ class CommissionService {
         network: op.user.username,
         name: `${op.user.firstName} ${op.user.lastName}`,
         egamesCommission: op.categoryName.toLowerCase().includes("egames")
-          ? op.grossCommission
+          ? op.netGGR
           : 0,
         sportsCommission: op.categoryName.toLowerCase().includes("sports")
-          ? op.grossCommission
+          ? op.netGGR
           : 0,
         netCommission: op.netCommissionAvailablePayout,
       }));
@@ -1580,10 +1570,10 @@ class CommissionService {
         network: plat.user.username,
         name: `${plat.user.firstName} ${plat.user.lastName}`,
         egamesCommission: plat.categoryName.toLowerCase().includes("egames")
-          ? plat.grossCommission
+          ? plat.netGGR
           : 0,
         sportsCommission: plat.categoryName.toLowerCase().includes("sports")
-          ? plat.grossCommission
+          ? plat.netGGR
           : 0,
         netCommission: plat.netCommissionAvailablePayout,
       }));
@@ -1657,10 +1647,10 @@ class CommissionService {
         network: gold.user.username,
         name: `${gold.user.firstName} ${gold.user.lastName}`,
         egamesCommission: gold.categoryName.toLowerCase().includes("egames")
-          ? gold.grossCommission
+          ? gold.netGGR
           : 0,
         sportsCommission: gold.categoryName.toLowerCase().includes("sports")
-          ? gold.grossCommission
+          ? gold.netGGR
           : 0,
         paymentGatewayFee: gold.paymentGatewayFee,
         totalNetCommission: gold.netCommissionAvailablePayout,
