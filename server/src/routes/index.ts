@@ -7,6 +7,7 @@ import categoryRoute from "./category.route";
 import roleRoute from "./role.route";
 import topPerformerRoute from "./top-performer.routes";
 import networkStatisticsRoute from "./network-statistics.routes";
+import transactionRoute from "./transaction.route";
 
 class Routes {
   private router: Router;
@@ -25,6 +26,7 @@ class Routes {
     roleRoute(this.router);
     topPerformerRoute(this.router);
     networkStatisticsRoute(this.router);
+    transactionRoute(this.router);
 
     // Register network statistics routes
     // this.router.use("/network-statistics", networkStatisticsRoute);
