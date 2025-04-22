@@ -154,8 +154,8 @@ class TopPerformerService {
           // Collect all Gold agent IDs under these Platinum agents
           const goldUserIds = [];
           platinumUsers.forEach((platinum) => {
-            platinum.children.forEach((gold) => {
-              goldUserIds.push(gold.id);
+            platinum.children.forEach((golden) => {
+              goldUserIds.push(golden.id);
             });
           });
 

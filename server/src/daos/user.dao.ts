@@ -1,5 +1,6 @@
 import { prisma } from "../server";
 import type { User } from "../../prisma/generated/prisma";
+import { UserRole } from "../common/config/constants";
 
 class UserDao {
   constructor() {}
@@ -44,7 +45,7 @@ class UserDao {
 
       let wallet = 0;
 
-      if (user.role.name === "operator") {
+      if (user.role.name === (UserRole.OPERATOR as string)) {
         const platinumUsers = await prisma.user.findMany({
           where: { parentId: userId },
           select: { id: true },
@@ -91,7 +92,7 @@ class UserDao {
         console.log("Downline Commission Sum:", downlineCommissionSum);
 
         wallet = downlineCommissionSum._sum.netCommissionAvailablePayout || 0;
-      } else if (user.role.name === "platinum") {
+      } else if (user.role.name === (UserRole.PLATINUM as string)) {
         const goldUsers = await prisma.user.findMany({
           where: { parentId: userId },
           select: { id: true },
@@ -502,30 +503,27 @@ class UserDao {
     return results;
   }
 
-  public async getCategoryTransaction(
-    category: string,
-    agent: "gold" | "platinum" | "operator"
-  ) {
+  public async getCategoryTransaction(category: string, agent: UserRole) {
     try {
       let include: any = {};
       let selectField: string;
 
       switch (agent) {
-        case "gold":
+        case UserRole.GOLDEN:
           include.agentGolden = true;
           selectField = "agentGoldenId";
           break;
-        case "platinum":
+        case UserRole.PLATINUM:
           include.agentPlatinum = true;
           selectField = "agentPlatinumId";
           break;
-        case "operator":
+        case UserRole.OPERATOR:
           include.agentOperator = true;
           selectField = "agentOperatorId";
           break;
         default:
           throw new Error(
-            "Invalid agent type. Use: gold | platinum | operator"
+            "Invalid agent type. Use: golden | platinum | operator"
           );
       }
 

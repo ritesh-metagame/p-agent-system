@@ -1,3 +1,4 @@
+import { UserRole } from "../common/config/constants";
 import { prisma } from "../server";
 
 class RoleDao {
@@ -30,10 +31,10 @@ class RoleDao {
   public async getRoleForARole(role: string) {
     console.log("Role:", role); // Debugging line
     try {
-      const roleHierarchy: Record<string, string[]> = {
-        operator: ["platinum", "gold"],
-        platinum: ["gold"],
-        gold: [],
+      const roleHierarchy: Record<string, any[]> = {
+        operator: [UserRole.PLATINUM, UserRole.GOLDEN],
+        platinum: [UserRole.GOLDEN],
+        golden: [],
       };
 
       const childRoles = roleHierarchy[role.toLowerCase()] || [];

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import Container from "typedi";
 import { UserService } from "../services/user.service";
+import { UserRole } from "../common/config/constants";
 
 class UserController {
   public static async createUser(
@@ -104,7 +105,7 @@ class UserController {
 
       const response = await userService.getTransactionByCategoryAndAgent(
         categoryName as string,
-        agent as "gold" | "platinum" | "operator"
+        agent as UserRole
       );
 
       return response;

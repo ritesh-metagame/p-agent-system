@@ -136,7 +136,12 @@ class Server {
           betTime: parseExcelDate(row["Bet Time"]),
           userId: row["User Id"],
           playerName: row["Player Name"],
-          platformType,
+          platformType:
+            row["Platform Type"] === "egames"
+              ? "E-Games"
+              : row["Platform Type"] === "sports"
+                ? "Sports Betting"
+                : row["Platform Type"],
           transactionType: row["Transaction Type"] || "bet",
 
           deposit: new Decimal(row["Deposit"] || 0),

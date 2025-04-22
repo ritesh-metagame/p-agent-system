@@ -7,6 +7,7 @@ import { prisma } from "../server";
 import {
   CommissionComputationPeriod,
   DEFAULT_COMMISSION_COMPUTATION_PERIOD,
+  UserRole,
 } from "../common/config/constants";
 
 import {
@@ -66,7 +67,7 @@ type LicenseData =
   | SpecialityGamesRNGLicenseData;
 
 // Default commission rates for superadmin
-const SUPERADMIN_DEFAULT_COMMISSION_RATES = {
+const SUPER_ADMIN_DEFAULT_COMMISSION_RATES = {
   "E-Games": 30,
   "Sports Betting": 2,
   "Speciality Games - Tote": 2,
@@ -119,13 +120,13 @@ class CommissionService {
       let summaries;
 
       // Fetch summaries based on role
-      if (roleName === "superadmin") {
+      if (roleName === UserRole.SUPER_ADMIN) {
         summaries = await this.commissionDao.getSuperAdminCommissionSummaries();
-      } else if (roleName === "operator") {
+      } else if (roleName === UserRole.OPERATOR) {
         summaries = await this.commissionDao.getOperatorCommissionSummaries(
           user.id
         );
-      } else if (roleName === "platinum") {
+      } else if (roleName === UserRole.PLATINUM) {
         summaries = await this.commissionDao.getPlatinumCommissionSummaries(
           user.id
         );
@@ -145,7 +146,7 @@ class CommissionService {
             acc[platform] = {};
           }
 
-          if (roleName === "superadmin") {
+          if (roleName === UserRole.SUPER_ADMIN) {
             // For superadmin, group all operators together
             if (!acc[platform]["ALL OPERATORS"]) {
               acc[platform]["ALL OPERATORS"] = {
@@ -159,7 +160,7 @@ class CommissionService {
               };
             }
 
-            if (role === "operator") {
+            if (role === UserRole.OPERATOR) {
               acc[platform]["ALL OPERATORS"].operators.push({
                 user: {
                   id: summary.user.id,
@@ -188,7 +189,7 @@ class CommissionService {
               acc[platform]["ALL OPERATORS"].netCommissionAvailablePayout +=
                 summary.netCommissionAvailablePayout;
             }
-          } else if (roleName === "operator") {
+          } else if (roleName === UserRole.OPERATOR) {
             // Initialize the ALL PLATINUMS group
             if (!acc[platform]["ALL PLATINUMS"]) {
               acc[platform]["ALL PLATINUMS"] = {
@@ -203,8 +204,8 @@ class CommissionService {
             }
 
             // Add operator's own data
-            if (role === "operator") {
-              acc[platform]["operator"] = {
+            if (role === UserRole.OPERATOR) {
+              acc[platform][UserRole.OPERATOR] = {
                 user: {
                   id: summary.user.id,
                   username: summary.user.username,
@@ -219,7 +220,7 @@ class CommissionService {
                 netCommissionAvailablePayout:
                   summary.netCommissionAvailablePayout,
               };
-            } else if (role === "platinum") {
+            } else if (role === UserRole.PLATINUM) {
               // Add platinum data to ALL PLATINUMS and individual entry
               const platinumData = {
                 user: {
@@ -252,8 +253,8 @@ class CommissionService {
               acc[platform]["ALL PLATINUMS"].grossCommission += summary.netGGR;
               acc[platform]["ALL PLATINUMS"].netCommissionAvailablePayout +=
                 summary.netCommissionAvailablePayout;
-            } else if (role === "gold" && summary.user.parent) {
-              // Add gold agents to their platinum parent's children array
+            } else if (role === UserRole.GOLDEN && summary.user.parent) {
+              // Add golden agents to their platinum parent's children array
               const platinumId = summary.user.parent.id;
               if (acc[platform][platinumId]) {
                 acc[platform][platinumId].children.push({
@@ -273,7 +274,7 @@ class CommissionService {
                 });
               }
             }
-          } else if (roleName === "platinum") {
+          } else if (roleName === UserRole.PLATINUM) {
             // Initialize the ALL GOLDS group
             if (!acc[platform]["ALL GOLDS"]) {
               acc[platform]["ALL GOLDS"] = {
@@ -287,9 +288,9 @@ class CommissionService {
               };
             }
 
-            if (role === "platinum") {
+            if (role === UserRole.PLATINUM) {
               // Add platinum's own data
-              acc[platform]["platinum"] = {
+              acc[platform][UserRole.PLATINUM] = {
                 user: {
                   id: summary.user.id,
                   username: summary.user.username,
@@ -304,8 +305,8 @@ class CommissionService {
                 netCommissionAvailablePayout:
                   summary.netCommissionAvailablePayout,
               };
-            } else if (role === "gold") {
-              // Add gold data to ALL GOLDS
+            } else if (role === UserRole.GOLDEN) {
+              // Add golden data to ALL GOLDS
               const goldData = {
                 user: {
                   id: summary.user.id,
@@ -795,7 +796,7 @@ class CommissionService {
       let commissionSummaries;
 
       switch (userRole) {
-        case "superadmin":
+        case UserRole.SUPER_ADMIN:
           // Get all operators' summaries
           commissionSummaries = await prisma.commissionSummary.findMany({
             where: {
@@ -804,7 +805,7 @@ class CommissionService {
                 lte: timestamp,
               },
               role: {
-                name: "operator",
+                name: UserRole.OPERATOR,
               },
             },
             select: {
@@ -814,7 +815,7 @@ class CommissionService {
           });
           break;
 
-        case "operator":
+        case UserRole.OPERATOR:
           // Get direct platinum summaries
           commissionSummaries = await prisma.commissionSummary.findMany({
             where: {
@@ -825,7 +826,7 @@ class CommissionService {
               user: {
                 parentId: userId,
                 role: {
-                  name: "platinum",
+                  name: UserRole.PLATINUM,
                 },
               },
             },
@@ -836,7 +837,7 @@ class CommissionService {
           });
           break;
 
-        case "platinum":
+        case UserRole.PLATINUM:
           // Get direct agent summaries
           commissionSummaries = await prisma.commissionSummary.findMany({
             where: {
@@ -847,7 +848,7 @@ class CommissionService {
               user: {
                 parentId: userId,
                 role: {
-                  name: "gold",
+                  name: UserRole.GOLDEN,
                 },
               },
             },
@@ -925,11 +926,11 @@ class CommissionService {
 
   private getRoleLabelForUser(role: string): string {
     switch (role.toLowerCase()) {
-      case "superadmin":
+      case UserRole.SUPER_ADMIN:
         return "ALL OPERATORS";
-      case "operator":
+      case UserRole.OPERATOR:
         return "ALL PLATINUMS";
-      case "platinum":
+      case UserRole.PLATINUM:
         return "ALL AGENTS";
       case "agent":
         return "SELF";
@@ -966,28 +967,28 @@ class CommissionService {
       roleName = roleName.toLowerCase();
 
       // Handle hierarchy based access
-      if (roleName === "superadmin") {
+      if (roleName === UserRole.SUPER_ADMIN) {
         const operators = await prisma.user.findMany({
           where: {
-            role: { name: "operator" },
+            role: { name: UserRole.OPERATOR },
           },
           select: { id: true },
         });
         userIds = operators.map((op) => op.id);
-      } else if (roleName === "operator") {
+      } else if (roleName === UserRole.OPERATOR) {
         const platinums = await prisma.user.findMany({
           where: {
             parentId: userId,
-            role: { name: "platinum" },
+            role: { name: UserRole.PLATINUM },
           },
           select: { id: true },
         });
         userIds = platinums.map((p) => p.id);
-      } else if (roleName === "platinum") {
+      } else if (roleName === UserRole.PLATINUM) {
         const golds = await prisma.user.findMany({
           where: {
             parentId: userId,
-            role: { name: "gold" },
+            role: { name: UserRole.GOLDEN },
           },
           select: { id: true },
         });
@@ -1166,32 +1167,32 @@ class CommissionService {
     // Get all users under this user based on role hierarchy
     let userIds = [userId];
 
-    if (roleName.toLowerCase() === "operator") {
-      // Get all platinum and gold users under this operator
+    if (roleName.toLowerCase() === UserRole.OPERATOR) {
+      // Get all platinum and golden users under this operator
       const platinums = await prisma.user.findMany({
         where: {
           parentId: userId,
-          role: { name: "platinum" },
+          role: { name: UserRole.PLATINUM },
         },
         select: { id: true },
       });
       userIds = [...userIds, ...platinums.map((p) => p.id)];
 
-      // Get all gold users under these platinums
+      // Get all golden users under these platinums
       const golds = await prisma.user.findMany({
         where: {
           parentId: { in: platinums.map((p) => p.id) },
-          role: { name: "gold" },
+          role: { name: UserRole.GOLDEN },
         },
         select: { id: true },
       });
       userIds = [...userIds, ...golds.map((g) => g.id)];
-    } else if (roleName.toLowerCase() === "platinum") {
-      // Get all gold users under this platinum
+    } else if (roleName.toLowerCase() === UserRole.PLATINUM) {
+      // Get all golden users under this platinum
       const golds = await prisma.user.findMany({
         where: {
           parentId: userId,
-          role: { name: "gold" },
+          role: { name: UserRole.GOLDEN },
         },
         select: { id: true },
       });
@@ -1269,30 +1270,30 @@ class CommissionService {
 
   //   // Get only direct children based on role
   //   switch (roleName.toLowerCase()) {
-  //     case "superadmin":
+  //     case UserRole.SUPER_ADMIN:
   //       const operators = await prisma.user.findMany({
-  //         where: { role: { name: "operator" } },
+  //         where: { role: { name: UserRole.OPERATOR } },
   //         select: { id: true },
   //       });
   //       childIds = operators.map(op => op.id);
   //       break;
 
-  //     case "operator":
+  //     case UserRole.OPERATOR:
   //       const platinums = await prisma.user.findMany({
   //         where: {
   //           parentId: userId,
-  //           role: { name: "platinum" },
+  //           role: { name: UserRole.PLATINUM },
   //         },
   //         select: { id: true },
   //       });
   //       childIds = platinums.map(p => p.id);
   //       break;
 
-  //     case "platinum":
+  //     case UserRole.PLATINUM:
   //       const golds = await prisma.user.findMany({
   //         where: {
   //           parentId: userId,
-  //           role: { name: "gold" },
+  //           role: { name: UserRole.GOLDEN },
   //         },
   //         select: { id: true },
   //       });
@@ -1445,7 +1446,7 @@ class CommissionService {
           },
           settledStatus: "N",
           role: {
-            name: "operator",
+            name: UserRole.OPERATOR,
           },
         },
         include: {
@@ -1503,7 +1504,7 @@ class CommissionService {
           },
           settledStatus: "N",
           role: {
-            name: "platinum",
+            name: UserRole.PLATINUM,
           },
           user: {
             parentId: operatorId,
@@ -1580,7 +1581,7 @@ class CommissionService {
           },
           settledStatus: "N",
           role: {
-            name: "gold",
+            name: UserRole.GOLDEN,
           },
           user: {
             parentId: platinumId,
@@ -1597,19 +1598,19 @@ class CommissionService {
         },
       });
 
-      const rows = goldens.map((gold) => ({
-        network: gold.user.username,
-        name: `${gold.user.firstName} ${gold.user.lastName}`,
-        egamesCommission: gold.categoryName.toLowerCase().includes("egames")
-          ? gold.netGGR
+      const rows = goldens.map((golden) => ({
+        network: golden.user.username,
+        name: `${golden.user.firstName} ${golden.user.lastName}`,
+        egamesCommission: golden.categoryName.toLowerCase().includes("egames")
+          ? golden.netGGR
           : 0,
-        sportsCommission: gold.categoryName.toLowerCase().includes("sports")
-          ? gold.netGGR
+        sportsCommission: golden.categoryName.toLowerCase().includes("sports")
+          ? golden.netGGR
           : 0,
-        paymentGatewayFee: gold.paymentGatewayFee,
-        totalNetCommission: gold.netCommissionAvailablePayout,
-        deductionsFromGross: gold.paymentGatewayFee,
-        finalNetCommission: gold.netCommissionAvailablePayout,
+        paymentGatewayFee: golden.paymentGatewayFee,
+        totalNetCommission: golden.netCommissionAvailablePayout,
+        deductionsFromGross: golden.paymentGatewayFee,
+        finalNetCommission: golden.netCommissionAvailablePayout,
       }));
 
       // Add total row
@@ -1778,7 +1779,7 @@ class CommissionService {
             lte: cycleEndDate,
           },
           role: {
-            name: "platinum",
+            name: UserRole.PLATINUM,
           },
           user: {
             parentId: effectiveUserId,
@@ -1805,7 +1806,7 @@ class CommissionService {
             lte: cycleEndDate,
           },
           role: {
-            name: "gold",
+            name: UserRole.GOLDEN,
           },
           user: {
             parentId: effectiveUserId,
@@ -1900,7 +1901,7 @@ class CommissionService {
         platinumRows.push(platinumTotal);
       }
 
-      // Process gold data
+      // Process golden data
       const goldRows = [];
       const goldUserMap = new Map();
 
@@ -1937,7 +1938,7 @@ class CommissionService {
 
       goldRows.push(...goldUserMap.values());
 
-      // Add gold total if there are gold rows
+      // Add golden total if there are golden rows
       if (goldRows.length > 0) {
         const goldTotal = {
           network: "",
@@ -1966,7 +1967,7 @@ class CommissionService {
             (sum, row) => sum + row.finalNetCommission,
             0
           ),
-          userId: "gold-total",
+          userId: "golden-total",
           isGoldTotal: true,
         };
         goldRows.push(goldTotal);
@@ -1976,16 +1977,16 @@ class CommissionService {
       let message;
       let code;
       switch (targetRole) {
-        case "superadmin":
+        case UserRole.SUPER_ADMIN:
           message = "Complete Commission Breakdown fetched successfully";
           code = "2007";
           break;
-        case "operator":
+        case UserRole.OPERATOR:
           message =
             "Platinum and Gold Partner Commission Breakdown fetched successfully";
           code = "2008";
           break;
-        case "platinum":
+        case UserRole.PLATINUM:
           message = "Golden Partner Commission Breakdown fetched successfully";
           code = "2009";
           break;
@@ -2007,7 +2008,7 @@ class CommissionService {
           ],
           data: {
             platinum: platinumRows,
-            gold: goldRows,
+            golden: goldRows,
           },
         },
       };
@@ -2027,8 +2028,8 @@ class CommissionService {
           ggr: { pending: 0, allTime: 0 },
           commission: { pending: 0, allTime: 0 },
           commissionRate:
-            roleName === "superadmin"
-              ? SUPERADMIN_DEFAULT_COMMISSION_RATES["E-Games"]
+            roleName === UserRole.SUPER_ADMIN
+              ? SUPER_ADMIN_DEFAULT_COMMISSION_RATES["E-Games"]
               : 0,
         },
         "Sports Betting": {
@@ -2036,8 +2037,8 @@ class CommissionService {
           betAmount: { pending: 0, allTime: 0 },
           commission: { pending: 0, allTime: 0 },
           commissionRate:
-            roleName === "superadmin"
-              ? SUPERADMIN_DEFAULT_COMMISSION_RATES["Sports Betting"]
+            roleName === UserRole.SUPER_ADMIN
+              ? SUPER_ADMIN_DEFAULT_COMMISSION_RATES["Sports Betting"]
               : 0,
         },
         "Speciality Games - Tote": {
@@ -2045,8 +2046,8 @@ class CommissionService {
           betAmount: { pending: 0, allTime: 0 },
           commission: { pending: 0, allTime: 0 },
           commissionRate:
-            roleName === "superadmin"
-              ? SUPERADMIN_DEFAULT_COMMISSION_RATES["Speciality Games - Tote"]
+            roleName === UserRole.SUPER_ADMIN
+              ? SUPER_ADMIN_DEFAULT_COMMISSION_RATES["Speciality Games - Tote"]
               : 0,
         },
         "Speciality Games - RNG": {
@@ -2054,15 +2055,15 @@ class CommissionService {
           ggr: { pending: 0, allTime: 0 },
           commission: { pending: 0, allTime: 0 },
           commissionRate:
-            roleName === "superadmin"
-              ? SUPERADMIN_DEFAULT_COMMISSION_RATES["Speciality Games - RNG"]
+            roleName === UserRole.SUPER_ADMIN
+              ? SUPER_ADMIN_DEFAULT_COMMISSION_RATES["Speciality Games - RNG"]
               : 0,
         },
       };
 
       // Get all relevant userIds based on role hierarchy
       let userIds = [userId];
-      if (roleName === "superadmin") {
+      if (roleName === UserRole.SUPER_ADMIN) {
         // For superadmin, get all operators and their children
         const operators = await prisma.user.findMany({
           where: { parentId: userId },
@@ -2099,12 +2100,12 @@ class CommissionService {
         console.log({ goldIds });
 
         userIds = [...userIds, ...goldIds];
-      } else if (roleName === "operator") {
+      } else if (roleName === UserRole.OPERATOR) {
         // For operator, get all platinums and their children
         const platinums = await prisma.user.findMany({
           where: {
             parentId: userId,
-            role: { name: "platinum" },
+            role: { name: UserRole.PLATINUM },
           },
           select: { id: true },
         });
@@ -2118,7 +2119,7 @@ class CommissionService {
         const golds = await prisma.user.findMany({
           where: {
             parentId: { in: platinumIds },
-            role: { name: "gold" },
+            role: { name: UserRole.GOLDEN },
           },
           select: { id: true },
         });
@@ -2127,12 +2128,12 @@ class CommissionService {
         console.log({ goldIds });
 
         userIds = [...userIds, ...goldIds];
-      } else if (roleName === "platinum") {
+      } else if (roleName === UserRole.PLATINUM) {
         // For platinum, get all golds under this platinum
         const golds = await prisma.user.findMany({
           where: {
             parentId: userId,
-            role: { name: "gold" },
+            role: { name: UserRole.GOLDEN },
           },
           select: { id: true },
         });
@@ -2184,7 +2185,7 @@ class CommissionService {
       // console.log({ commissionSummaries });
 
       // Get default commission rates for superadmin
-      if (roleName === "superadmin") {
+      if (roleName === UserRole.SUPER_ADMIN) {
         // First try to get system-wide commission rates
         const defaultCommissions = await prisma.commission.findMany({
           where: {
@@ -2195,7 +2196,7 @@ class CommissionService {
         // If no system-wide rates found, get commission rates from any operator's assigned site
         if (defaultCommissions.length === 0) {
           const operator = await prisma.user.findFirst({
-            where: { role: { name: "operator" } },
+            where: { role: { name: UserRole.OPERATOR } },
             select: { id: true },
           });
 
@@ -2413,26 +2414,26 @@ class CommissionService {
 
     // Get direct children based on role
     switch (roleName) {
-      case "superadmin":
+      case UserRole.SUPER_ADMIN:
         directChildren = await prisma.user.findMany({
-          where: { role: { name: "operator" } },
+          where: { role: { name: UserRole.OPERATOR } },
           select: { id: true },
         });
         break;
-      case "operator":
+      case UserRole.OPERATOR:
         directChildren = await prisma.user.findMany({
           where: {
             parentId: userId,
-            role: { name: "platinum" },
+            role: { name: UserRole.PLATINUM },
           },
           select: { id: true },
         });
         break;
-      case "platinum":
+      case UserRole.PLATINUM:
         directChildren = await prisma.user.findMany({
           where: {
             parentId: userId,
-            role: { name: "gold" },
+            role: { name: UserRole.GOLDEN },
           },
           select: { id: true },
         });
@@ -2443,12 +2444,12 @@ class CommissionService {
     childIds = directChildren.map((child) => child.id);
 
     // Recursively get grandchildren for operator role
-    if (roleName === "operator") {
+    if (roleName === UserRole.OPERATOR) {
       for (const child of directChildren) {
         const grandChildren = await prisma.user.findMany({
           where: {
             parentId: child.id,
-            role: { name: "gold" },
+            role: { name: UserRole.GOLDEN },
           },
           select: { id: true },
         });
@@ -2494,17 +2495,19 @@ class CommissionService {
       roleName = roleName.toLowerCase();
 
       switch (roleName) {
-        case "superadmin":
-          downlineRole = "operator";
+        case UserRole.SUPER_ADMIN:
+          downlineRole = UserRole.OPERATOR;
           break;
-        case "operator":
-          downlineRole = "platinum";
+        case UserRole.OPERATOR:
+          downlineRole = UserRole.PLATINUM;
           break;
-        case "platinum":
-          downlineRole = "gold";
+        case UserRole.PLATINUM:
+          downlineRole = UserRole.GOLDEN;
           break;
         default:
-          throw new Error("Unauthorized. Only superadmin, operator, and platinum users can access settled commission reports.");
+          throw new Error(
+            "Unauthorized. Only superadmin, operator, and platinum users can access settled commission reports."
+          );
       }
 
       // Get immediate downlines of the user
@@ -2516,17 +2519,19 @@ class CommissionService {
             id: downlineId,
             parentId: userId,
             role: {
-              name: downlineRole
-            }
+              name: downlineRole,
+            },
           },
           select: {
             id: true,
-            username: true
-          }
+            username: true,
+          },
         });
 
         if (downlineUsers.length === 0) {
-          throw new Error(`Invalid downline ID or not an immediate downline of the current user.`);
+          throw new Error(
+            `Invalid downline ID or not an immediate downline of the current user.`
+          );
         }
       } else {
         // Get all immediate downlines
@@ -2534,20 +2539,20 @@ class CommissionService {
           where: {
             parentId: userId,
             role: {
-              name: downlineRole
-            }
+              name: downlineRole,
+            },
           },
           select: {
             id: true,
-            username: true
-          }
+            username: true,
+          },
         });
       }
-      
+
       if (downlineUsers.length === 0) {
         return {
           reports: [],
-          message: "No downline users found."
+          message: "No downline users found.",
         };
       }
 
@@ -2557,46 +2562,52 @@ class CommissionService {
       // If startDate and endDate are not provided, find the earliest and latest settled commission dates
       if (!startDate || !endDate) {
         // Get the earliest and latest settled dates for the downline users
-        const downlineIds = downlineUsers.map(user => user.id);
-        
-        const earliestSettlementRecord = await prisma.commissionSummary.findFirst({
-          where: {
-            userId: { in: downlineIds },
-            settledStatus: "Y",
-            settledAt: { not: null }
-          },
-          orderBy: {
-            settledAt: 'asc'
-          },
-          select: {
-            settledAt: true
-          }
-        });
+        const downlineIds = downlineUsers.map((user) => user.id);
 
-        const latestSettlementRecord = await prisma.commissionSummary.findFirst({
-          where: {
-            userId: { in: downlineIds },
-            settledStatus: "Y",
-            settledAt: { not: null }
-          },
-          orderBy: {
-            settledAt: 'desc'
-          },
-          select: {
-            settledAt: true
+        const earliestSettlementRecord =
+          await prisma.commissionSummary.findFirst({
+            where: {
+              userId: { in: downlineIds },
+              settledStatus: "Y",
+              settledAt: { not: null },
+            },
+            orderBy: {
+              settledAt: "asc",
+            },
+            select: {
+              settledAt: true,
+            },
+          });
+
+        const latestSettlementRecord = await prisma.commissionSummary.findFirst(
+          {
+            where: {
+              userId: { in: downlineIds },
+              settledStatus: "Y",
+              settledAt: { not: null },
+            },
+            orderBy: {
+              settledAt: "desc",
+            },
+            select: {
+              settledAt: true,
+            },
           }
-        });
+        );
 
         // If no settled commissions found, use current cycle dates
         if (!earliestSettlementRecord || !latestSettlementRecord) {
-          const { cycleStartDate, cycleEndDate } = await this.getCurrentCycleDates();
+          const { cycleStartDate, cycleEndDate } =
+            await this.getCurrentCycleDates();
           startDate = cycleStartDate;
           // Cap the end date to the current date
-          endDate = new Date(Math.min(cycleEndDate.getTime(), currentDate.getTime()));
-          
+          endDate = new Date(
+            Math.min(cycleEndDate.getTime(), currentDate.getTime())
+          );
+
           return {
             reports: [],
-            message: "No settled commission reports found."
+            message: "No settled commission reports found.",
           };
         }
 
@@ -2618,12 +2629,12 @@ class CommissionService {
             settledStatus: "Y",
             settledAt: {
               gte: startDate,
-              lte: endDate
-            }
+              lte: endDate,
+            },
           },
           orderBy: {
-            settledAt: 'asc'
-          }
+            settledAt: "asc",
+          },
         });
 
         if (summaries.length === 0) {
@@ -2632,22 +2643,34 @@ class CommissionService {
 
         // Group by period (fromDate, toDate)
         const groupedByPeriod = new Map();
-        
+
         for (const summary of summaries) {
           // Determine the period based on bi-monthly or monthly cycle
           let fromDate, toDate;
           const settledAt = summary.settledAt || summary.createdAt;
-          
+
           // For bi-monthly periods
           if (DEFAULT_COMMISSION_COMPUTATION_PERIOD === "BI_MONTHLY") {
             const day = settledAt.getDate();
             if (day <= 15) {
               // First half of the month
-              fromDate = new Date(settledAt.getFullYear(), settledAt.getMonth(), 1);
-              toDate = new Date(settledAt.getFullYear(), settledAt.getMonth(), 15);
+              fromDate = new Date(
+                settledAt.getFullYear(),
+                settledAt.getMonth(),
+                1
+              );
+              toDate = new Date(
+                settledAt.getFullYear(),
+                settledAt.getMonth(),
+                15
+              );
             } else {
               // Second half of the month
-              fromDate = new Date(settledAt.getFullYear(), settledAt.getMonth(), 16);
+              fromDate = new Date(
+                settledAt.getFullYear(),
+                settledAt.getMonth(),
+                16
+              );
               toDate = lastDayOfMonth(settledAt);
             }
           } else {
@@ -2655,24 +2678,24 @@ class CommissionService {
             fromDate = startOfMonth(settledAt);
             toDate = lastDayOfMonth(settledAt);
           }
-          
+
           // Cap end date to current date for incomplete cycles
           if (toDate > currentDate) {
             toDate = new Date(currentDate);
           }
-          
+
           const periodKey = `${fromDate.toISOString()}-${toDate.toISOString()}`;
-          
+
           if (!groupedByPeriod.has(periodKey)) {
             groupedByPeriod.set(periodKey, {
               fromDate,
               toDate,
               downlineId: downline.id,
               downlineName: downline.username,
-              summaries: []
+              summaries: [],
             });
           }
-          
+
           groupedByPeriod.get(periodKey).summaries.push(summary);
         }
 
@@ -2688,8 +2711,8 @@ class CommissionService {
           _metadata: {
             downlineId: group.downlineId,
             fromDateISO: group.fromDate.toISOString(),
-            toDateISO: group.toDate.toISOString()
-          }
+            toDateISO: group.toDate.toISOString(),
+          },
         }));
       });
 
@@ -2698,13 +2721,18 @@ class CommissionService {
 
       return {
         reports,
-        message: reports.length > 0 ? "Settled commission reports fetched successfully." : "No settled commission reports found for the specified criteria."
+        message:
+          reports.length > 0
+            ? "Settled commission reports fetched successfully."
+            : "No settled commission reports found for the specified criteria.",
       };
     } catch (error) {
-      throw new Error(`Error fetching settled commission reports: ${error.message}`);
+      throw new Error(
+        `Error fetching settled commission reports: ${error.message}`
+      );
     }
   }
-  
+
   // Helper method to get current cycle dates
   private async getCurrentCycleDates() {
     const currentDate = new Date();
@@ -2721,14 +2749,22 @@ class CommissionService {
       if (currentDay <= 15) {
         // First half of month
         cycleStartDate = startOfMonth(currentDate);
-        cycleEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 15);
+        cycleEndDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          15
+        );
       } else {
         // Second half of month
-        cycleStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 16);
+        cycleStartDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          16
+        );
         cycleEndDate = endOfMonth(currentDate);
       }
     }
-    
+
     return { cycleStartDate, cycleEndDate };
   }
 
@@ -2750,14 +2786,14 @@ class CommissionService {
       roleName = roleName.toLowerCase();
 
       switch (roleName) {
-        case "superadmin":
-          downlineRole = "operator";
+        case UserRole.SUPER_ADMIN:
+          downlineRole = UserRole.OPERATOR;
           break;
-        case "operator":
-          downlineRole = "platinum";
+        case UserRole.OPERATOR:
+          downlineRole = UserRole.PLATINUM;
           break;
-        case "platinum":
-          downlineRole = "gold";
+        case UserRole.PLATINUM:
+          downlineRole = UserRole.GOLDEN;
           break;
         default:
           throw new Error(

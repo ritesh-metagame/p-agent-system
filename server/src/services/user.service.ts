@@ -360,7 +360,7 @@ class UserService {
 
   public async getTransactionByCategoryAndAgent(
     categoryName?: string,
-    agent?: "gold" | "platinum" | "operator"
+    agent?: UserRole
   ) {
     try {
       const users = await this.userDao.getCategoryTransaction(
