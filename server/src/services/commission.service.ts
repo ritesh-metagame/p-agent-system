@@ -2480,6 +2480,376 @@ class CommissionService {
       throw new Error(`Error creating commission: ${error}`);
     }
   }
+
+  public async getSettledCommissionReports(
+    userId: string,
+    roleName: string,
+    startDate?: Date,
+    endDate?: Date,
+    downlineId?: string
+  ) {
+    try {
+      // Determine the immediate downline role based on the logged-in user's role
+      let downlineRole: string;
+      roleName = roleName.toLowerCase();
+
+      switch (roleName) {
+        case "superadmin":
+          downlineRole = "operator";
+          break;
+        case "operator":
+          downlineRole = "platinum";
+          break;
+        case "platinum":
+          downlineRole = "gold";
+          break;
+        default:
+          throw new Error("Unauthorized. Only superadmin, operator, and platinum users can access settled commission reports.");
+      }
+
+      // Get immediate downlines of the user
+      let downlineUsers;
+      if (downlineId) {
+        // If downlineId is provided, verify that it's a valid immediate downline
+        downlineUsers = await prisma.user.findMany({
+          where: {
+            id: downlineId,
+            parentId: userId,
+            role: {
+              name: downlineRole
+            }
+          },
+          select: {
+            id: true,
+            username: true
+          }
+        });
+
+        if (downlineUsers.length === 0) {
+          throw new Error(`Invalid downline ID or not an immediate downline of the current user.`);
+        }
+      } else {
+        // Get all immediate downlines
+        downlineUsers = await prisma.user.findMany({
+          where: {
+            parentId: userId,
+            role: {
+              name: downlineRole
+            }
+          },
+          select: {
+            id: true,
+            username: true
+          }
+        });
+      }
+      
+      if (downlineUsers.length === 0) {
+        return {
+          reports: [],
+          message: "No downline users found."
+        };
+      }
+
+      // Get the current date to cap report end dates
+      const currentDate = new Date();
+
+      // If startDate and endDate are not provided, find the earliest and latest settled commission dates
+      if (!startDate || !endDate) {
+        // Get the earliest and latest settled dates for the downline users
+        const downlineIds = downlineUsers.map(user => user.id);
+        
+        const earliestSettlementRecord = await prisma.commissionSummary.findFirst({
+          where: {
+            userId: { in: downlineIds },
+            settledStatus: "Y",
+            settledAt: { not: null }
+          },
+          orderBy: {
+            settledAt: 'asc'
+          },
+          select: {
+            settledAt: true
+          }
+        });
+
+        const latestSettlementRecord = await prisma.commissionSummary.findFirst({
+          where: {
+            userId: { in: downlineIds },
+            settledStatus: "Y",
+            settledAt: { not: null }
+          },
+          orderBy: {
+            settledAt: 'desc'
+          },
+          select: {
+            settledAt: true
+          }
+        });
+
+        // If no settled commissions found, use current cycle dates
+        if (!earliestSettlementRecord || !latestSettlementRecord) {
+          const { cycleStartDate, cycleEndDate } = await this.getCurrentCycleDates();
+          startDate = cycleStartDate;
+          // Cap the end date to the current date
+          endDate = new Date(Math.min(cycleEndDate.getTime(), currentDate.getTime()));
+          
+          return {
+            reports: [],
+            message: "No settled commission reports found."
+          };
+        }
+
+        // Use earliest and latest settlement dates
+        startDate = earliestSettlementRecord.settledAt;
+        endDate = latestSettlementRecord.settledAt;
+      }
+
+      // Validate date inputs (should be already validated in controller, but double-check)
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        throw new Error("Invalid date format. Please use YYYY-MM-DD format.");
+      }
+
+      // For each downline, get their settled commission summaries grouped by date periods
+      const reportsPromises = downlineUsers.map(async (downline) => {
+        const summaries = await prisma.commissionSummary.findMany({
+          where: {
+            userId: downline.id,
+            settledStatus: "Y",
+            settledAt: {
+              gte: startDate,
+              lte: endDate
+            }
+          },
+          orderBy: {
+            settledAt: 'asc'
+          }
+        });
+
+        if (summaries.length === 0) {
+          return [];
+        }
+
+        // Group by period (fromDate, toDate)
+        const groupedByPeriod = new Map();
+        
+        for (const summary of summaries) {
+          // Determine the period based on bi-monthly or monthly cycle
+          let fromDate, toDate;
+          const settledAt = summary.settledAt || summary.createdAt;
+          
+          // For bi-monthly periods
+          if (DEFAULT_COMMISSION_COMPUTATION_PERIOD === "BI_MONTHLY") {
+            const day = settledAt.getDate();
+            if (day <= 15) {
+              // First half of the month
+              fromDate = new Date(settledAt.getFullYear(), settledAt.getMonth(), 1);
+              toDate = new Date(settledAt.getFullYear(), settledAt.getMonth(), 15);
+            } else {
+              // Second half of the month
+              fromDate = new Date(settledAt.getFullYear(), settledAt.getMonth(), 16);
+              toDate = lastDayOfMonth(settledAt);
+            }
+          } else {
+            // For monthly periods
+            fromDate = startOfMonth(settledAt);
+            toDate = lastDayOfMonth(settledAt);
+          }
+          
+          // Cap end date to current date for incomplete cycles
+          if (toDate > currentDate) {
+            toDate = new Date(currentDate);
+          }
+          
+          const periodKey = `${fromDate.toISOString()}-${toDate.toISOString()}`;
+          
+          if (!groupedByPeriod.has(periodKey)) {
+            groupedByPeriod.set(periodKey, {
+              fromDate,
+              toDate,
+              downlineId: downline.id,
+              downlineName: downline.username,
+              summaries: []
+            });
+          }
+          
+          groupedByPeriod.get(periodKey).summaries.push(summary);
+        }
+
+        // Convert grouped data to the required report format
+        return Array.from(groupedByPeriod.values()).map((group, index) => ({
+          id: index + 1, // Generate a unique ID for each group
+          fromDate: format(group.fromDate, "M-dd-yyyy"),
+          toDate: format(group.toDate, "M-dd-yyyy"),
+          downlineName: group.downlineName,
+          status: "COMPLETED",
+          action: "DOWNLOAD",
+          // Store additional data for download
+          _metadata: {
+            downlineId: group.downlineId,
+            fromDateISO: group.fromDate.toISOString(),
+            toDateISO: group.toDate.toISOString()
+          }
+        }));
+      });
+
+      const reportsArrays = await Promise.all(reportsPromises);
+      const reports = reportsArrays.flat();
+
+      return {
+        reports,
+        message: reports.length > 0 ? "Settled commission reports fetched successfully." : "No settled commission reports found for the specified criteria."
+      };
+    } catch (error) {
+      throw new Error(`Error fetching settled commission reports: ${error.message}`);
+    }
+  }
+  
+  // Helper method to get current cycle dates
+  private async getCurrentCycleDates() {
+    const currentDate = new Date();
+    const currentDay = currentDate.getDate();
+    let cycleStartDate: Date;
+    let cycleEndDate: Date;
+
+    if (DEFAULT_COMMISSION_COMPUTATION_PERIOD.toString() === "MONTHLY") {
+      // Monthly cycle: 1st to last day of month
+      cycleStartDate = startOfMonth(currentDate);
+      cycleEndDate = endOfMonth(currentDate);
+    } else {
+      // Bi-monthly cycle: 1-15 or 16-end of month
+      if (currentDay <= 15) {
+        // First half of month
+        cycleStartDate = startOfMonth(currentDate);
+        cycleEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 15);
+      } else {
+        // Second half of month
+        cycleStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 16);
+        cycleEndDate = endOfMonth(currentDate);
+      }
+    }
+    
+    return { cycleStartDate, cycleEndDate };
+  }
+
+  public async downloadSettledCommissionReport(
+    userId: string,
+    roleName: string,
+    fromDate: Date,
+    toDate: Date,
+    downlineId: string
+  ) {
+    try {
+      // Validate parameters
+      if (!downlineId || !fromDate || !toDate) {
+        throw new Error("Missing required parameters for report download.");
+      }
+
+      // Determine the immediate downline role based on the logged-in user's role
+      let downlineRole: string;
+      roleName = roleName.toLowerCase();
+
+      switch (roleName) {
+        case "superadmin":
+          downlineRole = "operator";
+          break;
+        case "operator":
+          downlineRole = "platinum";
+          break;
+        case "platinum":
+          downlineRole = "gold";
+          break;
+        default:
+          throw new Error(
+            "Unauthorized. Only superadmin, operator, and platinum users can access settled commission reports."
+          );
+      }
+
+      // Verify that the downline is a valid immediate downline of the user
+      const downline = await prisma.user.findFirst({
+        where: {
+          id: downlineId,
+          parentId: userId,
+          role: {
+            name: downlineRole,
+          },
+        },
+        include: {
+          role: true,
+        },
+      });
+
+      if (!downline) {
+        throw new Error(
+          "Invalid downline ID or not an immediate downline of the current user."
+        );
+      }
+
+      // Get all settled commission summaries for the specified downline and date range
+      const summaries = await prisma.commissionSummary.findMany({
+        where: {
+          userId: downlineId,
+          settledStatus: "Y",
+          settledAt: {
+            gte: fromDate,
+            lte: toDate,
+          },
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+          role: true,
+        },
+      });
+
+      if (summaries.length === 0) {
+        throw new Error("No commission data found for the specified criteria.");
+      }
+
+      // Generate CSV content
+      const csvRows = [
+        "User ID,User Name,Role,Commission Amount,Settlement Date,Downline Name,Downline Role,From Date,To Date,Status",
+      ];
+
+      summaries.forEach((summary) => {
+        const row = [
+          summary.userId,
+          summary.user
+            ? `${summary.user.firstName} ${summary.user.lastName}`
+            : "Unknown",
+          summary.role ? summary.role.name : "Unknown",
+          summary.netCommissionAvailablePayout,
+          summary.settledAt
+            ? format(summary.settledAt, "yyyy-MM-dd")
+            : format(summary.createdAt, "yyyy-MM-dd"),
+          downline.username,
+          downline.role.name,
+          format(fromDate, "yyyy-MM-dd"),
+          format(toDate, "yyyy-MM-dd"),
+          "COMPLETED",
+        ];
+
+        csvRows.push(row.join(","));
+      });
+
+      const csvContent = csvRows.join("\n");
+
+      return {
+        filename: `settled_commission_${downline.username}_${format(fromDate, "yyyyMMdd")}_${format(toDate, "yyyyMMdd")}.csv`,
+        content: csvContent,
+      };
+    } catch (error) {
+      throw new Error(
+        `Error generating commission report CSV: ${error.message}`
+      );
+    }
+  }
 }
 
 export { CommissionService };

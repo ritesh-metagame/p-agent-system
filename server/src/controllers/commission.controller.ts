@@ -536,6 +536,158 @@ class CommissionController {
       next(error);
     }
   }
+
+  public static async getSettledCommissionReports(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = req.user;
+      const { startDate, endDate, downlineId } = req.query;
+
+      if (!user || !user.roleId) {
+        return res.status(401).json(new ApiResponse(
+          ResponseCodes.UNAUTHORIZED.code,
+          "Unauthorized - User details not found",
+          null
+        ));
+      }
+
+      // Get user with role details
+      const userWithRole = await prisma.user.findUnique({
+        where: { id: user.id },
+        include: { role: true },
+      });
+
+      if (!userWithRole || !userWithRole.role) {
+        return res.status(401).json(new ApiResponse(
+          ResponseCodes.UNAUTHORIZED.code,
+          "Unauthorized - User role not found",
+          null
+        ));
+      }
+
+      const commissionService = Container.get(CommissionService);
+      
+      // If dates are provided, validate them before passing to service
+      let startDateObj, endDateObj;
+      
+      if (startDate && endDate) {
+        startDateObj = new Date(startDate as string);
+        endDateObj = new Date(endDate as string);
+        
+        // Check if dates are valid
+        if (isNaN(startDateObj.getTime()) || isNaN(endDateObj.getTime())) {
+          return res.status(400).json(new ApiResponse(
+            "4000",
+            "Bad Request - Invalid date format. Please use YYYY-MM-DD format.",
+            null
+          ));
+        }
+        
+        // Check if start date is before end date
+        if (startDateObj > endDateObj) {
+          return res.status(400).json(new ApiResponse(
+            "4000",
+            "Bad Request - Start date must be before or equal to end date.",
+            null
+          ));
+        }
+      }
+
+      const result = await commissionService.getSettledCommissionReports(
+        userWithRole.id,
+        userWithRole.role.name,
+        startDateObj, // Pass undefined if not provided
+        endDateObj,   // Pass undefined if not provided
+        downlineId as string | undefined
+      );
+
+      return res.status(200).json(new ApiResponse(
+        "2050",
+        result.message,
+        { reports: result.reports }
+      ));
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async downloadSettledCommissionReport(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = req.user;
+      const { fromDate, toDate, downlineId } = req.query;
+
+      if (!user || !user.roleId) {
+        return res
+          .status(401)
+          .json(
+            new ApiResponse(
+              ResponseCodes.UNAUTHORIZED.code,
+              "Unauthorized - User details not found",
+              null
+            )
+          );
+      }
+
+      // Validate required query parameters
+      if (!fromDate || !toDate || !downlineId) {
+        return res
+          .status(400)
+          .json(
+            new ApiResponse(
+              "4000",
+              "Bad Request - fromDate, toDate, and downlineId are required",
+              null
+            )
+          );
+      }
+
+      // Get user with role details
+      const userWithRole = await prisma.user.findUnique({
+        where: { id: user.id },
+        include: { role: true },
+      });
+
+      if (!userWithRole || !userWithRole.role) {
+        return res
+          .status(401)
+          .json(
+            new ApiResponse(
+              ResponseCodes.UNAUTHORIZED.code,
+              "Unauthorized - User role not found",
+              null
+            )
+          );
+      }
+
+      const commissionService = Container.get(CommissionService);
+      const result = await commissionService.downloadSettledCommissionReport(
+        userWithRole.id,
+        userWithRole.role.name,
+        new Date(fromDate as string),
+        new Date(toDate as string),
+        downlineId as string
+      );
+
+      // Set headers for CSV download
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=${result.filename}`
+      );
+
+      // Send CSV content
+      return res.status(200).send(result.content);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { CommissionController };
