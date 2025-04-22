@@ -110,6 +110,7 @@ class UserService {
         bankName: userData.bankName,
         accountNumber: userData.accountNumber,
         mobileNumber: userData.mobileNumber,
+        affiliateLink: process.env.AFFILIATE_LINK,
         password: hashedPassword,
         roleId: role.id,
         parentId: user.id,
@@ -297,6 +298,23 @@ class UserService {
         ResponseCodes.USERS_FETCHED_FAILED.code,
         `Error fetching users: ${error.message}`,
         null
+      );
+    }
+  }
+
+  public async getUserPayoutAndWalletBalance(partnerId: string) {
+    try {
+      const users = await this.userDao.getUserPayoutAndWalletBalance(partnerId);
+
+      return new Response(
+        ResponseCodes.USERS_PAYOUT_AND_WALLET_BALANCE_FETCHED_SUCCESSFULLY.code,
+        ResponseCodes.USERS_PAYOUT_AND_WALLET_BALANCE_FETCHED_SUCCESSFULLY.message,
+        users
+      );
+    } catch (error) {
+      return new Response(
+        ResponseCodes.USERS_PAYOUT_AND_WALLET_BALANCE_FETCHED_FAILED.code,
+        ResponseCodes.USERS_PAYOUT_AND_WALLET_BALANCE_FETCHED_FAILED.message
       );
     }
   }

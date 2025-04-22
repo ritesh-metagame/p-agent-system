@@ -19,6 +19,106 @@ class UserDao {
     }
   }
 
+  public async getUserPayoutAndWalletBalance(userId: string) {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: { role: true },
+      });
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      const userCommission = await prisma.commissionSummary.aggregate({
+        where: {
+          userId,
+          settledStatus: "N", // ✅ Only unsettled commissions
+        },
+        _sum: {
+          netCommissionAvailablePayout: true,
+        },
+      });
+
+      console.log("User Commission:", userCommission);
+
+      let wallet = 0;
+
+      if (user.role.name === "operator") {
+        const platinumUsers = await prisma.user.findMany({
+          where: { parentId: userId },
+          select: { id: true },
+        });
+        const platinumIds = platinumUsers.map((u) => u.id);
+
+        const goldUsers = await prisma.user.findMany({
+          where: { parentId: { in: platinumIds } },
+          select: { id: true },
+        });
+
+        // test purpose
+        // const platinumCommission = await prisma.commissionSummary.aggregate({
+        //   where: {
+        //     userId: { in: platinumIds },
+        //     settledStatus: "N", // ✅ Only unsettled commissions
+        //   },
+        //   _sum: { netCommissionAvailablePayout: true },
+        // });
+
+        // const goldUserId = goldUsers.map((u) => u.id);
+
+        // const goldCommission = await prisma.commissionSummary.aggregate({
+        //   where: {
+        //     userId: { in: goldUserId },
+        //     settledStatus: "N", // ✅ Only unsettled commissions
+        //   },
+        //   _sum: { netCommissionAvailablePayout: true },
+        // });
+
+        // console.log("Platinum Commission:", platinumCommission);
+        // console.log("Gold Commission:", goldCommission);
+
+        const allDownlineIds = [...platinumIds, ...goldUsers.map((u) => u.id)];
+
+        const downlineCommissionSum = await prisma.commissionSummary.aggregate({
+          where: {
+            userId: { in: allDownlineIds },
+            settledStatus: "N", // ✅ Only unsettled commissions
+          },
+          _sum: { netCommissionAvailablePayout: true },
+        });
+
+        console.log("Downline Commission Sum:", downlineCommissionSum);
+
+        wallet = downlineCommissionSum._sum.netCommissionAvailablePayout || 0;
+      } else if (user.role.name === "platinum") {
+        const goldUsers = await prisma.user.findMany({
+          where: { parentId: userId },
+          select: { id: true },
+        });
+
+        const goldIds = goldUsers.map((u) => u.id);
+
+        const goldCommissionSum = await prisma.commissionSummary.aggregate({
+          where: {
+            userId: { in: goldIds },
+            settledStatus: "N", // ✅ Only unsettled commissions
+          },
+          _sum: { netCommissionAvailablePayout: true },
+        });
+
+        wallet = goldCommissionSum._sum.netCommissionAvailablePayout || 0;
+      }
+
+      return {
+        payout: userCommission._sum.netCommissionAvailablePayout || 0,
+        wallet,
+      };
+    } catch (error) {
+      throw new Error(`Error fetching user: ${error}`);
+    }
+  }
+
   public async getUserByUsername(username: string) {
     console.log("Username:", username); // Debugging line
     try {

@@ -208,6 +208,26 @@ class UserController {
       next(error);
     }
   }
+
+  public static async getPayoutAndWalletBalance(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = req.user;
+
+      console.log("User in UserController:", user);
+
+      const userService = Container.get(UserService);
+
+      const response = await userService.getUserPayoutAndWalletBalance(user.id);
+
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { UserController };

@@ -11,6 +11,19 @@ export default (app: Router) => {
   app.use("/user", route);
 
   route.get(
+    "/payoutAndWalletBalance",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await UserController.getPayoutAndWalletBalance(
+        req,
+        res,
+        next
+      );
+
+      res.status(200).json(response);
+    })
+  );
+
+  route.get(
     "/all",
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {
       const response = await UserController.getAllUsers(req, res, next);
