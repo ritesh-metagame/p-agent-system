@@ -77,6 +77,16 @@ class ResponseCodes {
     message: "Users fetched successfully",
   } as const;
 
+  static readonly USERS_PAYOUT_AND_WALLET_BALANCE_FETCHED_SUCCESSFULLY = {
+    code: "PB200",
+    message: "Users payout and wallet fetched successfully",
+  } as const;
+
+  static readonly USERS_PAYOUT_AND_WALLET_BALANCE_FETCHED_FAILED = {
+    code: "PB400",
+    message: "Users payout and wallet fetched failed",
+  } as const;
+
   static readonly TRANSACTION_FETCHED_SUCCESSFULLY = {
     code: "T214",
     message: "Transaction fetched successfully",
