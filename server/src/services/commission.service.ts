@@ -33,28 +33,28 @@ interface SummaryTotal {
 }
 
 interface EGamesLicenseData {
-  type: "egames";
+  type: "E-Games";
   ggr: { pending: number; allTime: number };
   commission: { pending: number; allTime: number };
   commissionRate: number;
 }
 
 interface SportsBettingLicenseData {
-  type: "sports";
+  type: "Sports Betting";
   betAmount: { pending: number; allTime: number };
   commission: { pending: number; allTime: number };
   commissionRate: number;
 }
 
 interface SpecialityGamesToteLicenseData {
-  type: "specialityGamesTote";
+  type: "Speciality Games - Tote";
   betAmount: { pending: number; allTime: number };
   commission: { pending: number; allTime: number };
   commissionRate: number;
 }
 
 interface SpecialityGamesRNGLicenseData {
-  type: "specialityGamesRNG";
+  type: "Speciality Games - RNG";
   ggr: { pending: number; allTime: number };
   commission: { pending: number; allTime: number };
   commissionRate: number;
@@ -378,7 +378,7 @@ class CommissionService {
       };
 
       // Get commission data by category for the specified user only
-      const categories = ["egames", "sportsbet"];
+      const categories = ["E-Games", "Sports Betting"];
       const categoryData: any = {};
 
       for (const category of categories) {
@@ -525,13 +525,13 @@ class CommissionService {
 
       // Generate the overview metrics for each category
       const eGamesOverview = this.generateOverviewMetrics(
-        categoryData.egames.pending,
-        categoryData.egames.allTime
+        categoryData["E-Games"].pending,
+        categoryData["E-Games"].allTime
       );
 
       const sportsBettingOverview = this.generateOverviewMetrics(
-        categoryData.sportsbet.pending,
-        categoryData.sportsbet.allTime
+        categoryData["Sports Betting"].pending,
+        categoryData["Sports Betting"].allTime
       );
 
       // Combine the overviews to get total overview
@@ -904,14 +904,11 @@ class CommissionService {
 
       // Calculate totals for each game category
       commissionSummaries.forEach((summary) => {
-        if (
-          summary.categoryName.toLowerCase() === "egames" ||
-          summary.categoryName.toLowerCase() === "e-games"
-        ) {
+        if (summary.categoryName === "E-Games") {
           result.tally[0].eGames += Number(
             summary.netCommissionAvailablePayout || 0
           );
-        } else if (summary.categoryName.toLowerCase() === "sportsbet") {
+        } else if (summary.categoryName === "Sports Betting") {
           result.tally[0].sportsBetting += Number(
             summary.netCommissionAvailablePayout || 0
           );
@@ -1061,17 +1058,17 @@ class CommissionService {
 
       // Process pending data
       pendingData.forEach((summary) => {
-        const category = summary.categoryName.toLowerCase();
-        if (category.includes("egames") || category.includes("e-games")) {
+        const category = summary.categoryName;
+        if (category.includes("E-Games") || category.includes("e-games")) {
           categoryTotals.pending.egames.amount += summary.netGGR || 0;
           categoryTotals.pending.egames.grossCommission += summary.netGGR || 0;
-        } else if (
-          category.includes("sports") ||
-          category.includes("sportsbet")
-        ) {
+        } else if (category.includes("Sports Betting")) {
           categoryTotals.pending.sports.amount += summary.netGGR || 0;
           categoryTotals.pending.sports.grossCommission += summary.netGGR || 0;
-        } else if (category.includes("tote") || category.includes("rng")) {
+        } else if (
+          category.includes("Speciality Games -  Tote") ||
+          category.includes("Speciality Games - RNG")
+        ) {
           categoryTotals.pending.specialty.amount += summary.netGGR || 0;
           categoryTotals.pending.specialty.grossCommission +=
             summary.netGGR || 0;
@@ -1085,17 +1082,17 @@ class CommissionService {
 
       // Process all-time data
       allTimeData.forEach((summary) => {
-        const category = summary.categoryName.toLowerCase();
-        if (category.includes("egames") || category.includes("e-games")) {
+        const category = summary.categoryName;
+        if (category.includes("E-Games") || category.includes("e-games")) {
           categoryTotals.settled.egames.amount += summary.netGGR || 0;
           categoryTotals.settled.egames.grossCommission += summary.netGGR || 0;
-        } else if (
-          category.includes("sports") ||
-          category.includes("sportsbet")
-        ) {
+        } else if (category.includes("Sports Betting")) {
           categoryTotals.settled.sports.amount += summary.netGGR || 0;
           categoryTotals.settled.sports.grossCommission += summary.netGGR || 0;
-        } else if (category.includes("tote") || category.includes("rng")) {
+        } else if (
+          category.includes("Speciality Games -  Tote") ||
+          category.includes("Speciality Games - RNG")
+        ) {
           categoryTotals.settled.specialty.amount += summary.netGGR || 0;
           categoryTotals.settled.specialty.grossCommission +=
             summary.netGGR || 0;
@@ -1206,12 +1203,10 @@ class CommissionService {
         NOT: {
           categoryName: {
             in: [
-              "egames",
-              "sports-betting",
-              "eGames",
-              "e-games",
-              "sportsbet",
-              "sports betting",
+              "E-Games",
+              "Sports Betting",
+              "Speciality Games - Tote",
+              "Speciality Games - RNG",
             ],
           },
         },
@@ -1463,10 +1458,12 @@ class CommissionService {
       const rows = operators.map((op) => ({
         network: op.user.username,
         name: `${op.user.firstName} ${op.user.lastName}`,
-        egamesCommission: op.categoryName.toLowerCase().includes("egames")
+        egamesCommission: op.categoryName.toLowerCase().includes("E-Games")
           ? op.netGGR
           : 0,
-        sportsCommission: op.categoryName.toLowerCase().includes("sports")
+        sportsCommission: op.categoryName
+          .toLowerCase()
+          .includes("Sports Betting")
           ? op.netGGR
           : 0,
         netCommission: op.netCommissionAvailablePayout,
@@ -1524,10 +1521,12 @@ class CommissionService {
       const rows = platinums.map((plat) => ({
         network: plat.user.username,
         name: `${plat.user.firstName} ${plat.user.lastName}`,
-        egamesCommission: plat.categoryName.toLowerCase().includes("egames")
+        egamesCommission: plat.categoryName.toLowerCase().includes("E-Games")
           ? plat.netGGR
           : 0,
-        sportsCommission: plat.categoryName.toLowerCase().includes("sports")
+        sportsCommission: plat.categoryName
+          .toLowerCase()
+          .includes("Sports Betting")
           ? plat.netGGR
           : 0,
         netCommission: plat.netCommissionAvailablePayout,
@@ -1601,10 +1600,12 @@ class CommissionService {
       const rows = goldens.map((golden) => ({
         network: golden.user.username,
         name: `${golden.user.firstName} ${golden.user.lastName}`,
-        egamesCommission: golden.categoryName.toLowerCase().includes("egames")
+        egamesCommission: golden.categoryName.toLowerCase().includes("E-Games")
           ? golden.netGGR
           : 0,
-        sportsCommission: golden.categoryName.toLowerCase().includes("sports")
+        sportsCommission: golden.categoryName
+          .toLowerCase()
+          .includes("Sports Betting")
           ? golden.netGGR
           : 0,
         paymentGatewayFee: golden.paymentGatewayFee,
@@ -1851,9 +1852,9 @@ class CommissionService {
         }
 
         const userData = platinumUserMap.get(summary.user.id);
-        if (summary.categoryName.toLowerCase().includes("egames")) {
+        if (summary.categoryName.includes("E-Games")) {
           userData.egamesCommission += summary.netGGR || 0;
-        } else if (summary.categoryName.toLowerCase().includes("sports")) {
+        } else if (summary.categoryName.includes("Sports Betting")) {
           userData.sportsCommission += summary.netGGR || 0;
         }
         userData.paymentGatewayFee += summary.paymentGatewayFee || 0;
@@ -1923,9 +1924,9 @@ class CommissionService {
         }
 
         const userData = goldUserMap.get(summary.user.id);
-        if (summary.categoryName.toLowerCase().includes("egames")) {
+        if (summary.categoryName.includes("E-Games")) {
           userData.egamesCommission += summary.netGGR || 0;
-        } else if (summary.categoryName.toLowerCase().includes("sports")) {
+        } else if (summary.categoryName.includes("Sports Betting")) {
           userData.sportsCommission += summary.netGGR || 0;
         }
         userData.paymentGatewayFee += summary.paymentGatewayFee || 0;
@@ -2024,7 +2025,7 @@ class CommissionService {
       // Initialize license data structure
       const licenseData: Record<string, LicenseData> = {
         "E-Games": {
-          type: "egames",
+          type: "E-Games",
           ggr: { pending: 0, allTime: 0 },
           commission: { pending: 0, allTime: 0 },
           commissionRate:
@@ -2033,7 +2034,7 @@ class CommissionService {
               : 0,
         },
         "Sports Betting": {
-          type: "sports",
+          type: "Sports Betting",
           betAmount: { pending: 0, allTime: 0 },
           commission: { pending: 0, allTime: 0 },
           commissionRate:
@@ -2042,7 +2043,7 @@ class CommissionService {
               : 0,
         },
         "Speciality Games - Tote": {
-          type: "specialityGamesTote",
+          type: "Speciality Games - Tote",
           betAmount: { pending: 0, allTime: 0 },
           commission: { pending: 0, allTime: 0 },
           commissionRate:
@@ -2051,7 +2052,7 @@ class CommissionService {
               : 0,
         },
         "Speciality Games - RNG": {
-          type: "specialityGamesRNG",
+          type: "Speciality Games - RNG",
           ggr: { pending: 0, allTime: 0 },
           commission: { pending: 0, allTime: 0 },
           commissionRate:
@@ -2167,7 +2168,12 @@ class CommissionService {
               lte: cycleEndDate,
             },
             categoryName: {
-              in: ["egames", "sportsbet", "tote", "rng"],
+              in: [
+                "E-Games",
+                "Sports Betting",
+                "Speciality Games - Tote",
+                "Speciality Games - RNG",
+              ],
             },
           },
         });
@@ -2177,7 +2183,12 @@ class CommissionService {
           userId: { in: userIds },
           settledStatus: "Y",
           categoryName: {
-            in: ["egames", "sportsbet", "tote", "rng"],
+            in: [
+              "E-Games",
+              "Sports Betting",
+              "Speciality Games - Tote",
+              "Speciality Games - RNG",
+            ],
           },
         },
       });
@@ -2244,21 +2255,21 @@ class CommissionService {
       function setCommissionRates(commissions: any[]) {
         commissions.forEach((comm) => {
           if (!comm.category) return;
-          const categoryName = comm.category.name.toLowerCase();
+          const categoryName = comm.category.name;
           // console.log({ categoryName });
           switch (categoryName) {
-            case "egames":
+            case "E-Games":
               licenseData["E-Games"].commissionRate = comm.commissionPercentage;
               break;
-            case "sports-betting":
+            case "Sports Betting":
               licenseData["Sports Betting"].commissionRate =
                 comm.commissionPercentage;
               break;
-            case "tote":
+            case "Speciality Games - Tote":
               licenseData["Speciality Games - Tote"].commissionRate =
                 comm.commissionPercentage;
               break;
-            case "rng":
+            case "Speciality Games - RNG":
               licenseData["Speciality Games - RNG"].commissionRate =
                 comm.commissionPercentage;
               break;
@@ -2280,36 +2291,36 @@ class CommissionService {
       pendingSummaries.forEach((summary) => {
         const categoryName = summary.categoryName.toLowerCase();
         switch (categoryName) {
-          case "egames":
+          case "E-Games":
             const eGamesData = licenseData["E-Games"];
-            if (eGamesData.type === "egames") {
+            if (eGamesData.type === "E-Games") {
               const ggr = summary.netGGR || 0;
               eGamesData.ggr.pending += ggr;
               eGamesData.commission.pending +=
                 ggr * (eGamesData.commissionRate / 100);
             }
             break;
-          case "sportsbet":
+          case "Sports Betting":
             const sportsData = licenseData["Sports Betting"];
-            if (sportsData.type === "sports") {
+            if (sportsData.type === "Sports Betting") {
               const betAmount = summary.totalBetAmount || 0;
               sportsData.betAmount.pending += betAmount;
               sportsData.commission.pending +=
                 betAmount * (sportsData.commissionRate / 100);
             }
             break;
-          case "tote":
+          case "Speciality Games - Tote":
             const toteData = licenseData["Speciality Games - Tote"];
-            if (toteData.type === "specialityGamesTote") {
+            if (toteData.type === "Speciality Games - Tote") {
               const betAmount = summary.totalBetAmount || 0;
               toteData.betAmount.pending += betAmount;
               toteData.commission.pending +=
                 betAmount * (toteData.commissionRate / 100);
             }
             break;
-          case "rng":
+          case "Speciality Games - RNG":
             const rngData = licenseData["Speciality Games - RNG"];
-            if (rngData.type === "specialityGamesRNG") {
+            if (rngData.type === "Speciality Games - RNG") {
               const ggr = summary.netGGR || 0;
               rngData.ggr.pending += ggr;
               rngData.commission.pending +=
@@ -2323,36 +2334,36 @@ class CommissionService {
       settledCommissions.forEach((summary) => {
         const categoryName = summary.categoryName.toLowerCase();
         switch (categoryName) {
-          case "egames":
+          case "E-Games":
             const eGamesData = licenseData["E-Games"];
-            if (eGamesData.type === "egames") {
+            if (eGamesData.type === "E-Games") {
               const ggr = summary.netGGR || 0;
               eGamesData.ggr.allTime += ggr;
               eGamesData.commission.allTime +=
                 ggr * (eGamesData.commissionRate / 100);
             }
             break;
-          case "sportsbet":
+          case "Sports Betting":
             const sportsData = licenseData["Sports Betting"];
-            if (sportsData.type === "sports") {
+            if (sportsData.type === "Sports Betting") {
               const betAmount = summary.totalBetAmount || 0;
               sportsData.betAmount.allTime += betAmount;
               sportsData.commission.allTime +=
                 betAmount * (sportsData.commissionRate / 100);
             }
             break;
-          case "tote":
+          case "Speciality Games - Tote":
             const toteData = licenseData["Speciality Games - Tote"];
-            if (toteData.type === "specialityGamesTote") {
+            if (toteData.type === "Speciality Games - Tote") {
               const betAmount = summary.totalBetAmount || 0;
               toteData.betAmount.allTime += betAmount;
               toteData.commission.allTime +=
                 betAmount * (toteData.commissionRate / 100);
             }
             break;
-          case "rng":
+          case "Speciality Games - RNG":
             const rngData = licenseData["Speciality Games - RNG"];
-            if (rngData.type === "specialityGamesRNG") {
+            if (rngData.type === "Speciality Games - RNG") {
               const ggr = summary.netGGR || 0;
               rngData.ggr.allTime += ggr;
               rngData.commission.allTime +=
@@ -2374,15 +2385,18 @@ class CommissionService {
             fields: [
               {
                 label:
-                  data.type === "egames" || data.type === "specialityGamesRNG"
+                  data.type === "E-Games" ||
+                  data.type === "Speciality Games - RNG"
                     ? "GGR"
                     : "Total Bet Amount",
                 pendingSettlement:
-                  data.type === "egames" || data.type === "specialityGamesRNG"
+                  data.type === "E-Games" ||
+                  data.type === "Speciality Games - RNG"
                     ? data.ggr.pending
                     : data.betAmount.pending,
                 settledAllTime:
-                  data.type === "egames" || data.type === "specialityGamesRNG"
+                  data.type === "E-Games" ||
+                  data.type === "Speciality Games - RNG"
                     ? data.ggr.allTime
                     : data.betAmount.allTime,
               },
