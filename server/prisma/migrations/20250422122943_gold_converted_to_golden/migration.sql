@@ -9,7 +9,7 @@
 
 */
 -- AlterTable
-ALTER TABLE `networkstatistics` DROP COLUMN `gold_user_approved_count`,
+ALTER TABLE `NetworkStatistics` DROP COLUMN `gold_user_approved_count`,
     DROP COLUMN `gold_user_declined_count`,
     DROP COLUMN `gold_user_pending_count`,
     DROP COLUMN `gold_user_suspended_count`,
