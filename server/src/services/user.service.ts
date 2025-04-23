@@ -12,6 +12,7 @@ import { SiteService } from "./site.service";
 import { CategoryDao } from "../daos/category.dao";
 import { toFloat } from "validator";
 import { prisma } from "../server";
+import { NetworkStatisticsDao } from "../daos/network-statistics.dao";
 
 @Service()
 class UserService {
@@ -21,6 +22,7 @@ class UserService {
   private categoryService: CategoryService;
   private siteService: SiteService;
   private categoryDao: CategoryDao;
+  private networkStatisticsDao: NetworkStatisticsDao;
 
   constructor() {
     this.userDao = new UserDao();
@@ -29,6 +31,7 @@ class UserService {
     this.categoryService = Container.get(CategoryService);
     this.siteService = Container.get(SiteService);
     this.categoryDao = new CategoryDao();
+    this.networkStatisticsDao = new NetworkStatisticsDao();
   }
 
   public async createUser(
@@ -307,6 +310,18 @@ class UserService {
       );
 
       console.debug("[createUser] Transaction completed successfully");
+
+      // Update the parent user's network statistics
+      try {
+        console.debug("[createUser] Updating parent user's network statistics");
+        await this.networkStatisticsDao.calculateAndUpdateNetworkStatistics();
+        console.debug("[createUser] Network statistics updated successfully");
+      } catch (statsError) {
+        console.error("Error updating network statistics:", statsError);
+        // We don't want to fail the user creation if stats update fails
+        // Just log the error and continue
+      }
+
       return new Response(
         ResponseCodes.USER_CREATED_SUCCESSFULLY.code,
         ResponseCodes.USER_CREATED_SUCCESSFULLY.message,
