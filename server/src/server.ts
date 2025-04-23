@@ -141,7 +141,9 @@ class Server {
               ? "E-Games"
               : row["Platform Type"] === "sports"
                 ? "Sports Betting"
-                : row["Platform Type"],
+                : row["Platform Type"] === "sportsbet"
+                  ? "Sports Betting"
+                  : row["Platform Type"],
           transactionType: row["Transaction Type"] || "bet",
 
           deposit: new Decimal(row["Deposit"] || 0),
@@ -185,13 +187,13 @@ class Server {
       }
     }
 
-    // insertTransactionsFromXLSX(filePath)
-    //   .then(() => {
-    //     console.log("Import complete.");
-    //   })
-    //   .catch((err) => {
-    //     console.error("Import failed:", err);
-    //   });
+    insertTransactionsFromXLSX(filePath)
+      .then(() => {
+        console.log("Import complete.");
+      })
+      .catch((err) => {
+        console.error("Import failed:", err);
+      });
 
     this.app
       .listen(config.port, () => {
