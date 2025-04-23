@@ -1,4 +1,5 @@
-import { Commission } from "../../prisma/generated/prisma";
+import { Commission, User } from "../../prisma/generated/prisma";
+import { UserRole } from "../common/config/constants";
 import { prisma } from "../server";
 
 class CommissionDao {
@@ -52,7 +53,7 @@ class CommissionDao {
       return await prisma.commissionSummary.findMany({
         where: {
           role: {
-            name: "operator",
+            name: UserRole.OPERATOR as string,
           },
         },
         include: {
@@ -74,7 +75,7 @@ class CommissionDao {
 
   public async getOperatorCommissionSummaries(operatorId: string) {
     try {
-      // Get operator's data, platinum children's data, and gold grandchildren's data
+      // Get operator's data, platinum children's data, and golden grandchildren's data
       return await prisma.commissionSummary.findMany({
         where: {
           OR: [
@@ -85,7 +86,7 @@ class CommissionDao {
               user: {
                 parentId: operatorId,
                 role: {
-                  name: "platinum",
+                  name: UserRole.PLATINUM as string,
                 },
               },
             },
@@ -95,11 +96,11 @@ class CommissionDao {
                 parent: {
                   parentId: operatorId,
                   role: {
-                    name: "platinum",
+                    name: UserRole.PLATINUM as string,
                   },
                 },
                 role: {
-                  name: "gold",
+                  name: UserRole.GOLDEN as string,
                 },
               },
             },
@@ -197,7 +198,7 @@ class CommissionDao {
 
   public async getPlatinumCommissionSummaries(platinumId: string) {
     try {
-      // Get platinum's own data and their gold children's data
+      // Get platinum's own data and their golden children's data
       return await prisma.commissionSummary.findMany({
         where: {
           OR: [
@@ -208,7 +209,7 @@ class CommissionDao {
               user: {
                 parentId: platinumId,
                 role: {
-                  name: "gold",
+                  name: UserRole.GOLDEN as string,
                 },
               },
             },
@@ -313,19 +314,19 @@ class CommissionDao {
       throw new Error("User or user role not found.");
     }
 
-    const roleName = loggedInUser.role.name.toLowerCase();
-    let allowedRole = "";
+    const roleName = loggedInUser.role.name.toLowerCase() as UserRole;
+    let allowedRole = "" as UserRole;
 
     // Determine which role's commissions are allowed to be viewed
     switch (roleName) {
-      case "superadmin":
-        allowedRole = "operator";
+      case UserRole.SUPER_ADMIN:
+        allowedRole = UserRole.OPERATOR;
         break;
-      case "operator":
-        allowedRole = "platinum";
+      case UserRole.OPERATOR:
+        allowedRole = UserRole.PLATINUM;
         break;
-      case "platinum":
-        allowedRole = "gold";
+      case UserRole.PLATINUM:
+        allowedRole = UserRole.GOLDEN;
         break;
       default:
         throw new Error("You are not authorized to view commission data.");
@@ -430,11 +431,11 @@ class CommissionDao {
     }
   }
 
-  public async markCommissionAsSettled(id: string) {
+  public async markCommissionAsSettled(ids: string[]) {
     try {
-      const updatedSummary = await prisma.commissionSummary.update({
+      const updatedSummary = await prisma.commissionSummary.updateMany({
         where: {
-          id: id,
+          id: { in: ids },
         },
         data: {
           settledStatus: "Y",

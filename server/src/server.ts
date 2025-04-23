@@ -40,14 +40,44 @@ class Server {
       config.mongo.user!
     ).replace("<PASSWORD>", config.mongo.pass!) as string;
 
-    const siteIds = ["cm9jkon7w0001v9g86q7jdvc7"];
-    const GAIDS = ["cm9ljw2ad001yv96gwdkch2mn"];
-    const MAIDS = [
-      "cm9jvlj0g001sjf8g6b84k34b",
-      "cm9jvknlf001ijf8grhz4covw",
-      "cm9jvjkdn0018jf8g3p3gknz3",
+    const siteIds = [
+      "cm9cjqylv0002iob9krq51nvo",
+      "cm9cjrg5t0003iob9otfnpn8n",
+      "cm9cmuwr6000oiol5ob3lmprc",
+      "cm9cqlj9w000piol52m087niu",
     ];
-    const OWNERIDS = ["cm9jvi2ct000ijf8gjrzikjpo", "cm9jvf4t20004jf8g24j83ytf"];
+    const GAIDS = [
+      "cm9ic2z5700e1ioxndv37uwlg",
+      "cm9ibeymx00d1ioxna3nsp90l",
+      "cm9ibeepb00ctioxnvgaabk2u",
+      "cm9iauv3e0071ioxntngj23oz",
+      "cm9iaiklb005vioxnjdaqxn1d",
+      "cm9i46x21002gioxn2gc6hp2c",
+      "cm9ck623i006biob9x08pt1h8",
+      "cm9ck4smb005niob9xa6pempg",
+      "cm9ck3zto0053iob97mzi7sgc",
+      "cm9ck2jr9004jiob9c7ik1uhy",
+      "cm9ck1vpb003ziob9rs6kufod",
+      "cm9ck1a06003liob9d02vyo69",
+    ];
+    const MAIDS = [
+      "cm9cjv0qc0013iob901spod6b",
+      "cm9cjvrs6001hiob9jccmjs6p",
+      "cm9cjwpmu0021iob9mantjcze",
+      "cm9cjxf2k002liob9184yl4h2",
+      "cm9cjy80z002ziob9d34nt51k",
+      "cm9i42r9l001qioxnto68zgkx",
+      "cm9ih2pip0001iovt3frdptyu",
+      "cm9ih93do000yiovt9tkdwjl3",
+    ];
+    const OWNERIDS = [
+      "cm9cjseyd0005iob9kv4hj608",
+      "cm9cjta0j000fiob9guy5sgvm",
+      "cm9cju1dr000piob90w4tt5q5",
+      "cm9cqnl55000riol58vg52wda",
+      "cm9i2urpd0001ioxnb1yd157w",
+      "cm9i4sxti0037ioxnct6eeu0t",
+    ];
 
     const getRandom = (arr: string[]) =>
       arr[Math.floor(Math.random() * arr.length)];
@@ -136,7 +166,14 @@ class Server {
           betTime: parseExcelDate(row["Bet Time"]),
           userId: row["User Id"],
           playerName: row["Player Name"],
-          platformType,
+          platformType:
+            row["Platform Type"] === "egames"
+              ? "E-Games"
+              : row["Platform Type"] === "sports"
+                ? "Sports Betting"
+                : row["Platform Type"] === "sportsbet"
+                  ? "Sports Betting"
+                  : row["Platform Type"],
           transactionType: row["Transaction Type"] || "bet",
 
           deposit: new Decimal(row["Deposit"] || 0),

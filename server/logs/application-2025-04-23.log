@@ -2637,3 +2637,49 @@ info: 2025-04-23T09:55:18.502Z [loaders\index.ts] ✌️ Express loaded
 info: 2025-04-23T09:55:18.518Z [src\server.ts] 
 development Platform is running at http://localhost:8080 🛡️
       
+info: 2025-04-23T10:40:51.440Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-23T10:40:51.393Z [loaders\index.ts] ✌️ Express loaded
+debug: 2025-04-23T10:42:10.766Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-23T10:42:10.893Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-23T10:42:10.894Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-23T10:42:10.894Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-04-23T10:42:10.895Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkroaw0003v9g87gu6q5mp
+http: 2025-04-23T10:42:10.964Z [logger\morgan.ts] POST /api/v1/user/download-report 200 - - 207.452 ms
+
+debug: 2025-04-23T10:44:21.652Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-23T10:44:21.662Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-23T10:44:21.674Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-23T10:44:21.675Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-23T10:44:21.675Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-04-23T10:44:21.676Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkroaw0003v9g87gu6q5mp
+debug: 2025-04-23T10:44:21.709Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-23T10:44:21.710Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-23T10:44:21.711Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-04-23T10:44:21.711Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkroaw0003v9g87gu6q5mp
+http: 2025-04-23T10:44:21.751Z [logger\morgan.ts] GET /api/v1/user/partners 304 - - 94.294 ms
+
+debug: 2025-04-23T10:44:21.759Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-04-23T10:44:21.764Z [logger\morgan.ts] GET /api/v1/commission/settled-reports 200 609 - 122.047 ms
+
+debug: 2025-04-23T10:44:21.863Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-23T10:44:21.868Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-23T10:44:21.869Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-23T10:44:21.870Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-04-23T10:44:21.870Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkroaw0003v9g87gu6q5mp
+debug: 2025-04-23T10:44:21.888Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-23T10:44:21.890Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-23T10:44:21.891Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-04-23T10:44:21.892Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkroaw0003v9g87gu6q5mp
+http: 2025-04-23T10:44:21.899Z [logger\morgan.ts] GET /api/v1/user/partners 304 - - 143.346 ms
+
+http: 2025-04-23T10:44:21.956Z [logger\morgan.ts] GET /api/v1/commission/settled-reports 200 609 - 106.474 ms
+
+debug: 2025-04-23T10:44:26.242Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-23T10:44:26.254Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-23T10:44:26.255Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-23T10:44:26.256Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-04-23T10:44:26.256Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkroaw0003v9g87gu6q5mp
+http: 2025-04-23T10:44:26.301Z [logger\morgan.ts] POST /api/v1/user/download-report 200 - - 63.820 ms
+

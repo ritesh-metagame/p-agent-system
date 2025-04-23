@@ -109,6 +109,8 @@ export class NetworkStatisticsService {
         total: 0,
       };
 
+      console.log("Formatted statistics:", formattedStats);
+      console.log("Statistics for role:", rolePrefix, stat);
       try {
         if (stat) {
           data.approved = parseInt(stat[`${rolePrefix}UserApprovedCount`]) || 0;
@@ -128,25 +130,43 @@ export class NetworkStatisticsService {
     // Add statistics based on user role
     try {
       switch (lowerUserRoleName) {
-        case "superadmin":
+        case UserRole.SUPER_ADMIN:
           // SuperAdmin sees all roles
-          formattedStats.operator = formatRoleCounts(statistics[0], "operator");
-          formattedStats.platinum = formatRoleCounts(statistics[0], "platinum");
-          formattedStats.gold = formatRoleCounts(statistics[0], "gold");
+          formattedStats.operator = formatRoleCounts(
+            statistics[0],
+            UserRole.OPERATOR
+          );
+          formattedStats.platinum = formatRoleCounts(
+            statistics[0],
+            UserRole.PLATINUM
+          );
+          formattedStats.golden = formatRoleCounts(
+            statistics[0],
+            UserRole.GOLDEN
+          );
           break;
 
-        case "operator":
-          // Operator sees platinum and gold
-          formattedStats.platinum = formatRoleCounts(statistics[0], "platinum");
-          formattedStats.gold = formatRoleCounts(statistics[0], "gold");
+        case UserRole.OPERATOR:
+          // Operator sees platinum and golden
+          formattedStats.platinum = formatRoleCounts(
+            statistics[0],
+            UserRole.PLATINUM
+          );
+          formattedStats.golden = formatRoleCounts(
+            statistics[0],
+            UserRole.GOLDEN
+          );
           break;
 
-        case "platinum":
-          // Platinum sees only gold
-          formattedStats.gold = formatRoleCounts(statistics[0], "gold");
+        case UserRole.PLATINUM:
+          // Platinum sees only golden
+          formattedStats.golden = formatRoleCounts(
+            statistics[0],
+            UserRole.GOLDEN
+          );
           break;
 
-        case "gold":
+        case UserRole.GOLDEN:
           // Gold sees nothing
           break;
       }

@@ -280,6 +280,8 @@ class CommissionController {
   ) {
     const user = req.user;
 
+    const { userId } = req.query as any;
+
     if (!user || !user.roleId) {
       return new ApiResponse(
         ResponseCodes.UNAUTHORIZED.code,
@@ -288,7 +290,7 @@ class CommissionController {
       );
     }
 
-    const userWithRole = await prisma.user.findUnique({
+    let userWithRole = await prisma.user.findUnique({
       where: { id: user.id },
       include: { role: true },
     });
@@ -299,6 +301,21 @@ class CommissionController {
         "Unauthorized - User role not found",
         null
       );
+    }
+
+    if (userId) {
+      userWithRole = await prisma.user.findUnique({
+        where: { id: userId as string },
+        include: { role: true },
+      });
+
+      if (!userWithRole || !userWithRole.role) {
+        return new ApiResponse(
+          ResponseCodes.UNAUTHORIZED.code,
+          "Unauthorized - User role not found",
+          null
+        );
+      }
     }
 
     const commissionService = Container.get(CommissionService);
@@ -464,6 +481,8 @@ class CommissionController {
     try {
       const user = req.user;
 
+      const { userId } = req.query as any;
+
       if (!user || !user.roleId) {
         return new ApiResponse(
           ResponseCodes.UNAUTHORIZED.code,
@@ -472,10 +491,25 @@ class CommissionController {
         );
       }
 
-      const userWithRole = await prisma.user.findUnique({
+      let userWithRole = await prisma.user.findUnique({
         where: { id: user.id },
         include: { role: true },
       });
+
+      if (userId) {
+        userWithRole = await prisma.user.findUnique({
+          where: { id: userId as string },
+          include: { role: true },
+        });
+
+        if (!userWithRole || !userWithRole.role) {
+          return new ApiResponse(
+            ResponseCodes.UNAUTHORIZED.code,
+            "Unauthorized - User role not found",
+            null
+          );
+        }
+      }
 
       if (!userWithRole || !userWithRole.role) {
         return new ApiResponse(
@@ -523,9 +557,9 @@ class CommissionController {
     next: NextFunction
   ) {
     try {
-      const { id } = req.query as any;
+      const { ids } = req.body as any;
       const commissionService = Container.get(CommissionService);
-      const result = await commissionService.markCommissionSummaryStatus(id);
+      const result = await commissionService.markCommissionSummaryStatus(ids);
 
       return new ApiResponse(
         ResponseCodes.UNSETTLED_DATA_UPDATE_SUCCESSFULLY.code,
@@ -547,11 +581,15 @@ class CommissionController {
       const { startDate, endDate, downlineId } = req.query;
 
       if (!user || !user.roleId) {
-        return res.status(401).json(new ApiResponse(
-          ResponseCodes.UNAUTHORIZED.code,
-          "Unauthorized - User details not found",
-          null
-        ));
+        return res
+          .status(401)
+          .json(
+            new ApiResponse(
+              ResponseCodes.UNAUTHORIZED.code,
+              "Unauthorized - User details not found",
+              null
+            )
+          );
       }
 
       // Get user with role details
@@ -561,38 +599,50 @@ class CommissionController {
       });
 
       if (!userWithRole || !userWithRole.role) {
-        return res.status(401).json(new ApiResponse(
-          ResponseCodes.UNAUTHORIZED.code,
-          "Unauthorized - User role not found",
-          null
-        ));
+        return res
+          .status(401)
+          .json(
+            new ApiResponse(
+              ResponseCodes.UNAUTHORIZED.code,
+              "Unauthorized - User role not found",
+              null
+            )
+          );
       }
 
       const commissionService = Container.get(CommissionService);
-      
+
       // If dates are provided, validate them before passing to service
       let startDateObj, endDateObj;
-      
+
       if (startDate && endDate) {
         startDateObj = new Date(startDate as string);
         endDateObj = new Date(endDate as string);
-        
+
         // Check if dates are valid
         if (isNaN(startDateObj.getTime()) || isNaN(endDateObj.getTime())) {
-          return res.status(400).json(new ApiResponse(
-            "4000",
-            "Bad Request - Invalid date format. Please use YYYY-MM-DD format.",
-            null
-          ));
+          return res
+            .status(400)
+            .json(
+              new ApiResponse(
+                "4000",
+                "Bad Request - Invalid date format. Please use YYYY-MM-DD format.",
+                null
+              )
+            );
         }
-        
+
         // Check if start date is before end date
         if (startDateObj > endDateObj) {
-          return res.status(400).json(new ApiResponse(
-            "4000",
-            "Bad Request - Start date must be before or equal to end date.",
-            null
-          ));
+          return res
+            .status(400)
+            .json(
+              new ApiResponse(
+                "4000",
+                "Bad Request - Start date must be before or equal to end date.",
+                null
+              )
+            );
         }
       }
 
@@ -600,15 +650,15 @@ class CommissionController {
         userWithRole.id,
         userWithRole.role.name,
         startDateObj, // Pass undefined if not provided
-        endDateObj,   // Pass undefined if not provided
+        endDateObj, // Pass undefined if not provided
         downlineId as string | undefined
       );
 
-      return res.status(200).json(new ApiResponse(
-        "2050",
-        result.message,
-        { reports: result.reports }
-      ));
+      return res
+        .status(200)
+        .json(
+          new ApiResponse("2050", result.message, { reports: result.reports })
+        );
     } catch (error) {
       next(error);
     }

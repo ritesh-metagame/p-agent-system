@@ -103,11 +103,11 @@ model NetworkStatistics {
   platinumUserSuspendedCount Int @default(0) @map("platinum_user_suspended_count")
   platinumUserTotalCount     Int @default(0) @map("platinum_user_total_count")
 
-  goldUserApprovedCount  Int @default(0) @map("gold_user_approved_count")
-  goldUserPendingCount   Int @default(0) @map("gold_user_pending_count")
-  goldUserDeclinedCount  Int @default(0) @map("gold_user_declined_count")
-  goldUserSuspendedCount Int @default(0) @map("gold_user_suspended_count")
-  goldUserTotalCount     Int @default(0) @map("gold_user_total_count")
+  goldenUserApprovedCount  Int @default(0) @map("golden_user_approved_count")
+  goldenUserPendingCount   Int @default(0) @map("golden_user_pending_count")
+  goldenUserDeclinedCount  Int @default(0) @map("golden_user_declined_count")
+  goldenUserSuspendedCount Int @default(0) @map("golden_user_suspended_count")
+  goldenUserTotalCount     Int @default(0) @map("golden_user_total_count")
 
   calculationDate DateTime @default(now()) @map("calculation_date")
   createdAt       DateTime @default(now())
