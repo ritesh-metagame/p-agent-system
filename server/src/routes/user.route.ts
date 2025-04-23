@@ -10,6 +10,19 @@ const route = Router();
 export default (app: Router) => {
   app.use("/user", route);
 
+  route.post(
+    "/download-report",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await UserController.getDownloadReportList(
+        req,
+        res,
+        next
+      );
+
+      res.status(200).json(response);
+    })
+  );
+
   route.get(
     "/payoutAndWalletBalance",
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {

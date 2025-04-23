@@ -1304,6 +1304,7 @@ class CommissionService {
   // }
 
   public async getPendingSettlements(userId: string, roleName: string) {
+    console.log("user id", userId);
     try {
       // Calculate the date range for the last completed cycle
       const { cycleStartDate, cycleEndDate } =
@@ -1321,6 +1322,8 @@ class CommissionService {
         })
         .then((users) => users.map((user) => user.id));
 
+      console.log("children ids", childrenIds);
+
       // Get summaries for direct children users in the completed cycle
       const commissionSummaries = await prisma.user.findMany({
         where: {
@@ -1329,10 +1332,10 @@ class CommissionService {
         include: {
           commissionSummaries: {
             where: {
-              createdAt: {
-                gte: cycleStartDate,
-                lte: cycleEndDate,
-              },
+              // createdAt: {
+              //   gte: cycleStartDate,
+              //   lte: cycleEndDate,
+              // },
               settledStatus: "N",
               NOT: {
                 categoryName: "Unknown",
@@ -1350,6 +1353,8 @@ class CommissionService {
           },
         },
       });
+
+      console.log({ commissionSummaries });
 
       // Transform data into required format
       const rows = commissionSummaries.flatMap((user) => {
@@ -1735,6 +1740,14 @@ class CommissionService {
     targetUserId?: string
   ) {
     try {
+      console.log(
+        "Commission breakdown params:",
+        userId,
+        role,
+        startDate,
+        endDate,
+        targetUserId
+      );
       // Use provided date range or default to previous completed cycle
       let cycleStartDate: Date;
       let cycleEndDate: Date;
@@ -1760,6 +1773,8 @@ class CommissionService {
           where: { id: targetUserId },
           include: { role: true },
         });
+
+        console.log("Target user:", targetUser);
 
         if (!targetUser || !targetUser.role) {
           throw new Error("Target user not found or has no role");
@@ -1796,6 +1811,8 @@ class CommissionService {
         },
       });
 
+      console.log({ platinumSummaries });
+
       // Get summaries for golds
       const goldSummaries = await prisma.commissionSummary.findMany({
         where: {
@@ -1828,6 +1845,8 @@ class CommissionService {
           },
         },
       });
+
+      console.log("--------------", goldSummaries);
 
       // Process platinum data
       const platinumRows = [];
@@ -1990,6 +2009,8 @@ class CommissionService {
           code = "2009";
           break;
       }
+
+      console.log({ platinumRows, goldRows });
 
       return {
         code,
@@ -2504,7 +2525,9 @@ class CommissionService {
           downlineRole = "gold";
           break;
         default:
-          throw new Error("Unauthorized. Only superadmin, operator, and platinum users can access settled commission reports.");
+          throw new Error(
+            "Unauthorized. Only superadmin, operator, and platinum users can access settled commission reports."
+          );
       }
 
       // Get immediate downlines of the user
@@ -2516,17 +2539,19 @@ class CommissionService {
             id: downlineId,
             parentId: userId,
             role: {
-              name: downlineRole
-            }
+              name: downlineRole,
+            },
           },
           select: {
             id: true,
-            username: true
-          }
+            username: true,
+          },
         });
 
         if (downlineUsers.length === 0) {
-          throw new Error(`Invalid downline ID or not an immediate downline of the current user.`);
+          throw new Error(
+            `Invalid downline ID or not an immediate downline of the current user.`
+          );
         }
       } else {
         // Get all immediate downlines
@@ -2534,20 +2559,20 @@ class CommissionService {
           where: {
             parentId: userId,
             role: {
-              name: downlineRole
-            }
+              name: downlineRole,
+            },
           },
           select: {
             id: true,
-            username: true
-          }
+            username: true,
+          },
         });
       }
-      
+
       if (downlineUsers.length === 0) {
         return {
           reports: [],
-          message: "No downline users found."
+          message: "No downline users found.",
         };
       }
 
@@ -2557,46 +2582,52 @@ class CommissionService {
       // If startDate and endDate are not provided, find the earliest and latest settled commission dates
       if (!startDate || !endDate) {
         // Get the earliest and latest settled dates for the downline users
-        const downlineIds = downlineUsers.map(user => user.id);
-        
-        const earliestSettlementRecord = await prisma.commissionSummary.findFirst({
-          where: {
-            userId: { in: downlineIds },
-            settledStatus: "Y",
-            settledAt: { not: null }
-          },
-          orderBy: {
-            settledAt: 'asc'
-          },
-          select: {
-            settledAt: true
-          }
-        });
+        const downlineIds = downlineUsers.map((user) => user.id);
 
-        const latestSettlementRecord = await prisma.commissionSummary.findFirst({
-          where: {
-            userId: { in: downlineIds },
-            settledStatus: "Y",
-            settledAt: { not: null }
-          },
-          orderBy: {
-            settledAt: 'desc'
-          },
-          select: {
-            settledAt: true
+        const earliestSettlementRecord =
+          await prisma.commissionSummary.findFirst({
+            where: {
+              userId: { in: downlineIds },
+              settledStatus: "Y",
+              settledAt: { not: null },
+            },
+            orderBy: {
+              settledAt: "asc",
+            },
+            select: {
+              settledAt: true,
+            },
+          });
+
+        const latestSettlementRecord = await prisma.commissionSummary.findFirst(
+          {
+            where: {
+              userId: { in: downlineIds },
+              settledStatus: "Y",
+              settledAt: { not: null },
+            },
+            orderBy: {
+              settledAt: "desc",
+            },
+            select: {
+              settledAt: true,
+            },
           }
-        });
+        );
 
         // If no settled commissions found, use current cycle dates
         if (!earliestSettlementRecord || !latestSettlementRecord) {
-          const { cycleStartDate, cycleEndDate } = await this.getCurrentCycleDates();
+          const { cycleStartDate, cycleEndDate } =
+            await this.getCurrentCycleDates();
           startDate = cycleStartDate;
           // Cap the end date to the current date
-          endDate = new Date(Math.min(cycleEndDate.getTime(), currentDate.getTime()));
-          
+          endDate = new Date(
+            Math.min(cycleEndDate.getTime(), currentDate.getTime())
+          );
+
           return {
             reports: [],
-            message: "No settled commission reports found."
+            message: "No settled commission reports found.",
           };
         }
 
@@ -2618,12 +2649,12 @@ class CommissionService {
             settledStatus: "Y",
             settledAt: {
               gte: startDate,
-              lte: endDate
-            }
+              lte: endDate,
+            },
           },
           orderBy: {
-            settledAt: 'asc'
-          }
+            settledAt: "asc",
+          },
         });
 
         if (summaries.length === 0) {
@@ -2632,22 +2663,34 @@ class CommissionService {
 
         // Group by period (fromDate, toDate)
         const groupedByPeriod = new Map();
-        
+
         for (const summary of summaries) {
           // Determine the period based on bi-monthly or monthly cycle
           let fromDate, toDate;
           const settledAt = summary.settledAt || summary.createdAt;
-          
+
           // For bi-monthly periods
           if (DEFAULT_COMMISSION_COMPUTATION_PERIOD === "BI_MONTHLY") {
             const day = settledAt.getDate();
             if (day <= 15) {
               // First half of the month
-              fromDate = new Date(settledAt.getFullYear(), settledAt.getMonth(), 1);
-              toDate = new Date(settledAt.getFullYear(), settledAt.getMonth(), 15);
+              fromDate = new Date(
+                settledAt.getFullYear(),
+                settledAt.getMonth(),
+                1
+              );
+              toDate = new Date(
+                settledAt.getFullYear(),
+                settledAt.getMonth(),
+                15
+              );
             } else {
               // Second half of the month
-              fromDate = new Date(settledAt.getFullYear(), settledAt.getMonth(), 16);
+              fromDate = new Date(
+                settledAt.getFullYear(),
+                settledAt.getMonth(),
+                16
+              );
               toDate = lastDayOfMonth(settledAt);
             }
           } else {
@@ -2655,24 +2698,24 @@ class CommissionService {
             fromDate = startOfMonth(settledAt);
             toDate = lastDayOfMonth(settledAt);
           }
-          
+
           // Cap end date to current date for incomplete cycles
           if (toDate > currentDate) {
             toDate = new Date(currentDate);
           }
-          
+
           const periodKey = `${fromDate.toISOString()}-${toDate.toISOString()}`;
-          
+
           if (!groupedByPeriod.has(periodKey)) {
             groupedByPeriod.set(periodKey, {
               fromDate,
               toDate,
               downlineId: downline.id,
               downlineName: downline.username,
-              summaries: []
+              summaries: [],
             });
           }
-          
+
           groupedByPeriod.get(periodKey).summaries.push(summary);
         }
 
@@ -2688,8 +2731,8 @@ class CommissionService {
           _metadata: {
             downlineId: group.downlineId,
             fromDateISO: group.fromDate.toISOString(),
-            toDateISO: group.toDate.toISOString()
-          }
+            toDateISO: group.toDate.toISOString(),
+          },
         }));
       });
 
@@ -2698,13 +2741,18 @@ class CommissionService {
 
       return {
         reports,
-        message: reports.length > 0 ? "Settled commission reports fetched successfully." : "No settled commission reports found for the specified criteria."
+        message:
+          reports.length > 0
+            ? "Settled commission reports fetched successfully."
+            : "No settled commission reports found for the specified criteria.",
       };
     } catch (error) {
-      throw new Error(`Error fetching settled commission reports: ${error.message}`);
+      throw new Error(
+        `Error fetching settled commission reports: ${error.message}`
+      );
     }
   }
-  
+
   // Helper method to get current cycle dates
   private async getCurrentCycleDates() {
     const currentDate = new Date();
@@ -2721,14 +2769,22 @@ class CommissionService {
       if (currentDay <= 15) {
         // First half of month
         cycleStartDate = startOfMonth(currentDate);
-        cycleEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 15);
+        cycleEndDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          15
+        );
       } else {
         // Second half of month
-        cycleStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 16);
+        cycleStartDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          16
+        );
         cycleEndDate = endOfMonth(currentDate);
       }
     }
-    
+
     return { cycleStartDate, cycleEndDate };
   }
 
@@ -2848,6 +2904,295 @@ class CommissionService {
       throw new Error(
         `Error generating commission report CSV: ${error.message}`
       );
+    }
+  }
+
+  public async getCommissionBreakdownForDownLoadReport(
+    userId: string,
+    role: string,
+    startDate?: Date,
+    endDate?: Date,
+    targetUserId?: string
+  ) {
+    try {
+      // Use provided date range or default to previous completed cycle
+      let cycleStartDate: Date;
+      let cycleEndDate: Date;
+
+      if (startDate && endDate) {
+        cycleStartDate = startDate;
+        cycleEndDate = endDate;
+      } else {
+        const dates = await this.getPreviousCompletedCycleDates();
+        cycleStartDate = dates.cycleStartDate;
+        cycleEndDate = dates.cycleEndDate;
+      }
+
+      role = role.toLowerCase();
+      let breakdownData;
+
+      // First, if targetUserId is provided, get their role
+      let targetRole = role;
+      let effectiveUserId = userId;
+
+      if (targetUserId) {
+        const targetUser = await prisma.user.findUnique({
+          where: { id: targetUserId },
+          include: { role: true },
+        });
+
+        if (!targetUser || !targetUser.role) {
+          throw new Error("Target user not found or has no role");
+        }
+
+        targetRole = targetUser.role.name.toLowerCase();
+        effectiveUserId = targetUserId;
+      }
+
+      // Get summaries for platinums
+      const platinumSummaries = await prisma.commissionSummary.findMany({
+        where: {
+          settledStatus: "Y",
+          // createdAt: {
+          //   gte: cycleStartDate,
+          //   lte: cycleEndDate,
+          // },
+          role: {
+            name: "platinum",
+          },
+          user: {
+            parentId: effectiveUserId,
+          },
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      });
+
+      // Get summaries for golds
+      const goldSummaries = await prisma.commissionSummary.findMany({
+        where: {
+          settledStatus: "Y",
+          // createdAt: {
+          //   gte: cycleStartDate,
+          //   lte: cycleEndDate,
+          // },
+          role: {
+            name: "gold",
+          },
+          user: {
+            parentId: effectiveUserId,
+          },
+          // user: {
+          //   parent: {
+          //     parentId: effectiveUserId, // This ensures we get golds under the platinums of the operator
+          //   },
+          // },
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              firstName: true,
+              lastName: true,
+              parentId: true,
+            },
+          },
+        },
+      });
+
+      // Process platinum data
+      const platinumRows = [];
+      const platinumUserMap = new Map();
+
+      platinumSummaries.forEach((summary) => {
+        if (!platinumUserMap.has(summary.user.id)) {
+          platinumUserMap.set(summary.user.id, {
+            network: summary.user.username,
+            name: `${summary.user.firstName} ${summary.user.lastName}`,
+            egamesCommission: 0,
+            sportsCommission: 0,
+            paymentGatewayFee: 0,
+            totalNetCommission: 0,
+            deductionsFromGross: 0,
+            finalNetCommission: 0,
+            userId: summary.user.id,
+            isPlatinum: true,
+          });
+        }
+
+        const userData = platinumUserMap.get(summary.user.id);
+        if (summary.categoryName.toLowerCase().includes("egames")) {
+          userData.egamesCommission += summary.netGGR || 0;
+        } else if (summary.categoryName.toLowerCase().includes("sports")) {
+          userData.sportsCommission += summary.netGGR || 0;
+        }
+        userData.paymentGatewayFee += summary.paymentGatewayFee || 0;
+        userData.totalNetCommission +=
+          summary.netCommissionAvailablePayout || 0;
+        userData.deductionsFromGross += summary.paymentGatewayFee || 0;
+        userData.finalNetCommission +=
+          summary.netCommissionAvailablePayout || 0;
+      });
+
+      platinumRows.push(...platinumUserMap.values());
+
+      // Add platinum total if there are platinum rows
+      if (platinumRows.length > 0) {
+        const platinumTotal = {
+          network: "",
+          name: "PLATINUM PARTNER TOTAL",
+          egamesCommission: platinumRows.reduce(
+            (sum, row) => sum + row.egamesCommission,
+            0
+          ),
+          sportsCommission: platinumRows.reduce(
+            (sum, row) => sum + row.sportsCommission,
+            0
+          ),
+          paymentGatewayFee: platinumRows.reduce(
+            (sum, row) => sum + row.paymentGatewayFee,
+            0
+          ),
+          totalNetCommission: platinumRows.reduce(
+            (sum, row) => sum + row.totalNetCommission,
+            0
+          ),
+          deductionsFromGross: platinumRows.reduce(
+            (sum, row) => sum + row.deductionsFromGross,
+            0
+          ),
+          finalNetCommission: platinumRows.reduce(
+            (sum, row) => sum + row.finalNetCommission,
+            0
+          ),
+          userId: "platinum-total",
+          isPlatinumTotal: true,
+        };
+        platinumRows.push(platinumTotal);
+      }
+
+      // Process gold data
+      const goldRows = [];
+      const goldUserMap = new Map();
+
+      goldSummaries.forEach((summary) => {
+        if (!goldUserMap.has(summary.user.id)) {
+          goldUserMap.set(summary.user.id, {
+            network: summary.user.username,
+            name: `${summary.user.firstName} ${summary.user.lastName}`,
+            egamesCommission: 0,
+            sportsCommission: 0,
+            paymentGatewayFee: 0,
+            totalNetCommission: 0,
+            deductionsFromGross: 0,
+            finalNetCommission: 0,
+            userId: summary.user.id,
+            parentId: summary.user.parentId,
+            isGold: true,
+          });
+        }
+
+        const userData = goldUserMap.get(summary.user.id);
+        if (summary.categoryName.toLowerCase().includes("egames")) {
+          userData.egamesCommission += summary.netGGR || 0;
+        } else if (summary.categoryName.toLowerCase().includes("sports")) {
+          userData.sportsCommission += summary.netGGR || 0;
+        }
+        userData.paymentGatewayFee += summary.paymentGatewayFee || 0;
+        userData.totalNetCommission +=
+          summary.netCommissionAvailablePayout || 0;
+        userData.deductionsFromGross += summary.paymentGatewayFee || 0;
+        userData.finalNetCommission +=
+          summary.netCommissionAvailablePayout || 0;
+      });
+
+      goldRows.push(...goldUserMap.values());
+
+      // Add gold total if there are gold rows
+      if (goldRows.length > 0) {
+        const goldTotal = {
+          network: "",
+          name: "GOLD PARTNER TOTAL",
+          egamesCommission: goldRows.reduce(
+            (sum, row) => sum + row.egamesCommission,
+            0
+          ),
+          sportsCommission: goldRows.reduce(
+            (sum, row) => sum + row.sportsCommission,
+            0
+          ),
+          paymentGatewayFee: goldRows.reduce(
+            (sum, row) => sum + row.paymentGatewayFee,
+            0
+          ),
+          totalNetCommission: goldRows.reduce(
+            (sum, row) => sum + row.totalNetCommission,
+            0
+          ),
+          deductionsFromGross: goldRows.reduce(
+            (sum, row) => sum + row.deductionsFromGross,
+            0
+          ),
+          finalNetCommission: goldRows.reduce(
+            (sum, row) => sum + row.finalNetCommission,
+            0
+          ),
+          userId: "gold-total",
+          isGoldTotal: true,
+        };
+        goldRows.push(goldTotal);
+      }
+
+      // Set appropriate message based on the role
+      let message;
+      let code;
+      switch (targetRole) {
+        case "superadmin":
+          message = "Complete Commission Breakdown fetched successfully";
+          code = "2007";
+          break;
+        case "operator":
+          message =
+            "Platinum and Gold Partner Commission Breakdown fetched successfully";
+          code = "2008";
+          break;
+        case "platinum":
+          message = "Golden Partner Commission Breakdown fetched successfully";
+          code = "2009";
+          break;
+      }
+
+      return {
+        code,
+        message,
+        data: {
+          columns: [
+            "Network",
+            "Name",
+            "Total EGames Gross Commissions",
+            "Total Sports Gross Commissions",
+            "Less: Payment Gateway Fees",
+            "Total Net Commissions",
+            "Total Deductions",
+            "Final Net Commission",
+          ],
+          data: {
+            platinum: platinumRows,
+            gold: goldRows,
+          },
+        },
+      };
+    } catch (error) {
+      throw new Error(`Error getting commission breakdown: ${error}`);
     }
   }
 }
