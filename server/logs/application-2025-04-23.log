@@ -2683,3 +2683,7 @@ debug: 2025-04-23T10:44:26.256Z [middlewares\checkAuthAndAttachCurrentUser.ts] U
 debug: 2025-04-23T10:44:26.256Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkroaw0003v9g87gu6q5mp
 http: 2025-04-23T10:44:26.301Z [logger\morgan.ts] POST /api/v1/user/download-report 200 - - 63.820 ms
 
+info: 2025-04-23T10:50:15.521Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
+info: 2025-04-23T10:50:15.505Z [loaders\index.ts] ✌️ Express loaded
