@@ -2114,49 +2114,50 @@ class CommissionService {
         console.log({ goldIds });
 
         userIds = [...userIds, ...goldIds];
-      } else if (roleName === UserRole.OPERATOR) {
-        // For operator, get all platinums and their children
-        const platinums = await prisma.user.findMany({
-          where: {
-            parentId: userId,
-            role: { name: UserRole.PLATINUM },
-          },
-          select: { id: true },
-        });
-        const platinumIds = platinums.map((p) => p.id);
-
-        console.log({ platinumIds });
-
-        userIds = [...userIds, ...platinumIds];
-
-        // Get all golds under these platinums
-        const golds = await prisma.user.findMany({
-          where: {
-            parentId: { in: platinumIds },
-            role: { name: UserRole.GOLDEN },
-          },
-          select: { id: true },
-        });
-        const goldIds = golds.map((g) => g.id);
-
-        console.log({ goldIds });
-
-        userIds = [...userIds, ...goldIds];
-      } else if (roleName === UserRole.PLATINUM) {
-        // For platinum, get all golds under this platinum
-        const golds = await prisma.user.findMany({
-          where: {
-            parentId: userId,
-            role: { name: UserRole.GOLDEN },
-          },
-          select: { id: true },
-        });
-        const goldIds = golds.map((g) => g.id);
-
-        console.log({ goldIds });
-
-        userIds = [...userIds, ...goldIds];
       }
+      // else if (roleName === UserRole.OPERATOR) {
+      //   // For operator, get all platinums and their children
+      //   const platinums = await prisma.user.findMany({
+      //     where: {
+      //       parentId: userId,
+      //       role: { name: UserRole.PLATINUM },
+      //     },
+      //     select: { id: true },
+      //   });
+      //   const platinumIds = platinums.map((p) => p.id);
+
+      //   console.log({ platinumIds });
+
+      //   userIds = [...userIds, ...platinumIds];
+
+      //   // Get all golds under these platinums
+      //   const golds = await prisma.user.findMany({
+      //     where: {
+      //       parentId: { in: platinumIds },
+      //       role: { name: UserRole.GOLDEN },
+      //     },
+      //     select: { id: true },
+      //   });
+      //   const goldIds = golds.map((g) => g.id);
+
+      //   console.log({ goldIds });
+
+      //   userIds = [...userIds, ...goldIds];
+      // } else if (roleName === UserRole.PLATINUM) {
+      //   // For platinum, get all golds under this platinum
+      //   const golds = await prisma.user.findMany({
+      //     where: {
+      //       parentId: userId,
+      //       role: { name: UserRole.GOLDEN },
+      //     },
+      //     select: { id: true },
+      //   });
+      //   const goldIds = golds.map((g) => g.id);
+
+      //   console.log({ goldIds });
+
+      //   userIds = [...userIds, ...goldIds];
+      // }
 
       // Use provided date range or default to previous completed cycle
       let cycleStartDate: Date;
@@ -2177,6 +2178,8 @@ class CommissionService {
         cycleEndDate
       );
       // }
+
+      console.log({ userIds });
 
       // Get commission records for all relevant users
       const pendingCommissionSummaries =
