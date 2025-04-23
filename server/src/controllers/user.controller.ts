@@ -229,6 +229,33 @@ class UserController {
       next(error);
     }
   }
+
+  public static async getDownloadReportList(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { downlineId, fromDateISO, toDateISO } = req.body;
+      const user = req.user;
+
+      console.log("Userid in UserController:", user);
+
+      const userService = Container.get(UserService);
+
+      const response = await userService.getDownloadReportLists(
+        user,
+        downlineId,
+        fromDateISO,
+        toDateISO,
+        res
+      );
+
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { UserController };

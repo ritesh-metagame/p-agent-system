@@ -12,6 +12,8 @@ import { SiteService } from "./site.service";
 import { CategoryDao } from "../daos/category.dao";
 import { toFloat } from "validator";
 import { prisma } from "../server";
+import * as ExcelJS from "exceljs";
+import { Response as expressResponse } from "express";
 import { NetworkStatisticsDao } from "../daos/network-statistics.dao";
 
 @Service()
@@ -386,6 +388,143 @@ class UserService {
         `Error fetching all users: ${error.message}`,
         null
       );
+    }
+  }
+
+  public async getDownloadReportLists(
+    user: any,
+    downlineId: string,
+    fromDateISO: any,
+    toDateISO: any,
+    res: expressResponse
+  ) {
+    try {
+      const users =
+        await this.commissionService.getCommissionPayoutReport(downlineId);
+      const breakdown =
+        await this.commissionService.getCommissionBreakdownForDownLoadReport(
+          user.id,
+          user.role.name,
+          fromDateISO,
+          toDateISO,
+          downlineId
+        );
+
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet("Commission Report");
+
+      // Utility function for header styling
+      const applyHeaderStyle = (row: ExcelJS.Row) => {
+        row.eachCell((cell) => {
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "002060" }, // Dark blue
+          };
+          cell.font = {
+            color: { argb: "FFFFFF" }, // White
+            bold: true,
+          };
+          cell.alignment = { vertical: "middle", horizontal: "center" };
+        });
+      };
+
+      // === 1. HEADER for Breakdown per Game Type ===
+      const row1 = sheet.addRow(["PERIOD", "START DATE", "END DATE"]);
+      applyHeaderStyle(row1);
+
+      sheet.addRow([]);
+      const gameTypeHeader = sheet.addRow(["BREAKDOWN PER GAME TYPE"]);
+      applyHeaderStyle(gameTypeHeader);
+
+      sheet.addRow([]);
+
+      // E-GAMES breakdown
+      const egamesTitleRow = sheet.addRow(["E-GAMES"]);
+      applyHeaderStyle(egamesTitleRow);
+
+      const egamesHeaderRow = sheet.addRow(["", "Amount", "Settled All"]);
+      applyHeaderStyle(egamesHeaderRow);
+
+      const egames = users?.data?.categories?.["E-GAMES"] || [];
+      egames.forEach((item) => {
+        sheet.addRow([item.label, item.allTime]);
+      });
+
+      sheet.addRow([]);
+
+      // SPORTS BETTING breakdown
+      const sportsTitleRow = sheet.addRow(["SPORTS BETTING"]);
+      applyHeaderStyle(sportsTitleRow);
+
+      const sportsHeaderRow = sheet.addRow(["", "Amount", "Settled All"]);
+      applyHeaderStyle(sportsHeaderRow);
+
+      const sports = users?.data?.categories?.["SPORTS BETTING"] || [];
+      sports.forEach((item) => {
+        sheet.addRow([item.label, item.allTime]);
+      });
+
+      sheet.addRow([]);
+      sheet.addRow([]);
+
+      // === 2. BREAKDOWN PER section ===
+      const breakdownPerRow = sheet.addRow(["BREAKDOWN PER"]);
+      applyHeaderStyle(breakdownPerRow);
+
+      const columnHeaders = sheet.addRow([
+        "NETWORK",
+        "NAME",
+        "TOTAL EGAMES GROSS COMMISSIONS",
+        "TOTAL SPORTS GROSS COMMISSIONS",
+        "LESS: PAYMENT GATEWAY FEES",
+        "TOTAL NET COMMISSIONS",
+      ]);
+      applyHeaderStyle(columnHeaders);
+
+      const sections = ["operator", "platinum", "gold"];
+      const userData = breakdown?.data?.data || {};
+
+      for (const section of sections) {
+        if (userData[section]?.length) {
+          userData[section].forEach((entry: any) => {
+            sheet.addRow([
+              entry.network,
+              entry.name,
+              entry.egamesCommission || 0,
+              entry.sportsCommission || 0,
+              entry.paymentGatewayFee || 0,
+              entry.finalNetCommission || 0,
+            ]);
+          });
+
+          if (section === "platinum") {
+            const totalRow = sheet.addRow(["PLATINUM PARTNER TOTAL"]);
+            totalRow.getCell(1).font = { bold: true };
+          }
+
+          if (section === "gold") {
+            const totalRow = sheet.addRow(["GOLDEN PARTNER TOTAL"]);
+            totalRow.getCell(1).font = { bold: true };
+          }
+        }
+      }
+
+      // === 3. Send as downloadable Excel file ===
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=commission-report-${downlineId}.xlsx`
+      );
+
+      await workbook.xlsx.write(res);
+      res.end();
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error generating report");
     }
   }
 
