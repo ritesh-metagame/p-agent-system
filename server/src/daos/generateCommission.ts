@@ -35,7 +35,7 @@ class GenerateCommission {
           const category = txn.platformType || "Unknown";
           if (!userId) continue;
 
-          const key = `${userId}-${category}`;
+          const key = `${userId}|${category}`;
           const existing = grouped.get(key) || {
             deposit: 0,
             withdrawal: 0,
@@ -56,7 +56,8 @@ class GenerateCommission {
 
         // 2. Create summaries for each user-role combo
         for (const [key, sum] of grouped.entries()) {
-          const [userId, categoryName] = key.split("-");
+          console.log({ key });
+          const [userId, categoryName] = key.split("|");
           try {
             const user = await prisma.user.findUnique({
               where: { id: userId },
