@@ -2156,6 +2156,13 @@ class CommissionService {
       const dates = await this.getPreviousCompletedCycleDates();
       cycleStartDate = dates.cycleStartDate;
       cycleEndDate = dates.cycleEndDate;
+
+      console.log(
+        "📆 Cycle Start Date:",
+        cycleStartDate,
+        "📆 Cycle End Date:",
+        cycleEndDate
+      );
       // }
 
       // Get commission records for all relevant users
@@ -2177,6 +2184,8 @@ class CommissionService {
             },
           },
         });
+
+      console.log("🔃 Pending commissions: ", pendingCommissionSummaries);
 
       const settledCommissions = await prisma.commissionSummary.findMany({
         where: {
@@ -2289,7 +2298,7 @@ class CommissionService {
 
       // Process pending summaries
       pendingSummaries.forEach((summary) => {
-        const categoryName = summary.categoryName.toLowerCase();
+        const categoryName = summary.categoryName;
         switch (categoryName) {
           case "E-Games":
             const eGamesData = licenseData["E-Games"];
@@ -2332,7 +2341,7 @@ class CommissionService {
 
       // Process settled summaries
       settledCommissions.forEach((summary) => {
-        const categoryName = summary.categoryName.toLowerCase();
+        const categoryName = summary.categoryName;
         switch (categoryName) {
           case "E-Games":
             const eGamesData = licenseData["E-Games"];
