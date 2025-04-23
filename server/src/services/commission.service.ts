@@ -1943,7 +1943,7 @@ class CommissionService {
       if (goldRows.length > 0) {
         const goldTotal = {
           network: "",
-          name: "GOLD PARTNER TOTAL",
+          name: "GOLDEN PARTNER TOTAL",
           egamesCommission: goldRows.reduce(
             (sum, row) => sum + row.egamesCommission,
             0
