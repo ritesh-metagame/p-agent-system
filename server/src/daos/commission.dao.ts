@@ -431,11 +431,11 @@ class CommissionDao {
     }
   }
 
-  public async markCommissionAsSettled(id: string) {
+  public async markCommissionAsSettled(ids: string[]) {
     try {
-      const updatedSummary = await prisma.commissionSummary.update({
+      const updatedSummary = await prisma.commissionSummary.updateMany({
         where: {
-          id: id,
+          id: { in: ids },
         },
         data: {
           settledStatus: "Y",

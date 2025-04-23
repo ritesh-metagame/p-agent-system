@@ -1349,68 +1349,81 @@ class CommissionService {
 
       // Transform data into required format
       const rows = commissionSummaries.flatMap((user) => {
-        // Group summaries by category
-        const summariesByCategory = user.commissionSummaries.reduce(
+        // Group summaries by user (network)
+        const summariesByUser = user.commissionSummaries.reduce(
           (acc, summary) => {
-            const category = summary.categoryName;
-            if (!acc[category]) {
-              acc[category] = [];
+            if (!acc.summaries) {
+              acc.summaries = [];
+              acc.network = user.username || "Unknown";
+              acc.ids = [];
+              acc.totalEgamesCommissions = 0;
+              acc.totalSportsBettingCommissions = 0;
+              acc.totalSpecialtyGamesCommissions = 0;
+              acc.grossCommissions = 0;
+              acc.paymentGatewayFees = 0;
+              acc.netCommissions = 0;
             }
-            acc[category].push(summary);
+
+            acc.summaries.push(summary);
+
+            acc.ids.push(summary.id);
+
+            // Calculate totals by game category
+            if (summary.categoryName.includes("E-Games")) {
+              acc.totalEgamesCommissions += summary.netGGR || 0;
+            } else if (summary.categoryName.includes("Sports Betting")) {
+              acc.totalSportsBettingCommissions += summary.netGGR || 0;
+            } else if (
+              summary.categoryName.includes("Speciality Games - RNG") ||
+              summary.categoryName.includes("Speciality Games - Tote")
+            ) {
+              acc.totalSpecialtyGamesCommissions += summary.netGGR || 0;
+            }
+
+            // Update overall totals
+            acc.grossCommissions += summary.netGGR || 0;
+            acc.paymentGatewayFees += summary.paymentGatewayFee || 0;
+            acc.netCommissions += summary.netCommissionAvailablePayout || 0;
+
             return acc;
           },
-          {} as Record<string, typeof user.commissionSummaries>
+          {} as any
         );
 
-        // Create a row for each category
-        return Object.entries(summariesByCategory).map(
-          ([category, summaries]) => {
-            const totalDeposits = summaries.reduce(
-              (sum, s) => sum + (s.totalDeposit || 0),
-              0
-            );
-            const totalWithdrawals = summaries.reduce(
-              (sum, s) => sum + (s.totalWithdrawals || 0),
-              0
-            );
-            const grossCommissions = summaries.reduce(
-              (sum, s) => sum + (s.netGGR || 0),
-              0
-            );
-            const paymentGatewayFees = summaries.reduce(
-              (sum, s) => sum + (s.paymentGatewayFee || 0),
-              0
-            );
-            const netCommissions = summaries.reduce(
-              (sum, s) => sum + (s.netCommissionAvailablePayout || 0),
-              0
-            );
+        // If user has no summaries, return empty array
+        if (
+          !summariesByUser.summaries ||
+          summariesByUser.summaries.length === 0
+        ) {
+          return [];
+        }
 
-            // Get the commission summary IDs for this category
-            const summaryIds = summaries.map((s) => s.id);
-
-            return {
-              id: summaryIds.length > 0 ? summaryIds[0] : null,
-              network: user.username || "Unknown",
-              category: category,
-              totalDeposits,
-              totalWithdrawals,
-              grossCommissions,
-              paymentGatewayFees,
-              netCommissions,
-              breakdownAction: "view",
-              releaseAction: "release_comms",
-            };
-          }
-        );
+        // Create a unified row for this user with all category totals
+        return [
+          {
+            ids: summariesByUser.ids,
+            network: summariesByUser.network,
+            totalEgamesCommissions: summariesByUser.totalEgamesCommissions,
+            totalSportsBettingCommissions:
+              summariesByUser.totalSportsBettingCommissions,
+            totalSpecialtyGamesCommissions:
+              summariesByUser.totalSpecialtyGamesCommissions,
+            grossCommissions: summariesByUser.grossCommissions,
+            paymentGatewayFees: summariesByUser.paymentGatewayFees,
+            netCommissions: summariesByUser.netCommissions,
+            breakdownAction: "view",
+            releaseAction: "release_comms",
+          },
+        ];
       });
 
       return {
         columns: [
           "Network",
-          "Total Deposits",
-          "Total Withdrawals",
-          "Total Gross Commissions",
+          "Total EGames Commissions",
+          "Total Sports Betting Commissions",
+          "Total Specialty Games Commissions",
+          "Gross Commissions",
           "Less: Payment Gateway Fees",
           "Total Net Commissions for Settlement",
           "Breakdown",
@@ -2494,11 +2507,11 @@ class CommissionService {
     }
   }
 
-  public async markCommissionSummaryStatus(id: string) {
+  public async markCommissionSummaryStatus(ids: string[]) {
     try {
       // Using the instance variable instead of creating a new instance
       const commissionData =
-        await this.commissionDao.markCommissionAsSettled(id);
+        await this.commissionDao.markCommissionAsSettled(ids);
       return commissionData;
     } catch (error) {
       throw new Error(`Error creating commission: ${error}`);
