@@ -163,6 +163,10 @@ export class NetworkStatisticsDao {
 
         // Helper function to update counts based on user status
         const updateCounts = (user: any, rolePrefix: string) => {
+          console.log(
+            `Updating counts for user ${user.id} with role ${user.role.name}`
+          );
+
           stats[`${rolePrefix}UserTotalCount`]++;
           if (user.approved) {
             stats[`${rolePrefix}UserApprovedCount`]++;
@@ -180,6 +184,10 @@ export class NetworkStatisticsDao {
 
           for (const child of children) {
             const childRoleName = child.role.name.toLowerCase();
+
+            console.log(
+              `Counting child ${child.id} with role ${childRoleName} under parent ${currentUserId} with role ${parentRole}`
+            );
 
             if (
               parentRole === UserRole.SUPER_ADMIN &&
