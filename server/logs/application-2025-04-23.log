@@ -570,3 +570,7 @@ info: 2025-04-23T10:09:10.331Z [loaders\index.ts] ✌️ Express loaded
 info: 2025-04-23T10:09:10.342Z [src\server.ts] 
 development Platform is running at http://localhost:8080 🛡️
       
+info: 2025-04-23T10:10:21.858Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-23T10:10:21.868Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡️
+      
