@@ -1165,6 +1165,16 @@ class CommissionService {
     // Get all users under this user based on role hierarchy
     let userIds = [userId];
 
+    if (roleName === UserRole.SUPER_ADMIN) {
+      const operators = await prisma.user.findMany({
+        where: {
+          role: { name: UserRole.OPERATOR },
+        },
+        select: { id: true },
+      });
+      userIds = operators.map((op) => op.id);
+    }
+
     // if (roleName.toLowerCase() === UserRole.OPERATOR) {
     //   // Get all platinum and golden users under this operator
     //   const platinums = await prisma.user.findMany({
