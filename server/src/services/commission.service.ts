@@ -2257,9 +2257,49 @@ class CommissionService {
         // First try to get system-wide commission rates
         const defaultCommissions = await prisma.commission.findMany({
           where: {
-            commissionPercentage: { gt: 0 },
+            user: {
+              parentId: userId,
+            }, // the user you're calculating for
+          },
+          select: {
+            userId: true,
+            categoryId: true,
+            commissionPercentage: true,
+            category: {
+              select: {
+                name: true,
+              },
+            },
+          },
+          orderBy: {
+            siteId: "asc", // make sure to order so we can pick the first entry per category
           },
         });
+
+        // Step 2: Filter to only the first site per category manually
+        const seenCategories = new Set();
+        const filtered = defaultCommissions.filter((item) => {
+          const key = `${item.userId}-${item.categoryId}`;
+          if (seenCategories.has(key)) return false;
+          seenCategories.add(key);
+          return true;
+        });
+
+        const categoryTotals = filtered.reduce((acc, item) => {
+          if (!acc[item.categoryId]) {
+            acc[item.categoryId] = {
+              category: item.categoryId,
+              categoryName: item.category.name,
+              commissionRate: 0,
+            };
+          }
+          acc[item.categoryId].commissionRate += Number(
+            item.commissionPercentage
+          );
+          return acc;
+        }, {});
+
+        const result = Object.values(categoryTotals);
 
         // If no system-wide rates found, get commission rates from any operator's assigned site
         if (defaultCommissions.length === 0) {
@@ -2285,50 +2325,79 @@ class CommissionService {
             setCommissionRates(operatorCommissions);
           }
         } else {
-          setCommissionRates(defaultCommissions);
+          setCommissionRates(result);
         }
       } else {
         // For non-superadmin roles, get commission percentages from their assigned sites
-        const userSites = await prisma.userSite.findMany({
-          where: { userId },
-          select: { siteId: true },
-        });
-
-        const siteIds = userSites.map((us) => us.siteId);
-
         const commissions = await prisma.commission.findMany({
           where: {
-            siteId: { in: siteIds },
-            commissionPercentage: { gt: 0 },
+            userId: userId, // the user you're calculating for
           },
-          include: {
-            category: true,
+          select: {
+            userId: true,
+            categoryId: true,
+            commissionPercentage: true,
+            category: {
+              select: {
+                name: true,
+              },
+            },
+          },
+          orderBy: {
+            siteId: "asc", // make sure to order so we can pick the first entry per category
           },
         });
 
-        setCommissionRates(commissions);
+        // Step 2: Filter to only the first site per category manually
+        const seenCategories = new Set();
+        const filtered = commissions.filter((item) => {
+          const key = `${item.userId}-${item.categoryId}`;
+          if (seenCategories.has(key)) return false;
+          seenCategories.add(key);
+          return true;
+        });
+
+        const categoryTotals = filtered.reduce((acc, item) => {
+          if (!acc[item.categoryId]) {
+            acc[item.categoryId] = {
+              category: item.categoryId,
+              categoryName: item.category.name,
+              commissionRate: 0,
+            };
+          }
+          acc[item.categoryId].commissionRate += Number(
+            item.commissionPercentage
+          );
+          return acc;
+        }, {});
+
+        const result = Object.values(categoryTotals);
+
+        setCommissionRates(result);
       }
 
       function setCommissionRates(commissions: any[]) {
         commissions.forEach((comm) => {
+          console.log({ comm });
           if (!comm.category) return;
-          const categoryName = comm.category.name;
+          const categoryName = comm.category.name || comm.categoryName;
           // console.log({ categoryName });
           switch (categoryName) {
             case "E-Games":
-              licenseData["E-Games"].commissionRate = comm.commissionPercentage;
+              licenseData["E-Games"].commissionRate =
+                comm.commissionPercentage || comm.commissionRate;
               break;
             case "Sports Betting":
               licenseData["Sports Betting"].commissionRate =
-                comm.commissionPercentage;
+                comm.commissionPercentage || comm.commissionRate;
               break;
             case "Speciality Games - Tote":
               licenseData["Speciality Games - Tote"].commissionRate =
-                comm.commissionPercentage;
+                comm.commissionPercentage || comm.commissionRate;
               break;
             case "Speciality Games - RNG":
               licenseData["Speciality Games - RNG"].commissionRate =
-                comm.commissionPercentage;
+                comm.commissionPercentage || comm.commissionRate;
               break;
           }
         });
