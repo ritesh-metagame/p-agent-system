@@ -972,25 +972,26 @@ class CommissionService {
           select: { id: true },
         });
         userIds = operators.map((op) => op.id);
-      } else if (roleName === UserRole.OPERATOR) {
-        const platinums = await prisma.user.findMany({
-          where: {
-            parentId: userId,
-            role: { name: UserRole.PLATINUM },
-          },
-          select: { id: true },
-        });
-        userIds = platinums.map((p) => p.id);
-      } else if (roleName === UserRole.PLATINUM) {
-        const golds = await prisma.user.findMany({
-          where: {
-            parentId: userId,
-            role: { name: UserRole.GOLDEN },
-          },
-          select: { id: true },
-        });
-        userIds = golds.map((g) => g.id);
       }
+      // else if (roleName === UserRole.OPERATOR) {
+      //   const platinums = await prisma.user.findMany({
+      //     where: {
+      //       parentId: userId,
+      //       role: { name: UserRole.PLATINUM },
+      //     },
+      //     select: { id: true },
+      //   });
+      //   userIds = platinums.map((p) => p.id);
+      // } else if (roleName === UserRole.PLATINUM) {
+      //   const golds = await prisma.user.findMany({
+      //     where: {
+      //       parentId: userId,
+      //       role: { name: UserRole.GOLDEN },
+      //     },
+      //     select: { id: true },
+      //   });
+      //   userIds = golds.map((g) => g.id);
+      // }
 
       // Get cycle dates
       const { cycleStartDate, cycleEndDate } =
@@ -1164,42 +1165,42 @@ class CommissionService {
     // Get all users under this user based on role hierarchy
     let userIds = [userId];
 
-    if (roleName.toLowerCase() === UserRole.OPERATOR) {
-      // Get all platinum and golden users under this operator
-      const platinums = await prisma.user.findMany({
-        where: {
-          parentId: userId,
-          role: { name: UserRole.PLATINUM },
-        },
-        select: { id: true },
-      });
-      userIds = [...userIds, ...platinums.map((p) => p.id)];
+    // if (roleName.toLowerCase() === UserRole.OPERATOR) {
+    //   // Get all platinum and golden users under this operator
+    //   const platinums = await prisma.user.findMany({
+    //     where: {
+    //       parentId: userId,
+    //       role: { name: UserRole.PLATINUM },
+    //     },
+    //     select: { id: true },
+    //   });
+    //   userIds = [...userIds, ...platinums.map((p) => p.id)];
 
-      // Get all golden users under these platinums
-      const golds = await prisma.user.findMany({
-        where: {
-          parentId: { in: platinums.map((p) => p.id) },
-          role: { name: UserRole.GOLDEN },
-        },
-        select: { id: true },
-      });
-      userIds = [...userIds, ...golds.map((g) => g.id)];
-    } else if (roleName.toLowerCase() === UserRole.PLATINUM) {
-      // Get all golden users under this platinum
-      const golds = await prisma.user.findMany({
-        where: {
-          parentId: userId,
-          role: { name: UserRole.GOLDEN },
-        },
-        select: { id: true },
-      });
-      userIds = [...userIds, ...golds.map((g) => g.id)];
-    }
+    //   // Get all golden users under these platinums
+    //   const golds = await prisma.user.findMany({
+    //     where: {
+    //       parentId: { in: platinums.map((p) => p.id) },
+    //       role: { name: UserRole.GOLDEN },
+    //     },
+    //     select: { id: true },
+    //   });
+    //   userIds = [...userIds, ...golds.map((g) => g.id)];
+    // } else if (roleName.toLowerCase() === UserRole.PLATINUM) {
+    //   // Get all golden users under this platinum
+    //   const golds = await prisma.user.findMany({
+    //     where: {
+    //       parentId: userId,
+    //       role: { name: UserRole.GOLDEN },
+    //     },
+    //     select: { id: true },
+    //   });
+    //   userIds = [...userIds, ...golds.map((g) => g.id)];
+    // }
 
     // Get fees from commission_summary where deposits and withdrawals are not null
     const summaries = await prisma.commissionSummary.findMany({
       where: {
-        // userId: { in: userIds },
+        userId: { in: userIds },
         NOT: {
           categoryName: {
             in: [
