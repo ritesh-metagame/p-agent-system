@@ -972,25 +972,26 @@ class CommissionService {
           select: { id: true },
         });
         userIds = operators.map((op) => op.id);
-      } else if (roleName === UserRole.OPERATOR) {
-        const platinums = await prisma.user.findMany({
-          where: {
-            parentId: userId,
-            role: { name: UserRole.PLATINUM },
-          },
-          select: { id: true },
-        });
-        userIds = platinums.map((p) => p.id);
-      } else if (roleName === UserRole.PLATINUM) {
-        const golds = await prisma.user.findMany({
-          where: {
-            parentId: userId,
-            role: { name: UserRole.GOLDEN },
-          },
-          select: { id: true },
-        });
-        userIds = golds.map((g) => g.id);
       }
+      // else if (roleName === UserRole.OPERATOR) {
+      //   const platinums = await prisma.user.findMany({
+      //     where: {
+      //       parentId: userId,
+      //       role: { name: UserRole.PLATINUM },
+      //     },
+      //     select: { id: true },
+      //   });
+      //   userIds = platinums.map((p) => p.id);
+      // } else if (roleName === UserRole.PLATINUM) {
+      //   const golds = await prisma.user.findMany({
+      //     where: {
+      //       parentId: userId,
+      //       role: { name: UserRole.GOLDEN },
+      //     },
+      //     select: { id: true },
+      //   });
+      //   userIds = golds.map((g) => g.id);
+      // }
 
       // Get cycle dates
       const { cycleStartDate, cycleEndDate } =
@@ -1164,42 +1165,52 @@ class CommissionService {
     // Get all users under this user based on role hierarchy
     let userIds = [userId];
 
-    if (roleName.toLowerCase() === UserRole.OPERATOR) {
-      // Get all platinum and golden users under this operator
-      const platinums = await prisma.user.findMany({
+    if (roleName === UserRole.SUPER_ADMIN) {
+      const operators = await prisma.user.findMany({
         where: {
-          parentId: userId,
-          role: { name: UserRole.PLATINUM },
+          role: { name: UserRole.OPERATOR },
         },
         select: { id: true },
       });
-      userIds = [...userIds, ...platinums.map((p) => p.id)];
-
-      // Get all golden users under these platinums
-      const golds = await prisma.user.findMany({
-        where: {
-          parentId: { in: platinums.map((p) => p.id) },
-          role: { name: UserRole.GOLDEN },
-        },
-        select: { id: true },
-      });
-      userIds = [...userIds, ...golds.map((g) => g.id)];
-    } else if (roleName.toLowerCase() === UserRole.PLATINUM) {
-      // Get all golden users under this platinum
-      const golds = await prisma.user.findMany({
-        where: {
-          parentId: userId,
-          role: { name: UserRole.GOLDEN },
-        },
-        select: { id: true },
-      });
-      userIds = [...userIds, ...golds.map((g) => g.id)];
+      userIds = operators.map((op) => op.id);
     }
+
+    // if (roleName.toLowerCase() === UserRole.OPERATOR) {
+    //   // Get all platinum and golden users under this operator
+    //   const platinums = await prisma.user.findMany({
+    //     where: {
+    //       parentId: userId,
+    //       role: { name: UserRole.PLATINUM },
+    //     },
+    //     select: { id: true },
+    //   });
+    //   userIds = [...userIds, ...platinums.map((p) => p.id)];
+
+    //   // Get all golden users under these platinums
+    //   const golds = await prisma.user.findMany({
+    //     where: {
+    //       parentId: { in: platinums.map((p) => p.id) },
+    //       role: { name: UserRole.GOLDEN },
+    //     },
+    //     select: { id: true },
+    //   });
+    //   userIds = [...userIds, ...golds.map((g) => g.id)];
+    // } else if (roleName.toLowerCase() === UserRole.PLATINUM) {
+    //   // Get all golden users under this platinum
+    //   const golds = await prisma.user.findMany({
+    //     where: {
+    //       parentId: userId,
+    //       role: { name: UserRole.GOLDEN },
+    //     },
+    //     select: { id: true },
+    //   });
+    //   userIds = [...userIds, ...golds.map((g) => g.id)];
+    // }
 
     // Get fees from commission_summary where deposits and withdrawals are not null
     const summaries = await prisma.commissionSummary.findMany({
       where: {
-        // userId: { in: userIds },
+        userId: { in: userIds },
         NOT: {
           categoryName: {
             in: [
@@ -2135,49 +2146,50 @@ class CommissionService {
         console.log({ goldIds });
 
         userIds = [...userIds, ...goldIds];
-      } else if (roleName === UserRole.OPERATOR) {
-        // For operator, get all platinums and their children
-        const platinums = await prisma.user.findMany({
-          where: {
-            parentId: userId,
-            role: { name: UserRole.PLATINUM },
-          },
-          select: { id: true },
-        });
-        const platinumIds = platinums.map((p) => p.id);
-
-        console.log({ platinumIds });
-
-        userIds = [...userIds, ...platinumIds];
-
-        // Get all golds under these platinums
-        const golds = await prisma.user.findMany({
-          where: {
-            parentId: { in: platinumIds },
-            role: { name: UserRole.GOLDEN },
-          },
-          select: { id: true },
-        });
-        const goldIds = golds.map((g) => g.id);
-
-        console.log({ goldIds });
-
-        userIds = [...userIds, ...goldIds];
-      } else if (roleName === UserRole.PLATINUM) {
-        // For platinum, get all golds under this platinum
-        const golds = await prisma.user.findMany({
-          where: {
-            parentId: userId,
-            role: { name: UserRole.GOLDEN },
-          },
-          select: { id: true },
-        });
-        const goldIds = golds.map((g) => g.id);
-
-        console.log({ goldIds });
-
-        userIds = [...userIds, ...goldIds];
       }
+      // else if (roleName === UserRole.OPERATOR) {
+      //   // For operator, get all platinums and their children
+      //   const platinums = await prisma.user.findMany({
+      //     where: {
+      //       parentId: userId,
+      //       role: { name: UserRole.PLATINUM },
+      //     },
+      //     select: { id: true },
+      //   });
+      //   const platinumIds = platinums.map((p) => p.id);
+
+      //   console.log({ platinumIds });
+
+      //   userIds = [...userIds, ...platinumIds];
+
+      //   // Get all golds under these platinums
+      //   const golds = await prisma.user.findMany({
+      //     where: {
+      //       parentId: { in: platinumIds },
+      //       role: { name: UserRole.GOLDEN },
+      //     },
+      //     select: { id: true },
+      //   });
+      //   const goldIds = golds.map((g) => g.id);
+
+      //   console.log({ goldIds });
+
+      //   userIds = [...userIds, ...goldIds];
+      // } else if (roleName === UserRole.PLATINUM) {
+      //   // For platinum, get all golds under this platinum
+      //   const golds = await prisma.user.findMany({
+      //     where: {
+      //       parentId: userId,
+      //       role: { name: UserRole.GOLDEN },
+      //     },
+      //     select: { id: true },
+      //   });
+      //   const goldIds = golds.map((g) => g.id);
+
+      //   console.log({ goldIds });
+
+      //   userIds = [...userIds, ...goldIds];
+      // }
 
       // Use provided date range or default to previous completed cycle
       let cycleStartDate: Date;
@@ -2198,6 +2210,8 @@ class CommissionService {
         cycleEndDate
       );
       // }
+
+      console.log({ userIds });
 
       // Get commission records for all relevant users
       const pendingCommissionSummaries =
@@ -2243,9 +2257,49 @@ class CommissionService {
         // First try to get system-wide commission rates
         const defaultCommissions = await prisma.commission.findMany({
           where: {
-            commissionPercentage: { gt: 0 },
+            user: {
+              parentId: userId,
+            }, // the user you're calculating for
+          },
+          select: {
+            userId: true,
+            categoryId: true,
+            commissionPercentage: true,
+            category: {
+              select: {
+                name: true,
+              },
+            },
+          },
+          orderBy: {
+            siteId: "asc", // make sure to order so we can pick the first entry per category
           },
         });
+
+        // Step 2: Filter to only the first site per category manually
+        const seenCategories = new Set();
+        const filtered = defaultCommissions.filter((item) => {
+          const key = `${item.userId}-${item.categoryId}`;
+          if (seenCategories.has(key)) return false;
+          seenCategories.add(key);
+          return true;
+        });
+
+        const categoryTotals = filtered.reduce((acc, item) => {
+          if (!acc[item.categoryId]) {
+            acc[item.categoryId] = {
+              category: item.categoryId,
+              categoryName: item.category.name,
+              commissionRate: 0,
+            };
+          }
+          acc[item.categoryId].commissionRate += Number(
+            item.commissionPercentage
+          );
+          return acc;
+        }, {});
+
+        const result = Object.values(categoryTotals);
 
         // If no system-wide rates found, get commission rates from any operator's assigned site
         if (defaultCommissions.length === 0) {
@@ -2271,50 +2325,79 @@ class CommissionService {
             setCommissionRates(operatorCommissions);
           }
         } else {
-          setCommissionRates(defaultCommissions);
+          setCommissionRates(result);
         }
       } else {
         // For non-superadmin roles, get commission percentages from their assigned sites
-        const userSites = await prisma.userSite.findMany({
-          where: { userId },
-          select: { siteId: true },
-        });
-
-        const siteIds = userSites.map((us) => us.siteId);
-
         const commissions = await prisma.commission.findMany({
           where: {
-            siteId: { in: siteIds },
-            commissionPercentage: { gt: 0 },
+            userId: userId, // the user you're calculating for
           },
-          include: {
-            category: true,
+          select: {
+            userId: true,
+            categoryId: true,
+            commissionPercentage: true,
+            category: {
+              select: {
+                name: true,
+              },
+            },
+          },
+          orderBy: {
+            siteId: "asc", // make sure to order so we can pick the first entry per category
           },
         });
 
-        setCommissionRates(commissions);
+        // Step 2: Filter to only the first site per category manually
+        const seenCategories = new Set();
+        const filtered = commissions.filter((item) => {
+          const key = `${item.userId}-${item.categoryId}`;
+          if (seenCategories.has(key)) return false;
+          seenCategories.add(key);
+          return true;
+        });
+
+        const categoryTotals = filtered.reduce((acc, item) => {
+          if (!acc[item.categoryId]) {
+            acc[item.categoryId] = {
+              category: item.categoryId,
+              categoryName: item.category.name,
+              commissionRate: 0,
+            };
+          }
+          acc[item.categoryId].commissionRate += Number(
+            item.commissionPercentage
+          );
+          return acc;
+        }, {});
+
+        const result = Object.values(categoryTotals);
+
+        setCommissionRates(result);
       }
 
       function setCommissionRates(commissions: any[]) {
         commissions.forEach((comm) => {
+          console.log({ comm });
           if (!comm.category) return;
-          const categoryName = comm.category.name;
+          const categoryName = comm.category.name || comm.categoryName;
           // console.log({ categoryName });
           switch (categoryName) {
             case "E-Games":
-              licenseData["E-Games"].commissionRate = comm.commissionPercentage;
+              licenseData["E-Games"].commissionRate =
+                comm.commissionPercentage || comm.commissionRate;
               break;
             case "Sports Betting":
               licenseData["Sports Betting"].commissionRate =
-                comm.commissionPercentage;
+                comm.commissionPercentage || comm.commissionRate;
               break;
             case "Speciality Games - Tote":
               licenseData["Speciality Games - Tote"].commissionRate =
-                comm.commissionPercentage;
+                comm.commissionPercentage || comm.commissionRate;
               break;
             case "Speciality Games - RNG":
               licenseData["Speciality Games - RNG"].commissionRate =
-                comm.commissionPercentage;
+                comm.commissionPercentage || comm.commissionRate;
               break;
           }
         });
