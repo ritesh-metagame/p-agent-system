@@ -46,20 +46,7 @@ class Server {
       "cm9cmuwr6000oiol5ob3lmprc",
       "cm9cqlj9w000piol52m087niu",
     ];
-    const GAIDS = [
-      "cm9ic2z5700e1ioxndv37uwlg",
-      "cm9ibeymx00d1ioxna3nsp90l",
-      "cm9ibeepb00ctioxnvgaabk2u",
-      "cm9iauv3e0071ioxntngj23oz",
-      "cm9iaiklb005vioxnjdaqxn1d",
-      "cm9i46x21002gioxn2gc6hp2c",
-      "cm9ck623i006biob9x08pt1h8",
-      "cm9ck4smb005niob9xa6pempg",
-      "cm9ck3zto0053iob97mzi7sgc",
-      "cm9ck2jr9004jiob9c7ik1uhy",
-      "cm9ck1vpb003ziob9rs6kufod",
-      "cm9ck1a06003liob9d02vyo69",
-    ];
+    const GAIDS = ["cm9v4w7uk008fiocn7yvxz283", "cm9v56bl10026iozcn9qlokqu"];
     const MAIDS = [
       "cm9cjv0qc0013iob901spod6b",
       "cm9cjvrs6001hiob9jccmjs6p",
@@ -97,6 +84,11 @@ class Server {
       return cleaned;
     }
 
+    const categoryIdMap: Record<string, string> = {
+      egames: "8a2ac3c1-202d-11f0-81af-0a951197db91",
+      sportsbet: "8a2ac69c-202d-11f0-81af-0a951197db91",
+    };
+
     async function insertTransactionsFromXLSX(filePath: string) {
       const workbook = xlsx.readFile(filePath);
       const sheetName = workbook.SheetNames[0];
@@ -106,6 +98,15 @@ class Server {
       for (const rawRow of rawRows) {
         const row = cleanRowKeys(rawRow);
         const platformType = row["Platform Type"];
+        const normalizedPlatform =
+          platformType === "egames"
+            ? "E-Games"
+            : platformType === "sports" || platformType === "sportsbet"
+              ? "Sports Betting"
+              : platformType;
+
+        const categoryId = categoryIdMap[platformType];
+
         const baseAmount = new Decimal(
           platformType === "egames"
             ? row["Revenue"] || 0
@@ -115,14 +116,20 @@ class Server {
         // Step 1: GA
         const gaId = getRandom(GAIDS);
         const gaCommissionRecord = await prisma.commission.findFirst({
-          where: { userId: gaId },
+          where: {
+            userId: gaId,
+            categoryId,
+          },
         });
+
+        console.log(`Commission fetch: user=${gaId}, categoryId=${categoryId}`);
+
         const gaPercentage = new Decimal(
           gaCommissionRecord?.commissionPercentage || 0
         );
         const gaCommission = baseAmount.mul(gaPercentage).div(100);
 
-        // Step 2: MA (Parent of GA)
+        // Step 2: MA
         const gaUser = await prisma.user.findUnique({ where: { id: gaId } });
         const maId = gaUser?.parentId || null;
 
@@ -130,7 +137,10 @@ class Server {
         let maCommission = new Decimal(0);
         if (maId) {
           const maCommissionRecord = await prisma.commission.findFirst({
-            where: { userId: maId },
+            where: {
+              userId: maId,
+              categoryId,
+            },
           });
 
           maPercentage = new Decimal(
@@ -139,7 +149,7 @@ class Server {
           maCommission = baseAmount.mul(maPercentage).div(100);
         }
 
-        // Step 3: Owner (Parent of MA)
+        // Step 3: Owner
         let ownerId = null;
         let ownerPercentage = new Decimal(0);
         let ownerCommission = new Decimal(0);
@@ -150,7 +160,10 @@ class Server {
 
           if (ownerId) {
             const ownerCommissionRecord = await prisma.commission.findFirst({
-              where: { userId: ownerId },
+              where: {
+                userId: ownerId,
+                categoryId,
+              },
             });
 
             ownerPercentage = new Decimal(
@@ -166,14 +179,7 @@ class Server {
           betTime: parseExcelDate(row["Bet Time"]),
           userId: row["User Id"],
           playerName: row["Player Name"],
-          platformType:
-            row["Platform Type"] === "egames"
-              ? "E-Games"
-              : row["Platform Type"] === "sports"
-                ? "Sports Betting"
-                : row["Platform Type"] === "sportsbet"
-                  ? "Sports Betting"
-                  : row["Platform Type"],
+          platformType: normalizedPlatform,
           transactionType: row["Transaction Type"] || "bet",
 
           deposit: new Decimal(row["Deposit"] || 0),
@@ -204,6 +210,7 @@ class Server {
         };
 
         try {
+          // console.log("Inserting transaction:", transaction.transactionId);
           await prisma.transaction.create({ data: transaction });
         } catch (err) {
           console.error(
@@ -212,18 +219,18 @@ class Server {
             err
           );
         }
-
-        console.log("✅ All transactions inserted successfully");
       }
+
+      console.log("✅ All transactions inserted successfully");
     }
 
-    // insertTransactionsFromXLSX(filePath)
-    //   .then(() => {
-    //     console.log("Import complete.");
-    //   })
-    //   .catch((err) => {
-    //     console.error("Import failed:", err);
-    //   });
+    insertTransactionsFromXLSX(filePath)
+      .then(() => {
+        console.log("Import complete.");
+      })
+      .catch((err) => {
+        console.error("Import failed:", err);
+      });
 
     this.app
       .listen(config.port, () => {
