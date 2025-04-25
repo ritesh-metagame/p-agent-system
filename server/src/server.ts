@@ -114,7 +114,15 @@ class Server {
         );
 
         // Step 1: GA
-        const gaId = getRandom(GAIDS);
+        const excelGaId = row["GA ID"];
+        const gaId = GAIDS.includes(excelGaId) ? excelGaId : null;
+
+        if (!gaId) {
+          console.warn(`
+            ⚠ GA ID ${excelGaId} not found in allowed GAIDS. Skipping transaction.
+          `);
+          continue;
+        }
         const gaCommissionRecord = await prisma.commission.findFirst({
           where: {
             userId: gaId,
@@ -235,7 +243,7 @@ class Server {
     this.app
       .listen(config.port, () => {
         log.info(`
-${process.env.NODE_ENV} Platform is running at http://localhost:${config.port} 🛡️
+${process.env.NODE_ENV} Platform is running at http://localhost:${config.port} 🛡
       `);
       })
       .on("error", (err) => {
