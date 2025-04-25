@@ -368,9 +368,19 @@ class CommissionService {
 
   public async getCommissionPayoutReport(userId: string, categoryId?: string) {
     try {
-      // Calculate the date range for the previously completed cycle
+      // Get the category name for the categoryId if provided
+      let categoryName: string | undefined;
+      if (categoryId) {
+        const category = await prisma.category.findUnique({
+          where: { id: categoryId },
+          select: { name: true },
+        });
+        categoryName = category?.name;
+      }
+
+      // Calculate the date range for the previously completed cycle based on category
       const { cycleStartDate, cycleEndDate } =
-        await this.getPreviousCompletedCycleDates();
+        await this.getPreviousCompletedCycleDates(categoryName);
 
       const pendingPeriod = {
         start: format(cycleStartDate, "yyyy-MM-dd"),
@@ -378,19 +388,29 @@ class CommissionService {
       };
 
       // Get commission data by category for the specified user only
-      const categories = ["E-Games", "Sports Betting"];
+      const categories = [
+        "E-Sports",
+        "Sports Betting",
+        "Speciality Games - RNG",
+        "Speciality Games - Tote",
+      ];
       const categoryData: any = {};
 
       for (const category of categories) {
-        console.log({ cycleStartDate, cycleEndDate });
+        console.log({ category, cycleStartDate, cycleEndDate });
+
+        // Get the cycle dates specific to this category
+        const categoryCycleDates =
+          await this.getPreviousCompletedCycleDates(category);
+
         // Get commission data for pending settlements
         const pendingSettlements = await prisma.commissionSummary.findMany({
           where: {
             userId: userId,
             categoryName: category,
             createdAt: {
-              gte: cycleStartDate,
-              lte: cycleEndDate,
+              gte: categoryCycleDates.cycleStartDate,
+              lte: categoryCycleDates.cycleEndDate,
             },
             settledStatus: "N",
           },
@@ -973,69 +993,70 @@ class CommissionService {
         });
         userIds = operators.map((op) => op.id);
       }
-      // else if (roleName === UserRole.OPERATOR) {
-      //   const platinums = await prisma.user.findMany({
-      //     where: {
-      //       parentId: userId,
-      //       role: { name: UserRole.PLATINUM },
-      //     },
-      //     select: { id: true },
-      //   });
-      //   userIds = platinums.map((p) => p.id);
-      // } else if (roleName === UserRole.PLATINUM) {
-      //   const golds = await prisma.user.findMany({
-      //     where: {
-      //       parentId: userId,
-      //       role: { name: UserRole.GOLDEN },
-      //     },
-      //     select: { id: true },
-      //   });
-      //   userIds = golds.map((g) => g.id);
-      // }
 
-      // Get cycle dates
-      const { cycleStartDate, cycleEndDate } =
-        await this.getPreviousCompletedCycleDates();
+      // Initialize an object to store category-specific data
+      const categoryData = {
+        "E-Games": { pending: [], settled: [] },
+        "Sports Betting": { pending: [], settled: [] },
+        "Speciality Games - Tote": { pending: [], settled: [] },
+        "Speciality Games - RNG": { pending: [], settled: [] },
+      };
 
-      console.log({ cycleStartDate, cycleEndDate });
+      // Get cycle dates for each category and fetch data
+      for (const category of Object.keys(categoryData)) {
+        // Get category-specific cycle dates
+        const { cycleStartDate, cycleEndDate } =
+          await this.getPreviousCompletedCycleDates(category);
 
-      // Get pending settlement data (all unsettled transactions)
-      const pendingData = await prisma.commissionSummary.findMany({
-        where: {
-          userId: { in: userIds },
-          createdAt: {
-            gte: cycleStartDate,
-            lte: cycleEndDate,
+        console.log({ category, cycleStartDate, cycleEndDate });
+
+        // Get pending settlement data for this category
+        const pendingData = await prisma.commissionSummary.findMany({
+          where: {
+            userId: { in: userIds },
+            categoryName: category,
+            createdAt: {
+              gte: cycleStartDate,
+              lte: cycleEndDate,
+            },
+            settledStatus: "N",
           },
-          settledStatus: "N",
-        },
-        select: {
-          categoryName: true,
-          totalBetAmount: true,
-          netGGR: true,
-          grossCommission: true,
-          paymentGatewayFee: true,
-          netCommissionAvailablePayout: true,
-        },
-      });
+          select: {
+            categoryName: true,
+            totalBetAmount: true,
+            netGGR: true,
+            grossCommission: true,
+            paymentGatewayFee: true,
+            netCommissionAvailablePayout: true,
+          },
+        });
 
-      // Get settled data
-      const allTimeData = await prisma.commissionSummary.findMany({
-        where: {
-          userId: { in: userIds },
-          settledStatus: "Y",
-        },
-        select: {
-          categoryName: true,
-          totalBetAmount: true,
-          netGGR: true,
-          grossCommission: true,
-          paymentGatewayFee: true,
-          netCommissionAvailablePayout: true,
-        },
-      });
+        categoryData[category].pending = pendingData;
 
-      console.log({ allTimeData });
+        // Get settled data for this category
+        const settledData = await prisma.commissionSummary.findMany({
+          where: {
+            userId: { in: userIds },
+            categoryName: category,
+            settledStatus: "Y",
+          },
+          select: {
+            categoryName: true,
+            totalBetAmount: true,
+            netGGR: true,
+            grossCommission: true,
+            paymentGatewayFee: true,
+            netCommissionAvailablePayout: true,
+          },
+        });
+
+        categoryData[category].settled = settledData;
+      }
+
+      // Use the bimonthly cycle dates for display in the UI
+      // This keeps the UI consistent while still using category-specific calculations
+      const { cycleStartDate, cycleEndDate } =
+        await this.getPreviousCompletedCycleDates("E-Games");
 
       // Initialize category totals
       const categoryTotals = {
@@ -1057,23 +1078,10 @@ class CommissionService {
         },
       };
 
-      // Process pending data
-      pendingData.forEach((summary) => {
-        const category = summary.categoryName;
-        if (category.includes("E-Games") || category.includes("e-games")) {
-          categoryTotals.pending.egames.amount += summary.netGGR || 0;
-          categoryTotals.pending.egames.grossCommission += summary.netGGR || 0;
-        } else if (category.includes("Sports Betting")) {
-          categoryTotals.pending.sports.amount += summary.netGGR || 0;
-          categoryTotals.pending.sports.grossCommission += summary.netGGR || 0;
-        } else if (
-          category.includes("Speciality Games -  Tote") ||
-          category.includes("Speciality Games - RNG")
-        ) {
-          categoryTotals.pending.specialty.amount += summary.netGGR || 0;
-          categoryTotals.pending.specialty.grossCommission +=
-            summary.netGGR || 0;
-        }
+      // Process E-Games pending data
+      categoryData["E-Games"].pending.forEach((summary) => {
+        categoryTotals.pending.egames.amount += summary.netGGR || 0;
+        categoryTotals.pending.egames.grossCommission += summary.netGGR || 0;
         categoryTotals.pending.totalGrossCommission += summary.netGGR || 0;
         categoryTotals.pending.totalPaymentGatewayFees +=
           summary.paymentGatewayFee || 0;
@@ -1081,23 +1089,47 @@ class CommissionService {
           summary.netCommissionAvailablePayout || 0;
       });
 
-      // Process all-time data
-      allTimeData.forEach((summary) => {
-        const category = summary.categoryName;
-        if (category.includes("E-Games") || category.includes("e-games")) {
-          categoryTotals.settled.egames.amount += summary.netGGR || 0;
-          categoryTotals.settled.egames.grossCommission += summary.netGGR || 0;
-        } else if (category.includes("Sports Betting")) {
-          categoryTotals.settled.sports.amount += summary.netGGR || 0;
-          categoryTotals.settled.sports.grossCommission += summary.netGGR || 0;
-        } else if (
-          category.includes("Speciality Games -  Tote") ||
-          category.includes("Speciality Games - RNG")
-        ) {
-          categoryTotals.settled.specialty.amount += summary.netGGR || 0;
-          categoryTotals.settled.specialty.grossCommission +=
+      // Process Sports Betting pending data
+      categoryData["Sports Betting"].pending.forEach((summary) => {
+        categoryTotals.pending.sports.amount += summary.netGGR || 0;
+        categoryTotals.pending.sports.grossCommission += summary.netGGR || 0;
+        categoryTotals.pending.totalGrossCommission += summary.netGGR || 0;
+        categoryTotals.pending.totalPaymentGatewayFees +=
+          summary.paymentGatewayFee || 0;
+        categoryTotals.pending.netCommissionPayout +=
+          summary.netCommissionAvailablePayout || 0;
+      });
+
+      // Process Specialty Games pending data
+      const specialtyCategories = [
+        "Speciality Games - Tote",
+        "Speciality Games - RNG",
+      ];
+      specialtyCategories.forEach((category) => {
+        categoryData[category].pending.forEach((summary) => {
+          categoryTotals.pending.specialty.amount += summary.netGGR || 0;
+          categoryTotals.pending.specialty.grossCommission +=
             summary.netGGR || 0;
-        }
+          categoryTotals.pending.totalGrossCommission += summary.netGGR || 0;
+          categoryTotals.pending.totalPaymentGatewayFees +=
+            summary.paymentGatewayFee || 0;
+          categoryTotals.pending.netCommissionPayout +=
+            summary.netCommissionAvailablePayout || 0;
+        });
+      });
+
+      // Process settled data for all categories
+      const allCategories = [
+        "E-Games",
+        "Sports Betting",
+        "Speciality Games - Tote",
+        "Speciality Games - RNG",
+      ];
+
+      // Process E-Games settled data
+      categoryData["E-Games"].settled.forEach((summary) => {
+        categoryTotals.settled.egames.amount += summary.netGGR || 0;
+        categoryTotals.settled.egames.grossCommission += summary.netGGR || 0;
         categoryTotals.settled.totalGrossCommission += summary.netGGR || 0;
         categoryTotals.settled.totalPaymentGatewayFees +=
           summary.paymentGatewayFee || 0;
@@ -1105,7 +1137,30 @@ class CommissionService {
           summary.netCommissionAvailablePayout || 0;
       });
 
-      // console.log({ categoryTotals: categoryTotals.settled });
+      // Process Sports Betting settled data
+      categoryData["Sports Betting"].settled.forEach((summary) => {
+        categoryTotals.settled.sports.amount += summary.netGGR || 0;
+        categoryTotals.settled.sports.grossCommission += summary.netGGR || 0;
+        categoryTotals.settled.totalGrossCommission += summary.netGGR || 0;
+        categoryTotals.settled.totalPaymentGatewayFees +=
+          summary.paymentGatewayFee || 0;
+        categoryTotals.settled.netCommissionPayout +=
+          summary.netCommissionAvailablePayout || 0;
+      });
+
+      // Process Specialty Games settled data
+      specialtyCategories.forEach((category) => {
+        categoryData[category].settled.forEach((summary) => {
+          categoryTotals.settled.specialty.amount += summary.netGGR || 0;
+          categoryTotals.settled.specialty.grossCommission +=
+            summary.netGGR || 0;
+          categoryTotals.settled.totalGrossCommission += summary.netGGR || 0;
+          categoryTotals.settled.totalPaymentGatewayFees +=
+            summary.paymentGatewayFee || 0;
+          categoryTotals.settled.netCommissionPayout +=
+            summary.netCommissionAvailablePayout || 0;
+        });
+      });
 
       return {
         columns: [
@@ -1339,10 +1394,10 @@ class CommissionService {
         include: {
           commissionSummaries: {
             where: {
-              // createdAt: {
-              //   gte: cycleStartDate,
-              //   lte: cycleEndDate,
-              // },
+              createdAt: {
+                gte: cycleStartDate,
+                lte: cycleEndDate,
+              },
               settledStatus: "N",
               NOT: {
                 categoryName: "Unknown",
@@ -1352,6 +1407,7 @@ class CommissionService {
               id: true,
               totalDeposit: true,
               totalWithdrawals: true,
+              createdAt: true,
               netGGR: true,
               paymentGatewayFee: true,
               netCommissionAvailablePayout: true,
@@ -1699,7 +1755,7 @@ class CommissionService {
   }
 
   // Helper method to get date range for previous completed cycle
-  private async getPreviousCompletedCycleDates() {
+  private async getPreviousCompletedCycleDates(categoryName?: string) {
     const currentDate = new Date();
 
     // If in test mode, return dates from 1 month back
@@ -1712,6 +1768,15 @@ class CommissionService {
       };
     }
 
+    // For weekly computation categories (Sports Betting and Speciality Games - Tote)
+    if (
+      categoryName === "Sports Betting" ||
+      categoryName === "Speciality Games - Tote"
+    ) {
+      return this.getWeeklyCompletedCycleDates(currentDate);
+    }
+
+    // For bi-monthly computation categories (default, E-Sports and Speciality Games - RNG)
     // Production mode - use cycle-based dates
     const currentDay = currentDate.getDate();
     let cycleStartDate: Date;
@@ -1756,6 +1821,30 @@ class CommissionService {
     }
 
     return { cycleStartDate, cycleEndDate };
+  }
+
+  // Helper method to get weekly cycle dates for Sports Betting and Speciality Games - Tote
+  private getWeeklyCompletedCycleDates(currentDate: Date) {
+    // Get today's day of the week (0 = Sunday, 1 = Monday, etc.)
+    const today = currentDate.getDay();
+
+    // Calculate the date of the most recent Sunday (end of the previous week)
+    const daysToSubtract = today === 0 ? 7 : today; // If today is Sunday, get last week's Sunday
+    const mostRecentSunday = new Date(currentDate);
+    mostRecentSunday.setDate(currentDate.getDate() - daysToSubtract);
+
+    // Set hours to end of day
+    mostRecentSunday.setHours(23, 59, 59, 999);
+
+    // Calculate the start of that week (Monday)
+    const startOfPrevWeek = new Date(mostRecentSunday);
+    startOfPrevWeek.setDate(mostRecentSunday.getDate() - 6);
+    startOfPrevWeek.setHours(0, 0, 0, 0);
+
+    return {
+      cycleStartDate: startOfPrevWeek,
+      cycleEndDate: mostRecentSunday,
+    };
   }
 
   public async getCommissionBreakdown(

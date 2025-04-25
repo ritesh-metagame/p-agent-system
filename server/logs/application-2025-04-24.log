@@ -184,3 +184,19 @@ debug: 2025-04-24T10:08:38.339Z [middlewares\checkAuthAndAttachCurrentUser.ts] U
 debug: 2025-04-24T10:08:38.339Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jvf4t20004jf8g24j83ytf
 http: 2025-04-24T10:08:38.356Z [logger\morgan.ts] GET /api/v1/commission/license-breakdown 200 1018 - 38.514 ms
 
+debug: 2025-04-24T10:14:57.115Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-24T10:14:57.124Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-04-24T10:14:57.126Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=operator 401 26 - 13.662 ms
+
+debug: 2025-04-24T10:14:57.168Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-24T10:14:57.172Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-04-24T10:14:57.174Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=operator 401 26 - 8.121 ms
+
+debug: 2025-04-24T10:16:34.127Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-24T10:16:34.131Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-04-24T10:16:34.132Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=operator 401 26 - 7.317 ms
+
+debug: 2025-04-24T10:16:34.225Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-24T10:16:34.228Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-04-24T10:16:34.230Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=operator 401 26 - 7.893 ms
+
