@@ -2687,3 +2687,45 @@ info: 2025-04-23T10:50:15.521Z [src\server.ts]
 development Platform is running at http://localhost:8080 🛡️
       
 info: 2025-04-23T10:50:15.505Z [loaders\index.ts] ✌️ Express loaded
+debug: 2025-04-23T10:52:09.919Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-23T10:52:09.985Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-23T10:52:09.987Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-23T10:52:09.989Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-04-23T10:52:09.990Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkroaw0003v9g87gu6q5mp
+http: 2025-04-23T10:52:10.006Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=operator 304 - - 105.081 ms
+
+debug: 2025-04-23T10:52:10.019Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-23T10:52:10.028Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-23T10:52:10.029Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-23T10:52:10.030Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-04-23T10:52:10.030Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkroaw0003v9g87gu6q5mp
+http: 2025-04-23T10:52:10.039Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=operator 304 - - 24.376 ms
+
+debug: 2025-04-23T10:52:14.344Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-23T10:52:14.351Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-23T10:52:14.352Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-23T10:52:14.353Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-04-23T10:52:14.353Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkroaw0003v9g87gu6q5mp
+http: 2025-04-23T10:52:14.359Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=operator 304 - - 18.836 ms
+
+debug: 2025-04-23T10:52:14.383Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-23T10:52:14.390Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-23T10:52:14.391Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-23T10:52:14.392Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-04-23T10:52:14.393Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkroaw0003v9g87gu6q5mp
+http: 2025-04-23T10:52:14.398Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=operator 304 - - 18.864 ms
+
+debug: 2025-04-23T10:55:28.674Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-23T10:55:28.688Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-23T10:55:28.688Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-23T10:55:28.689Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-04-23T10:55:28.689Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkroaw0003v9g87gu6q5mp
+http: 2025-04-23T10:55:28.695Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=operator 304 - - 25.094 ms
+
+debug: 2025-04-23T10:55:28.732Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-23T10:55:28.740Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-23T10:55:28.740Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-23T10:55:28.741Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-04-23T10:55:28.741Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkroaw0003v9g87gu6q5mp
+http: 2025-04-23T10:55:28.746Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=operator 304 - - 16.658 ms
+

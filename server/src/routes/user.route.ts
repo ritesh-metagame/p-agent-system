@@ -13,13 +13,8 @@ export default (app: Router) => {
   route.post(
     "/download-report",
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-      const response = await UserController.getDownloadReportList(
-        req,
-        res,
-        next
-      );
-
-      res.status(200).json(response);
+      // Remove res.json here — let the controller handle the response
+      await UserController.getDownloadReportList(req, res, next);
     })
   );
 
