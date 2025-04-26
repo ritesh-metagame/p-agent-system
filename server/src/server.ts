@@ -241,18 +241,18 @@ class Server {
       console.log("✅ All transactions inserted successfully");
     }
 
-    insertTransactionsFromXLSX(filePath)
-      .then(() => {
-        console.log("Import complete.");
-      })
-      .catch((err) => {
-        console.error("Import failed:", err);
-      });
+    // insertTransactionsFromXLSX(filePath)
+    //   .then(() => {
+    //     console.log("Import complete.");
+    //   })
+    //   .catch((err) => {
+    //     console.error("Import failed:", err);
+    //   });
 
     this.app
       .listen(config.port, () => {
         log.info(`
-${process.env.NODE_ENV} Platform is running at http://localhost:${config.port} 🛡️
+${process.env.NODE_ENV} Platform is running at http://localhost:${config.port} 🛡
       `);
       })
       .on("error", (err) => {
