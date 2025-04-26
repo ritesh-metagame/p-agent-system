@@ -46,7 +46,7 @@ class Server {
       "cm9cmuwr6000oiol5ob3lmprc",
       "cm9cqlj9w000piol52m087niu",
     ];
-    const GAIDS = ["cm9v4w7uk008fiocn7yvxz283", "cm9v56bl10026iozcn9qlokqu"];
+    const GAIDS = ["cm9xvdzdr0001v9zw7t9rx2o6", "cm9xvlbnr000av9zwok5z39qc"];
     const MAIDS = [
       "cm9cjv0qc0013iob901spod6b",
       "cm9cjvrs6001hiob9jccmjs6p",
@@ -85,8 +85,8 @@ class Server {
     }
 
     const categoryIdMap: Record<string, string> = {
-      egames: "8a2ac3c1-202d-11f0-81af-0a951197db91",
-      sportsbet: "8a2ac69c-202d-11f0-81af-0a951197db91",
+      egames: "cm9jrpceq0000v9ngy0exuc3q",
+      sportsbet: "cm9jrpnaa0001v9ng9h109tnp",
     };
 
     async function insertTransactionsFromXLSX(filePath: string) {
@@ -114,7 +114,18 @@ class Server {
         );
 
         // Step 1: GA
-        const gaId = getRandom(GAIDS);
+        const excelGaId = row["GA ID"];
+        const gaId = GAIDS.includes(excelGaId) ? excelGaId : null;
+        console.log(
+          `GA ID: ${excelGaId}, GA ID found: ${gaId}, Category ID: ${categoryId}`
+        );
+
+        if (!gaId) {
+          console.warn(
+            `⚠️ GA ID ${excelGaId} not found in allowed GAIDS. Skipping transaction.`
+          );
+          continue;
+        }
         const gaCommissionRecord = await prisma.commission.findFirst({
           where: {
             userId: gaId,
@@ -122,10 +133,16 @@ class Server {
           },
         });
 
-        console.log(`Commission fetch: user=${gaId}, categoryId=${categoryId}`);
+        console.log(
+          `Commission fetch:  gaCommissionRecord=${gaCommissionRecord}`
+        );
 
         const gaPercentage = new Decimal(
           gaCommissionRecord?.commissionPercentage || 0
+        );
+
+        console.log(
+          `GA Percentage: ${gaPercentage.toString()}% for user ${gaId}`
         );
         const gaCommission = baseAmount.mul(gaPercentage).div(100);
 
@@ -209,16 +226,16 @@ class Server {
           ownerCommission,
         };
 
-        try {
-          // console.log("Inserting transaction:", transaction.transactionId);
-          await prisma.transaction.create({ data: transaction });
-        } catch (err) {
-          console.error(
-            "❌ Error inserting transaction:",
-            transaction.transactionId,
-            err
-          );
-        }
+        // try {
+        //   // console.log("Inserting transaction:", transaction.transactionId);
+        //   await prisma.transaction.create({ data: transaction });
+        // } catch (err) {
+        //   console.error(
+        //     "❌ Error inserting transaction:",
+        //     transaction.transactionId,
+        //     err
+        //   );
+        // }
       }
 
       console.log("✅ All transactions inserted successfully");
