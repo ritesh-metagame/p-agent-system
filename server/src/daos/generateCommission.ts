@@ -69,7 +69,24 @@ class GenerateCommission {
               continue;
             }
 
-            const netCommission = sum.revenue - sum.pgFeeCommission;
+            // --- NEW netCommission calculation ---
+            let netCommission = 0;
+            for (const txn of transactions) {
+              const txnUserId = txn[roleKey as keyof typeof txn] as string;
+              const txnCategory = txn.platformType || "Unknown";
+              if (!txnUserId) continue;
+
+              const txnKey = `${txnUserId}|${txnCategory}`;
+              if (txnKey !== key) continue;
+
+              if (roleKey === "ownerId") {
+                netCommission += Number(txn.ownerCommission || 0);
+              } else if (roleKey === "maId") {
+                netCommission += Number(txn.maCommission || 0);
+              } else if (roleKey === "gaId") {
+                netCommission += Number(txn.gaCommission || 0);
+              }
+            }
 
             await prisma.commissionSummary.create({
               data: {

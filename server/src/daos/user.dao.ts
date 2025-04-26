@@ -22,101 +22,58 @@ class UserDao {
 
   public async getUserPayoutAndWalletBalance(userId: string) {
     try {
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        include: { role: true },
-      });
-
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      const userCommission = await prisma.commissionSummary.aggregate({
+      // Step 1: Fetch all commission summary records for this user
+      const summaries = await prisma.commissionSummary.findMany({
         where: {
           userId,
-          settledStatus: "N", // ✅ Only unsettled commissions
-        },
-        _sum: {
-          netCommissionAvailablePayout: true,
         },
       });
 
-      console.log("User Commission:", userCommission);
-
-      let wallet = 0;
-
-      if (user.role.name === (UserRole.OPERATOR as string)) {
-        const platinumUsers = await prisma.user.findMany({
-          where: { parentId: userId },
-          select: { id: true },
-        });
-        const platinumIds = platinumUsers.map((u) => u.id);
-
-        const goldUsers = await prisma.user.findMany({
-          where: { parentId: { in: platinumIds } },
-          select: { id: true },
-        });
-
-        // test purpose
-        // const platinumCommission = await prisma.commissionSummary.aggregate({
-        //   where: {
-        //     userId: { in: platinumIds },
-        //     settledStatus: "N", // ✅ Only unsettled commissions
-        //   },
-        //   _sum: { netCommissionAvailablePayout: true },
-        // });
-
-        // const goldUserId = goldUsers.map((u) => u.id);
-
-        // const goldCommission = await prisma.commissionSummary.aggregate({
-        //   where: {
-        //     userId: { in: goldUserId },
-        //     settledStatus: "N", // ✅ Only unsettled commissions
-        //   },
-        //   _sum: { netCommissionAvailablePayout: true },
-        // });
-
-        // console.log("Platinum Commission:", platinumCommission);
-        // console.log("Gold Commission:", goldCommission);
-
-        const allDownlineIds = [...platinumIds, ...goldUsers.map((u) => u.id)];
-
-        const downlineCommissionSum = await prisma.commissionSummary.aggregate({
-          where: {
-            userId: { in: allDownlineIds },
-            settledStatus: "N", // ✅ Only unsettled commissions
-          },
-          _sum: { netCommissionAvailablePayout: true },
-        });
-
-        console.log("Downline Commission Sum:", downlineCommissionSum);
-
-        wallet = downlineCommissionSum._sum.netCommissionAvailablePayout || 0;
-      } else if (user.role.name === (UserRole.PLATINUM as string)) {
-        const goldUsers = await prisma.user.findMany({
-          where: { parentId: userId },
-          select: { id: true },
-        });
-
-        const goldIds = goldUsers.map((u) => u.id);
-
-        const goldCommissionSum = await prisma.commissionSummary.aggregate({
-          where: {
-            userId: { in: goldIds },
-            settledStatus: "N", // ✅ Only unsettled commissions
-          },
-          _sum: { netCommissionAvailablePayout: true },
-        });
-
-        wallet = goldCommissionSum._sum.netCommissionAvailablePayout || 0;
+      if (!summaries.length) {
+        console.warn(`⚠️ No commission summaries found for user: ${userId}`);
+        return { payout: 0, wallet: 0 };
       }
 
+      // Step 2: Initialize sums
+      let totalNetGGR = 0;
+      let totalBetAmount = 0;
+      let totalCommissionByUser = 0;
+      let totalPaymentGatewayFee = 0;
+
+      // Step 3: Loop over summaries and accumulate
+      for (const summary of summaries) {
+        if (summary.categoryName === "E-Games") {
+          totalNetGGR += Number(summary.netGGR || 0);
+        } else if (summary.categoryName === "Sports Betting") {
+          totalBetAmount += Number(summary.totalBetAmount || 0);
+        }
+
+        totalCommissionByUser += Number(
+          summary.netCommissionAvailablePayout || 0
+        );
+        totalPaymentGatewayFee += Number(summary.paymentGatewayFee || 0);
+      }
+
+      // Step 4: Apply the percentages
+      const totalEgamesAmount = totalNetGGR * 0.3;
+      const totalSportsBettingAmount = totalBetAmount * 0.02;
+
+      const totalCommissionAmount =
+        totalEgamesAmount + totalSportsBettingAmount;
+
+      // Step 5: Calculate payout (subtract paymentGatewayFee now)
+      const payout =
+        totalCommissionAmount - totalCommissionByUser - totalPaymentGatewayFee;
+      const wallet = totalCommissionByUser;
+
+      // Step 6: Return result
       return {
-        payout: userCommission._sum.netCommissionAvailablePayout || 0,
+        payout,
         wallet,
       };
-    } catch (error) {
-      throw new Error(`Error fetching user: ${error}`);
+    } catch (err) {
+      console.error("🔥 Error calculating payout and wallet:", err);
+      throw err;
     }
   }
 

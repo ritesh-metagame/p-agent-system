@@ -46,7 +46,7 @@ class Server {
       "cm9cmuwr6000oiol5ob3lmprc",
       "cm9cqlj9w000piol52m087niu",
     ];
-    const GAIDS = ["cm9v4w7uk008fiocn7yvxz283", "cm9v56bl10026iozcn9qlokqu"];
+    const GAIDS = ["cm9xx5vub000fv9akeqaq95by", "cm9xxb2xr0010v9akh8qspvgg"];
     const MAIDS = [
       "cm9cjv0qc0013iob901spod6b",
       "cm9cjvrs6001hiob9jccmjs6p",
@@ -85,8 +85,8 @@ class Server {
     }
 
     const categoryIdMap: Record<string, string> = {
-      egames: "8a2ac3c1-202d-11f0-81af-0a951197db91",
-      sportsbet: "8a2ac69c-202d-11f0-81af-0a951197db91",
+      egames: "cm9jrpceq0000v9ngy0exuc3q",
+      sportsbet: "cm9jrpnaa0001v9ng9h109tnp",
     };
 
     async function insertTransactionsFromXLSX(filePath: string) {
