@@ -1031,6 +1031,12 @@ class CommissionService {
         userIds = operators.map((op) => op.id);
       }
 
+      console.log({
+        eGamesCommissionPercentage,
+        specialtyGamesRNGCommissionPercentage,
+        specialtyGamesToteCommissionPercentage,
+      });
+
       // Initialize an object to store category-specific data
       const categoryData = {
         "E-Games": { pending: [], settled: [] },
@@ -1117,11 +1123,20 @@ class CommissionService {
 
       // Process E-Games pending data
       categoryData["E-Games"].pending.forEach((summary) => {
+        console.log({
+          "E-Games":
+            summary.netGGR *
+              (eGamesCommissionPercentage?.commissionPercentage / 100) || 0,
+          "Net GGR": summary.netGGR,
+
+          summary: summary,
+        });
         categoryTotals.pending.egames.amount +=
-          (summary.netGGR *
-            (eGamesCommissionPercentage?.commissionPercentage || 0)) /
-            100 || 0;
-        categoryTotals.pending.egames.grossCommission += summary.netGGR || 0;
+          summary.netGGR *
+            (eGamesCommissionPercentage?.commissionPercentage / 100) || 0;
+        categoryTotals.pending.egames.grossCommission +=
+          summary.netGGR *
+            (eGamesCommissionPercentage?.commissionPercentage / 100) || 0;
         categoryTotals.pending.totalGrossCommission += summary.netGGR || 0;
         categoryTotals.pending.totalPaymentGatewayFees +=
           summary.paymentGatewayFee || 0;
@@ -1131,10 +1146,18 @@ class CommissionService {
 
       // Process Sports Betting pending data
       categoryData["Sports Betting"].pending.forEach((summary) => {
+        console.log({
+          "Sports Betting":
+            summary.netGGR *
+              (sportsBettingCommissionPercentage?.commissionPercentage / 100) ||
+            0,
+          "Net GGR": summary.netGGR,
+          summary: summary,
+        });
         categoryTotals.pending.sports.amount +=
-          (summary.netGGR *
-            (sportsBettingCommissionPercentage?.commissionPercentage || 0)) /
-            100 || 0;
+          summary.totalBetAmount *
+            (sportsBettingCommissionPercentage?.commissionPercentage / 100) ||
+          0;
         categoryTotals.pending.sports.grossCommission += summary.netGGR || 0;
         categoryTotals.pending.totalGrossCommission += summary.netGGR || 0;
         categoryTotals.pending.totalPaymentGatewayFees +=
@@ -1157,9 +1180,13 @@ class CommissionService {
       specialtyCategories.forEach((category) => {
         categoryData[category].pending.forEach((summary) => {
           categoryTotals.pending.specialty.amount +=
-            (summary.netGGR *
-              (categoryCommissionsMap[category]?.commissionPercentage || 0)) /
-              100 || 0;
+            category === "Speciality Games - Tote"
+              ? summary.totalBetAmount *
+                  (categoryCommissionsMap[category]?.commissionPercentage /
+                    100) || 0
+              : summary.netGGR *
+                  (categoryCommissionsMap[category]?.commissionPercentage /
+                    100) || 0;
           categoryTotals.pending.specialty.grossCommission +=
             summary.netGGR || 0;
           categoryTotals.pending.totalGrossCommission += summary.netGGR || 0;
@@ -1181,9 +1208,8 @@ class CommissionService {
       // Process E-Games settled data
       categoryData["E-Games"].settled.forEach((summary) => {
         categoryTotals.settled.egames.amount +=
-          (summary.netGGR *
-            (eGamesCommissionPercentage?.commissionPercentage || 0)) /
-            100 || 0;
+          summary.netGGR *
+            (eGamesCommissionPercentage?.commissionPercentage / 100) || 0;
         categoryTotals.settled.egames.grossCommission += summary.netGGR || 0;
         categoryTotals.settled.totalGrossCommission += summary.netGGR || 0;
         categoryTotals.settled.totalPaymentGatewayFees +=
@@ -1195,9 +1221,9 @@ class CommissionService {
       // Process Sports Betting settled data
       categoryData["Sports Betting"].settled.forEach((summary) => {
         categoryTotals.settled.sports.amount +=
-          (summary.netGGR *
-            (sportsBettingCommissionPercentage?.commissionPercentage || 0)) /
-            100 || 0;
+          summary.totalBetAmount *
+            (sportsBettingCommissionPercentage?.commissionPercentage / 100) ||
+          0;
         categoryTotals.settled.sports.grossCommission += summary.netGGR || 0;
         categoryTotals.settled.totalGrossCommission += summary.netGGR || 0;
         categoryTotals.settled.totalPaymentGatewayFees +=
@@ -1210,9 +1236,12 @@ class CommissionService {
       specialtyCategories.forEach((category) => {
         categoryData[category].settled.forEach((summary) => {
           categoryTotals.settled.specialty.amount +=
-            (summary.netGGR *
-              (categoryCommissionsMap[category]?.commissionPercentage || 0)) /
-              100 || 0;
+            category === "Speciality Games - Tote"
+              ? summary.totalBetAmount *
+                (categoryCommissionsMap[category]?.commissionPercentage / 100)
+              : summary.netGGR *
+                  (categoryCommissionsMap[category]?.commissionPercentage /
+                    100) || 0;
           categoryTotals.settled.specialty.grossCommission +=
             summary.netGGR || 0;
           categoryTotals.settled.totalGrossCommission += summary.netGGR || 0;
@@ -1222,6 +1251,24 @@ class CommissionService {
             summary.netCommissionAvailablePayout || 0;
         });
       });
+
+      const totalPendingGrossCommission =
+        categoryTotals.pending.egames.amount +
+        categoryTotals.pending.sports.amount +
+        categoryTotals.pending.specialty.amount;
+
+      const totalSettledGrossCommission =
+        categoryTotals.settled.egames.grossCommission +
+        categoryTotals.settled.sports.grossCommission +
+        categoryTotals.settled.specialty.grossCommission;
+
+      const totalPendingNetCommissionPayout =
+        totalPendingGrossCommission -
+        categoryTotals.pending.totalPaymentGatewayFees;
+
+      const totalSettledNetCommissionPayout =
+        totalSettledGrossCommission -
+        categoryTotals.settled.totalPaymentGatewayFees;
 
       return {
         columns: [
@@ -1253,8 +1300,8 @@ class CommissionService {
           },
           {
             label: "Gross Commissions",
-            pendingSettlement: categoryTotals.pending.totalGrossCommission,
-            settledAllTime: categoryTotals.settled.totalGrossCommission,
+            pendingSettlement: totalPendingGrossCommission,
+            settledAllTime: totalSettledGrossCommission,
           },
           {
             label: "Less: Total Payment Gateway Fees",
@@ -1263,8 +1310,8 @@ class CommissionService {
           },
           {
             label: "Net Commission Available for Payout",
-            pendingSettlement: categoryTotals.pending.netCommissionPayout,
-            settledAllTime: categoryTotals.settled.netCommissionPayout,
+            pendingSettlement: totalPendingNetCommissionPayout,
+            settledAllTime: totalSettledNetCommissionPayout,
             note: "(Gross Commission less Payment Gateway Fees)",
           },
         ],
@@ -1469,6 +1516,7 @@ class CommissionService {
               // user: true,
               totalDeposit: true,
               totalWithdrawals: true,
+              totalBetAmount: true,
               createdAt: true,
               netGGR: true,
               paymentGatewayFee: true,
@@ -1482,114 +1530,135 @@ class CommissionService {
       console.log({ commissionSummaries });
 
       // Transform data into required format
-      const rows = commissionSummaries.flatMap(async (user) => {
-        const eGamesCommissionPercentage = await prisma.commission.findFirst({
-          where: {
-            userId: user.id,
-            category: { name: "E-Games" },
-          },
-          select: { commissionPercentage: true },
-        });
-
-        const sportsBettingCommissionPercentage =
-          await prisma.commission.findFirst({
+      const rows = await Promise.all(
+        commissionSummaries.flatMap(async (user) => {
+          const eGamesCommissionPercentage = await prisma.commission.findFirst({
             where: {
               userId: user.id,
-              category: { name: "Sports Betting" },
+              category: { name: "E-Games" },
             },
             select: { commissionPercentage: true },
           });
 
-        const specialtyGamesRNGCommissionPercentage =
-          await prisma.commission.findFirst({
-            where: {
-              userId: user.id,
-              category: { name: "Speciality Games - RNG" },
-            },
-            select: { commissionPercentage: true },
+          const sportsBettingCommissionPercentage =
+            await prisma.commission.findFirst({
+              where: {
+                userId: user.id,
+                category: { name: "Sports Betting" },
+              },
+              select: { commissionPercentage: true },
+            });
+
+          const specialityGamesRNGCommissionPercentage =
+            await prisma.commission.findFirst({
+              where: {
+                userId: user.id,
+                category: { name: "Speciality Games - RNG" },
+              },
+              select: { commissionPercentage: true },
+            });
+
+          const specialityGamesToteCommissionPercentage =
+            await prisma.commission.findFirst({
+              where: {
+                userId: user.id,
+                category: { name: "Speciality Games - Tote" },
+              },
+              select: { commissionPercentage: true },
+            });
+
+          const categoryCommissionPercentagesMap = {
+            "E-Games": eGamesCommissionPercentage?.commissionPercentage || 0,
+            "Sports Betting":
+              sportsBettingCommissionPercentage?.commissionPercentage || 0,
+            "Speciality Games - RNG":
+              specialityGamesRNGCommissionPercentage?.commissionPercentage || 0,
+            "Speciality Games - Tote":
+              specialityGamesToteCommissionPercentage?.commissionPercentage ||
+              0,
+          };
+
+          console.log({
+            eGamesCommissionPercentage,
+            sportsBettingCommissionPercentage,
+            specialityGamesRNGCommissionPercentage,
+            specialityGamesToteCommissionPercentage,
           });
 
-        const specialtyGamesToteCommissionPercentage =
-          await prisma.commission.findFirst({
-            where: {
-              userId: user.id,
-              category: { name: "Speciality Games - Tote" },
+          // Group summaries by user (network)
+          const summariesByUser = user.commissionSummaries.reduce(
+            (acc, summary) => {
+              if (!acc.summaries) {
+                acc.summaries = [];
+                acc.network = user.username || "Unknown";
+                acc.bankName = user.bankName;
+                acc.ids = [];
+                acc.totalEgamesCommissions = 0;
+                acc.totalSportsBettingCommissions = 0;
+                acc.totalSpecialtyGamesCommissions = 0;
+                acc.grossCommissions = 0;
+                acc.paymentGatewayFees = 0;
+                acc.netCommissions = 0;
+              }
+
+              acc.summaries.push(summary);
+
+              acc.ids.push(summary.id);
+
+              // Calculate totals by game category
+              if (summary.categoryName.includes("E-Games")) {
+                acc.totalEgamesCommissions +=
+                  summary.netGGR *
+                    (eGamesCommissionPercentage?.commissionPercentage / 100) ||
+                  0;
+              } else if (summary.categoryName.includes("Sports Betting")) {
+                // console.log({ totalBetAmount: summary.totalBetAmount });
+                // console.log({CommissionPercentage:})
+                acc.totalSportsBettingCommissions +=
+                  summary.totalBetAmount *
+                    (sportsBettingCommissionPercentage?.commissionPercentage /
+                      100) || 0;
+              } else if (
+                summary.categoryName.includes("Speciality Games - RNG") ||
+                summary.categoryName.includes("Speciality Games - Tote")
+              ) {
+                acc.totalSpecialtyGamesCommissions +=
+                  summary.netGGR *
+                    (categoryCommissionPercentagesMap[summary.categoryName] /
+                      100) || 0;
+              }
+
+              console.log({ summary });
+
+              const totalGrossCommissions =
+                acc.totalEgamesCommissions +
+                acc.totalSportsBettingCommissions +
+                acc.totalSpecialtyGamesCommissions;
+
+              console.log({
+                totalGrossCommissions,
+              });
+
+              // Update overall totals
+              acc.grossCommissions += summary.netGGR || 0;
+              acc.paymentGatewayFees += summary.paymentGatewayFee || 0;
+              acc.netCommissions += summary.netCommissionAvailablePayout || 0;
+
+              return acc;
             },
-            select: { commissionPercentage: true },
-          });
+            {} as any
+          );
 
-        const categoryCommissionPercentagesMap = {
-          "E-Games": eGamesCommissionPercentage?.commissionPercentage || 0,
-          "Sports Betting":
-            sportsBettingCommissionPercentage?.commissionPercentage || 0,
-          "Speciality Games - RNG":
-            specialtyGamesRNGCommissionPercentage?.commissionPercentage || 0,
-          "Speciality Games - Tote":
-            specialtyGamesToteCommissionPercentage?.commissionPercentage || 0,
-        };
+          // If user has no summaries, return empty array
+          if (
+            !summariesByUser.summaries ||
+            summariesByUser.summaries.length === 0
+          ) {
+            return [];
+          }
 
-        // Group summaries by user (network)
-        const summariesByUser = user.commissionSummaries.reduce(
-          (acc, summary) => {
-            if (!acc.summaries) {
-              acc.summaries = [];
-              acc.network = user.username || "Unknown";
-              acc.bankName = user.bankName;
-              acc.ids = [];
-              acc.totalEgamesCommissions = 0;
-              acc.totalSportsBettingCommissions = 0;
-              acc.totalSpecialtyGamesCommissions = 0;
-              acc.grossCommissions = 0;
-              acc.paymentGatewayFees = 0;
-              acc.netCommissions = 0;
-            }
-
-            acc.summaries.push(summary);
-
-            acc.ids.push(summary.id);
-
-            // Calculate totals by game category
-            if (summary.categoryName.includes("E-Games")) {
-              acc.totalEgamesCommissions +=
-                (summary.netGGR *
-                  eGamesCommissionPercentage?.commissionPercentage) /
-                  100 || 0;
-            } else if (summary.categoryName.includes("Sports Betting")) {
-              acc.totalSportsBettingCommissions +=
-                (summary.netGGR *
-                  sportsBettingCommissionPercentage?.commissionPercentage) /
-                  100 || 0;
-            } else if (
-              summary.categoryName.includes("Speciality Games - RNG") ||
-              summary.categoryName.includes("Speciality Games - Tote")
-            ) {
-              acc.totalSpecialtyGamesCommissions +=
-                (summary.netGGR *
-                  categoryCommissionPercentagesMap[summary.categoryName]) /
-                  100 || 0;
-            }
-
-            // Update overall totals
-            acc.grossCommissions += summary.netGGR || 0;
-            acc.paymentGatewayFees += summary.paymentGatewayFee || 0;
-            acc.netCommissions += summary.netCommissionAvailablePayout || 0;
-
-            return acc;
-          },
-          {} as any
-        );
-
-        // If user has no summaries, return empty array
-        if (
-          !summariesByUser.summaries ||
-          summariesByUser.summaries.length === 0
-        ) {
-          return [];
-        }
-
-        // Create a unified row for this user with all category totals
-        return [
-          {
+          // Create a unified row for this user with all category totals
+          return {
             ids: summariesByUser.ids,
             network: summariesByUser.network,
             totalEgamesCommissions: summariesByUser.totalEgamesCommissions,
@@ -1598,14 +1667,21 @@ class CommissionService {
               summariesByUser.totalSportsBettingCommissions,
             totalSpecialtyGamesCommissions:
               summariesByUser.totalSpecialtyGamesCommissions,
-            grossCommissions: summariesByUser.grossCommissions,
+            grossCommissions:
+              summariesByUser.totalEgamesCommissions +
+              summariesByUser.totalSportsBettingCommissions +
+              summariesByUser.totalSpecialtyGamesCommissions,
             paymentGatewayFees: summariesByUser.paymentGatewayFees,
-            netCommissions: summariesByUser.netCommissions,
+            netCommissions:
+              summariesByUser.totalEgamesCommissions +
+              summariesByUser.totalSportsBettingCommissions +
+              summariesByUser.totalSpecialtyGamesCommissions -
+              summariesByUser.paymentGatewayFees,
             breakdownAction: "view",
             releaseAction: "release_comms",
-          },
-        ];
-      });
+          };
+        })
+      );
 
       return {
         columns: [
@@ -1623,7 +1699,7 @@ class CommissionService {
           start: format(cycleStartDate, "yyyy-MM-dd"),
           end: format(cycleEndDate, "yyyy-MM-dd"),
         },
-        rows: rows,
+        rows: rows.filter((row) => !Array.isArray(row)),
       };
     } catch (error) {
       throw new Error(`Error getting pending settlements: ${error}`);
