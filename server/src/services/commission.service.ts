@@ -2815,6 +2815,7 @@ class CommissionService {
         switch (categoryName) {
           case "E-Games":
             const eGamesData = licenseData["E-Games"];
+            console.log({ eGamesData });
             if (eGamesData.type === "E-Games") {
               const ggr = summary.netGGR || 0;
               eGamesData.ggr.pending += ggr;
@@ -2824,6 +2825,7 @@ class CommissionService {
             break;
           case "Sports Betting":
             const sportsData = licenseData["Sports Betting"];
+            console.log({ sportsData });
             if (sportsData.type === "Sports Betting") {
               const betAmount = summary.totalBetAmount || 0;
               sportsData.betAmount.pending += betAmount;
@@ -2833,6 +2835,7 @@ class CommissionService {
             break;
           case "Speciality Games - Tote":
             const toteData = licenseData["Speciality Games - Tote"];
+            console.log({ toteData });
             if (toteData.type === "Speciality Games - Tote") {
               const betAmount = summary.totalBetAmount || 0;
               toteData.betAmount.pending += betAmount;
@@ -2842,6 +2845,7 @@ class CommissionService {
             break;
           case "Speciality Games - RNG":
             const rngData = licenseData["Speciality Games - RNG"];
+            console.log({ rngData });
             if (rngData.type === "Speciality Games - RNG") {
               const ggr = summary.netGGR || 0;
               rngData.ggr.pending += ggr;
