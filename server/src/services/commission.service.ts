@@ -1050,11 +1050,54 @@ class CommissionService {
       if (roleName === UserRole.SUPER_ADMIN) {
         const operators = await prisma.user.findMany({
           where: {
+            parentId: userId,
             role: { name: UserRole.OPERATOR },
           },
           select: { id: true },
         });
         userIds = operators.map((op) => op.id);
+
+        const platinums = await prisma.user.findMany({
+          where: {
+            parentId: { in: operators.map((op) => op.id) },
+            role: { name: UserRole.PLATINUM },
+          },
+          select: { id: true },
+        });
+
+        userIds = userIds.concat(platinums.map((platinum) => platinum.id));
+
+        const goldens = await prisma.user.findMany({
+          where: {
+            parentId: { in: platinums.map((platinum) => platinum.id) },
+            role: { name: UserRole.GOLDEN },
+          },
+          select: { id: true },
+        });
+
+        userIds = userIds.concat(goldens.map((golden) => golden.id));
+      }
+
+      if (roleName === UserRole.OPERATOR) {
+        const platinums = await prisma.user.findMany({
+          where: {
+            parentId: userId,
+            role: { name: UserRole.PLATINUM },
+          },
+          select: { id: true },
+        });
+        userIds = platinums.map((platinum) => platinum.id);
+      }
+
+      if (roleName === UserRole.PLATINUM) {
+        const goldens = await prisma.user.findMany({
+          where: {
+            parentId: userId,
+            role: { name: UserRole.GOLDEN },
+          },
+          select: { id: true },
+        });
+        userIds = goldens.map((golden) => golden.id);
       }
 
       // console.log({
