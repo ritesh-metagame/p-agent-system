@@ -1255,6 +1255,8 @@ class CommissionService {
         totalSettledGrossCommission -
         categoryTotals.settled.totalPaymentGatewayFees;
 
+      console.log({ categoryTotals });
+
       return {
         columns: [
           "",
