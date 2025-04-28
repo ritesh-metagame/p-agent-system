@@ -1059,40 +1059,12 @@ class CommissionService {
 
       console.log({ userId, roleName });
 
-      // const eGamesCommissionPercentage = await prisma.commission.findFirst({
-      //   where: {
-      //     userId: userId,
-      //     category: { name: "E-Games" },
-      //   },
-      //   select: { commissionPercentage: true },
-      // });
+      let oIds = [];
+      let pIds = [];
+      let gIds = [];
 
-      // const sportsBettingCommissionPercentage =
-      //   await prisma.commission.findFirst({
-      //     where: {
-      //       userId: userId,
-      //       category: { name: "Sports Betting" },
-      //     },
-      //     select: { commissionPercentage: true },
-      //   });
-
-      // const specialtyGamesRNGCommissionPercentage =
-      //   await prisma.commission.findFirst({
-      //     where: {
-      //       userId: userId,
-      //       category: { name: "Speciality Games - RNG" },
-      //     },
-      //     select: { commissionPercentage: true },
-      //   });
-
-      // const specialtyGamesToteCommissionPercentage =
-      //   await prisma.commission.findFirst({
-      //     where: {
-      //       userId: userId,
-      //       category: { name: "Speciality Games - Tote" },
-      //     },
-      //     select: { commissionPercentage: true },
-      //   });
+      let pendingPaymentGatewayFee;
+      let settledPaymentGatewayFee;
 
       // Handle hierarchy based access
       if (roleName === UserRole.SUPER_ADMIN) {
@@ -1104,6 +1076,21 @@ class CommissionService {
           select: { id: true },
         });
         userIds = operators.map((op) => op.id);
+        oIds = userIds;
+
+        pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
+          userIds,
+          false,
+          undefined,
+          undefined
+        );
+
+        settledPaymentGatewayFee = await this.getPaymentGatewayFee(
+          userIds,
+          true,
+          undefined,
+          undefined
+        );
 
         const platinums = await prisma.user.findMany({
           where: {
@@ -1135,6 +1122,22 @@ class CommissionService {
           select: { id: true },
         });
         userIds = platinums.map((platinum) => platinum.id);
+
+        pIds = [userId, ...userIds];
+
+        pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
+          pIds,
+          false,
+          undefined,
+          undefined
+        );
+
+        settledPaymentGatewayFee = await this.getPaymentGatewayFee(
+          pIds,
+          true,
+          undefined,
+          undefined
+        );
       }
 
       if (roleName === UserRole.PLATINUM) {
@@ -1146,6 +1149,22 @@ class CommissionService {
           select: { id: true },
         });
         userIds = goldens.map((golden) => golden.id);
+
+        gIds = [userId, ...userIds];
+
+        pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
+          gIds,
+          false,
+          undefined,
+          undefined
+        );
+
+        settledPaymentGatewayFee = await this.getPaymentGatewayFee(
+          gIds,
+          true,
+          undefined,
+          undefined
+        );
       }
 
       // console.log({
@@ -1219,20 +1238,20 @@ class CommissionService {
         categoryData[category].settled = settledData;
       }
 
-      const pendingPaymentGatewayFees = await this.getPaymentGatewayFee(
-        userIds,
-        false,
-        cycleStartDate,
-        cycleEndDate
-      );
-      console.log({ pendingPaymentGatewayFees });
+      // const pendingPaymentGatewayFees = await this.getPaymentGatewayFee(
+      //   [userId],
+      //   false,
+      //   cycleStartDate,
+      //   cycleEndDate
+      // );
+      // console.log({ pendingPaymentGatewayFees });
 
-      const settledPaymentGatewayFees = await this.getPaymentGatewayFee(
-        userIds,
-        true,
-        undefined,
-        undefined
-      );
+      // const settledPaymentGatewayFees = await this.getPaymentGatewayFee(
+      //   [userId],
+      //   true,
+      //   undefined,
+      //   undefined
+      // );
 
       // Use the bimonthly cycle dates for display in the UI
       // This keeps the UI consistent while still using category-specific calculations
@@ -1391,10 +1410,10 @@ class CommissionService {
         categoryTotals.settled.specialty.grossCommission;
 
       const totalPendingNetCommissionPayout =
-        totalPendingGrossCommission - pendingPaymentGatewayFees;
+        totalPendingGrossCommission - pendingPaymentGatewayFee;
 
       const totalSettledNetCommissionPayout =
-        totalSettledGrossCommission - settledPaymentGatewayFees;
+        totalSettledGrossCommission - settledPaymentGatewayFee;
 
       console.log({ categoryTotals });
 
@@ -1433,8 +1452,8 @@ class CommissionService {
           },
           {
             label: "Less: Total Payment Gateway Fees",
-            pendingSettlement: pendingPaymentGatewayFees,
-            settledAllTime: settledPaymentGatewayFees,
+            pendingSettlement: pendingPaymentGatewayFee,
+            settledAllTime: settledPaymentGatewayFee,
           },
           {
             label: "Net Commission Available for Payout",
