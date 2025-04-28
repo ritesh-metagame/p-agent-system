@@ -480,14 +480,14 @@ class CommissionService {
         });
 
         const settledPaymentGatewayFees = await this.getPaymentGatewayFee(
-          userIds,
+          [userId],
           true,
           undefined,
           undefined
         );
 
         const pendingPaymentGatewayFees = await this.getPaymentGatewayFee(
-          userIds,
+          [userId],
           false,
           categoryCycleDates.cycleStartDate,
           categoryCycleDates.cycleEndDate
