@@ -978,6 +978,32 @@ class CommissionService {
     }
   }
 
+  private async getPaymentGatewayFee(
+    userId: string,
+    settled: boolean = false,
+    startDate: Date,
+    endDate: Date
+  ): Promise<number> {
+    const commissions = await prisma.commissionSummary.findMany({
+      where: {
+        userId: userId,
+        paymentGatewayFee: {
+          gte: 0,
+        },
+        ...(settled ? { settledStatus: "Y" } : { settledStatus: "N" }),
+        ...(startDate && endDate
+          ? { createdAt: { gte: startDate, lte: endDate } }
+          : {}),
+      },
+      select: { paymentGatewayFee: true },
+    });
+
+    return commissions.reduce(
+      (total, commission) => total + (commission.paymentGatewayFee || 0),
+      0
+    );
+  }
+
   public async getTotalBreakdown(userId: string, roleName: string) {
     try {
       let userIds = [userId];
@@ -1237,6 +1263,23 @@ class CommissionService {
         });
       });
 
+      const pendingPaymentGatewayFees = await this.getPaymentGatewayFee(
+        userId,
+        false,
+        cycleStartDate,
+        cycleEndDate
+      );
+      console.log({ pendingPaymentGatewayFees });
+
+      const settledPaymentGatewayFees = await this.getPaymentGatewayFee(
+        userId,
+        true,
+        undefined,
+        undefined
+      );
+
+      console.log({ settledPaymentGatewayFees });
+
       const totalPendingGrossCommission =
         categoryTotals.pending.egames.amount +
         categoryTotals.pending.sports.amount +
@@ -1248,12 +1291,10 @@ class CommissionService {
         categoryTotals.settled.specialty.grossCommission;
 
       const totalPendingNetCommissionPayout =
-        totalPendingGrossCommission -
-        categoryTotals.pending.totalPaymentGatewayFees;
+        totalPendingGrossCommission - pendingPaymentGatewayFees;
 
       const totalSettledNetCommissionPayout =
-        totalSettledGrossCommission -
-        categoryTotals.settled.totalPaymentGatewayFees;
+        totalSettledGrossCommission - settledPaymentGatewayFees;
 
       console.log({ categoryTotals });
 
@@ -1292,8 +1333,8 @@ class CommissionService {
           },
           {
             label: "Less: Total Payment Gateway Fees",
-            pendingSettlement: categoryTotals.pending.totalPaymentGatewayFees,
-            settledAllTime: categoryTotals.settled.totalPaymentGatewayFees,
+            pendingSettlement: pendingPaymentGatewayFees,
+            settledAllTime: settledPaymentGatewayFees,
           },
           {
             label: "Net Commission Available for Payout",
