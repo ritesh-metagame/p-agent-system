@@ -1296,6 +1296,8 @@ class CommissionService {
       const totalSettledNetCommissionPayout =
         totalSettledGrossCommission - settledPaymentGatewayFees;
 
+      console.log({ categoryTotals });
+
       return {
         columns: [
           "",
