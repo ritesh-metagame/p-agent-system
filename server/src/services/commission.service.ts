@@ -1669,6 +1669,14 @@ class CommissionService {
             {} as any
           );
 
+          const pendingPaymentGatewayFees = await this.getPaymentGatewayFee(
+            user.id,
+            false,
+            cycleStartDate,
+            cycleEndDate
+          );
+          console.log({ pendingPaymentGatewayFees });
+
           // If user has no summaries, return empty array
           if (
             !summariesByUser.summaries ||
@@ -1691,12 +1699,12 @@ class CommissionService {
               summariesByUser.totalEgamesCommissions +
               summariesByUser.totalSportsBettingCommissions +
               summariesByUser.totalSpecialtyGamesCommissions,
-            paymentGatewayFees: summariesByUser.paymentGatewayFees,
+            paymentGatewayFees: pendingPaymentGatewayFees,
             netCommissions:
               summariesByUser.totalEgamesCommissions +
               summariesByUser.totalSportsBettingCommissions +
               summariesByUser.totalSpecialtyGamesCommissions -
-              summariesByUser.paymentGatewayFees,
+              pendingPaymentGatewayFees,
             breakdownAction: "view",
             releaseAction: "release_comms",
           };
