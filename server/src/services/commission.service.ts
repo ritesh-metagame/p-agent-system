@@ -2818,9 +2818,9 @@ class CommissionService {
             console.log({ eGamesData });
             if (eGamesData.type === "E-Games") {
               const ggr = summary.netGGR || 0;
-              eGamesData.ggr.pending += ggr;
+              eGamesData.ggr.pending += ggr / 3;
               eGamesData.commission.pending +=
-                ggr * (eGamesData.commissionRate / 100);
+                (ggr * (eGamesData.commissionRate / 100)) / 3;
             }
             break;
           case "Sports Betting":
@@ -2828,9 +2828,9 @@ class CommissionService {
             console.log({ sportsData });
             if (sportsData.type === "Sports Betting") {
               const betAmount = summary.totalBetAmount || 0;
-              sportsData.betAmount.pending += betAmount;
+              sportsData.betAmount.pending += betAmount / 3;
               sportsData.commission.pending +=
-                betAmount * (sportsData.commissionRate / 100);
+                (betAmount * (sportsData.commissionRate / 100)) / 3;
             }
             break;
           case "Speciality Games - Tote":
@@ -2838,9 +2838,9 @@ class CommissionService {
             console.log({ toteData });
             if (toteData.type === "Speciality Games - Tote") {
               const betAmount = summary.totalBetAmount || 0;
-              toteData.betAmount.pending += betAmount;
+              toteData.betAmount.pending += betAmount / 3;
               toteData.commission.pending +=
-                betAmount * (toteData.commissionRate / 100);
+                (betAmount * (toteData.commissionRate / 100)) / 3;
             }
             break;
           case "Speciality Games - RNG":
@@ -2848,9 +2848,9 @@ class CommissionService {
             console.log({ rngData });
             if (rngData.type === "Speciality Games - RNG") {
               const ggr = summary.netGGR || 0;
-              rngData.ggr.pending += ggr;
+              rngData.ggr.pending += ggr / 3;
               rngData.commission.pending +=
-                ggr * (rngData.commissionRate / 100);
+                (ggr * (rngData.commissionRate / 100)) / 3;
             }
             break;
         }
@@ -2864,36 +2864,36 @@ class CommissionService {
             const eGamesData = licenseData["E-Games"];
             if (eGamesData.type === "E-Games") {
               const ggr = summary.netGGR || 0;
-              eGamesData.ggr.allTime += ggr;
+              eGamesData.ggr.allTime += ggr / 3;
               eGamesData.commission.allTime +=
-                ggr * (eGamesData.commissionRate / 100);
+                (ggr * (eGamesData.commissionRate / 100)) / 3;
             }
             break;
           case "Sports Betting":
             const sportsData = licenseData["Sports Betting"];
             if (sportsData.type === "Sports Betting") {
               const betAmount = summary.totalBetAmount || 0;
-              sportsData.betAmount.allTime += betAmount;
+              sportsData.betAmount.allTime += betAmount / 3;
               sportsData.commission.allTime +=
-                betAmount * (sportsData.commissionRate / 100);
+                (betAmount * (sportsData.commissionRate / 100)) / 3;
             }
             break;
           case "Speciality Games - Tote":
             const toteData = licenseData["Speciality Games - Tote"];
             if (toteData.type === "Speciality Games - Tote") {
               const betAmount = summary.totalBetAmount || 0;
-              toteData.betAmount.allTime += betAmount;
+              toteData.betAmount.allTime += betAmount / 3;
               toteData.commission.allTime +=
-                betAmount * (toteData.commissionRate / 100);
+                (betAmount * (toteData.commissionRate / 100)) / 3;
             }
             break;
           case "Speciality Games - RNG":
             const rngData = licenseData["Speciality Games - RNG"];
             if (rngData.type === "Speciality Games - RNG") {
               const ggr = summary.netGGR || 0;
-              rngData.ggr.allTime += ggr;
+              rngData.ggr.allTime += ggr / 3;
               rngData.commission.allTime +=
-                ggr * (rngData.commissionRate / 100);
+                (ggr * (rngData.commissionRate / 100)) / 3;
             }
             break;
         }
