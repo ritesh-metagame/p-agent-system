@@ -26,6 +26,7 @@ class UserDao {
       const summaries = await prisma.commissionSummary.findMany({
         where: {
           userId,
+          settledStatus: "N",
         },
       });
 
@@ -34,11 +35,54 @@ class UserDao {
         return { payout: 0, wallet: 0 };
       }
 
+      // Step 2: Fetch the parentId of this user
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          parentId: true,
+          role: {
+            select: {
+              name: true, // or id, or any field you need from Role table
+            },
+          },
+        },
+      });
+
+      console.log("User fetched for parentId:", user.role.name);
+
+      if (!user) {
+        console.warn(`⚠️ User not found: ${userId}`);
+        return { payout: 0, wallet: 0, totalParentCommission: 0 };
+      }
+
+      const parentId = user.parentId;
+      let totalParentCommission = 0;
+
+      if (parentId) {
+        const parentSummaries = await prisma.commissionSummary.findMany({
+          where: { userId: parentId },
+        });
+
+        if (!parentSummaries.length) {
+          console.warn(
+            `⚠️ No commission summaries found for parent user: ${parentId}`
+          );
+          totalParentCommission = 0;
+        } else {
+          totalParentCommission = parentSummaries.reduce(
+            (acc, summary) =>
+              acc + Number(summary.netCommissionAvailablePayout || 0),
+            0
+          );
+        }
+      }
+
       // Step 2: Initialize sums
       let totalNetGGR = 0;
       let totalBetAmount = 0;
       let totalCommissionByUser = 0;
       let totalPaymentGatewayFee = 0;
+      let wallet = 0;
 
       // Step 3: Loop over summaries and accumulate
       for (const summary of summaries) {
@@ -54,17 +98,39 @@ class UserDao {
         totalPaymentGatewayFee += Number(summary.paymentGatewayFee || 0);
       }
 
+      // console.log(
+      //   "totalPaymentGatewayFee---------------------",
+      //   totalPaymentGatewayFee
+      // );
+
       // Step 4: Apply the percentages
       const totalEgamesAmount = totalNetGGR * 0.3;
       const totalSportsBettingAmount = totalBetAmount * 0.02;
+
+      console.log(
+        "totalEgamesAmount---------------------",
+        totalPaymentGatewayFee
+      );
 
       const totalCommissionAmount =
         totalEgamesAmount + totalSportsBettingAmount;
 
       // Step 5: Calculate payout (subtract paymentGatewayFee now)
       const payout =
-        totalCommissionAmount - totalCommissionByUser - totalPaymentGatewayFee;
-      const wallet = totalCommissionByUser;
+        totalCommissionAmount -
+        totalCommissionByUser -
+        totalParentCommission -
+        totalPaymentGatewayFee;
+      if (user.role.name === UserRole.GOLDEN) {
+        const value = totalCommissionByUser - totalPaymentGatewayFee;
+        console.log("value---------------------", value);
+        wallet = totalCommissionByUser - totalPaymentGatewayFee;
+      } else {
+        wallet = totalCommissionByUser;
+      }
+
+      console.log("payout---------------------", payout);
+      console.log("wallet---------------------", wallet);
 
       // Step 6: Return result
       return {
