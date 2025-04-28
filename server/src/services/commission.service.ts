@@ -1121,7 +1121,17 @@ class CommissionService {
           },
           select: { id: true },
         });
-        userIds = platinums.map((platinum) => platinum.id);
+        userIds = [...userIds, ...platinums.map((platinum) => platinum.id)];
+
+        const goldens = await prisma.user.findMany({
+          where: {
+            parentId: { in: platinums.map((platinum) => platinum.id) },
+            role: { name: UserRole.GOLDEN },
+          },
+          select: { id: true },
+        });
+
+        userIds = userIds.concat(goldens.map((golden) => golden.id));
 
         pIds = [userId, ...userIds];
 
@@ -1148,23 +1158,17 @@ class CommissionService {
           },
           select: { id: true },
         });
-        userIds = goldens.map((golden) => golden.id);
+        userIds = [...userIds, ...goldens.map((golden) => golden.id)];
 
         gIds = [userId, ...userIds];
 
-        pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
-          gIds,
-          false,
-          undefined,
-          undefined
-        );
+        pendingPaymentGatewayFee =
+          (await this.getPaymentGatewayFee(gIds, false, undefined, undefined)) /
+          2;
 
-        settledPaymentGatewayFee = await this.getPaymentGatewayFee(
-          gIds,
-          true,
-          undefined,
-          undefined
-        );
+        settledPaymentGatewayFee =
+          (await this.getPaymentGatewayFee(gIds, true, undefined, undefined)) /
+          2;
       }
 
       // console.log({
