@@ -41,3 +41,22 @@ info: 2025-04-28T04:54:29.576Z [src\server.ts]
 development Platform is running at http://localhost:8080 🛡
       
 info: 2025-04-28T04:54:29.539Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-28T06:38:03.652Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-28T06:38:03.682Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+debug: 2025-04-28T06:38:11.751Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-04-28T06:38:11.852Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-04-28T06:38:11.853Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-04-28T06:38:11.854Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jv954z0000jfy8um1pz2de
+debug: 2025-04-28T06:38:11.854Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jvbgea0007jfy8lcubkd8a
+http: 2025-04-28T06:38:11.908Z [logger\morgan.ts] GET /api/v1/commission/pending-settlements 200 - - 150.839 ms
+
+info: 2025-04-28T06:58:47.451Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-04-28T06:58:47.441Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-28T07:03:03.674Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-28T07:03:03.685Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      

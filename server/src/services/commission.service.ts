@@ -2525,7 +2525,7 @@ class CommissionService {
       };
 
       // Get all relevant userIds based on role hierarchy
-      let userIds = [];
+      let userIds = [userId];
 
       if (roleName === UserRole.SUPER_ADMIN) {
         // For superadmin, get all operators and their children
@@ -2537,7 +2537,7 @@ class CommissionService {
 
         console.log({ operatorIds });
 
-        userIds = [...operatorIds];
+        userIds = operatorIds;
 
         // Get all platinums under these operators
         const platinums = await prisma.user.findMany({
@@ -2708,7 +2708,7 @@ class CommissionService {
         // For non-superadmin roles, get commission percentages from their assigned sites
         const commissions = await prisma.commission.findMany({
           where: {
-            userId: userId, // the user you're calculating for
+            userId: { in: userIds }, // the user you're calculating for
           },
           select: {
             userId: true,
