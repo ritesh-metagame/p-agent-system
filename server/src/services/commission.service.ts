@@ -1133,7 +1133,7 @@ class CommissionService {
 
         userIds = userIds.concat(goldens.map((golden) => golden.id));
 
-        pIds = [userId, ...userIds];
+        pIds = [userId];
 
         pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
           pIds,
@@ -1160,7 +1160,7 @@ class CommissionService {
         });
         userIds = [...userIds, ...goldens.map((golden) => golden.id)];
 
-        gIds = [userId, ...userIds];
+        gIds = [userId];
 
         pendingPaymentGatewayFee =
           (await this.getPaymentGatewayFee(gIds, false, undefined, undefined)) /
