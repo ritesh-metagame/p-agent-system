@@ -439,6 +439,28 @@ class CommissionDao {
       },
     });
 
+    const pendingPaymentGatewayFees = commissionSummaries.filter(
+      (summary) =>
+        summary.user.role.name === UserRole.GOLDEN &&
+        summary.settledStatus === "N"
+    );
+
+    const settledPaymentGatewayFees = commissionSummaries.filter(
+      (summary) =>
+        summary.user.role.name === UserRole.GOLDEN &&
+        summary.settledStatus === "Y"
+    );
+
+    const pendingPaymentGatewayFeeSum = pendingPaymentGatewayFees.reduce(
+      (acc, summary) => acc + summary.paymentGatewayFee,
+      0
+    );
+
+    const settledPaymentGatewayFeeSum = settledPaymentGatewayFees.reduce(
+      (acc, summary) => acc + summary.paymentGatewayFee,
+      0
+    );
+
     const totals = {
       totalDeposit: 0,
       totalWithdrawals: 0,
@@ -472,8 +494,8 @@ class CommissionDao {
     return {
       summaries: commissionSummaries,
       allTotal: totals,
-      totalPending: totalPending,
-      totalSettled: totalSettled,
+      totalPending: totalPending - pendingPaymentGatewayFeeSum,
+      totalSettled: totalSettled - settledPaymentGatewayFeeSum,
     };
   }
 
