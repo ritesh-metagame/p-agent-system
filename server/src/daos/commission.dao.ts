@@ -327,6 +327,8 @@ class CommissionDao {
       },
     });
 
+    let userIds = [userId];
+
     if (!loggedInUser || !loggedInUser.role) {
       throw new Error("User or user role not found.");
     }
@@ -334,37 +336,87 @@ class CommissionDao {
     const roleName = loggedInUser.role.name.toLowerCase() as UserRole;
     let allowedRole = "" as UserRole;
 
-    // Determine which role's commissions are allowed to be viewed
-    switch (roleName) {
-      case UserRole.SUPER_ADMIN:
-        allowedRole = UserRole.OPERATOR;
-        break;
-      case UserRole.OPERATOR:
-        allowedRole = UserRole.PLATINUM;
-        break;
-      case UserRole.PLATINUM:
-        allowedRole = UserRole.GOLDEN;
-        break;
-      default:
-        throw new Error("You are not authorized to view commission data.");
-    }
+    if (roleName === UserRole.SUPER_ADMIN) {
+      const oChildens = await prisma.user.findMany({
+        where: {
+          parentId: userId,
+        },
+        select: {
+          id: true,
+        },
+      });
 
-    // Filter children by the allowed role
-    const downlineUsers = loggedInUser.children.filter(
-      (child) => child.role?.name.toLowerCase() === allowedRole
-    );
+      const oChildensIds = oChildens.map((child) => child.id);
+      userIds = oChildensIds;
 
-    const downlineUserIds = downlineUsers.map((user) => user.id);
+      const pChildrens = await prisma.user.findMany({
+        where: {
+          parentId: { in: oChildensIds },
+        },
+        select: {
+          id: true,
+        },
+      });
 
-    if (downlineUserIds.length === 0) {
-      return []; // No commissions if no downline users
+      const pChildrensIds = pChildrens.map((child) => child.id);
+
+      userIds = [...userIds, ...pChildrensIds];
+
+      const gChildrens = await prisma.user.findMany({
+        where: {
+          parentId: { in: pChildrensIds },
+        },
+        select: {
+          id: true,
+        },
+      });
+      const gChildrensIds = gChildrens.map((child) => child.id);
+
+      userIds = [...userIds, ...gChildrensIds];
+    } else if (roleName === UserRole.OPERATOR) {
+      const pChildrens = await prisma.user.findMany({
+        where: {
+          parentId: userId,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      const pChildrensIds = pChildrens.map((child) => child.id);
+
+      userIds = [...userIds, ...pChildrensIds];
+
+      const gChildrens = await prisma.user.findMany({
+        where: {
+          parentId: { in: pChildrensIds },
+        },
+        select: {
+          id: true,
+        },
+      });
+      const gChildrensIds = gChildrens.map((child) => child.id);
+
+      userIds = [...userIds, ...gChildrensIds];
+    } else if (roleName === UserRole.PLATINUM) {
+      const gChildrens = await prisma.user.findMany({
+        where: {
+          parentId: userId,
+        },
+        select: {
+          id: true,
+        },
+      });
+      const gChildrensIds = gChildrens.map((child) => child.id);
+
+      userIds = [...userIds, ...gChildrensIds];
     }
 
     // Fetch CommissionSummaries of those users
     const commissionSummaries = await prisma.commissionSummary.findMany({
       where: {
         userId: {
-          in: downlineUserIds,
+          in: userIds,
         },
       },
       include: {
