@@ -691,7 +691,7 @@ class CommissionService {
         allTime: 0,
       },
       {
-        label: "Net Commission Available for Payout",
+        label: "Commission Available for Payout",
         pendingSettlement: 0,
         allTime: 0,
       },
@@ -802,7 +802,7 @@ class CommissionService {
         allTime: allTimeTotal.paymentGatewayFee,
       },
       {
-        label: "Net Commission Available for Payout",
+        label: "Commission Available for Payout",
         pendingSettlement:
           pendingTotal.grossCommission - pendingTotal.paymentGatewayFee,
         allTime: allTimeTotal.grossCommission - allTimeTotal.paymentGatewayFee,
@@ -980,7 +980,7 @@ class CommissionService {
         roleLabel: this.getRoleLabelForUser(userRole),
         tally: [
           {
-            metric: "Net Commission Available for Payout",
+            metric: "Commission Available for Payout",
             eGames: 0,
             sportsBetting: 0,
           },
@@ -1481,7 +1481,7 @@ class CommissionService {
             settledAllTime: settledPaymentGatewayFee,
           },
           {
-            label: "Net Commission Available for Payout",
+            label: "Commission Available for Payout",
             pendingSettlement: totalPendingNetCommissionPayout,
             settledAllTime: totalSettledNetCommissionPayout,
             note: "(Gross Commission less Payment Gateway Fees)",
