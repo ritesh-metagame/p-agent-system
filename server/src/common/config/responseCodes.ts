@@ -19,6 +19,11 @@ class ResponseCodes {
     message: "User created successfully",
   } as const;
 
+  static readonly USER_COMMISSION_FETCHED_SUCCESSFULLY = {
+    code: "2010",
+    message: "Commission fetched successfully",
+  } as const;
+
   static readonly SITE_CREATED_SUCCESSFULLY = {
     code: "1005",
     message: "Site created successfully",

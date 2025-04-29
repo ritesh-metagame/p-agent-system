@@ -7,6 +7,22 @@ import { Response as ApiResponse } from "../common/config/response";
 import { ResponseCodes } from "../common/config/responseCodes";
 
 class CommissionController {
+  public static async getCommissionByUserId(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { userId } = req.params;
+      const commissionService = Container.get(CommissionService);
+      const result = await commissionService.getCommissionByUserId(userId);
+
+      return result;
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public static async createCommission(
     req: Request,
     res: Response,

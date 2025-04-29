@@ -17,6 +17,7 @@ export default (app: Router) => {
   //     res.status(200).json(response);
   //   }) as any
   // );
+
   route.put(
     "/update-unsettled-commission",
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -268,6 +269,20 @@ export default (app: Router) => {
         if (!res.headersSent) {
           next(error);
         }
+      }
+    })
+  );
+
+  route.get(
+    "/:userId",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await CommissionController.getCommissionByUserId(
+        req,
+        res,
+        next
+      );
+      if (response) {
+        res.status(200).json(response);
       }
     })
   );

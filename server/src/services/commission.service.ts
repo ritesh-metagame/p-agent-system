@@ -21,6 +21,8 @@ import {
   startOfMonth,
   subMonths,
 } from "date-fns";
+import { ResponseCodes } from "../common/config/responseCodes";
+import { Response } from "../common/config/response";
 
 interface SummaryTotal {
   totalDeposit: number;
@@ -108,6 +110,25 @@ class CommissionService {
       return newCommission;
     } catch (error) {
       throw new Error(`Error creating commission: ${error}`);
+    }
+  }
+
+  public async getCommissionByUserId(
+    userId: string,
+    categoryId?: string
+  ): Promise<Response> {
+    try {
+      const commission = await this.commissionDao.getCommissionByUserId(userId);
+
+      return new Response(
+        ResponseCodes.USER_COMMISSION_FETCHED_SUCCESSFULLY.code,
+        ResponseCodes.USER_COMMISSION_FETCHED_SUCCESSFULLY.message,
+        commission
+      );
+
+      // return commission;
+    } catch (error) {
+      throw new Error(`Error fetching commission by user ID: ${error}`);
     }
   }
 

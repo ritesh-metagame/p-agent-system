@@ -14,6 +14,23 @@ class CommissionDao {
     }
   }
 
+  public async getCommissionByUserId(userId: string): Promise<Commission[]> {
+    try {
+      const commissions = await prisma.commission.findMany({
+        where: { userId },
+        include: {
+          user: true,
+          role: true,
+          site: true,
+          category: true,
+        },
+      });
+      return commissions;
+    } catch (error) {
+      throw new Error(`Error fetching commission by user ID: ${error}`);
+    }
+  }
+
   public async updateCommission() {}
 
   public async deleteCommission() {}
