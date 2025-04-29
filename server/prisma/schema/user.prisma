@@ -23,6 +23,9 @@ model User {
   parent   User?   @relation("UserToUser", fields: [parentId], references: [id])
   children User[]  @relation("UserToUser")
 
+  // commissions         Commission[] @relation("UserCommission")
+  // parentCommissions   Commission[] @relation("ParentCommission")
+
   commissions         Commission[]
   commissionSummaries CommissionSummary[]
   agentSummaries      AgentSummary[]
