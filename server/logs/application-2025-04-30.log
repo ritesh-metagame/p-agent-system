@@ -218,3 +218,11 @@ debug: 2025-04-30T05:00:08.809Z [middlewares\checkAuthAndAttachCurrentUser.ts] U
 debug: 2025-04-30T05:00:08.810Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cma259tl60004jf9wud5qde8e
 http: 2025-04-30T05:00:08.821Z [logger\morgan.ts] GET /api/v1/commission/cma259tl60004jf9wud5qde8e 304 - - 25.171 ms
 
+info: 2025-04-30T05:37:21.738Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-04-30T05:37:21.750Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-04-30T05:55:26.043Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-04-30T05:55:26.032Z [loaders\index.ts] ✌️ Express loaded

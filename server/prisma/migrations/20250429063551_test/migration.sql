@@ -5,5 +5,5 @@
 
 */
 -- AlterTable
-ALTER TABLE `commission` ADD COLUMN `parent_percentage` DOUBLE NULL,
+ALTER TABLE `Commission` ADD COLUMN `parent_percentage` DOUBLE NULL,
     ADD COLUMN `total_assigned_commission_percentage` DOUBLE NOT NULL;

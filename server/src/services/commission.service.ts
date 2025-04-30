@@ -1131,7 +1131,23 @@ class CommissionService {
           select: { id: true },
         });
 
+        gIds = goldens.map((golden) => golden.id);
+
         userIds = userIds.concat(goldens.map((golden) => golden.id));
+
+        pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
+          gIds,
+          false,
+          undefined,
+          undefined
+        );
+
+        settledPaymentGatewayFee = await this.getPaymentGatewayFee(
+          gIds,
+          true,
+          undefined,
+          undefined
+        );
       }
 
       if (roleName === UserRole.OPERATOR) {
@@ -1152,19 +1168,21 @@ class CommissionService {
           select: { id: true },
         });
 
+        gIds = goldens.map((golden) => golden.id);
+
         userIds = userIds.concat(goldens.map((golden) => golden.id));
 
         pIds = [userId];
 
         pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
-          pIds,
+          gIds,
           false,
           undefined,
           undefined
         );
 
         settledPaymentGatewayFee = await this.getPaymentGatewayFee(
-          pIds,
+          gIds,
           true,
           undefined,
           undefined
@@ -1179,17 +1197,24 @@ class CommissionService {
           },
           select: { id: true },
         });
+
         userIds = [...userIds, ...goldens.map((golden) => golden.id)];
 
-        gIds = [userId];
+        gIds = [goldens.map((golden) => golden.id)];
 
-        pendingPaymentGatewayFee =
-          (await this.getPaymentGatewayFee(gIds, false, undefined, undefined)) /
-          2;
+        pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
+          gIds,
+          false,
+          undefined,
+          undefined
+        );
 
-        settledPaymentGatewayFee =
-          (await this.getPaymentGatewayFee(gIds, true, undefined, undefined)) /
-          2;
+        settledPaymentGatewayFee = await this.getPaymentGatewayFee(
+          gIds,
+          true,
+          undefined,
+          undefined
+        );
       }
 
       // console.log({
