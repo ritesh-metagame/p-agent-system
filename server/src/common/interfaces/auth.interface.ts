@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 const loginSchema = Joi.object({
-  username: Joi.string().required().min(3).messages({
+  username: Joi.string().required().min(2).messages({
     "string.empty": "Username cannot be empty",
     "any.required": "Username is required",
     "string.min": "Username must be at least {#limit} characters long",
