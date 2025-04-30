@@ -385,7 +385,7 @@ class CommissionDao {
 
       const pChildrensIds = pChildrens.map((child) => child.id);
 
-      userIds = [...userIds, ...pChildrensIds];
+      userIds = [...pChildrensIds];
 
       const gChildrens = await prisma.user.findMany({
         where: {
@@ -409,7 +409,7 @@ class CommissionDao {
       });
       const gChildrensIds = gChildrens.map((child) => child.id);
 
-      userIds = [...userIds, ...gChildrensIds];
+      userIds = [...gChildrensIds];
     }
 
     // Fetch CommissionSummaries of those users
