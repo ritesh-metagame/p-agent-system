@@ -1053,13 +1053,14 @@ class CommissionService {
     startDate: Date,
     endDate: Date
   ): Promise<number> {
+    console.log("User IDs:", userIds);
     const commissions = await prisma.commissionSummary.findMany({
       where: {
         userId: { in: userIds },
         paymentGatewayFee: {
           gte: 0,
         },
-        ...(settled ? { settledStatus: "Y" } : { settledStatus: "N" }),
+        // ...(settled ? { settledStatus: "Y" } : { settledStatus: "N" }),
         ...(startDate && endDate
           ? { createdAt: { gte: startDate, lte: endDate } }
           : {}),
@@ -1084,8 +1085,12 @@ class CommissionService {
       let pIds = [];
       let gIds = [];
 
-      let pendingPaymentGatewayFee;
-      let settledPaymentGatewayFee;
+      let settledOids = [];
+      let settledPids = [];
+      let settledGids = [];
+
+      let pendingPaymentGatewayFee = 0;
+      let settledPaymentGatewayFee = 0;
 
       const categoryData = {
         "E-Games": { pending: [], settled: [] },
@@ -1128,20 +1133,6 @@ class CommissionService {
 
         userIds = userIds.concat(goldens.map((golden) => golden.id));
 
-        pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
-          gIds,
-          false,
-          undefined,
-          undefined
-        );
-
-        settledPaymentGatewayFee = await this.getPaymentGatewayFee(
-          gIds,
-          true,
-          undefined,
-          undefined
-        );
-
         // Fetch settled data for operators and their hierarchy
         const settledData = await prisma.commissionSummary.findMany({
           where: {
@@ -1149,6 +1140,7 @@ class CommissionService {
             settledStatus: "Y",
           },
           select: {
+            userId: true,
             categoryName: true,
             totalBetAmount: true,
             netGGR: true,
@@ -1158,6 +1150,63 @@ class CommissionService {
           },
         });
 
+        const settledUserIds = settledData.map((data) => data.userId);
+
+        settledOids = settledUserIds;
+
+        // Fetch non-settled data for operators and their hierarchy
+        // Check if there are any non-settled data for the same users
+
+        const nonSettledPlatinumChildren = await prisma.user.findMany({
+          where: {
+            parentId: { in: settledUserIds },
+            role: { name: UserRole.PLATINUM },
+          },
+          select: { id: true },
+        });
+
+        settledPids = nonSettledPlatinumChildren.map((platinum) => platinum.id);
+
+        const nonSettledGoldenChildren = await prisma.user.findMany({
+          where: {
+            parentId: {
+              in: nonSettledPlatinumChildren.map((platinum) => platinum.id),
+            },
+            role: { name: UserRole.GOLDEN },
+          },
+          select: { id: true },
+        });
+
+        settledGids = nonSettledGoldenChildren.map((golden) => golden.id);
+
+        if (settledData.length !== 0) {
+          const settledDataForNonSettled =
+            await prisma.commissionSummary.findMany({
+              where: {
+                userId: {
+                  in: [
+                    ...nonSettledPlatinumChildren.map((ch) => ch.id),
+                    ...nonSettledGoldenChildren.map((ch) => ch.id),
+                  ],
+                },
+                settledStatus: "N",
+              },
+              select: {
+                userId: true,
+                categoryName: true,
+                totalBetAmount: true,
+                netGGR: true,
+                grossCommission: true,
+                paymentGatewayFee: true,
+                netCommissionAvailablePayout: true,
+              },
+            });
+
+          settledData.push(...settledDataForNonSettled);
+        }
+
+        console.log({ settledData });
+
         // Add settled data to categoryData
         settledData.forEach((summary) => {
           if (!categoryData[summary.categoryName]) {
@@ -1165,6 +1214,24 @@ class CommissionService {
           }
           categoryData[summary.categoryName].settled.push(summary);
         });
+
+        console.log({ settled: categoryData["E-Games"].settled }, "🙌");
+
+        pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
+          gIds,
+          false,
+          undefined,
+          undefined
+        );
+
+        settledPaymentGatewayFee = await this.getPaymentGatewayFee(
+          settledUserIds,
+          true,
+          undefined,
+          undefined
+        );
+
+        console.log({ settledPaymentGatewayFee });
       }
 
       if (roleName === UserRole.OPERATOR) {
@@ -1195,6 +1262,7 @@ class CommissionService {
             settledStatus: "Y",
           },
           select: {
+            userId: true,
             categoryName: true,
             totalBetAmount: true,
             netGGR: true,
@@ -1203,6 +1271,50 @@ class CommissionService {
             netCommissionAvailablePayout: true,
           },
         });
+
+        const settledUserIds = settledData.map((data) => data.userId);
+
+        settledPids = settledUserIds;
+
+        // Fetch non-settled data for operators and their hierarchy
+        // Check if there are any non-settled data for the same users
+
+        const nonSettledGoldenChildren = await prisma.user.findMany({
+          where: {
+            parentId: {
+              in: settledPids,
+            },
+            role: { name: UserRole.GOLDEN },
+          },
+          select: { id: true },
+        });
+
+        settledGids = nonSettledGoldenChildren.map((golden) => golden.id);
+
+        if (settledData.length !== 0) {
+          const settledDataForNonSettled =
+            await prisma.commissionSummary.findMany({
+              where: {
+                userId: {
+                  in: [...nonSettledGoldenChildren.map((ch) => ch.id)],
+                },
+                settledStatus: "N",
+              },
+              select: {
+                userId: true,
+                categoryName: true,
+                totalBetAmount: true,
+                netGGR: true,
+                grossCommission: true,
+                paymentGatewayFee: true,
+                netCommissionAvailablePayout: true,
+              },
+            });
+
+          settledData.push(...settledDataForNonSettled);
+        }
+
+        console.log({ settledData });
 
         // Add settled data to categoryData
         settledData.forEach((summary) => {
@@ -1215,14 +1327,14 @@ class CommissionService {
         pIds = [userId];
 
         pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
-          gIds,
+          pIds,
           false,
           undefined,
           undefined
         );
 
         settledPaymentGatewayFee = await this.getPaymentGatewayFee(
-          gIds,
+          settledUserIds,
           true,
           undefined,
           undefined
@@ -1315,6 +1427,14 @@ class CommissionService {
       let cycleStartDate: Date;
       let cycleEndDate: Date;
 
+      let settledIds = new Set([
+        ...settledOids,
+        ...settledPids,
+        ...settledGids,
+      ]);
+
+      let filteredUserIds = userIds.filter((id) => !settledIds.has(id));
+
       // Get cycle dates for each category and fetch data
       for (const category of Object.keys(categoryData)) {
         // Get category-specific cycle dates
@@ -1329,7 +1449,9 @@ class CommissionService {
         // Get pending settlement data for this category
         const pendingData = await prisma.commissionSummary.findMany({
           where: {
-            userId: { in: userIds },
+            userId: {
+              in: filteredUserIds,
+            },
             categoryName: category,
             createdAt: {
               gte: cycleStartDate,
@@ -1350,23 +1472,23 @@ class CommissionService {
         categoryData[category].pending = pendingData;
 
         // Get settled data for this category
-        const settledData = await prisma.commissionSummary.findMany({
-          where: {
-            userId: { in: userIds },
-            categoryName: category,
-            settledStatus: "Y",
-          },
-          select: {
-            categoryName: true,
-            totalBetAmount: true,
-            netGGR: true,
-            grossCommission: true,
-            paymentGatewayFee: true,
-            netCommissionAvailablePayout: true,
-          },
-        });
+        // const settledData = await prisma.commissionSummary.findMany({
+        //   where: {
+        //     userId: { in: userIds },
+        //     categoryName: category,
+        //     settledStatus: "Y",
+        //   },
+        //   select: {
+        //     categoryName: true,
+        //     totalBetAmount: true,
+        //     netGGR: true,
+        //     grossCommission: true,
+        //     paymentGatewayFee: true,
+        //     netCommissionAvailablePayout: true,
+        //   },
+        // });
 
-        categoryData[category].settled = settledData;
+        // categoryData[category].settled = settledData;
       }
 
       // const pendingPaymentGatewayFees = await this.getPaymentGatewayFee(
@@ -1541,13 +1663,24 @@ class CommissionService {
         categoryTotals.settled.specialty.amount;
 
       const totalPendingNetCommissionPayout =
-        totalPendingGrossCommission - pendingPaymentGatewayFee;
+        settledPaymentGatewayFee > 0
+          ? totalPendingGrossCommission -
+            (pendingPaymentGatewayFee - settledPaymentGatewayFee)
+          : totalPendingGrossCommission - pendingPaymentGatewayFee;
 
       const totalSettledNetCommissionPayout =
-        totalSettledGrossCommission -
-        categoryTotals.settled.totalPaymentGatewayFees;
+        totalSettledGrossCommission - settledPaymentGatewayFee;
 
-      console.log({ categoryTotals });
+      console.log({
+        totalPendingGrossCommission,
+        totalSettledGrossCommission,
+        totalPendingNetCommissionPayout,
+        totalSettledNetCommissionPayout,
+        pendingPaymentGatewayFee,
+        settledPaymentGatewayFee,
+      });
+
+      // console.log({ categoryTotals });
 
       return {
         columns: [
@@ -1584,18 +1717,16 @@ class CommissionService {
           },
           {
             label: "Less: Total Payment Gateway Fees",
-            pendingSettlement: pendingPaymentGatewayFee,
-            settledAllTime: categoryTotals.settled.totalPaymentGatewayFees,
+            pendingSettlement:
+              pendingPaymentGatewayFee - settledPaymentGatewayFee,
+            settledAllTime: settledPaymentGatewayFee,
           },
           {
             label:
               roleName === UserRole.GOLDEN
                 ? "Net Commission"
                 : "Commission Available for Payout",
-            pendingSettlement:
-              roleName === UserRole.GOLDEN
-                ? totalPendingGrossCommission - pendingPaymentGatewayFee
-                : totalPendingNetCommissionPayout,
+            pendingSettlement: totalPendingNetCommissionPayout,
             settledAllTime:
               roleName === UserRole.GOLDEN
                 ? totalSettledGrossCommission - settledPaymentGatewayFee
@@ -1613,6 +1744,7 @@ class CommissionService {
     userId: string,
     roleName: string
   ) {
+    console.log({ roleName });
     // Get all users under this user based on role hierarchy
     // let userIds = [userId];
 
@@ -1658,35 +1790,78 @@ class CommissionService {
     //   userIds = [...userIds, ...golds.map((g) => g.id)];
     // }
 
-    const pgSummaries = await prisma.transaction.findMany({
-      where: {
-        transactionType: {
-          in: ["deposit", "withdraw"],
+    let depositPgFeesTotal = 0;
+    let withdrawPgFeesTotal = 0;
+    let totalPgFees = 0;
+
+    if (roleName === UserRole.SUPER_ADMIN) {
+      const pgSummaries = await prisma.transaction.findMany({
+        where: {
+          transactionType: {
+            in: ["deposit", "withdraw"],
+          },
         },
-      },
-      select: {
-        transactionType: true,
-        pgFeeCommission: true,
-      },
-    });
+        select: {
+          transactionType: true,
+          pgFeeCommission: true,
+        },
+      });
 
-    const depositPgFees = pgSummaries.filter(
-      (p) => p.transactionType === "deposit"
-    );
-    const withdrawPgFees = pgSummaries.filter(
-      (p) => p.transactionType === "withdraw"
-    );
+      const depositPgFees = pgSummaries.filter(
+        (p) => p.transactionType === "deposit"
+      );
+      const withdrawPgFees = pgSummaries.filter(
+        (p) => p.transactionType === "withdraw"
+      );
 
-    const depositPgFeesTotal = depositPgFees.reduce(
-      (acc, curr) => acc + Number(curr.pgFeeCommission || 0),
-      0
-    );
-    const withdrawPgFeesTotal = withdrawPgFees.reduce(
-      (acc, curr) => acc + Number(curr.pgFeeCommission || 0),
-      0
-    );
+      depositPgFeesTotal = depositPgFees.reduce(
+        (acc, curr) => acc + Number(curr.pgFeeCommission || 0),
+        0
+      );
+      withdrawPgFeesTotal = withdrawPgFees.reduce(
+        (acc, curr) => acc + Number(curr.pgFeeCommission || 0),
+        0
+      );
 
-    const totalPgFees = depositPgFeesTotal + withdrawPgFeesTotal;
+      totalPgFees = depositPgFeesTotal + withdrawPgFeesTotal;
+    } else {
+      const pgSummaries = await prisma.transaction.findMany({
+        where: {
+          ...(roleName === UserRole.OPERATOR
+            ? { ownerId: { in: [userId] } }
+            : {}),
+          ...(roleName === UserRole.PLATINUM ? { maId: { in: [userId] } } : {}),
+          ...(roleName === UserRole.GOLDEN ? { gaId: { in: [userId] } } : {}),
+          transactionType: {
+            in: ["deposit", "withdraw"],
+          },
+        },
+        select: {
+          transactionType: true,
+          pgFeeCommission: true,
+        },
+      });
+
+      const depositPgFees = pgSummaries.filter(
+        (p) => p.transactionType === "deposit"
+      );
+      const withdrawPgFees = pgSummaries.filter(
+        (p) => p.transactionType === "withdraw"
+      );
+
+      console.log({ depositPgFees, withdrawPgFees });
+
+      depositPgFeesTotal = depositPgFees.reduce(
+        (acc, curr) => acc + Number(curr.pgFeeCommission || 0),
+        0
+      );
+      withdrawPgFeesTotal = withdrawPgFees.reduce(
+        (acc, curr) => acc + Number(curr.pgFeeCommission || 0),
+        0
+      );
+
+      totalPgFees = depositPgFeesTotal + withdrawPgFeesTotal;
+    }
 
     // Get fees from commission_summary where deposits and withdrawals are not null
     // const summaries = await prisma.commissionSummary.findMany({
