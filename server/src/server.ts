@@ -46,7 +46,7 @@ class Server {
       "cm9cmuwr6000oiol5ob3lmprc",
       "cm9cqlj9w000piol52m087niu",
     ];
-    const GAIDS = ["cm9v4w7uk008fiocn7yvxz283", "cm9v56bl10026iozcn9qlokqu"];
+    const GAIDS = ["cma3hbjdb0020io9vrj0usfnm", "cma3h63q8000nio9vetirwy4k"];
     const MAIDS = [
       "cm9cjv0qc0013iob901spod6b",
       "cm9cjvrs6001hiob9jccmjs6p",
