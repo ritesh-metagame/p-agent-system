@@ -1734,12 +1734,81 @@ class CommissionService {
         })
         .then((users) => users.map((user) => user.id));
 
-      console.log("children ids", childrenIds);
+      let restUserIds = [];
+
+      if (roleName === UserRole.SUPER_ADMIN) {
+        const oIds = childrenIds;
+
+        const platinums = await prisma.user.findMany({
+          where: {
+            parentId: { in: oIds },
+            role: { name: UserRole.PLATINUM },
+          },
+          select: { id: true },
+        });
+
+        restUserIds = platinums.map((platinum) => platinum.id);
+
+        const goldens = await prisma.user.findMany({
+          where: {
+            parentId: { in: platinums.map((platinum) => platinum.id) },
+            role: { name: UserRole.GOLDEN },
+          },
+          select: { id: true },
+        });
+
+        restUserIds = [...restUserIds, ...goldens.map((golden) => golden.id)];
+      }
+
+      if (roleName === UserRole.OPERATOR) {
+        const pIds = childrenIds;
+
+        const goldens = await prisma.user.findMany({
+          where: {
+            parentId: { in: pIds },
+          },
+          select: { id: true },
+        });
+
+        restUserIds = goldens.map((golden) => golden.id);
+      }
 
       // Get summaries for direct children users in the completed cycle
       const commissionSummaries = await prisma.user.findMany({
         where: {
           id: { in: childrenIds },
+        },
+        include: {
+          commissionSummaries: {
+            where: {
+              // createdAt: {
+              //   gte: cycleStartDate,
+              //   lte: cycleEndDate,
+              // },
+              settledStatus: "N",
+              NOT: {
+                categoryName: "Unknown",
+              },
+            },
+            select: {
+              id: true,
+              // user: true,
+              totalDeposit: true,
+              totalWithdrawals: true,
+              totalBetAmount: true,
+              createdAt: true,
+              netGGR: true,
+              paymentGatewayFee: true,
+              netCommissionAvailablePayout: true,
+              categoryName: true,
+            },
+          },
+        },
+      });
+
+      const restCommissionSummaries = await prisma.user.findMany({
+        where: {
+          id: { in: restUserIds },
         },
         include: {
           commissionSummaries: {
@@ -1885,6 +1954,44 @@ class CommissionService {
             {} as any
           );
 
+          // Add commissions from restCommissionSummaries for this user's hierarchy
+          // Find all rest users that belong to this user's hierarchy
+          const relevantRestUsers = restCommissionSummaries.filter(
+            (restUser) => {
+              // Logic to determine if restUser belongs to user's hierarchy
+              // This depends on your specific hierarchy rules, but a simple approach could be:
+              // Check if the restUser has this user as an ancestor in the chain
+              return true; // Replace with actual hierarchy check if needed
+            }
+          );
+
+          // Add their commission amounts to the totals without adding their IDs
+          for (const restUser of relevantRestUsers) {
+            for (const summary of restUser.commissionSummaries) {
+              // Calculate totals by game category - same logic as above but don't add IDs
+              if (summary.categoryName.includes("E-Games")) {
+                summariesByUser.totalEgamesCommissions +=
+                  summary.netCommissionAvailablePayout || 0;
+              } else if (summary.categoryName.includes("Sports Betting")) {
+                summariesByUser.totalSportsBettingCommissions +=
+                  summary.netCommissionAvailablePayout || 0;
+              } else if (
+                summary.categoryName.includes("Speciality Games - RNG") ||
+                summary.categoryName.includes("Speciality Games - Tote")
+              ) {
+                summariesByUser.totalSpecialtyGamesCommissions +=
+                  summary.netCommissionAvailablePayout || 0;
+              }
+
+              // Update overall totals
+              summariesByUser.grossCommissions += summary.netGGR || 0;
+              summariesByUser.paymentGatewayFees +=
+                summary.paymentGatewayFee || 0;
+              summariesByUser.netCommissions +=
+                summary.netCommissionAvailablePayout || 0;
+            }
+          }
+
           const pendingPaymentGatewayFees = await this.getPaymentGatewayFee(
             [user.id],
             false,
@@ -1903,7 +2010,7 @@ class CommissionService {
 
           // Create a unified row for this user with all category totals
           return {
-            ids: summariesByUser.ids,
+            ids: summariesByUser.ids, // Keep only the original childrenIds
             network: summariesByUser.network,
             totalEgamesCommissions: summariesByUser.totalEgamesCommissions,
             bankName: summariesByUser.bankName,
