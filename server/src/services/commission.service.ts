@@ -1955,15 +1955,115 @@ class CommissionService {
           );
 
           // Add commissions from restCommissionSummaries for this user's hierarchy
-          // Find all rest users that belong to this user's hierarchy
-          const relevantRestUsers = restCommissionSummaries.filter(
-            (restUser) => {
-              // if restUser.parentId
-              // Logic to determine if restUser belongs to user's hierarchy
-              // This depends on your specific hierarchy rules, but a simple approach could be:
-              // Check if the restUser has this user as an ancestor in the chain
-              return restUser.parentId === user.id; // Replace with actual hierarchy check if needed
+          const userRole = await this.roleDao
+            .getRoleById(user.roleId)
+            .then((role) => role.name);
+
+          // Initialize arrays to store relevant users at each level of the hierarchy
+          let relevantRestUsers = [];
+
+          // Get all user roles ahead of time
+          const restUserRoles = await Promise.all(
+            restCommissionSummaries.map(async (restUser) => {
+              const role = await this.roleDao
+                .getRoleById(restUser.roleId)
+                .then((role) => role.name);
+              return {
+                userId: restUser.id,
+                parentId: restUser.parentId,
+                role: role,
+              };
+            })
+          );
+
+          if (userRole === UserRole.SUPER_ADMIN) {
+            // For SUPER_ADMIN, we need to include OPERATOR's descendants (PLATINUM and GOLDEN)
+            // First, find all direct PLATINUM descendants
+            const platinumUsers = restCommissionSummaries.filter((restUser) => {
+              const restUserRole = restUserRoles.find(
+                (r) => r.userId === restUser.id
+              );
+              return (
+                restUser.parentId === user.id &&
+                restUserRole?.role === UserRole.PLATINUM
+              );
+            });
+
+            // Add these PLATINUM users to our relevant users
+            relevantRestUsers = [...platinumUsers];
+
+            // For each PLATINUM user, find their GOLDEN descendants
+            const goldenUsers = [];
+            for (const platinumUser of platinumUsers) {
+              const platinumGoldens = restCommissionSummaries.filter(
+                (restUser) => {
+                  const restUserRole = restUserRoles.find(
+                    (r) => r.userId === restUser.id
+                  );
+                  return (
+                    restUser.parentId === platinumUser.id &&
+                    restUserRole?.role === UserRole.GOLDEN
+                  );
+                }
+              );
+              goldenUsers.push(...platinumGoldens);
             }
+
+            // Add these GOLDEN users to our relevant users
+            relevantRestUsers = [...relevantRestUsers, ...goldenUsers];
+          } else if (userRole === UserRole.OPERATOR) {
+            // For OPERATOR, we need PLATINUM users as direct children
+            const platinumUsers = restCommissionSummaries.filter((restUser) => {
+              const restUserRole = restUserRoles.find(
+                (r) => r.userId === restUser.id
+              );
+              return (
+                restUser.parentId === user.id &&
+                restUserRole?.role === UserRole.PLATINUM
+              );
+            });
+
+            // Add these PLATINUM users to our relevant users
+            relevantRestUsers = [...platinumUsers];
+
+            // For each PLATINUM user, find their GOLDEN descendants
+            const goldenUsers = [];
+            for (const platinumUser of platinumUsers) {
+              const platinumGoldens = restCommissionSummaries.filter(
+                (restUser) => {
+                  const restUserRole = restUserRoles.find(
+                    (r) => r.userId === restUser.id
+                  );
+                  return (
+                    restUser.parentId === platinumUser.id &&
+                    restUserRole?.role === UserRole.GOLDEN
+                  );
+                }
+              );
+              goldenUsers.push(...platinumGoldens);
+            }
+
+            // Add these GOLDEN users to our relevant users
+            relevantRestUsers = [...relevantRestUsers, ...goldenUsers];
+          } else if (userRole === UserRole.PLATINUM) {
+            // For PLATINUM, we only need direct GOLDEN children
+            const goldenUsers = restCommissionSummaries.filter((restUser) => {
+              const restUserRole = restUserRoles.find(
+                (r) => r.userId === restUser.id
+              );
+              return (
+                restUser.parentId === user.id &&
+                restUserRole?.role === UserRole.GOLDEN
+              );
+            });
+
+            // Add these GOLDEN users to our relevant users
+            relevantRestUsers = [...goldenUsers];
+          }
+          // GOLDEN users don't have any descendants in this hierarchy, so no special case needed
+
+          console.log(
+            `Found ${relevantRestUsers.length} relevant descendant users for ${user.username}`
           );
 
           console.log({ relevantRestUsers });
