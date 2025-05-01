@@ -1087,6 +1087,13 @@ class CommissionService {
       let pendingPaymentGatewayFee;
       let settledPaymentGatewayFee;
 
+      const categoryData = {
+        "E-Games": { pending: [], settled: [] },
+        "Sports Betting": { pending: [], settled: [] },
+        "Speciality Games - Tote": { pending: [], settled: [] },
+        "Speciality Games - RNG": { pending: [], settled: [] },
+      };
+
       // Handle hierarchy based access
       if (roleName === UserRole.SUPER_ADMIN) {
         const operators = await prisma.user.findMany({
@@ -1134,6 +1141,30 @@ class CommissionService {
           undefined,
           undefined
         );
+
+        // Fetch settled data for operators and their hierarchy
+        const settledData = await prisma.commissionSummary.findMany({
+          where: {
+            userId: { in: userIds },
+            settledStatus: "Y",
+          },
+          select: {
+            categoryName: true,
+            totalBetAmount: true,
+            netGGR: true,
+            grossCommission: true,
+            paymentGatewayFee: true,
+            netCommissionAvailablePayout: true,
+          },
+        });
+
+        // Add settled data to categoryData
+        settledData.forEach((summary) => {
+          if (!categoryData[summary.categoryName]) {
+            categoryData[summary.categoryName] = { pending: [], settled: [] };
+          }
+          categoryData[summary.categoryName].settled.push(summary);
+        });
       }
 
       if (roleName === UserRole.OPERATOR) {
@@ -1144,7 +1175,8 @@ class CommissionService {
           },
           select: { id: true },
         });
-        userIds = [...userIds, ...platinums.map((platinum) => platinum.id)];
+
+        userIds = platinums.map((platinum) => platinum.id);
 
         const goldens = await prisma.user.findMany({
           where: {
@@ -1154,9 +1186,31 @@ class CommissionService {
           select: { id: true },
         });
 
-        gIds = goldens.map((golden) => golden.id);
-
         userIds = userIds.concat(goldens.map((golden) => golden.id));
+
+        // Fetch settled data for platinums and their hierarchy
+        const settledData = await prisma.commissionSummary.findMany({
+          where: {
+            userId: { in: userIds },
+            settledStatus: "Y",
+          },
+          select: {
+            categoryName: true,
+            totalBetAmount: true,
+            netGGR: true,
+            grossCommission: true,
+            paymentGatewayFee: true,
+            netCommissionAvailablePayout: true,
+          },
+        });
+
+        // Add settled data to categoryData
+        settledData.forEach((summary) => {
+          if (!categoryData[summary.categoryName]) {
+            categoryData[summary.categoryName] = { pending: [], settled: [] };
+          }
+          categoryData[summary.categoryName].settled.push(summary);
+        });
 
         pIds = [userId];
 
@@ -1184,7 +1238,31 @@ class CommissionService {
           select: { id: true },
         });
 
-        userIds = [...userIds, ...goldens.map((golden) => golden.id)];
+        userIds = goldens.map((golden) => golden.id);
+
+        // Fetch settled data for goldens
+        const settledData = await prisma.commissionSummary.findMany({
+          where: {
+            userId: { in: userIds },
+            settledStatus: "Y",
+          },
+          select: {
+            categoryName: true,
+            totalBetAmount: true,
+            netGGR: true,
+            grossCommission: true,
+            paymentGatewayFee: true,
+            netCommissionAvailablePayout: true,
+          },
+        });
+
+        // Add settled data to categoryData
+        settledData.forEach((summary) => {
+          if (!categoryData[summary.categoryName]) {
+            categoryData[summary.categoryName] = { pending: [], settled: [] };
+          }
+          categoryData[summary.categoryName].settled.push(summary);
+        });
 
         gIds = [...goldens.map((golden) => golden.id)];
 
@@ -1204,7 +1282,10 @@ class CommissionService {
       }
 
       if (roleName === UserRole.GOLDEN) {
-        // userIds = [...userIds, ...goldens.map((golden) => golden.id)];
+        // No settled data for golden as they do not settle to anyone
+        Object.keys(categoryData).forEach((category) => {
+          categoryData[category].settled = [];
+        });
 
         gIds = [userId];
 
@@ -1230,12 +1311,6 @@ class CommissionService {
       // });
 
       // Initialize an object to store category-specific data
-      const categoryData = {
-        "E-Games": { pending: [], settled: [] },
-        "Sports Betting": { pending: [], settled: [] },
-        "Speciality Games - Tote": { pending: [], settled: [] },
-        "Speciality Games - RNG": { pending: [], settled: [] },
-      };
 
       let cycleStartDate: Date;
       let cycleEndDate: Date;
@@ -1461,15 +1536,16 @@ class CommissionService {
         categoryTotals.pending.specialty.amount;
 
       const totalSettledGrossCommission =
-        categoryTotals.settled.egames.grossCommission +
-        categoryTotals.settled.sports.grossCommission +
-        categoryTotals.settled.specialty.grossCommission;
+        categoryTotals.settled.egames.amount +
+        categoryTotals.settled.sports.amount +
+        categoryTotals.settled.specialty.amount;
 
       const totalPendingNetCommissionPayout =
         totalPendingGrossCommission - pendingPaymentGatewayFee;
 
       const totalSettledNetCommissionPayout =
-        totalSettledGrossCommission - settledPaymentGatewayFee;
+        totalSettledGrossCommission -
+        categoryTotals.settled.totalPaymentGatewayFees;
 
       console.log({ categoryTotals });
 
@@ -1509,7 +1585,7 @@ class CommissionService {
           {
             label: "Less: Total Payment Gateway Fees",
             pendingSettlement: pendingPaymentGatewayFee,
-            settledAllTime: settledPaymentGatewayFee,
+            settledAllTime: categoryTotals.settled.totalPaymentGatewayFees,
           },
           {
             label:
