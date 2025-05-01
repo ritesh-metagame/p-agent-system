@@ -1913,10 +1913,11 @@ class CommissionService {
           // Find all rest users that belong to this user's hierarchy
           const relevantRestUsers = restCommissionSummaries.filter(
             (restUser) => {
+              // if restUser.parentId
               // Logic to determine if restUser belongs to user's hierarchy
               // This depends on your specific hierarchy rules, but a simple approach could be:
               // Check if the restUser has this user as an ancestor in the chain
-              return true; // Replace with actual hierarchy check if needed
+              return restUser.parentId === user.id; // Replace with actual hierarchy check if needed
             }
           );
 
