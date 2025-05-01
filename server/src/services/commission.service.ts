@@ -1966,6 +1966,8 @@ class CommissionService {
             }
           );
 
+          console.log({ relevantRestUsers });
+
           // Add their commission amounts to the totals without adding their IDs
           for (const restUser of relevantRestUsers) {
             for (const summary of restUser.commissionSummaries) {
@@ -1991,6 +1993,8 @@ class CommissionService {
               summariesByUser.netCommissions +=
                 summary.netCommissionAvailablePayout || 0;
             }
+
+            console.log({ commissionByUser: summariesByUser });
           }
 
           const pendingPaymentGatewayFees = await this.getPaymentGatewayFee(
