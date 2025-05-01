@@ -2073,6 +2073,9 @@ class CommissionService {
             for (const summary of restUser.commissionSummaries) {
               // Calculate totals by game category - same logic as above but don't add IDs
               if (summary.categoryName.includes("E-Games")) {
+                console.log({
+                  "E-Games": summariesByUser.totalEgamesCommissions || 0,
+                });
                 summariesByUser.totalEgamesCommissions +=
                   summary.netCommissionAvailablePayout || 0;
               } else if (summary.categoryName.includes("Sports Betting")) {
