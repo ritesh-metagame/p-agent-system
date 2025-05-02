@@ -526,7 +526,7 @@ class CommissionDao {
       // Fetch settled data for platinums and their hierarchy
       const settledData = await prisma.commissionSummary.findMany({
         where: {
-          userId: { in: userIds },
+          userId: { in: platinums.map((platinum) => platinum.id) },
           settledStatus: "Y",
         },
         select: {
@@ -739,11 +739,13 @@ class CommissionDao {
 
     console.log("Commission Summaries:", commissionSummaries);
 
+    console.group(totalPending, totalPending);
+
     return {
       summaries: commissionSummaries,
       allTotal: totals,
-      totalPending: totalPending - pendingPaymentGatewayFeeSum,
-      totalSettled: totalSettled - settledPaymentGatewayFee,
+      totalPending: totalPending > 0 ? totalPending - pendingPaymentGatewayFeeSum : 0,
+      totalSettled: totalSettled > 0 ? totalSettled - settledPaymentGatewayFee : 0,
     };
   }
 
