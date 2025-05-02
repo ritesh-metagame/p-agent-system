@@ -3935,13 +3935,13 @@ class CommissionService {
                 pendingSettlement:
                   data.type === "E-Games" ||
                   data.type === "Speciality Games - RNG"
-                    ? data.ggr.pending
-                    : data.betAmount.pending,
+                    ? (roleName === UserRole.GOLDEN ? data.ggr.allTime : data.ggr.pending)
+                    : (roleName === UserRole.GOLDEN ? data.betAmount.allTime : data.betAmount.pending),
                 settledAllTime:
                   data.type === "E-Games" ||
                   data.type === "Speciality Games - RNG"
-                    ? data.ggr.allTime
-                    : data.betAmount.allTime,
+                    ? (roleName === UserRole.GOLDEN ? 0 : data.ggr.allTime)
+                    : (roleName === UserRole.GOLDEN ? 0:  data.betAmount.allTime),
               },
               {
                 label: "Commission Rate",
@@ -3949,8 +3949,8 @@ class CommissionService {
               },
               {
                 label: "Total Commission",
-                pendingSettlement: data.commission.pending,
-                settledAllTime: data.commission.allTime,
+                pendingSettlement: (roleName === UserRole.GOLDEN ? data.commission.allTime : data.commission.pending),
+                settledAllTime: (roleName === UserRole.GOLDEN ? 0 : data.commission.allTime),
               },
             ],
           })),
