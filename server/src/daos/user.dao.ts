@@ -26,7 +26,7 @@ class UserDao {
       const summaries = await prisma.commissionSummary.findMany({
         where: {
           userId,
-          settledStatus: "N",
+          // settledStatus: "N",
         },
       });
 
