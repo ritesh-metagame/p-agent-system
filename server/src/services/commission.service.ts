@@ -3210,14 +3210,128 @@ class CommissionService {
       if (roleName === UserRole.SUPER_ADMIN) {
         // For superadmin, get all operators and their children
         const operators = await prisma.user.findMany({
-          where: { parentId: userId },
+          where: {
+            parentId: userId,
+            role: { name: UserRole.OPERATOR },
+          },
           select: { id: true },
         });
-        const operatorIds = operators.map((op) => op.id);
+        userIds = operators.map((op) => op.id);
+        oIds = userIds;
 
-        console.log({ operatorIds });
+        const platinums = await prisma.user.findMany({
+          where: {
+            parentId: { in: operators.map((op) => op.id) },
+            role: { name: UserRole.PLATINUM },
+          },
+          select: { id: true },
+        });
 
-        userIds = operatorIds;
+        userIds = userIds.concat(platinums.map((platinum) => platinum.id));
+
+        const goldens = await prisma.user.findMany({
+          where: {
+            parentId: { in: platinums.map((platinum) => platinum.id) },
+            role: { name: UserRole.GOLDEN },
+          },
+          select: { id: true },
+        });
+
+        gIds = goldens.map((golden) => golden.id);
+
+        userIds = userIds.concat(goldens.map((golden) => golden.id));
+
+        // Fetch settled data for operators and their hierarchy
+        const settledData = await prisma.commissionSummary.findMany({
+          where: {
+            userId: { in: userIds },
+            settledStatus: "Y",
+          },
+          select: {
+            userId: true,
+            categoryName: true,
+            totalBetAmount: true,
+            netGGR: true,
+            grossCommission: true,
+            paymentGatewayFee: true,
+            netCommissionAvailablePayout: true,
+          },
+        });
+
+        const settledUserIds = settledData.map((data) => data.userId);
+
+        settledOids = settledUserIds;
+
+        // Fetch non-settled data for operators and their hierarchy
+        // Check if there are any non-settled data for the same users
+
+        const nonSettledPlatinumChildren = await prisma.user.findMany({
+          where: {
+            parentId: { in: settledUserIds },
+            role: { name: UserRole.PLATINUM },
+          },
+          select: { id: true },
+        });
+
+        settledPids = nonSettledPlatinumChildren.map((platinum) => platinum.id);
+
+        const nonSettledGoldenChildren = await prisma.user.findMany({
+          where: {
+            parentId: {
+              in: nonSettledPlatinumChildren.map((platinum) => platinum.id),
+            },
+            role: { name: UserRole.GOLDEN },
+          },
+          select: { id: true },
+        });
+
+        settledGids = nonSettledGoldenChildren.map((golden) => golden.id);
+
+        if (settledData.length !== 0) {
+          const settledDataForNonSettled =
+            await prisma.commissionSummary.findMany({
+              where: {
+                userId: {
+                  in: [
+                    ...nonSettledPlatinumChildren.map((ch) => ch.id),
+                    ...nonSettledGoldenChildren.map((ch) => ch.id),
+                  ],
+                },
+                settledStatus: "N",
+              },
+              select: {
+                userId: true,
+                categoryName: true,
+                totalBetAmount: true,
+                netGGR: true,
+                grossCommission: true,
+                paymentGatewayFee: true,
+                netCommissionAvailablePayout: true,
+              },
+            });
+
+          settledData.push(...settledDataForNonSettled);
+        }
+
+        console.log({ settledData });
+
+        settledCommissionSummary = settledData;
+
+        pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
+          gIds,
+          false,
+          undefined,
+          undefined
+        );
+
+        settledPaymentGatewayFee = await this.getPaymentGatewayFee(
+          settledUserIds,
+          true,
+          undefined,
+          undefined
+        );
+
+        console.log({ settledPaymentGatewayFee });
       } else if (roleName === UserRole.OPERATOR) {
         // For operator, get all platinums and their children
         const platinums = await prisma.user.findMany({
