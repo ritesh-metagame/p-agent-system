@@ -469,7 +469,6 @@ class CommissionDao {
                   ...nonSettledGoldenChildren.map((ch) => ch.id),
                 ],
               },
-              settledStatus: "N",
             },
             select: {
               userId: true,
@@ -566,7 +565,7 @@ class CommissionDao {
               userId: {
                 in: [...nonSettledGoldenChildren.map((ch) => ch.id)],
               },
-              settledStatus: "N",
+              // settledStatus: "N",
             },
             select: {
               userId: true,

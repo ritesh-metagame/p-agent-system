@@ -1440,11 +1440,16 @@ class CommissionService {
         );
 
         settledPaymentGatewayFee = await this.getPaymentGatewayFee(
-          settledUserIds,
+          [userId],
           true,
           undefined,
           undefined
         );
+
+        console.log("-----------------------------------------------------")
+        console.log({ settledPaymentGatewayFee, pendingPaymentGatewayFee });
+        console.log("-----------------------------------------------------")
+
       }
 
       if (roleName === UserRole.PLATINUM) {
@@ -1497,7 +1502,7 @@ class CommissionService {
         );
 
         settledPaymentGatewayFee = await this.getPaymentGatewayFee(
-          settledGids,
+          [userId],
           true,
           undefined,
           undefined
@@ -3230,6 +3235,8 @@ class CommissionService {
         });
         const operatorIds = operators.map((op) => op.id);
 
+        oIds = operatorIds;
+
         userIds = operatorIds;
 
         const platinums = await prisma.user.findMany({
@@ -3362,6 +3369,8 @@ class CommissionService {
         });
         const platinumIds = platinums.map((p) => p.id);
 
+        pIds = platinumIds;
+
         console.log({ platinumIds });
 
         userIds = [...userIds, ...platinumIds];
@@ -3423,7 +3432,7 @@ class CommissionService {
                 userId: {
                   in: [...nonSettledGoldenChildren.map((ch) => ch.id)],
                 },
-                settledStatus: "N",
+                // settledStatus: "N",
               },
               select: {
                 userId: true,
@@ -3435,6 +3444,8 @@ class CommissionService {
                 netCommissionAvailablePayout: true,
               },
             });
+
+          console.log({settledDataForNonSettled})
 
           settledData.push(...settledDataForNonSettled);
         }
@@ -3852,69 +3863,162 @@ class CommissionService {
 
       console.log("Settled Commission Summary-----------------------------------", settledCommissionSummary)
 
-      // Process settled summaries
-      settledCommissionSummary.forEach((summary) => {
-        const categoryName = summary.categoryName;
-        console.log({ summary }, "--------------------------------------------------------");
-        switch (categoryName) {
-          case "E-Games":
-            const eGamesData = licenseData["E-Games"];
-            if (eGamesData.type === "E-Games") {
-              const ggr = summary.netGGR || 0;
-              roleName !== UserRole.SUPER_ADMIN
-                ? (eGamesData.ggr.allTime = ggr)
-                : (eGamesData.ggr.allTime = ggr);
-              roleName !== UserRole.SUPER_ADMIN
-                ? (eGamesData.commission.allTime +=
-                    summary.netCommissionAvailablePayout)
-                : (eGamesData.commission.allTime +=
-                    summary.netCommissionAvailablePayout);
-            }
-            break;
-          case "Sports Betting":
-            const sportsData = licenseData["Sports Betting"];
-            if (sportsData.type === "Sports Betting") {
-              const betAmount = summary.totalBetAmount || 0;
-              roleName !== UserRole.SUPER_ADMIN
-                ? (sportsData.betAmount.allTime = betAmount)
-                : (sportsData.betAmount.allTime = betAmount);
-              roleName !== UserRole.SUPER_ADMIN
-                ? (sportsData.commission.allTime +=
-                    summary.netCommissionAvailablePayout)
-                : (sportsData.commission.allTime +=
-                    summary.netCommissionAvailablePayout);
-            }
-            break;
-          case "Speciality Games - Tote":
-            const toteData = licenseData["Speciality Games - Tote"];
-            if (toteData.type === "Speciality Games - Tote") {
-              const betAmount = summary.totalBetAmount || 0;
-              roleName !== UserRole.SUPER_ADMIN
-                ? (toteData.betAmount.allTime = betAmount)
-                : (toteData.betAmount.allTime = betAmount);
-              roleName !== UserRole.SUPER_ADMIN
-                ? (toteData.commission.allTime +=
-                    summary.netCommissionAvailablePayout)
-                : (toteData.commission.allTime =
-                    summary.netCommissionAvailablePayout);
-            }
-            break;
-          case "Speciality Games - RNG":
-            const rngData = licenseData["Speciality Games - RNG"];
-            if (rngData.type === "Speciality Games - RNG") {
-              const ggr = summary.netGGR || 0;
-              roleName !== UserRole.SUPER_ADMIN
-                ? (rngData.ggr.allTime = ggr)
-                : (rngData.ggr.allTime = ggr);
-              roleName !== UserRole.SUPER_ADMIN
-                ? (rngData.commission.allTime +=
-                    summary.netCommissionAvailablePayout)
-                : (rngData.commission.allTime =
-                    summary.netCommissionAvailablePayout);
-            }
-            break;
+      const userIdSet = new Set();
+
+settledCommissionSummary.forEach((summary) => {
+  const categoryName = summary.categoryName;
+  const isOperator = oIds.includes(summary.userId);
+  const isPlatinum = settledPids.includes(summary.userId);
+  const isGolden = settledGids.includes(summary.userId)
+  const key = `${summary.userId}-${categoryName}`;
+
+  console.log({isPlatinum, isOperator})
+
+  switch (categoryName) {
+    case "E-Games": {
+      const eGamesData = licenseData["E-Games"];
+      if (eGamesData.type === "E-Games") {
+        // Only SUPER_ADMIN can modify GGR
+        if (
+          roleName === UserRole.SUPER_ADMIN &&
+          isOperator &&
+          !userIdSet.has(key)
+        ) {
+          userIdSet.add(key);
+          const ggr = summary.netGGR || 0;
+          eGamesData.ggr.allTime += ggr;
         }
-      });
+
+        if (roleName !== UserRole.SUPER_ADMIN && isPlatinum && !userIdSet.has(key)) {
+          userIdSet.add(key);
+          const ggr = summary.netGGR || 0;
+          eGamesData.ggr.allTime += ggr;
+
+        }
+
+        if (roleName !== UserRole.SUPER_ADMIN && isGolden && !userIdSet.has(key)) {
+          userIdSet.add(key);
+          const ggr = summary.netGGR || 0;
+          eGamesData.ggr.allTime += ggr;
+
+        }
+
+        // Commission applies to all roles
+        eGamesData.commission.allTime += summary.netCommissionAvailablePayout;
+      }
+      break;
+    }
+
+    case "Sports Betting": {
+      const sportsData = licenseData["Sports Betting"];
+      if (sportsData.type === "Sports Betting") {
+        
+        const betAmount = summary.totalBetAmount || 0;
+
+        if (
+          roleName === UserRole.SUPER_ADMIN &&
+          isOperator &&
+          !userIdSet.has(key)
+        ) {
+          userIdSet.add(key);
+          const ggr = summary.netGGR || 0;
+          sportsData.betAmount.allTime += betAmount;
+        }
+
+        if (
+          roleName !== UserRole.SUPER_ADMIN &&
+          isPlatinum &&
+          !userIdSet.has(key)
+        ) {
+          userIdSet.add(key);
+          const ggr = summary.netGGR || 0;
+          sportsData.betAmount.allTime += betAmount;
+        }
+
+        if (
+          roleName !== UserRole.SUPER_ADMIN &&
+          isGolden &&
+          !userIdSet.has(key)
+        ) {
+          userIdSet.add(key);
+          const ggr = summary.netGGR || 0;
+          sportsData.betAmount.allTime += betAmount;
+        }
+
+        sportsData.commission.allTime += summary.netCommissionAvailablePayout;
+
+        // sportsData.betAmount.allTime = betAmount;
+        // sportsData.commission.allTime += summary.netCommissionAvailablePayout;
+      }
+      break;
+    }
+
+    case "Speciality Games - Tote": {
+      const toteData = licenseData["Speciality Games - Tote"];
+      if (toteData.type === "Speciality Games - Tote") {
+        const betAmount = summary.totalBetAmount || 0;
+
+        if (
+          roleName === UserRole.SUPER_ADMIN &&
+          isOperator &&
+          !userIdSet.has(key)
+        ) {
+          userIdSet.add(key);
+          const ggr = summary.netGGR || 0;
+          toteData.betAmount.allTime += betAmount;
+        }
+
+        if (
+          roleName !== UserRole.SUPER_ADMIN &&
+          isPlatinum &&
+          !userIdSet.has(key)
+        ) {
+          userIdSet.add(key);
+          const ggr = summary.netGGR || 0;
+          toteData.betAmount.allTime += betAmount;
+        }
+
+        if (
+          roleName !== UserRole.SUPER_ADMIN &&
+          isGolden &&
+          !userIdSet.has(key)
+        ) {
+          userIdSet.add(key);
+          const ggr = summary.netGGR || 0;
+          toteData.betAmount.allTime += betAmount;
+        }
+
+        toteData.commission.allTime += summary.netCommissionAvailablePayout;
+
+        // sportsData.betAmount.allTime = betAmount;
+        // sportsData.commission.allTime += summary.netCommissionAvailablePayout;
+      }
+      break;
+    }
+
+    case "Speciality Games - RNG": {
+      const rngData = licenseData["Speciality Games - RNG"];
+      if (rngData.type === "Speciality Games - RNG") {
+        // Only SUPER_ADMIN can modify GGR
+        if (
+          roleName === UserRole.SUPER_ADMIN &&
+          isOperator &&
+          !userIdSet.has(key)
+        ) {
+          userIdSet.add(key);
+          const ggr = summary.netGGR || 0;
+          rngData.ggr.allTime += ggr;
+        }
+
+        // Commission applies to all roles
+        rngData.commission.allTime += summary.netCommissionAvailablePayout;
+      }
+      break;
+    }
+  }
+});
+
+
 
       // Return response structure
       return {
