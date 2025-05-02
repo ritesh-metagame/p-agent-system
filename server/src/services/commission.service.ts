@@ -3758,11 +3758,12 @@ class CommissionService {
       // );
 
       // console.log({ settledSummaries });
+      // console.log(pendingSU)
 
       // Process pending summaries
       pendingSummaries.forEach((summary) => {
         const categoryName = summary.categoryName;
-        console.log({ categoryName });
+        // console.log({ categoryName });
         switch (categoryName) {
           case "E-Games":
             const eGamesData = licenseData["E-Games"];
@@ -3772,12 +3773,12 @@ class CommissionService {
               console.log("🙌", { ggr });
               roleName !== UserRole.SUPER_ADMIN
                 ? (eGamesData.ggr.pending = ggr)
-                : (eGamesData.ggr.pending += ggr);
+                : (eGamesData.ggr.pending = ggr);
               roleName !== UserRole.SUPER_ADMIN
                 ? (eGamesData.commission.pending =
                     ggr * (eGamesData.commissionRate / 100))
-                : (eGamesData.commission.pending +=
-                    ggr * (eGamesData.commissionRate / 100));
+                : (eGamesData.commission.pending =
+                    summary.netGGR * (eGamesData.commissionRate / 100));
             }
             break;
           case "Sports Betting":
@@ -3788,12 +3789,12 @@ class CommissionService {
               console.log("🙌", { betAmount });
               roleName !== UserRole.SUPER_ADMIN
                 ? (sportsData.betAmount.pending = betAmount)
-                : (sportsData.betAmount.pending += betAmount);
+                : (sportsData.betAmount.pending = betAmount);
               roleName !== UserRole.SUPER_ADMIN
                 ? (sportsData.commission.pending =
                     betAmount * (sportsData.commissionRate / 100))
                 : (sportsData.commission.pending +=
-                    betAmount * (sportsData.commissionRate / 100));
+                    summary.netCommissionAvailablePayout);
             }
             break;
           case "Speciality Games - Tote":
@@ -3803,12 +3804,12 @@ class CommissionService {
               const betAmount = summary.totalBetAmount || 0;
               roleName !== UserRole.SUPER_ADMIN
                 ? (toteData.betAmount.pending = betAmount)
-                : (toteData.betAmount.pending += betAmount);
+                : (toteData.betAmount.pending = betAmount);
               roleName !== UserRole.SUPER_ADMIN
                 ? (toteData.commission.pending =
                     betAmount * (toteData.commissionRate / 100))
                 : (toteData.commission.pending +=
-                    betAmount * (toteData.commissionRate / 100));
+                    summary.netCommissionAvailablePayout);
             }
             break;
           case "Speciality Games - RNG":
@@ -3818,12 +3819,12 @@ class CommissionService {
               const ggr = summary.netGGR || 0;
               roleName !== UserRole.SUPER_ADMIN
                 ? (rngData.ggr.pending = ggr)
-                : (rngData.ggr.pending += ggr);
+                : (rngData.ggr.pending = ggr);
               roleName !== UserRole.SUPER_ADMIN
                 ? (rngData.commission.pending =
                     ggr * (rngData.commissionRate / 100))
                 : (rngData.commission.pending +=
-                    ggr * (rngData.commissionRate / 100));
+                    summary.netCommissionAvailablePayout);
             }
             break;
         }
@@ -3832,6 +3833,7 @@ class CommissionService {
       // Process settled summaries
       settledCommissionSummary.forEach((summary) => {
         const categoryName = summary.categoryName;
+        console.log({ summary });
         switch (categoryName) {
           case "E-Games":
             const eGamesData = licenseData["E-Games"];
@@ -3839,14 +3841,13 @@ class CommissionService {
               const ggr = summary.netGGR || 0;
               roleName !== UserRole.SUPER_ADMIN
                 ? (eGamesData.ggr.allTime = ggr)
-                : (eGamesData.ggr.allTime += ggr);
+                : (eGamesData.ggr.allTime = ggr);
               roleName !== UserRole.SUPER_ADMIN
                 ? (eGamesData.commission.allTime +=
                     summary.netCommissionAvailablePayout -
                     settledPaymentGatewayFee)
                 : (eGamesData.commission.allTime +=
-                    summary.netCommissionAvailablePayout -
-                    settledPaymentGatewayFee);
+                    summary.netCommissionAvailablePayout);
             }
             break;
           case "Sports Betting":
@@ -3855,14 +3856,13 @@ class CommissionService {
               const betAmount = summary.totalBetAmount || 0;
               roleName !== UserRole.SUPER_ADMIN
                 ? (sportsData.betAmount.allTime = betAmount)
-                : (sportsData.betAmount.allTime += betAmount);
+                : (sportsData.betAmount.allTime = betAmount);
               roleName !== UserRole.SUPER_ADMIN
                 ? (sportsData.commission.allTime +=
                     summary.netCommissionAvailablePayout -
                     settledPaymentGatewayFee)
                 : (sportsData.commission.allTime +=
-                    summary.netCommissionAvailablePayout -
-                    settledPaymentGatewayFee);
+                    summary.netCommissionAvailablePayout);
             }
             break;
           case "Speciality Games - Tote":
@@ -3871,14 +3871,13 @@ class CommissionService {
               const betAmount = summary.totalBetAmount || 0;
               roleName !== UserRole.SUPER_ADMIN
                 ? (toteData.betAmount.allTime = betAmount)
-                : (toteData.betAmount.allTime += betAmount);
+                : (toteData.betAmount.allTime = betAmount);
               roleName !== UserRole.SUPER_ADMIN
                 ? (toteData.commission.allTime +=
                     summary.netCommissionAvailablePayout -
                     settledPaymentGatewayFee)
                 : (toteData.commission.allTime +=
-                    summary.netCommissionAvailablePayout -
-                    settledPaymentGatewayFee);
+                    summary.netCommissionAvailablePayout);
             }
             break;
           case "Speciality Games - RNG":
@@ -3887,14 +3886,13 @@ class CommissionService {
               const ggr = summary.netGGR || 0;
               roleName !== UserRole.SUPER_ADMIN
                 ? (rngData.ggr.allTime = ggr)
-                : (rngData.ggr.allTime += ggr);
+                : (rngData.ggr.allTime = ggr);
               roleName !== UserRole.SUPER_ADMIN
                 ? (rngData.commission.allTime +=
                     summary.netCommissionAvailablePayout -
                     settledPaymentGatewayFee)
                 : (rngData.commission.allTime +=
-                    summary.netCommissionAvailablePayout -
-                    settledPaymentGatewayFee);
+                    summary.netCommissionAvailablePayout);
             }
             break;
         }
@@ -3934,7 +3932,10 @@ class CommissionService {
               {
                 label: "Total Commission",
                 pendingSettlement: data.commission.pending,
-                settledAllTime: data.commission.allTime,
+                settledAllTime:
+                  data.commission.allTime > 0
+                    ? data.commission.allTime - settledPaymentGatewayFee
+                    : 0,
               },
             ],
           })),
