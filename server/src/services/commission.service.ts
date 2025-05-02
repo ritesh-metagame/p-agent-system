@@ -2752,7 +2752,7 @@ class CommissionService {
     // If in test mode, return dates from 1 month back
     if (process.env.VIEW_MODE === "test") {
       const oneMonthAgo = new Date(currentDate);
-      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 8);
       return {
         cycleStartDate: oneMonthAgo,
         cycleEndDate: currentDate,
@@ -3382,7 +3382,7 @@ class CommissionService {
         pIds = [userId];
 
         pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
-          pIds,
+          goldIds,
           false,
           undefined,
           undefined
@@ -3728,9 +3728,11 @@ class CommissionService {
                 : (eGamesData.ggr.allTime += ggr);
               roleName !== UserRole.SUPER_ADMIN
                 ? (eGamesData.commission.allTime +=
-                    summary.netCommissionAvailablePayout)
+                    summary.netCommissionAvailablePayout -
+                    settledPaymentGatewayFee)
                 : (eGamesData.commission.allTime +=
-                    ggr * (eGamesData.commissionRate / 100));
+                    summary.netCommissionAvailablePayout -
+                    settledPaymentGatewayFee);
             }
             break;
           case "Sports Betting":
@@ -3742,9 +3744,11 @@ class CommissionService {
                 : (sportsData.betAmount.allTime += betAmount);
               roleName !== UserRole.SUPER_ADMIN
                 ? (sportsData.commission.allTime +=
-                    summary.netCommissionAvailablePayout)
+                    summary.netCommissionAvailablePayout -
+                    settledPaymentGatewayFee)
                 : (sportsData.commission.allTime +=
-                    betAmount * (sportsData.commissionRate / 100));
+                    summary.netCommissionAvailablePayout -
+                    settledPaymentGatewayFee);
             }
             break;
           case "Speciality Games - Tote":
@@ -3755,10 +3759,12 @@ class CommissionService {
                 ? (toteData.betAmount.allTime = betAmount)
                 : (toteData.betAmount.allTime += betAmount);
               roleName !== UserRole.SUPER_ADMIN
-                ? (toteData.commission.allTime =
-                    betAmount * (toteData.commissionRate / 100))
+                ? (toteData.commission.allTime +=
+                    summary.netCommissionAvailablePayout -
+                    settledPaymentGatewayFee)
                 : (toteData.commission.allTime +=
-                    betAmount * (toteData.commissionRate / 100));
+                    summary.netCommissionAvailablePayout -
+                    settledPaymentGatewayFee);
             }
             break;
           case "Speciality Games - RNG":
@@ -3769,10 +3775,12 @@ class CommissionService {
                 ? (rngData.ggr.allTime = ggr)
                 : (rngData.ggr.allTime += ggr);
               roleName !== UserRole.SUPER_ADMIN
-                ? (rngData.commission.allTime =
-                    ggr * (rngData.commissionRate / 100))
+                ? (rngData.commission.allTime +=
+                    summary.netCommissionAvailablePayout -
+                    settledPaymentGatewayFee)
                 : (rngData.commission.allTime +=
-                    ggr * (rngData.commissionRate / 100));
+                    summary.netCommissionAvailablePayout -
+                    settledPaymentGatewayFee);
             }
             break;
         }
