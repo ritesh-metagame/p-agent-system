@@ -102,7 +102,7 @@ class GenerateCommission {
                 netCommissionAvailablePayout: netCommission,
                 settledStatus: "N",
                 siteId: null,
-                createdAt: new Date(),
+                createdAt: date,
                 updatedAt: new Date(),
               },
             });

@@ -1,0 +1,28 @@
+debug: 2025-05-02T04:53:01.463Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-02T04:53:02.071Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-02T04:53:02.079Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-02T04:53:02.089Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6a0r0001v9gs8w9w9rs7
+debug: 2025-05-02T04:53:02.091Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xvjgx20007v9zwwwo4m74v
+http: 2025-05-02T04:53:02.172Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=platinum 304 - - 848.136 ms
+
+debug: 2025-05-02T04:53:02.221Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-02T04:53:02.255Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-02T04:53:02.258Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-02T04:53:02.261Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6a0r0001v9gs8w9w9rs7
+debug: 2025-05-02T04:53:02.262Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xvjgx20007v9zwwwo4m74v
+http: 2025-05-02T04:53:02.289Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=platinum 304 - - 89.288 ms
+
+debug: 2025-05-02T04:53:07.479Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-02T04:53:07.491Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-02T04:53:07.493Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-02T04:53:07.496Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6a0r0001v9gs8w9w9rs7
+debug: 2025-05-02T04:53:07.498Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xvjgx20007v9zwwwo4m74v
+http: 2025-05-02T04:53:07.507Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=platinum 304 - - 48.106 ms
+
+debug: 2025-05-02T04:53:07.553Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-02T04:53:07.562Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-02T04:53:07.563Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-02T04:53:07.565Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6a0r0001v9gs8w9w9rs7
+debug: 2025-05-02T04:53:07.565Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xvjgx20007v9zwwwo4m74v
+http: 2025-05-02T04:53:07.588Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=platinum 304 - - 40.554 ms
+
