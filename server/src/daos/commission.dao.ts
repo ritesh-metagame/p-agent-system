@@ -770,20 +770,78 @@ class CommissionDao {
       throw error;
     }
   }
-
+  
   public async markCommissionAsSettled(ids: string[]) {
     try {
-      const updatedSummary = await prisma.commissionSummary.updateMany({
+      // First get the current records with their user roles
+      const currentRecords = await prisma.commissionSummary.findMany({
         where: {
           id: { in: ids },
         },
-        data: {
-          settledStatus: "Y",
-          settledAt: new Date(),
+        select: {
+          id: true,
+          pendingSettleCommission: true,
+          netCommissionAvailablePayout: true,
+          paymentGatewayFee: true,
+          user: {
+            select: {
+              role: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          }
         },
       });
 
-      return updatedSummary;
+      // Separate golden users from others
+      const goldenRecords = currentRecords.filter(record => record.user.role.name === UserRole.GOLDEN);
+      const otherRecords = currentRecords.filter(record => record.user.role.name !== UserRole.GOLDEN);
+
+      // Calculate ratio only for golden users
+      const totalGoldenNetCommission = goldenRecords.reduce(
+        (sum, record) => sum + record.netCommissionAvailablePayout,
+        0
+      );
+
+      // Get the total paymentGatewayFee (should be same value for all records)
+      const totalPaymentGatewayFee = currentRecords[0]?.paymentGatewayFee || 0;
+
+      // Update golden records with ratio-based payment gateway fee
+      const updatedGoldenRecords = await Promise.all(
+        goldenRecords.map(record => {
+          // Calculate this record's ratio of the total commission
+          const ratio = record.netCommissionAvailablePayout / totalGoldenNetCommission;
+          // Calculate this record's share of the payment gateway fee based on its ratio
+          const recordPaymentGatewayFee = totalPaymentGatewayFee * ratio;
+
+          return prisma.commissionSummary.update({
+            where: { id: record.id },
+            data: {
+              settledStatus: "Y",
+              settledAt: new Date(),
+              pendingSettleCommission: (record.pendingSettleCommission || 0) - (record.netCommissionAvailablePayout - recordPaymentGatewayFee),
+            },
+          });
+        })
+      );
+
+      // Update other records without ratio calculation
+      const updatedOtherRecords = await Promise.all(
+        otherRecords.map(record => {
+          return prisma.commissionSummary.update({
+            where: { id: record.id },
+            data: {
+              settledStatus: "Y",
+              settledAt: new Date(),
+              pendingSettleCommission: (record.pendingSettleCommission || 0) - record.netCommissionAvailablePayout,
+            },
+          });
+        })
+      );
+
+      return [...updatedGoldenRecords, ...updatedOtherRecords];
     } catch (error) {
       console.error("Error updating settledStatus:", error);
       throw error;
