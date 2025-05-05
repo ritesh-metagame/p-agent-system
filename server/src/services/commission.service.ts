@@ -1298,6 +1298,7 @@ class CommissionService {
           settledData.push(...settledDataForNonSettled);
         }
 
+        console.log(`Settled Data: `, settledData)
 
         // Add settled data to categoryData
         settledData.forEach((summary) => {
@@ -1355,7 +1356,7 @@ class CommissionService {
         // Fetch settled data for platinums and their hierarchy
         const settledData = await prisma.commissionSummary.findMany({
           where: {
-            userId: { in: [...userIds] },
+            userId: { in: [...pIds] },
             settledStatus: "Y",
           },
           select: {
@@ -1395,7 +1396,7 @@ class CommissionService {
                 userId: {
                   in: [...nonSettledGoldenChildren.map((ch) => ch.id)],
                 },
-                settledStatus: "N",
+                // settledStatus: "N",
               },
               select: {
                 userId: true,
