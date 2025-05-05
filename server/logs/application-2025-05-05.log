@@ -2357,3 +2357,442 @@ http: 2025-05-05T05:46:51.808Z [logger\morgan.ts] GET /api/v1/commission/getTota
 
 http: 2025-05-05T05:46:51.888Z [logger\morgan.ts] GET /api/v1/commission/total-breakdown 304 - - 130.728 ms
 
+info: 2025-05-05T05:47:29.232Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-05T05:47:29.259Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+debug: 2025-05-05T05:47:29.393Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:29.500Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:29.508Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:29.511Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:29.514Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:29.524Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:29.546Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:29.548Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:29.549Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:29.552Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:47:29.578Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:29.581Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:29.582Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:29.582Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:47:29.589Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:29.591Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:29.593Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:29.594Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:47:29.599Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:29.600Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:29.603Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:29.605Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:47:29.609Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:29.609Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:29.610Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:29.610Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:47:29.613Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:29.614Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:29.614Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:29.615Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+http: 2025-05-05T05:47:29.641Z [logger\morgan.ts] POST /api/v1/commission/running-tally 200 340 - 163.839 ms
+
+http: 2025-05-05T05:47:29.647Z [logger\morgan.ts] GET /api/v1/commission/payment-gateway-fees 304 - - 155.249 ms
+
+debug: 2025-05-05T05:47:29.655Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-05-05T05:47:29.664Z [logger\morgan.ts] GET /api/v1/network-statistics 304 - - 291.064 ms
+
+debug: 2025-05-05T05:47:29.666Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:29.669Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:29.670Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:29.671Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:29.672Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:47:29.683Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:29.685Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:29.686Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:29.688Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:29.689Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+http: 2025-05-05T05:47:29.693Z [logger\morgan.ts] GET /api/v1/commission/license-breakdown 200 - - 180.659 ms
+
+debug: 2025-05-05T05:47:29.696Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:29.697Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:29.697Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:29.697Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:47:29.708Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-05-05T05:47:29.714Z [logger\morgan.ts] POST /api/v1/commission/running-tally 200 340 - 62.191 ms
+
+http: 2025-05-05T05:47:29.719Z [logger\morgan.ts] GET /api/v1/commission/payment-gateway-fees 304 - - 57.914 ms
+
+debug: 2025-05-05T05:47:29.724Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:29.725Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:29.725Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:29.726Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+http: 2025-05-05T05:47:29.741Z [logger\morgan.ts] GET /api/v1/network-statistics 304 - - 59.862 ms
+
+http: 2025-05-05T05:47:29.753Z [logger\morgan.ts] GET /api/v1/commission/getTotalCommissionByUser?userId=cm9jkceqd0004v9gs9gs4k1ra 304 - - 272.637 ms
+
+debug: 2025-05-05T05:47:29.762Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-05-05T05:47:29.765Z [logger\morgan.ts] GET /api/v1/commission/license-breakdown 304 - - 65.171 ms
+
+debug: 2025-05-05T05:47:29.770Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:29.771Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:29.772Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:29.773Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+http: 2025-05-05T05:47:29.788Z [logger\morgan.ts] GET /api/v1/commission/total-breakdown 304 - - 375.900 ms
+
+debug: 2025-05-05T05:47:29.795Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:29.802Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:29.803Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:29.804Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:29.805Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+http: 2025-05-05T05:47:29.846Z [logger\morgan.ts] GET /api/v1/commission/getTotalCommissionByUser?userId=cm9jkceqd0004v9gs9gs4k1ra 304 - - 88.062 ms
+
+http: 2025-05-05T05:47:29.878Z [logger\morgan.ts] GET /api/v1/commission/total-breakdown 304 - - 86.504 ms
+
+http: 2025-05-05T05:47:48.058Z [logger\morgan.ts] POST /api/v1/auth/login 200 - - 780.737 ms
+
+debug: 2025-05-05T05:47:48.530Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:48.567Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:48.581Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:48.588Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:48.599Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:48.606Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:48.611Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:48.612Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:48.613Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:48.614Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:47:48.616Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:48.618Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:48.622Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:48.623Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:47:48.625Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:48.626Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:48.627Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:48.628Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:47:48.630Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:48.632Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:48.633Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:48.635Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:47:48.642Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:48.643Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:48.645Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:48.646Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:47:48.649Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:48.654Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:48.656Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:48.657Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+http: 2025-05-05T05:47:48.676Z [logger\morgan.ts] POST /api/v1/commission/running-tally 200 340 - 162.415 ms
+
+http: 2025-05-05T05:47:48.688Z [logger\morgan.ts] POST /api/v1/commission/running-tally 200 340 - 148.643 ms
+
+debug: 2025-05-05T05:47:48.716Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-05-05T05:47:48.732Z [logger\morgan.ts] GET /api/v1/commission/payment-gateway-fees 304 - - 166.843 ms
+
+debug: 2025-05-05T05:47:48.746Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+http: 2025-05-05T05:47:48.744Z [logger\morgan.ts] GET /api/v1/network-statistics 304 - - 194.849 ms
+
+debug: 2025-05-05T05:47:48.747Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:48.748Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:48.749Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:47:48.782Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:48.795Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:48.799Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:48.803Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:48.807Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:48.821Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:47:48.838Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:48.857Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:48.859Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:48.859Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+http: 2025-05-05T05:47:48.892Z [logger\morgan.ts] GET /api/v1/commission/payment-gateway-fees 304 - - 138.850 ms
+
+http: 2025-05-05T05:47:48.930Z [logger\morgan.ts] GET /api/v1/commission/license-breakdown 304 - - 235.877 ms
+
+http: 2025-05-05T05:47:48.953Z [logger\morgan.ts] GET /api/v1/network-statistics 304 - - 181.843 ms
+
+http: 2025-05-05T05:47:48.958Z [logger\morgan.ts] GET /api/v1/commission/getTotalCommissionByUser?userId=cm9jkceqd0004v9gs9gs4k1ra 304 - - 414.704 ms
+
+debug: 2025-05-05T05:47:48.966Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:48.981Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:48.983Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:48.985Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:48.986Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:48.987Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:47:48.993Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:48.993Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:48.994Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:48.995Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+http: 2025-05-05T05:47:49.025Z [logger\morgan.ts] GET /api/v1/commission/license-breakdown 304 - - 63.316 ms
+
+http: 2025-05-05T05:47:49.028Z [logger\morgan.ts] GET /api/v1/commission/total-breakdown 304 - - 472.614 ms
+
+debug: 2025-05-05T05:47:49.035Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:49.043Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:49.044Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:49.044Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:49.045Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+http: 2025-05-05T05:47:49.089Z [logger\morgan.ts] GET /api/v1/commission/getTotalCommissionByUser?userId=cm9jkceqd0004v9gs9gs4k1ra 304 - - 113.115 ms
+
+http: 2025-05-05T05:47:49.152Z [logger\morgan.ts] GET /api/v1/commission/total-breakdown 304 - - 121.458 ms
+
+debug: 2025-05-05T05:47:54.136Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:54.147Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:54.148Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:54.148Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:54.149Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+http: 2025-05-05T05:47:54.305Z [logger\morgan.ts] GET /api/v1/commission/pending-settlements 200 - - 169.573 ms
+
+debug: 2025-05-05T05:47:54.322Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:47:54.328Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:47:54.329Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:47:54.332Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:47:54.333Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+http: 2025-05-05T05:47:54.494Z [logger\morgan.ts] GET /api/v1/commission/pending-settlements 304 - - 183.730 ms
+
+debug: 2025-05-05T05:48:06.320Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:48:06.365Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:48:06.366Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:48:06.367Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:48:06.371Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+http: 2025-05-05T05:48:06.428Z [logger\morgan.ts] PUT /api/v1/commission/update-unsettled-commission 200 81 - 116.567 ms
+
+debug: 2025-05-05T05:48:09.663Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:48:09.693Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:48:09.696Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:48:09.698Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:48:09.700Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:48:09.706Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:48:09.707Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:48:09.745Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:48:09.748Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:48:09.751Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:48:09.755Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:48:09.757Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:48:09.758Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:48:09.759Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:48:09.760Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:48:09.760Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:48:09.760Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:48:09.771Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:48:09.775Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:48:09.776Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:48:09.778Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:48:09.778Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:48:09.780Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:48:09.782Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:48:09.783Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:48:09.784Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:48:09.789Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:48:09.791Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:48:09.792Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:48:09.793Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+http: 2025-05-05T05:48:09.799Z [logger\morgan.ts] POST /api/v1/commission/running-tally 200 340 - 131.894 ms
+
+http: 2025-05-05T05:48:09.808Z [logger\morgan.ts] POST /api/v1/commission/running-tally 200 340 - 124.339 ms
+
+debug: 2025-05-05T05:48:09.817Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-05-05T05:48:09.827Z [logger\morgan.ts] GET /api/v1/commission/payment-gateway-fees 304 - - 64.213 ms
+
+debug: 2025-05-05T05:48:09.831Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+http: 2025-05-05T05:48:09.830Z [logger\morgan.ts] GET /api/v1/network-statistics 304 - - 105.861 ms
+
+debug: 2025-05-05T05:48:09.832Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:48:09.832Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:48:09.833Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:48:09.847Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:48:09.859Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:48:09.863Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:48:09.863Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:48:09.864Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:48:09.864Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+debug: 2025-05-05T05:48:09.870Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:48:09.874Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:48:09.874Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:48:09.875Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+http: 2025-05-05T05:48:09.897Z [logger\morgan.ts] GET /api/v1/commission/payment-gateway-fees 304 - - 58.891 ms
+
+http: 2025-05-05T05:48:09.907Z [logger\morgan.ts] GET /api/v1/commission/license-breakdown 200 - - 91.475 ms
+
+debug: 2025-05-05T05:48:09.914Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-05-05T05:48:09.922Z [logger\morgan.ts] GET /api/v1/network-statistics 304 - - 71.831 ms
+
+debug: 2025-05-05T05:48:09.926Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:48:09.926Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:48:09.927Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:48:09.927Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+http: 2025-05-05T05:48:09.947Z [logger\morgan.ts] GET /api/v1/commission/getTotalCommissionByUser?userId=cm9jkceqd0004v9gs9gs4k1ra 200 - - 286.562 ms
+
+debug: 2025-05-05T05:48:09.960Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-05-05T05:48:09.972Z [logger\morgan.ts] GET /api/v1/commission/license-breakdown 304 - - 60.811 ms
+
+debug: 2025-05-05T05:48:09.973Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:48:09.974Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:48:09.974Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:48:09.975Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+http: 2025-05-05T05:48:10.005Z [logger\morgan.ts] GET /api/v1/commission/total-breakdown 200 854 - 267.306 ms
+
+debug: 2025-05-05T05:48:10.012Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:48:10.018Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:48:10.019Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:48:10.020Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk60xi0000v9gskam57gdk
+debug: 2025-05-05T05:48:10.020Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9jkceqd0004v9gs9gs4k1ra
+http: 2025-05-05T05:48:10.057Z [logger\morgan.ts] GET /api/v1/commission/getTotalCommissionByUser?userId=cm9jkceqd0004v9gs9gs4k1ra 304 - - 104.571 ms
+
+http: 2025-05-05T05:48:10.123Z [logger\morgan.ts] GET /api/v1/commission/total-breakdown 304 - - 114.956 ms
+
+http: 2025-05-05T05:49:08.468Z [logger\morgan.ts] POST /api/v1/auth/login 200 - - 196.045 ms
+
+debug: 2025-05-05T05:49:09.179Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:49:09.207Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:49:09.217Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:49:09.221Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.225Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.227Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.228Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+debug: 2025-05-05T05:49:09.231Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.236Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.242Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.243Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+debug: 2025-05-05T05:49:09.245Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.246Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.255Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.259Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+http: 2025-05-05T05:49:09.276Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=operator 304 - - 105.208 ms
+
+debug: 2025-05-05T05:49:09.308Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:49:09.325Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.329Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.332Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.336Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+http: 2025-05-05T05:49:09.346Z [logger\morgan.ts] GET /api/v1/network-statistics 200 224 - 163.894 ms
+
+http: 2025-05-05T05:49:09.351Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=operator 304 - - 60.665 ms
+
+debug: 2025-05-05T05:49:09.373Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:49:09.387Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.390Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.391Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.393Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+debug: 2025-05-05T05:49:09.426Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-05-05T05:49:09.429Z [logger\morgan.ts] GET /api/v1/network-statistics 304 - - 68.897 ms
+
+debug: 2025-05-05T05:49:09.435Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.437Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.439Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.439Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+http: 2025-05-05T05:49:09.447Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=operator 304 - - 25.863 ms
+
+debug: 2025-05-05T05:49:09.461Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-05-05T05:49:09.456Z [logger\morgan.ts] GET /api/v1/top-performers/role/operator 304 - - 262.502 ms
+
+debug: 2025-05-05T05:49:09.479Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:49:09.481Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.487Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.490Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.491Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+debug: 2025-05-05T05:49:09.493Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.500Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.505Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.508Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+http: 2025-05-05T05:49:09.513Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=operator 304 - - 62.541 ms
+
+http: 2025-05-05T05:49:09.546Z [logger\morgan.ts] GET /api/v1/top-performers/role/operator 304 - - 81.701 ms
+
+debug: 2025-05-05T05:49:09.594Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:49:09.611Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.612Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.613Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.613Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+debug: 2025-05-05T05:49:09.617Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:49:09.641Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:49:09.645Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:49:09.649Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:49:09.654Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:49:09.656Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.657Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.658Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.658Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+debug: 2025-05-05T05:49:09.662Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.663Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.664Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.665Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+debug: 2025-05-05T05:49:09.672Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.672Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.673Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.674Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+debug: 2025-05-05T05:49:09.676Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.676Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.677Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.677Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+debug: 2025-05-05T05:49:09.681Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.688Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.690Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.691Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+http: 2025-05-05T05:49:09.698Z [logger\morgan.ts] GET /api/v1/network-statistics 304 - - 106.796 ms
+
+http: 2025-05-05T05:49:09.725Z [logger\morgan.ts] POST /api/v1/commission/running-tally 200 340 - 113.908 ms
+
+debug: 2025-05-05T05:49:09.734Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-05-05T05:49:09.743Z [logger\morgan.ts] GET /api/v1/commission/payment-gateway-fees 200 240 - 117.557 ms
+
+debug: 2025-05-05T05:49:09.757Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-05-05T05:49:09.775Z [logger\morgan.ts] GET /api/v1/commission/license-breakdown 200 - - 111.436 ms
+
+debug: 2025-05-05T05:49:09.762Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.762Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.763Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.763Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+http: 2025-05-05T05:49:09.785Z [logger\morgan.ts] GET /api/v1/user/payoutAndWalletBalance 304 - - 147.695 ms
+
+debug: 2025-05-05T05:49:09.790Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:49:09.792Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.793Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.793Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.794Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+debug: 2025-05-05T05:49:09.808Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:49:09.810Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:49:09.814Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.814Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.816Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.817Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+debug: 2025-05-05T05:49:09.822Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.823Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.823Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.824Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+debug: 2025-05-05T05:49:09.825Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.826Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.826Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.826Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+http: 2025-05-05T05:49:09.834Z [logger\morgan.ts] POST /api/v1/commission/running-tally 200 340 - 86.053 ms
+
+debug: 2025-05-05T05:49:09.849Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-05-05T05:49:09.854Z [logger\morgan.ts] GET /api/v1/commission/payment-gateway-fees 304 - - 56.238 ms
+
+http: 2025-05-05T05:49:09.858Z [logger\morgan.ts] GET /api/v1/commission/license-breakdown 304 - - 53.624 ms
+
+debug: 2025-05-05T05:49:09.863Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+http: 2025-05-05T05:49:09.869Z [logger\morgan.ts] GET /api/v1/network-statistics 304 - - 97.285 ms
+
+debug: 2025-05-05T05:49:09.864Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.864Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.865Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+http: 2025-05-05T05:49:09.894Z [logger\morgan.ts] GET /api/v1/user/payoutAndWalletBalance 304 - - 51.797 ms
+
+http: 2025-05-05T05:49:09.899Z [logger\morgan.ts] GET /api/v1/commission/getTotalCommissionByUser?userId=cm9xx1ev50001v9akcdrl6jwg 304 - - 185.974 ms
+
+debug: 2025-05-05T05:49:09.908Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-05-05T05:49:09.910Z [logger\morgan.ts] GET /api/v1/commission/total-breakdown 200 - - 279.908 ms
+
+debug: 2025-05-05T05:49:09.916Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-05T05:49:09.918Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.920Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.921Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.921Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+debug: 2025-05-05T05:49:09.924Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-05T05:49:09.925Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-05T05:49:09.925Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cm9jk6h760002v9gslpkusdno
+debug: 2025-05-05T05:49:09.926Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cm9xx1ev50001v9akcdrl6jwg
+http: 2025-05-05T05:49:09.997Z [logger\morgan.ts] GET /api/v1/commission/getTotalCommissionByUser?userId=cm9xx1ev50001v9akcdrl6jwg 304 - - 92.599 ms
+
+http: 2025-05-05T05:49:10.017Z [logger\morgan.ts] GET /api/v1/commission/total-breakdown 304 - - 103.759 ms
+
+info: 2025-05-05T06:02:42.618Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-05T06:02:42.685Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
