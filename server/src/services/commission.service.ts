@@ -3328,7 +3328,7 @@ settled.sportsBet = settledSportsGGR; // as per your requirement
                 where: {
                   userId: user.parentId,
                   categoryName: "E-Games",
-                  settledStatus: "N"
+                  // settledStatus: "N"
                 },
                 select: {
                   netCommissionAvailablePayout: true
@@ -3370,7 +3370,7 @@ settled.sportsBet = settledSportsGGR; // as per your requirement
                 where: {
                   userId: user.parentId,
                   categoryName: "Sports Betting",
-                  settledStatus: "N"
+                  // settledStatus: "N"
                 },
                 select: {
                   netCommissionAvailablePayout: true
@@ -3379,6 +3379,8 @@ settled.sportsBet = settledSportsGGR; // as per your requirement
       
               parentCommission = Math.floor(parentSummary?.netCommissionAvailablePayout ?? 0);
             }
+
+            console.log("parent commission", parentCommission, "comm", comm, "pendingComm", pendingComm);
       
             pending.sportsCommission = pendingComm - parentCommission;
           } else {
