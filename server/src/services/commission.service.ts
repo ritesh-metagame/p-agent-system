@@ -1226,7 +1226,7 @@ class CommissionService {
         // Fetch settled data for operators and their hierarchy
         const settledData = await prisma.commissionSummary.findMany({
           where: {
-            userId: { in: userIds },
+            userId: { in: oIds },
             settledStatus: "Y",
           },
           select: {
@@ -1279,7 +1279,10 @@ class CommissionService {
                     ...nonSettledGoldenChildren.map((ch) => ch.id),
                   ],
                 },
-                settledStatus: "N",
+                categoryName: {
+                  not: "Unknown"
+                }
+                // settledStatus: "N",
               },
               select: {
                 userId: true,

@@ -12,7 +12,7 @@ model CommissionSummary {
   netCommissionAvailablePayout Float   @default(0)
   pendingSettleCommission      Float   @default(0) // ← New field
   settledStatus                String?
-  pendingSettleCommission      Float   @default(0) // ← New field
+  // pendingSettleCommission      Float   @default(0) // ← New field
 
   // Relations
   user     User     @relation(fields: [userId], references: [id])
