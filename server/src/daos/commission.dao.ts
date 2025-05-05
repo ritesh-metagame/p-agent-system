@@ -781,6 +781,7 @@ class CommissionDao {
           pendingSettleCommission: true,
           netCommissionAvailablePayout: true,
           paymentGatewayFee: true,
+          userId: true,
           user: {
             select: {
               role: {
@@ -793,10 +794,17 @@ class CommissionDao {
         },
       });
 
+      const paymentGatewayFees = await prisma.commissionSummary.findMany({
+        where: {
+          userId: currentRecords[0].userId // only include the records you're working with
+        },
+      
+      });
+
+
       // Separate golden users from others
       const goldenRecords = currentRecords.filter(record => record.user.role.name === UserRole.GOLDEN);
       const otherRecords = currentRecords.filter(record => record.user.role.name !== UserRole.GOLDEN);
-
       // Calculate ratio only for golden users
       const totalGoldenNetCommission = goldenRecords.reduce(
         (sum, record) => sum + record.netCommissionAvailablePayout,
@@ -804,7 +812,8 @@ class CommissionDao {
       );
 
       // Get the total paymentGatewayFee (should be same value for all records)
-      const totalPaymentGatewayFee = currentRecords[0]?.paymentGatewayFee || 0;
+      const totalPaymentGatewayFee = paymentGatewayFees[0].paymentGatewayFee || 0;
+      console.log("Total Payment Gateway Fee:", totalPaymentGatewayFee);
 
       // Update golden records with ratio-based payment gateway fee
       const updatedGoldenRecords = await Promise.all(
@@ -814,12 +823,14 @@ class CommissionDao {
           // Calculate this record's share of the payment gateway fee based on its ratio
           const recordPaymentGatewayFee = totalPaymentGatewayFee * ratio;
 
+          console.log("Record Payment Gateway Fee:", recordPaymentGatewayFee);
+
           return prisma.commissionSummary.update({
             where: { id: record.id },
             data: {
               settledStatus: "Y",
               settledAt: new Date(),
-              pendingSettleCommission: (record.pendingSettleCommission || 0) - (record.netCommissionAvailablePayout - recordPaymentGatewayFee),
+              netCommissionAvailablePayout:  record.netCommissionAvailablePayout - recordPaymentGatewayFee,
             },
           });
         })
