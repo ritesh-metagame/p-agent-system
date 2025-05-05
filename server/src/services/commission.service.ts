@@ -1279,9 +1279,9 @@ class CommissionService {
                     ...nonSettledGoldenChildren.map((ch) => ch.id),
                   ],
                 },
-                categoryName: {
-                  not: "Unknown"
-                }
+                // categoryName: {
+                //   not: "Unknown"
+                // }
                 // settledStatus: "N",
               },
               select: {
