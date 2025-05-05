@@ -109,8 +109,7 @@ export class NetworkStatisticsService {
         total: 0,
       };
 
-      console.log("Formatted statistics:", formattedStats);
-      console.log("Statistics for role:", rolePrefix, stat);
+     
       try {
         if (stat) {
           data.approved = parseInt(stat[`${rolePrefix}UserApprovedCount`]) || 0;

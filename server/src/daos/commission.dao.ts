@@ -325,7 +325,6 @@ class CommissionDao {
     startDate: Date,
     endDate: Date
   ): Promise<number> {
-    console.log("User IDs:", userIds);
     const commissions = await prisma.commissionSummary.findMany({
       where: {
         userId: { in: userIds },
@@ -736,7 +735,6 @@ class CommissionDao {
       }
     }
 
-    console.log("Commission Summaries:", commissionSummaries);
 
     console.group(totalPending, totalPending);
 

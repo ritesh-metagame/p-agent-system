@@ -12,7 +12,6 @@ class UserDao {
         include: { role: true },
       });
 
-      console.log("User fetched:", user);
 
       return user;
     } catch (error) {
@@ -144,15 +143,12 @@ class UserDao {
   }
 
   public async getUserByUsername(username: string) {
-    console.log("Username:", username); // Debugging line
     try {
       const user = await prisma.user.findUnique({
         where: { username },
         include: { role: true },
       });
-      console.log("Username1111111111111:", username); // Debugging line
 
-      console.log("User fetched:", user);
 
       return user;
     } catch (error) {
