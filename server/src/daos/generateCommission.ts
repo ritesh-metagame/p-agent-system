@@ -88,6 +88,14 @@ class GenerateCommission {
               }
             }
 
+            // --- NEW pendingSettleCommission logic ---
+            let pendingSettleCommission = 0;
+            if (categoryName === "E-Games") {
+              pendingSettleCommission = sum.revenue * 0.3;
+            } else if (categoryName === "Sports Betting") {
+              pendingSettleCommission = sum.betAmount * 0.02;
+            }
+
             await prisma.commissionSummary.create({
               data: {
                 userId,
@@ -100,6 +108,7 @@ class GenerateCommission {
                 grossCommission: 0, // optional logic
                 paymentGatewayFee: sum.pgFeeCommission,
                 netCommissionAvailablePayout: netCommission,
+                pendingSettleCommission: pendingSettleCommission,
                 settledStatus: "N",
                 siteId: null,
                 createdAt: date,

@@ -10,6 +10,7 @@ model CommissionSummary {
   grossCommission              Float   @default(0)
   paymentGatewayFee            Float   @default(0)
   netCommissionAvailablePayout Float   @default(0)
+  pendingSettleCommission      Float   @default(0) // ← New field
   settledStatus                String?
 
   // Relations
