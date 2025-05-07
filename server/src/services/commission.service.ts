@@ -3199,6 +3199,7 @@ class CommissionService {
           settledStatus: true,
           netGGR: true,
           totalBetAmount: true,
+          grossCommission: true,
           netCommissionAvailablePayout: true,
           paymentGatewayFee: true,
           pendingSettleCommission: true // 🔧 added field
@@ -3262,10 +3263,13 @@ for (const summary of operatorSummaries) {
     const ggr = Math.floor(summary.netGGR ?? 0);
     const comm = Math.floor(summary.pendingSettleCommission ?? 0);
 
+    console.log("pending commission", comm, "ggr", ggr)
+
     egamesGGR += ggr;
     egamesCommission += comm;
 
     if (summary.settledStatus === "Y") {
+      egamesCommission = comm  - comm
       settledEGamesGGR += ggr;
       settledEGamesCommission += comm;
     }
@@ -3278,6 +3282,8 @@ for (const summary of operatorSummaries) {
 
     if (summary.settledStatus === "Y") {
       console.log("settled sports commission-------------------", comm)
+      sportsCommission = comm - comm;
+
       settledSportsGGR += bet;
       settledSportsCommission += comm;
     }
@@ -3304,16 +3310,28 @@ settled.sportsBet = settledSportsGGR; // as per your requirement
   
       for (const summary of summaries) {
         const category = summary.categoryName;
+        const grossCommission = Math.floor(summary.grossCommission ?? 0);
         const ggr = Math.floor(summary.netGGR ?? 0);
         const bet = Math.floor(summary.totalBetAmount ?? 0);
         const comm = Math.floor(summary.netCommissionAvailablePayout ?? 0);
         const pendingComm = Math.floor(summary.pendingSettleCommission ?? 0);
+        const paymentGatewayFee = Math.floor(summary.paymentGatewayFee ?? 0);
         const isSettled = summary.settledStatus === "Y";
+
+        console.log("pending commission", pendingComm, "comm", comm, "grossCommission", grossCommission)
       
         if (category === "E-Games") {
           if (isSettled) {
-            settled.eGamesGGR += ggr;
-            settled.eGamesCommission += comm;
+            if (roleName === UserRole.GOLDEN) {
+              settled.eGamesCommission = grossCommission;
+              settled.eGamesGGR += ggr;
+
+
+            } else {
+              settled.eGamesGGR += ggr;
+              settled.eGamesCommission += comm;
+            }
+           
           }
       
           pending.eGamesGGR += ggr;
@@ -3351,9 +3369,17 @@ settled.sportsBet = settledSportsGGR; // as per your requirement
       
         } else if (category === "Sports Betting") {
           if (isSettled) {
-            
-            settled.sportsBet += bet;
+            if (roleName === UserRole.GOLDEN) {
+              settled.sportsCommission = grossCommission;
+              settled.sportsBet += bet;
+
+
+            } else {
+              settled.sportsBet += bet;
             settled.sportsCommission += comm;
+            }
+            
+            
           }
       
           pending.sportsBet += bet;
