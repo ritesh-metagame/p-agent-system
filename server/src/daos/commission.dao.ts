@@ -830,7 +830,7 @@ class CommissionDao {
             data: {
               settledStatus: "Y",
               settledAt: new Date(),
-              netCommissionAvailablePayout:  record.netCommissionAvailablePayout - recordPaymentGatewayFee,
+              grossCommission:  record.netCommissionAvailablePayout - recordPaymentGatewayFee,
             },
           });
         })

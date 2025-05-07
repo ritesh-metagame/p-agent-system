@@ -115,7 +115,9 @@ class UserService {
         bankName: userData.bankName,
         accountNumber: userData.accountNumber,
         mobileNumber: userData.mobileNumber,
-        affiliateLink: process.env.AFFILIATE_LINK,
+        affiliateLink: role.name === UserRole.GOLDEN
+    ? process.env.AFFILIATE_LINK_GOLDEN
+    : process.env.AFFILIATE_LINK,
         password: hashedPassword,
         roleId: role.id,
         parentId: user.id,
