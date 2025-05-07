@@ -29,6 +29,70 @@ class UserController {
     }
   }
 
+  public static async registerPartner(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userData = {
+        ...req.body,
+      };
+
+      // const role = req.role;
+      // const user = req.user;
+
+      // console.log("Role in UserController:", role);
+
+      const userService = Container.get(UserService);
+
+      const response = await userService.registerPartner(userData);
+
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getPartnerApprovalList(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = req.user;
+
+      const userService = Container.get(UserService);
+
+      const response = await userService.getPartnersForApproval(user);
+
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async approvePartner(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = req.user;
+      const partnerId = req.body.partnerId;
+
+      const userService = Container.get(UserService);
+
+      const response = await userService.approvePartner(req.body);
+
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  
+
   public static async getPartners(
     req: Request,
     res: Response,

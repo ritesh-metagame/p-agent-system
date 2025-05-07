@@ -1,0 +1,96 @@
+info: 2025-05-06T10:26:50.385Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-06T10:26:50.410Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+debug: 2025-05-06T14:56:56.933Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:56.961Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:56.963Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:57.145Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-06T14:56:57.153Z [logger\morgan.ts] GET /api/v1/top-performers/role/operator 401 26 - 194.174 ms
+
+debug: 2025-05-06T14:56:57.154Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+debug: 2025-05-06T14:56:57.157Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-06T14:56:57.157Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=operator 401 26 - 245.867 ms
+
+http: 2025-05-06T14:56:57.159Z [logger\morgan.ts] GET /api/v1/network-statistics 401 26 - 200.480 ms
+
+debug: 2025-05-06T14:56:57.172Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:57.175Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:57.177Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-05-06T14:56:57.181Z [logger\morgan.ts] GET /api/v1/top-performers/role/operator 401 26 - 19.347 ms
+
+debug: 2025-05-06T14:56:57.180Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+debug: 2025-05-06T14:56:57.182Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-06T14:56:57.183Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=operator 401 26 - 17.137 ms
+
+debug: 2025-05-06T14:56:57.184Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+debug: 2025-05-06T14:56:57.191Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-05-06T14:56:57.186Z [logger\morgan.ts] GET /api/v1/network-statistics 401 26 - 16.050 ms
+
+debug: 2025-05-06T14:56:57.193Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-06T14:56:57.195Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=operator 401 26 - 7.445 ms
+
+debug: 2025-05-06T14:56:57.271Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:57.280Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-05-06T14:56:57.283Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=operator 401 26 - 14.755 ms
+
+debug: 2025-05-06T14:56:57.282Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-06T14:56:57.330Z [logger\morgan.ts] GET /api/v1/network-statistics 401 26 - 56.614 ms
+
+debug: 2025-05-06T14:56:57.323Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:57.326Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:57.327Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:57.328Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-06T14:56:57.337Z [logger\morgan.ts] GET /api/v1/user/payoutAndWalletBalance 401 26 - 51.810 ms
+
+debug: 2025-05-06T14:56:57.336Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+debug: 2025-05-06T14:56:57.338Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+debug: 2025-05-06T14:56:57.340Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:57.342Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:57.343Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-06T14:56:57.339Z [logger\morgan.ts] POST /api/v1/commission/running-tally 401 26 - 21.210 ms
+
+http: 2025-05-06T14:56:57.344Z [logger\morgan.ts] GET /api/v1/commission/total-breakdown 401 26 - 23.531 ms
+
+debug: 2025-05-06T14:56:57.347Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+debug: 2025-05-06T14:56:57.350Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:57.351Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-06T14:56:57.349Z [logger\morgan.ts] GET /api/v1/commission/getTotalCommissionByUser?userId=cma259tl60004jf9wud5qde8e 401 26 - 17.214 ms
+
+http: 2025-05-06T14:56:57.352Z [logger\morgan.ts] GET /api/v1/commission/license-breakdown 401 26 - 18.111 ms
+
+debug: 2025-05-06T14:56:57.352Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-06T14:56:57.353Z [logger\morgan.ts] GET /api/v1/commission/payment-gateway-fees 401 26 - 8.138 ms
+
+debug: 2025-05-06T14:56:57.411Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:57.427Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+http: 2025-05-06T14:56:57.434Z [logger\morgan.ts] GET /api/v1/network-statistics 401 26 - 25.155 ms
+
+debug: 2025-05-06T14:56:57.428Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:57.430Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:57.431Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:57.433Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:57.433Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-06T14:56:57.435Z [logger\morgan.ts] GET /api/v1/user/payoutAndWalletBalance 401 26 - 22.672 ms
+
+debug: 2025-05-06T14:56:57.435Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+debug: 2025-05-06T14:56:57.436Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+debug: 2025-05-06T14:56:57.437Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+debug: 2025-05-06T14:56:57.438Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-06T14:56:57.437Z [logger\morgan.ts] POST /api/v1/commission/running-tally 401 26 - 21.017 ms
+
+debug: 2025-05-06T14:56:57.440Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-06T14:56:57.438Z [logger\morgan.ts] GET /api/v1/commission/total-breakdown 401 26 - 18.072 ms
+
+http: 2025-05-06T14:56:57.440Z [logger\morgan.ts] GET /api/v1/commission/getTotalCommissionByUser?userId=cma259tl60004jf9wud5qde8e 401 26 - 16.885 ms
+
+http: 2025-05-06T14:56:57.441Z [logger\morgan.ts] GET /api/v1/commission/payment-gateway-fees 401 26 - 16.156 ms
+
+debug: 2025-05-06T14:56:57.444Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-06T14:56:57.446Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-06T14:56:57.447Z [logger\morgan.ts] GET /api/v1/commission/license-breakdown 401 26 - 4.876 ms
+
+info: 2025-05-06T15:24:33.820Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-06T15:24:33.797Z [loaders\index.ts] ✌️ Express loaded

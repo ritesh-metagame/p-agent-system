@@ -13,7 +13,7 @@ model User {
   bankName      String?
   accountNumber String?
 
-  approved Boolean @default(true)
+  approved Int 
 
   userSites UserSite[]
 
@@ -49,3 +49,9 @@ model User {
   createdBy String? @default("system") @map("created_by")
   updatedBy String? @default("system") @map("updated_by")
 }
+
+// enum Approved {
+//   -1
+//   1
+//   0
+// }

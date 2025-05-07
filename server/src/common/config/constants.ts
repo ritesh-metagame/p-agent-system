@@ -6,6 +6,12 @@ enum UserRole {
   PLAYER = "player",
 }
 
+enum ApprovedStatus {
+  APPROVED = 1,
+  PENDING = 0,
+  REJECTED = -1,
+}
+
 enum CommissionComputationPeriod {
   MONTHLY = "MONTHLY",
   BI_MONTHLY = "BI_MONTHLY",
@@ -17,5 +23,6 @@ const DEFAULT_COMMISSION_COMPUTATION_PERIOD =
 export {
   UserRole,
   CommissionComputationPeriod,
+  ApprovedStatus,
   DEFAULT_COMMISSION_COMPUTATION_PERIOD,
 };

@@ -14,9 +14,24 @@ class ResponseCodes {
     message: "Something went wrong",
   } as const;
 
+  static readonly PARTNER_NOT_FOUND = {
+    code: "5000",
+    message: "Partner not found",
+  } as const;
+
   static readonly USER_CREATED_SUCCESSFULLY = {
     code: "1004",
     message: "User created successfully",
+  } as const;
+
+  static readonly USER_APPROVAL_UPDATED_SUCCESSFULLY = {
+    code: "5151",
+    message: "User approval updated successfully",
+  } as const;
+
+  static readonly USER_CREATION_FAILED = {
+    code: "400",
+    message: "User creation failed",
   } as const;
 
   static readonly USER_COMMISSION_FETCHED_SUCCESSFULLY = {

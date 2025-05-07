@@ -11,6 +11,39 @@ export default (app: Router) => {
   app.use("/user", route);
 
   route.post(
+    "/partner/register",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await UserController.registerPartner(req, res, next);
+      res.status(200).json(response);
+    }
+    )
+  );
+
+  route.get(
+    "/partner/approval-list",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await UserController.getPartnerApprovalList(
+        req,
+        res,
+        next
+      );
+      res.status(200).json(response);
+    })
+  );
+
+  route.put(
+    "/partner/approve",
+    catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+      const response = await UserController.approvePartner(
+        req,
+        res,
+        next
+      );
+      res.status(200).json(response);
+    })
+  );
+
+  route.post(
     "/download-report",
     catchAsync(async (req: Request, res: Response, next: NextFunction) => {
       // Remove res.json here — let the controller handle the response
