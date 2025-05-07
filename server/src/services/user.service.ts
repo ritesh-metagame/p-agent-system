@@ -107,6 +107,9 @@ class UserService {
         this.categoryDao.getAllCategories(),
       ]);
 
+      const GOLDEN_AFFILIATE_LINK = `${process.env.AFFILIATE_LINK_GOLDEN}`;
+      const AFFILIATE_LINK = `${process.env.AFFILIATE_LINK}?parentCode=${userData.username}`;
+
       // Prepare user data
       const data: Partial<User> = {
         username: userData.username,
@@ -117,7 +120,7 @@ class UserService {
         mobileNumber: userData.mobileNumber,
         affiliateLink: role.name === UserRole.GOLDEN
     ? process.env.AFFILIATE_LINK_GOLDEN
-    : process.env.AFFILIATE_LINK,
+    : AFFILIATE_LINK,
         password: hashedPassword,
         roleId: role.id,
         parentId: user.id,
