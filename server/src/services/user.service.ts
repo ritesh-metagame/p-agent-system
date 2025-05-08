@@ -196,7 +196,7 @@ class UserService {
                     categoryId: eGamesCategory.id,
                     commissionPercentage: isGolden ? toFloat(userData.commissions.eGames) : 0,
                     totalAssignedCommissionPercentage: !isGolden ? toFloat(userData.commissions.eGames) : 0,
-                    settlementPeriod: userData.settlementDetails?.period,
+                    settlementPeriod: "BI_MONTHLY",
                     settlementStartingFrom: userData.settlementDetails
                       ? new Date(userData.settlementDetails.startDate)
                       : undefined,
@@ -248,7 +248,7 @@ class UserService {
                     categoryId: sportsBettingCategory.id,
                     commissionPercentage: isGolden ? toFloat(userData.commissions.sportsBetting) : 0,
                     totalAssignedCommissionPercentage: !isGolden ? toFloat(userData.commissions.sportsBetting) : 0,
-                    settlementPeriod: userData.settlementDetails?.period,
+                    settlementPeriod: "WEEKLY",
                     settlementStartingFrom: userData.settlementDetails
                       ? new Date(userData.settlementDetails.startDate)
                       : undefined,
@@ -301,7 +301,7 @@ class UserService {
                     categoryId: specialtyGamesToteCategory.id,
                     commissionPercentage: isGolden ? toFloat(userData.commissions.specialityGamesTote) : 0,
                     totalAssignedCommissionPercentage: !isGolden ? toFloat(userData.commissions.specialityGamesTote) : 0,
-                    settlementPeriod: userData.settlementDetails?.period,
+                    settlementPeriod: "WEEKLY",
                     settlementStartingFrom: userData.settlementDetails
                       ? new Date(userData.settlementDetails.startDate)
                       : undefined,
@@ -355,7 +355,7 @@ class UserService {
                     categoryId: specialtyGamesRngCategory.id,
                     commissionPercentage: isGolden ? toFloat(userData.commissions.specialityGamesRng) : 0,
                     totalAssignedCommissionPercentage: !isGolden ? toFloat(userData.commissions.specialityGamesRng) : 0,
-                    settlementPeriod: userData.settlementDetails?.period,
+                    settlementPeriod: "BI_MONTHLY",
                     settlementStartingFrom: userData.settlementDetails
                       ? new Date(userData.settlementDetails.startDate)
                       : undefined,

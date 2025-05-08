@@ -31,5 +31,5 @@ model Commission {
 
 enum SettlementPeriod {
   BI_MONTHLY
-  MONTHLY
+  WEEKLY
 }
