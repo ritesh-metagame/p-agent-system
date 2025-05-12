@@ -124,7 +124,7 @@ class UserService {
         password: hashedPassword,
         roleId: role.id,
         parentId: user.id,
-        approved: 0
+        approved: 1
       };
 
       // Put another check if user with username already exists return error message
@@ -196,7 +196,7 @@ class UserService {
                     categoryId: eGamesCategory.id,
                     commissionPercentage: isGolden ? toFloat(userData.commissions.eGames) : 0,
                     totalAssignedCommissionPercentage: !isGolden ? toFloat(userData.commissions.eGames) : 0,
-                    settlementPeriod: "BI_MONTHLY",
+                    commissionComputationPeriod: userData.eGamesCommissionComputationPeriod || undefined,
                     settlementStartingFrom: userData.settlementDetails
                       ? new Date(userData.settlementDetails.startDate)
                       : undefined,
@@ -248,7 +248,7 @@ class UserService {
                     categoryId: sportsBettingCategory.id,
                     commissionPercentage: isGolden ? toFloat(userData.commissions.sportsBetting) : 0,
                     totalAssignedCommissionPercentage: !isGolden ? toFloat(userData.commissions.sportsBetting) : 0,
-                    settlementPeriod: "WEEKLY",
+                    commissionComputationPeriod: userData.sportsBettingCommissionComputationPeriod || undefined,
                     settlementStartingFrom: userData.settlementDetails
                       ? new Date(userData.settlementDetails.startDate)
                       : undefined,
@@ -301,7 +301,7 @@ class UserService {
                     categoryId: specialtyGamesToteCategory.id,
                     commissionPercentage: isGolden ? toFloat(userData.commissions.specialityGamesTote) : 0,
                     totalAssignedCommissionPercentage: !isGolden ? toFloat(userData.commissions.specialityGamesTote) : 0,
-                    settlementPeriod: "WEEKLY",
+                    commissionComputationPeriod: userData.commissions.specialityGamesToteCommissionComputationPeriod || undefined,
                     settlementStartingFrom: userData.settlementDetails
                       ? new Date(userData.settlementDetails.startDate)
                       : undefined,
@@ -355,7 +355,7 @@ class UserService {
                     categoryId: specialtyGamesRngCategory.id,
                     commissionPercentage: isGolden ? toFloat(userData.commissions.specialityGamesRng) : 0,
                     totalAssignedCommissionPercentage: !isGolden ? toFloat(userData.commissions.specialityGamesRng) : 0,
-                    settlementPeriod: "BI_MONTHLY",
+                    commissionComputationPeriod: userData.specialityGamesRngCommissionComputationPeriod || undefined,
                     settlementStartingFrom: userData.settlementDetails
                       ? new Date(userData.settlementDetails.startDate)
                       : undefined,
@@ -491,6 +491,16 @@ class UserService {
       const newUser = await prisma.user.create({
         data: registrationData as any,
       })
+
+      try {
+        console.debug("[createUser] Updating parent user's network statistics");
+        await this.networkStatisticsDao.calculateAndUpdateNetworkStatistics();
+        console.debug("[createUser] Network statistics updated successfully");
+      } catch (statsError) {
+        console.error("Error updating network statistics:", statsError);
+        // We don't want to fail the user creation if stats update fails
+        // Just log the error and continue
+      }
 
       return new Response(
         ResponseCodes.USER_CREATED_SUCCESSFULLY.code,
