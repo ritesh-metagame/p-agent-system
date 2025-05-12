@@ -1,0 +1,48 @@
+info: 2025-05-08T06:07:01.850Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-08T06:07:01.910Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-08T06:12:28.980Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-08T06:12:28.993Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-08T06:12:49.156Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-08T06:12:49.139Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-08T06:14:30.996Z [loaders\index.ts] ✌️ Express loaded
+error: 2025-05-08T06:14:41.030Z [src\server.ts] Error starting server: connect ETIMEDOUT
+info: 2025-05-08T06:37:16.674Z [loaders\index.ts] ✌️ Express loaded
+error: 2025-05-08T06:37:26.708Z [src\server.ts] Error starting server: connect ETIMEDOUT
+info: 2025-05-08T06:40:56.950Z [loaders\index.ts] ✌️ Express loaded
+error: 2025-05-08T06:41:06.994Z [src\server.ts] Error starting server: connect ETIMEDOUT
+info: 2025-05-08T07:23:23.676Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-08T07:23:23.698Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-08T08:47:28.359Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-08T08:47:28.390Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-08T08:48:34.555Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-08T08:48:34.580Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-08T08:53:21.765Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-08T08:53:21.794Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-08T10:23:48.011Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-08T10:23:48.066Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-08T10:24:57.405Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-08T10:29:41.203Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-08T10:29:41.245Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-08T10:31:56.021Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-08T10:31:56.001Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-08T10:32:08.853Z [loaders\index.ts] ✌️ Express loaded

@@ -2461,3 +2461,11 @@ debug: 2025-05-07T10:08:18.790Z [middlewares\checkAuthAndAttachCurrentUser.ts] U
 debug: 2025-05-07T10:08:18.791Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cmadj0w1h0001jfbczc344p0w
 http: 2025-05-07T10:08:18.801Z [logger\morgan.ts] GET /api/v1/user/partners 304 - - 17.482 ms
 
+info: 2025-05-07T11:48:29.225Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-07T11:48:29.156Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-07T12:08:47.468Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-07T12:08:47.495Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      

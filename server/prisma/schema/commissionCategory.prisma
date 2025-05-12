@@ -13,6 +13,7 @@ model CommissionSummary {
   settledStatus                String?
   pendingSettleCommission      Float   @default(0) // ← New field
 
+
   // Relations
   user     User     @relation(fields: [userId], references: [id])
   role     Role     @relation(fields: [roleId], references: [id])

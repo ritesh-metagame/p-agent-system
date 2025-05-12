@@ -80,6 +80,7 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "ts-node": "^10.9.2",
+    "tunnel-ssh": "^5.2.0",
     "typedi": "^0.10.0",
     "uuid": "^9.0.1",
     "validator": "^13.11.0",

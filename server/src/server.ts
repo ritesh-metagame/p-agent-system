@@ -11,6 +11,7 @@ import "./main";
 import { Decimal } from "../prisma/generated/prisma/runtime/library";
 import fs from "fs";
 import csv from "csv-parser"; // install with: npm install csv-parser
+import { syncRemoteBetsToLocal } from "./common/config/dataMigrations";
 
 const filePath = path.join(__dirname, "./data/sampledata.xlsx");
 // import { redisService } from "./core/services/redis.service";
@@ -231,6 +232,8 @@ class Server {
 
       console.log("✅ All transactions inserted successfully");
     }
+
+    await syncRemoteBetsToLocal()
 
     // insertTransactionsFromXLSX(filePath)
     //   .then(() => {
