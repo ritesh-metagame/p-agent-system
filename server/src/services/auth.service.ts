@@ -50,6 +50,13 @@ class AuthService {
         );
       }
 
+      if (user.approved !== 1) {
+        return new Response(
+          ResponseCodes.USER_NOT_APPROVED.code,
+          ResponseCodes.USER_NOT_APPROVED.message
+        );
+      }
+
       const token = JWTService.assignToken(
         {
           id: user.id,

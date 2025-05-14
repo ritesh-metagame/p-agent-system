@@ -1089,3 +1089,101 @@ debug: 2025-05-14T05:07:10.167Z [middlewares\checkAuthAndAttachCurrentUser.ts] U
 debug: 2025-05-14T05:07:10.167Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cmadj0w1h0001jfbczc344p0w
 http: 2025-05-14T05:07:10.171Z [logger\morgan.ts] GET /api/v1/user/partner/approval-list 304 - - 10.865 ms
 
+debug: 2025-05-14T05:26:48.187Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-14T05:26:48.206Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-14T05:26:48.207Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-14T05:26:48.207Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cmadiiivj0001jf0cnss9mobl
+debug: 2025-05-14T05:26:48.208Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cmadj0w1h0001jfbczc344p0w
+http: 2025-05-14T05:26:48.215Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=operator 200 70 - 29.301 ms
+
+debug: 2025-05-14T05:26:48.221Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-14T05:26:48.224Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-14T05:26:48.224Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-14T05:26:48.225Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cmadiiivj0001jf0cnss9mobl
+debug: 2025-05-14T05:26:48.225Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cmadj0w1h0001jfbczc344p0w
+http: 2025-05-14T05:26:48.231Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=operator 200 70 - 11.677 ms
+
+debug: 2025-05-14T05:27:38.683Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-14T05:27:38.687Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-14T05:27:38.687Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-14T05:27:38.687Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cmadiiivj0001jf0cnss9mobl
+debug: 2025-05-14T05:27:38.688Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cmadj0w1h0001jfbczc344p0w
+http: 2025-05-14T05:27:38.696Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=operator 304 - - 14.490 ms
+
+debug: 2025-05-14T05:27:38.704Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-14T05:27:38.707Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-14T05:27:38.707Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-14T05:27:38.708Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cmadiiivj0001jf0cnss9mobl
+debug: 2025-05-14T05:27:38.708Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cmadj0w1h0001jfbczc344p0w
+http: 2025-05-14T05:27:38.711Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=operator 304 - - 9.414 ms
+
+debug: 2025-05-14T05:29:09.501Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-14T05:29:09.504Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-14T05:29:09.505Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-14T05:29:09.505Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cmadiiivj0001jf0cnss9mobl
+debug: 2025-05-14T05:29:09.506Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cmadj0w1h0001jfbczc344p0w
+http: 2025-05-14T05:29:09.508Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=operator 304 - - 10.455 ms
+
+debug: 2025-05-14T05:29:09.523Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-14T05:29:09.526Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: [object Object]
+debug: 2025-05-14T05:29:09.527Z [middlewares\checkAuthAndAttachCurrentUser.ts] User found: [object Object]
+debug: 2025-05-14T05:29:09.527Z [middlewares\checkAuthAndAttachCurrentUser.ts] User role: cmadiiivj0001jf0cnss9mobl
+debug: 2025-05-14T05:29:09.527Z [middlewares\checkAuthAndAttachCurrentUser.ts] User id: cmadj0w1h0001jfbczc344p0w
+http: 2025-05-14T05:29:09.531Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=operator 304 - - 9.957 ms
+
+debug: 2025-05-14T05:29:24.244Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-14T05:29:24.246Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-14T05:29:24.248Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=platinum 401 26 - 5.534 ms
+
+debug: 2025-05-14T05:29:24.322Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-14T05:29:24.324Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-14T05:29:24.326Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=platinum 401 26 - 5.566 ms
+
+debug: 2025-05-14T05:48:35.808Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-14T05:48:35.816Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-14T05:48:35.818Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=platinum 401 26 - 12.169 ms
+
+debug: 2025-05-14T05:48:35.826Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-14T05:48:35.828Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-14T05:48:35.830Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=platinum 401 26 - 5.705 ms
+
+debug: 2025-05-14T05:49:22.831Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-14T05:49:22.834Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-14T05:49:22.836Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=platinum 401 26 - 6.112 ms
+
+debug: 2025-05-14T05:49:22.847Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-14T05:49:22.849Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-14T05:49:22.851Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=platinum 401 26 - 6.165 ms
+
+info: 2025-05-14T05:58:53.318Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-14T05:58:53.347Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+debug: 2025-05-14T06:00:32.570Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-14T06:00:32.597Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-14T06:00:32.600Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=platinum 401 26 - 41.767 ms
+
+debug: 2025-05-14T06:00:32.607Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-14T06:00:32.610Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-14T06:00:32.611Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=platinum 401 26 - 5.628 ms
+
+info: 2025-05-14T06:01:19.177Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-14T06:01:19.188Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-14T06:02:02.276Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-14T06:02:02.266Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-14T06:08:49.238Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-14T06:08:49.218Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-14T06:08:54.653Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-14T06:08:54.664Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-14T06:09:48.833Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-14T06:09:48.843Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      

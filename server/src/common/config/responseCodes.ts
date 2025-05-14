@@ -92,6 +92,11 @@ class ResponseCodes {
     message: "Role fetch failed",
   } as const;
 
+  static readonly USER_NOT_APPROVED = {
+    code: "8787",
+    message: "User not approved",
+  } as const;
+
   static readonly USERS_FETCHED_SUCCESSFULLY = {
     code: "1014",
     message: "Users fetched successfully",

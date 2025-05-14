@@ -571,6 +571,16 @@ class UserService {
           
       })
 
+      try {
+        console.debug("[createUser] Updating parent user's network statistics");
+        await this.networkStatisticsDao.calculateAndUpdateNetworkStatistics();
+        console.debug("[createUser] Network statistics updated successfully");
+      } catch (statsError) {
+        console.error("Error updating network statistics:", statsError);
+        // We don't want to fail the user creation if stats update fails
+        // Just log the error and continue
+      }
+
       return new Response(
         ResponseCodes.USERS_FETCHED_SUCCESSFULLY.code,
         ResponseCodes.USERS_FETCHED_SUCCESSFULLY.message,
