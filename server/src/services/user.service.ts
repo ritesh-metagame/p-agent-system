@@ -477,6 +477,11 @@ class UserService {
 
       const hashedPassword = await BcryptService.generateHash(registerData.password)
 
+      const GOLDEN_AFFILIATE_LINK = `${process.env.AFFILIATE_LINK_GOLDEN}`;
+      const AFFILIATE_LINK = `${process.env.AFFILIATE_LINK}?parentCode=${registerData.username}`;
+
+      
+
         const registrationData: Partial<User> = {
           firstName: registerData.firstName,
           lastName: registerData.lastName,
@@ -485,7 +490,10 @@ class UserService {
           mobileNumber: registerData.mobileNumber,
           roleId: role.id,
           approved: 0,
-          parentId: parentUser.id
+          parentId: parentUser.id,
+          affiliateLink: role.name === UserRole.GOLDEN
+          ? GOLDEN_AFFILIATE_LINK
+          : AFFILIATE_LINK
       };
 
       const newUser = await prisma.user.create({
@@ -549,13 +557,9 @@ class UserService {
       
       const pendingPartners = await prisma.user.findMany({
         where: {
-          parentId: user.id
+          parentId: user.id,
+          approved: 0,
         },
-        include: {
-          children: {
-            where: {
-              approved: 0
-            },
             select: {
               id: true,
               firstName: true,
@@ -564,9 +568,18 @@ class UserService {
               mobileNumber: true,
               approved: true
             }
-          }
-        }
+          
       })
+
+      try {
+        console.debug("[createUser] Updating parent user's network statistics");
+        await this.networkStatisticsDao.calculateAndUpdateNetworkStatistics();
+        console.debug("[createUser] Network statistics updated successfully");
+      } catch (statsError) {
+        console.error("Error updating network statistics:", statsError);
+        // We don't want to fail the user creation if stats update fails
+        // Just log the error and continue
+      }
 
       return new Response(
         ResponseCodes.USERS_FETCHED_SUCCESSFULLY.code,
@@ -1130,7 +1143,7 @@ class UserService {
         data: {
           commissionPercentage: useCommissionPercentage ? data.totalAssignedCommissionPercentage : 0,
           totalAssignedCommissionPercentage: !useCommissionPercentage ? data.totalAssignedCommissionPercentage : 0,
-          commissionComputationPeriod: data.settlementPeriod || "MONTHLY",
+          commissionComputationPeriod: data.settlementPeriod,
           updatedBy: data.updatedBy,
           createdBy: data.updatedBy,
           site: {
@@ -1234,6 +1247,7 @@ class UserService {
         userDetails
       );
     } catch (error) {
+      console.log(error)
       return new Response(
         ResponseCodes.USERS_FETCHED_FAILED.code,
         `Error fetching user details: ${error.message}`,

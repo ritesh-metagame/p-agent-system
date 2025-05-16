@@ -176,7 +176,7 @@ class UserDao {
   public async getUsersByParentId(parentId: string) {
     try {
       const users = await prisma.user.findMany({
-        where: { parentId },
+        where: { parentId, approved: 1 },
         include: {
           role: true,
           commissions: {

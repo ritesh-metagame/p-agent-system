@@ -167,11 +167,17 @@ export class NetworkStatisticsDao {
             `Updating counts for user ${user.id} with role ${user.role.name}`
           );
 
+          console.log(
+            `User status: ${user.approved}, Role: ${user.role.name}, Parent ID: ${user.parentId}`)
+
           stats[`${rolePrefix}UserTotalCount`]++;
-          if (user.approved) {
+          if (user.approved === 1) {
             stats[`${rolePrefix}UserApprovedCount`]++;
-          } else {
+          } else if (user.approved === 0) {
             stats[`${rolePrefix}UserPendingCount`]++;
+          } else {
+            stats[`${rolePrefix}UserDeclinedCount`]++;
+            stats[`${rolePrefix}UserSuspendedCount`]++;
           }
         };
 
