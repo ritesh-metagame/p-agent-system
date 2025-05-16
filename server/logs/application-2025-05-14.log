@@ -1187,3 +1187,31 @@ info: 2025-05-14T06:09:48.833Z [loaders\index.ts] ✌️ Express loaded
 info: 2025-05-14T06:09:48.843Z [src\server.ts] 
 development Platform is running at http://localhost:8080 🛡
       
+info: 2025-05-14T08:18:02.835Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-14T08:18:02.818Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-14T08:21:48.924Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-14T08:21:48.938Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-14T08:34:38.006Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-14T08:34:38.021Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-14T08:53:14.091Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-14T08:53:14.075Z [loaders\index.ts] ✌️ Express loaded
+debug: 2025-05-14T09:56:52.758Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-14T09:56:52.873Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-14T09:56:52.880Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=eGames&agent=platinum 401 26 - 160.199 ms
+
+debug: 2025-05-14T09:56:52.893Z [middlewares\checkAuthAndAttachCurrentUser.ts] Getting player by id--
+debug: 2025-05-14T09:56:52.897Z [middlewares\checkAuthAndAttachCurrentUser.ts] Player found: null
+http: 2025-05-14T09:56:52.901Z [logger\morgan.ts] GET /api/v1/user/transactionsByCategory?categoryName=Sports-Betting&agent=platinum 401 26 - 12.544 ms
+
+info: 2025-05-14T11:38:21.834Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-14T11:38:21.846Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
