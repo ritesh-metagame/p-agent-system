@@ -44,3 +44,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 yarn.lock
+.data
+data
+db.config.ts
+logs

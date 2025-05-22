@@ -11,8 +11,9 @@ import "./main";
 import { Decimal } from "../prisma/generated/prisma/runtime/library";
 import fs from "fs";
 import csv from "csv-parser"; // install with: npm install csv-parser
+import { exportBetsWithAgentCodeToExcel } from "./common/config/db.config";
 
-const filePath = path.join(__dirname, "./data/sampledata.xlsx");
+const filePath = path.join(__dirname, "./data/bets_with_agent_code.xlsx");
 // import { redisService } from "./core/services/redis.service";
 
 const log = logger(module);
@@ -46,7 +47,9 @@ class Server {
       "cm9cmuwr6000oiol5ob3lmprc",
       "cm9cqlj9w000piol52m087niu",
     ];
-    const GAIDS = ["cma3hbjdb0020io9vrj0usfnm", "cma3h63q8000nio9vetirwy4k"];
+    // const GAIDS = ["cmakq6t0d001uv9aog3bq171j"];
+    const GAIDS = ["cmaywjc7100fdioys47zdd6sa"];
+    
     const MAIDS = [
       "cm9cjv0qc0013iob901spod6b",
       "cm9cjvrs6001hiob9jccmjs6p",
@@ -90,14 +93,19 @@ class Server {
     };
 
     async function insertTransactionsFromXLSX(filePath: string) {
-      const workbook = xlsx.readFile(filePath);
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      const rawRows = xlsx.utils.sheet_to_json(sheet);
+      // const workbook = xlsx.readFile(filePath);
+      // const sheetName = workbook.SheetNames[0];
+      // const sheet = workbook.Sheets[sheetName];
+      // const rawRows = xlsx.utils.sheet_to_json(sheet);
+
+         const rawRows: any = await prisma.$queryRawUnsafe(`
+    SELECT * FROM bets
+  `);
+
 
       for (const rawRow of rawRows) {
         const row = cleanRowKeys(rawRow);
-        const platformType = row["Platform Type"];
+        const platformType = row["platform_name"];
         const normalizedPlatform =
           platformType === "egames"
             ? "E-Games"
@@ -106,15 +114,20 @@ class Server {
               : platformType;
 
         const categoryId = categoryIdMap[platformType];
+        const betAmount = new Decimal(row["bet_amount"] || 0);
+            const payoutAmount = new Decimal(row["payout_amount"] || 0);
+
+            const revenue = betAmount.minus(payoutAmount);
+
 
         const baseAmount = new Decimal(
           platformType === "egames"
-            ? row["Revenue"] || 0
-            : row["Bet Amount"] || 0
+            ? revenue || 0
+            : row["bet_amount"] || 0
         );
 
         // Step 1: GA
-        const excelGaId = row["GA ID"];
+        const excelGaId = row["agent_code"];
         const gaId = GAIDS.includes(excelGaId) ? excelGaId : null;
 
         if (!gaId) {
@@ -183,23 +196,23 @@ class Server {
 
         // Step 4: Build transaction object
         const transaction = {
-          transactionId: String(row["Trans ID"]),
-          betTime: parseExcelDate(row["Bet Time"]),
+          transactionId: String(row["transaction_id"]),
+          betTime: parseExcelDate(row["time_of_bet"]),
           userId: row["User Id"],
-          playerName: row["Player Name"],
+          playerName: row["player_id"],
           platformType: normalizedPlatform,
-          transactionType: row["Transaction Type"] || "bet",
+          transactionType: row["transaction_type"] ,
 
-          deposit: new Decimal(row["Deposit"] || 0),
-          withdrawal: new Decimal(row["Withdraw"] || 0),
-          betAmount: new Decimal(row["Bet Amount"] || 0),
-          payoutAmount: new Decimal(row["Payout Amount"] || 0),
-          refundAmount: new Decimal(row["Refund Amount"] || 0),
-          revenue: new Decimal(row["Revenue"] || 0),
-          pgFeeCommission: new Decimal(row["PG Fee Commission"] || 0),
+          deposit: new Decimal(row["deposit_amount"] || 0),
+          withdrawal: new Decimal(row["withdraw_amount"] || 0),
+          betAmount: new Decimal(row["bet_amount"] || 0),
+          payoutAmount: new Decimal(row["payout_amount"] || 0),
+          refundAmount: new Decimal(row["refund_amount"] || 0),
+          revenue: revenue ,
+          pgFeeCommission: new Decimal(row["pg_fee_commission"] || 0),
 
-          status: row["Status"] || null,
-          settled: getRandomSettledStatus(),
+          status: row["status"] || null,
+          settled: "N",
 
           gaId,
           gaName: row["GA Name"] || null,
@@ -231,6 +244,8 @@ class Server {
 
       console.log("✅ All transactions inserted successfully");
     }
+
+    // exportBetsWithAgentCodeToExcel();
 
     // insertTransactionsFromXLSX(filePath)
     //   .then(() => {

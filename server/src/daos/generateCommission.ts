@@ -11,6 +11,8 @@ class GenerateCommission {
       const from = startOfDay(date);
       const to = endOfDay(date);
 
+      console.log("date from",from, "date to",to);
+
       // 1. Get all transactions in date range
       const transactions = await prisma.transaction.findMany({
         where: {
@@ -96,25 +98,25 @@ class GenerateCommission {
               pendingSettleCommission = sum.betAmount * 0.02;
             }
 
-            await prisma.commissionSummary.create({
-              data: {
-                userId,
-                roleId: user.roleId,
-                categoryName,
-                totalDeposit: sum.deposit,
-                totalWithdrawals: sum.withdrawal,
-                totalBetAmount: sum.betAmount,
-                netGGR: sum.revenue,
-                grossCommission: 0, // optional logic
-                paymentGatewayFee: sum.pgFeeCommission,
-                netCommissionAvailablePayout: netCommission,
-                pendingSettleCommission: pendingSettleCommission,
-                settledStatus: "N",
-                siteId: null,
-                createdAt: date,
-                updatedAt: new Date(),
-              },
-            });
+            // await prisma.commissionSummary.create({
+            //   data: {
+            //     userId,
+            //     roleId: user.roleId,
+            //     categoryName,
+            //     totalDeposit: sum.deposit,
+            //     totalWithdrawals: sum.withdrawal,
+            //     totalBetAmount: sum.betAmount,
+            //     netGGR: sum.revenue,
+            //     grossCommission: 0, // optional logic
+            //     paymentGatewayFee: sum.pgFeeCommission,
+            //     netCommissionAvailablePayout: netCommission,
+            //     pendingSettleCommission: pendingSettleCommission,
+            //     settledStatus: "N",
+            //     siteId: null,
+            //     createdAt: date,
+            //     updatedAt: new Date(),
+            //   },
+            // });
 
             console.log(
               `✅ Summary added for ${userId} (${roleKey}) in ${categoryName}`
