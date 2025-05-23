@@ -1387,24 +1387,15 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
   commissionSummaries = commissionSummaries.concat(summaries);
 }
 
+console.log({commissionSummaries})
+
     const pendingPaymentGatewayFees = commissionSummaries.filter(
       (summary) =>
         summary.user.role.name === UserRole.GOLDEN &&
         summary.settledStatus === "N"
     );
 
-    const settledPaymentGatewayFees = commissionSummaries.filter(
-      (summary) =>
-        summary.user.role.name === UserRole.GOLDEN &&
-        summary.settledStatus === "Y"
-    );
-
     const pendingPaymentGatewayFeeSum = pendingPaymentGatewayFees.reduce(
-      (acc, summary) => acc + summary.paymentGatewayFee,
-      0
-    );
-
-    const settledPaymentGatewayFeeSum = settledPaymentGatewayFees.reduce(
       (acc, summary) => acc + summary.paymentGatewayFee,
       0
     );
@@ -1443,14 +1434,23 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
       }
     }
 
+    const settledPaymentGatewayFeeSum = settledSummaries.filter(
+      (summary) => summary.user.role.name === UserRole.GOLDEN &&
+        summary.settledStatus === "Y"
+    ).reduce(
+      (acc, summary) => acc + summary.paymentGatewayFee,
+      0
+    );
 
-    console.group(totalPending, totalPending);
+    console.log({ pendingPaymentGatewayFeeSum, settledPaymentGatewayFeeSum })
+
+    console.log({ totalPending, totalSettled })
 
     return {
       summaries: commissionSummaries,
       allTotal: totals,
       totalPending: totalPending > 0 ? totalPending - pendingPaymentGatewayFeeSum : 0,
-      totalSettled: totalSettled > 0 ? totalSettled - settledPaymentGatewayFee : 0,
+      totalSettled: totalSettled > 0 ? totalSettled - settledPaymentGatewayFeeSum : 0,
     };
     } catch (error) {
       throw new Error(`Error creating commission: ${error}`);
@@ -2252,7 +2252,7 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
           },
           ...(roleName !== UserRole.GOLDEN? [{
             label: "Net Commission",
-            pendingSettlement: totalPendingGrossCommission + ownCommissionData["E-Games"].pending + ownCommissionData["Sports Betting"].pending + ownCommissionData["Speciality Games - RNG"].pending + ownCommissionData["Speciality Games - Tote"].pending - pendingPaymentGatewayFee,
+            pendingSettlement: totalPendingGrossCommission + ownCommissionData["E-Games"].pending + ownCommissionData["Sports Betting"].pending + ownCommissionData["Speciality Games - RNG"].pending + ownCommissionData["Speciality Games - Tote"].pending > 0 ? totalPendingGrossCommission + ownCommissionData["E-Games"].pending + ownCommissionData["Sports Betting"].pending + ownCommissionData["Speciality Games - RNG"].pending + ownCommissionData["Speciality Games - Tote"].pending - pendingPaymentGatewayFee : 0,
             settledAllTime:
               roleName === UserRole.GOLDEN
                 ? totalSettledGrossCommission - settledPaymentGatewayFee
