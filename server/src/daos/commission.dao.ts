@@ -769,7 +769,8 @@ class CommissionDao {
     }
   }
   
-  public async markCommissionAsSettled(ids: string[]) {
+  public async markCommissionAsSettled(ids: string[], roleName: UserRole, childrenCommissionIds: string[]) {
+    
     try {
       // First get the current records with their user roles
       const currentRecords = await prisma.commissionSummary.findMany({
@@ -798,7 +799,6 @@ class CommissionDao {
         where: {
           userId: currentRecords[0].userId // only include the records you're working with
         },
-      
       });
 
 
@@ -850,7 +850,42 @@ class CommissionDao {
         })
       );
 
-      return [...updatedGoldenRecords, ...updatedOtherRecords];
+      const childrenRecords = await prisma.commissionSummary.findMany({
+        where: {
+          id: { in: childrenCommissionIds },
+        },
+        select: {
+          id: true,
+          pendingSettleCommission: true,
+          netCommissionAvailablePayout: true,
+          paymentGatewayFee: true,
+          userId: true,
+          user: {
+            select: {
+              role: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          }
+        },
+      });
+
+      const updatedChildrenRecords = await Promise.all(
+        childrenRecords.map(record => {
+          return prisma.commissionSummary.update({
+            where: { id: record.id },
+            data: {
+              settledBySuperadmin: roleName === UserRole.SUPER_ADMIN ? true : false,
+              settledByOperator: roleName === UserRole.OPERATOR ? true : false,
+              settledByPlatinum: roleName === UserRole.PLATINUM ? true : false,
+            },
+          });
+        })
+      );
+
+      return [...updatedGoldenRecords, ...updatedOtherRecords, ...updatedChildrenRecords];
     } catch (error) {
       console.error("Error updating settledStatus:", error);
       throw error;

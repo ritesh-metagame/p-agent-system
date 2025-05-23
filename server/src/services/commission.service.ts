@@ -1164,6 +1164,7 @@ class CommissionService {
                   ...nonSettledGoldenChildren.map((ch) => ch.id),
                 ],
               },
+              settledBySuperadmin: true,
             },
             select: {
               userId: true,
@@ -1260,6 +1261,7 @@ class CommissionService {
               userId: {
                 in: [...nonSettledGoldenChildren.map((ch) => ch.id)],
               },
+              settledByOperator: true
               // settledStatus: "N",
             },
             select: {
@@ -1359,6 +1361,10 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
         in: filteredUserIds,
       },
       categoryName: category,
+      settledStatus: "N",
+      ...(roleName === UserRole.SUPER_ADMIN ? { settledBySuperadmin: false } : {}),
+            ...(roleName === UserRole.OPERATOR ? { settledByOperator: false } : {}),
+            ...(roleName === UserRole.PLATINUM ? { settledByPlatinum: false } : {}),
       createdAt: {
         gte: cycleStartDate,
         lte: cycleEndDate,
@@ -1393,18 +1399,7 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
         summary.settledStatus === "N"
     );
 
-    const settledPaymentGatewayFees = commissionSummaries.filter(
-      (summary) =>
-        summary.user.role.name === UserRole.GOLDEN &&
-        summary.settledStatus === "Y"
-    );
-
     const pendingPaymentGatewayFeeSum = pendingPaymentGatewayFees.reduce(
-      (acc, summary) => acc + summary.paymentGatewayFee,
-      0
-    );
-
-    const settledPaymentGatewayFeeSum = settledPaymentGatewayFees.reduce(
       (acc, summary) => acc + summary.paymentGatewayFee,
       0
     );
@@ -1694,6 +1689,7 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
                     ...nonSettledGoldenChildren.map((ch) => ch.id),
                   ],
                 },
+                settledBySuperadmin: true
                 // categoryName: {
                 //   not: "Unknown"
                 // }
@@ -1812,6 +1808,8 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
                 userId: {
                   in: [...nonSettledGoldenChildren.map((ch) => ch.id)],
                 },
+                settledBySuperadmin: true,
+                settledByOperator: true
                 // settledStatus: "N",
               },
               select: {
@@ -2006,6 +2004,9 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
               gte: cycleStartDate,
               lte: cycleEndDate,
             },
+            ...(roleName === UserRole.SUPER_ADMIN ? { settledBySuperadmin: false } : {}),
+            ...(roleName === UserRole.OPERATOR ? { settledByOperator: false } : {}),
+            ...(roleName === UserRole.PLATINUM ? { settledByPlatinum: false } : {}),
             settledStatus: roleName === UserRole.GOLDEN ? {in: ["Y", "N"]} : "N",
           },
           select: {
@@ -2292,50 +2293,6 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
     roleName: string
   ) {
     console.log({ roleName });
-    // Get all users under this user based on role hierarchy
-    // let userIds = [userId];
-
-    // if (roleName === UserRole.SUPER_ADMIN) {
-    //   const operators = await prisma.user.findMany({
-    //     where: {
-    //       role: { name: UserRole.OPERATOR },
-    //     },
-    //     select: { id: true },
-    //   });
-    //   userIds = operators.map((op) => op.id);
-    // }
-
-    // if (roleName.toLowerCase() === UserRole.OPERATOR) {
-    //   // Get all platinum and golden users under this operator
-    //   const platinums = await prisma.user.findMany({
-    //     where: {
-    //       parentId: userId,
-    //       role: { name: UserRole.PLATINUM },
-    //     },
-    //     select: { id: true },
-    //   });
-    //   userIds = [...userIds, ...platinums.map((p) => p.id)];
-
-    //   // Get all golden users under these platinums
-    //   const golds = await prisma.user.findMany({
-    //     where: {
-    //       parentId: { in: platinums.map((p) => p.id) },
-    //       role: { name: UserRole.GOLDEN },
-    //     },
-    //     select: { id: true },
-    //   });
-    //   userIds = [...userIds, ...golds.map((g) => g.id)];
-    // } else if (roleName.toLowerCase() === UserRole.PLATINUM) {
-    //   // Get all golden users under this platinum
-    //   const golds = await prisma.user.findMany({
-    //     where: {
-    //       parentId: userId,
-    //       role: { name: UserRole.GOLDEN },
-    //     },
-    //     select: { id: true },
-    //   });
-    //   userIds = [...userIds, ...golds.map((g) => g.id)];
-    // }
 
     let depositPgFeesTotal = 0;
     let withdrawPgFeesTotal = 0;
@@ -2609,7 +2566,7 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
 
       for (const category of categories) {
 
-        const {} = await this.getPreviousCompletedCycleDates(category)
+        const { cycleStartDate, cycleEndDate } = await this.getPreviousCompletedCycleDates(category)
 
         const summaries = await prisma.user.findMany({
           where: {
@@ -2808,6 +2765,7 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
                 acc.grossCommissions = 0;
                 acc.paymentGatewayFees = 0;
                 acc.netCommissions = 0;
+                acc.restCommissionIds = [];
               }
 
               acc.summaries.push(summary);
@@ -2963,6 +2921,7 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
           // Add their commission amounts to the totals without adding their IDs
           for (const restUser of relevantRestUsers) {
             for (const summary of restUser.commissionSummaries) {
+              summariesByUser.restCommissionIds.push(summary.id);
               // Calculate totals by game category - same logic as above but don't add IDs
               if (summary.categoryName.includes("E-Games")) {
                
@@ -2998,6 +2957,10 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
 
           console.log("payment fee-------", pendingPaymentGatewayFees);
 
+          console.log({
+            restCommissions: summariesByUser.restCommissionIds
+          })
+          
           // If user has no summaries, return empty array
           if (
             !summariesByUser.summaries ||
@@ -3005,6 +2968,7 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
           ) {
             return [];
           }
+
 
           // Create a unified row for this user with all category totals
           return {
@@ -3016,6 +2980,7 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
               summariesByUser.totalSportsBettingCommissions,
             totalSpecialtyGamesCommissions:
               summariesByUser.totalSpecialtyGamesCommissions,
+              restCommissionIds: summariesByUser.restCommissionIds,
             grossCommissions:
               summariesByUser.totalEgamesCommissions +
               summariesByUser.totalSportsBettingCommissions +
@@ -5319,11 +5284,11 @@ settled.sportsBet = settledSportsGGR; // as per your requirement
     }
   }
 
-  public async markCommissionSummaryStatus(ids: string[]) {
+  public async markCommissionSummaryStatus(ids: string[], childrenCommissionIds: string[], roleName: UserRole) {
     try {
       // Using the instance variable instead of creating a new instance
       const commissionData =
-        await this.commissionDao.markCommissionAsSettled(ids);
+        await this.commissionDao.markCommissionAsSettled(ids, roleName, childrenCommissionIds);
       return commissionData;
     } catch (error) {
       throw new Error(`Error creating commission: ${error}`);

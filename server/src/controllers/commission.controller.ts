@@ -572,9 +572,10 @@ class CommissionController {
     next: NextFunction
   ) {
     try {
-      const { ids } = req.body as any;
+      const { ids, childrenCommissionIds } = req.body as any;
+      const role = req.role as any
       const commissionService = Container.get(CommissionService);
-      const result = await commissionService.markCommissionSummaryStatus(ids);
+      const result = await commissionService.markCommissionSummaryStatus(ids,childrenCommissionIds, role);
 
       return new ApiResponse(
         ResponseCodes.UNSETTLED_DATA_UPDATE_SUCCESSFULLY.code,
