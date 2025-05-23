@@ -2356,7 +2356,7 @@ console.log({commissionSummaries})
               roleName === UserRole.GOLDEN
                 ? "Net Commission"
                 : "Commission Available for Payout",
-            pendingSettlement: totalPendingNetCommissionPayout - ownCommission,
+            pendingSettlement: totalPendingGrossCommission + ownCommissionData["E-Games"].pending + ownCommissionData["Sports Betting"].pending + ownCommissionData["Speciality Games - RNG"].pending + ownCommissionData["Speciality Games - Tote"].pending > 0 ? totalPendingGrossCommission + ownCommissionData["E-Games"].pending + ownCommissionData["Sports Betting"].pending + ownCommissionData["Speciality Games - RNG"].pending + ownCommissionData["Speciality Games - Tote"].pending - pendingPaymentGatewayFeeSum - ownCommission : 0,
             settledAllTime:
               roleName === UserRole.GOLDEN
                 ? totalSettledGrossCommission - settledPaymentGatewayFee
@@ -2388,10 +2388,10 @@ console.log({commissionSummaries})
           transactionType: {
             in: ["deposit", "withdraw"],
           },
-          createdAt: {
-            gte: cycleStartDate,
-            lte: cycleEndDate,
-          },
+          // createdAt: {
+          //   gte: cycleStartDate,
+          //   lte: cycleEndDate,
+          // },
         },
         select: {
           transactionType: true,
@@ -2453,60 +2453,6 @@ console.log({commissionSummaries})
 
       totalPgFees = depositPgFeesTotal + withdrawPgFeesTotal;
     }
-
-    // Get fees from commission_summary where deposits and withdrawals are not null
-    // const summaries = await prisma.commissionSummary.findMany({
-    //   where: {
-    //     userId: { in: userIds },
-    //     NOT: {
-    //       categoryName: {
-    //         in: [
-    //           "E-Games",
-    //           "Sports Betting",
-    //           "Speciality Games - Tote",
-    //           "Speciality Games - RNG",
-    //         ],
-    //       },
-    //     },
-    //     OR: [{ totalDeposit: { gt: 0 } }, { totalWithdrawals: { gt: 0 } }],
-    //     paymentGatewayFee: {
-    //       gt: 0,
-    //     },
-    //   },
-    //   select: {
-    //     totalDeposit: true,
-    //     totalWithdrawals: true,
-    //     paymentGatewayFee: true,
-    //   },
-    // });
-
-    // console.log({ summaries });
-
-    // Calculate total fees and transaction amounts
-    // const totals = summaries.reduce(
-    //   (acc, curr) => ({
-    //     totalDeposit: acc.totalDeposit + (curr.totalDeposit || 0),
-    //     totalWithdrawals: acc.totalWithdrawals + (curr.totalWithdrawals || 0),
-    //     totalFees: acc.totalFees + (curr.paymentGatewayFee || 0),
-    //   }),
-    //   {
-    //     totalDeposit: 0,
-    //     totalWithdrawals: 0,
-    //     totalFees: 0,
-    //   }
-    // );
-
-    // // Calculate proportional fees for deposits and withdrawals
-    // const totalTransactions = totals.totalDeposit + totals.totalWithdrawals;
-    // let depositFees = 0;
-    // let withdrawalFees = 0;
-
-    // if (totalTransactions > 0) {
-    //   depositFees =
-    //     totals.totalFees * (totals.totalDeposit / totalTransactions);
-    //   withdrawalFees =
-    //     totals.totalFees * (totals.totalWithdrawals / totalTransactions);
-    // }
 
     return {
       columns: ["", "Amount"],
