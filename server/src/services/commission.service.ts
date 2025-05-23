@@ -1387,6 +1387,8 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
   commissionSummaries = commissionSummaries.concat(summaries);
 }
 
+console.log({commissionSummaries})
+
     const pendingPaymentGatewayFees = commissionSummaries.filter(
       (summary) =>
         summary.user.role.name === UserRole.GOLDEN &&
