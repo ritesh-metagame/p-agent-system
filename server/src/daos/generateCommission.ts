@@ -14,15 +14,14 @@ class GenerateCommission {
       console.log("date from",from, "date to",to);
 
       // 1. Get all transactions in date range
-     const transactions = await prisma.transaction.findMany({
-  where: {
-    betTime: {
-      gte: new Date('2025-05-10T00:00:00Z'),
-      lte: new Date('2025-05-16T23:59:59Z'),
-    },
-  },
-});
-
+      const transactions = await prisma.transaction.findMany({
+        where: {
+          betTime: {
+            gte: from,
+            lte: to,
+          },
+        },
+      });
 
       console.log(
         `📦 Found ${transactions.length} transactions on ${date.toDateString()}`

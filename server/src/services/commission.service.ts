@@ -3724,8 +3724,13 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
 
   public async getLicenseBreakdown(userId: string, roleName: string) {
 
-    console.log("-------------------------->>>>>>>>>>>>>>>>>>>>>/////////////userId", userId, "roleName", roleName);
     try {
+
+      const eGamesCycle = await this.getPreviousCompletedCycleDates("E-Games");
+      const sportsCycle = await this.getPreviousCompletedCycleDates("Sports Betting");
+      
+      console.log("eGamesCycle", eGamesCycle);
+      console.log("sportsCycle", sportsCycle);
       roleName = roleName.toLowerCase();
       const result = {
         code: "2010",
@@ -3786,22 +3791,38 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
           }
         ]
       });
-  
-      const summaries = await prisma.commissionSummary.findMany({
-        where: {
-          userId: userId
-        },
-        select: {
-          categoryName: true,
-          settledStatus: true,
-          netGGR: true,
-          totalBetAmount: true,
-          grossCommission: true,
-          netCommissionAvailablePayout: true,
-          paymentGatewayFee: true,
-          pendingSettleCommission: true // 🔧 added field
+  const summaries = await prisma.commissionSummary.findMany({
+  where: {
+    userId: userId,
+    OR: [
+      {
+        categoryName: "E-Games",
+        createdAt: {
+          gte: eGamesCycle.cycleStartDate,
+          lte: eGamesCycle.cycleEndDate
         }
-      });
+      },
+      {
+        categoryName: "Sports Betting",
+        createdAt: {
+          gte: sportsCycle.cycleStartDate,
+          lte: sportsCycle.cycleEndDate
+        }
+      }
+    ]
+  },
+  select: {
+    categoryName: true,
+    settledStatus: true,
+    netGGR: true,
+    totalBetAmount: true,
+    grossCommission: true,
+    netCommissionAvailablePayout: true,
+    paymentGatewayFee: true,
+    pendingSettleCommission: true
+  }
+});
+
   
       const pending = {
         eGamesGGR: 0,
@@ -3833,17 +3854,35 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
       const operatorIds = operators.map(op => op.id);
 
       const operatorSummaries = await prisma.commissionSummary.findMany({
-        where: {
-          userId: { in: operatorIds }
-        },
-        select: {
-          categoryName: true,
-          netGGR: true,
-          totalBetAmount: true,
-          pendingSettleCommission: true,
-          settledStatus: true,
+  where: {
+    userId: { in: operatorIds },
+    OR: [
+      {
+        categoryName: "E-Games",
+        createdAt: {
+          gte: eGamesCycle.cycleStartDate,
+          lte: eGamesCycle.cycleEndDate
         }
-      });
+      },
+      {
+        categoryName: "Sports Betting",
+        createdAt: {
+          gte: sportsCycle.cycleStartDate,
+          lte: sportsCycle.cycleEndDate
+
+        }
+      }
+    ]
+  },
+  select: {
+    categoryName: true,
+    netGGR: true,
+    totalBetAmount: true,
+    pendingSettleCommission: true,
+    settledStatus: true
+  }
+});
+
 
       let egamesGGR = 0;
 let sportsGGR = 0;
