@@ -3334,21 +3334,21 @@ console.log({commissionSummaries})
           currentDate.getMonth(),
           1
         );
-        cycleEndDate = new Date(
+        cycleEndDate = new Date(new Date(
           currentDate.getFullYear(),
           currentDate.getMonth(),
           15
-        );
+        ).setHours(23, 59, 59, 999))
       } else {
         // We're in first half, show second half of previous month
-        cycleStartDate = new Date(
+        cycleStartDate = new Date(new Date(
           currentDate.getFullYear(),
           currentDate.getMonth() - 1,
           16
-        );
-        cycleEndDate = endOfMonth(
+        ).setHours(0, 0, 0, 0));
+        cycleEndDate = new Date(endOfMonth(
           new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
-        );
+        ).setHours(23, 59, 59, 999));
       }
     }
 
@@ -3375,7 +3375,7 @@ console.log({commissionSummaries})
 
     return {
       cycleStartDate: startOfPrevWeek,
-      cycleEndDate: mostRecentSunday,
+      cycleEndDate: new Date(mostRecentSunday.setHours(23, 59, 59, 999)),
     };
   }
 
