@@ -1442,9 +1442,9 @@ console.log({commissionSummaries})
       0
     );
 
-    console.log({pendingPaymentGatewayFeeSum, settledPaymentGatewayFeeSum})
+    console.log({ pendingPaymentGatewayFeeSum, settledPaymentGatewayFeeSum })
 
-    console.log({totalPending, totalSettled})
+    console.log({ totalPending, totalSettled })
 
     return {
       summaries: commissionSummaries,
