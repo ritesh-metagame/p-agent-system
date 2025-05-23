@@ -3838,21 +3838,30 @@ console.log({commissionSummaries})
       });
   const summaries = await prisma.commissionSummary.findMany({
   where: {
-    userId: userId,
     OR: [
       {
-        categoryName: "E-Games",
-        createdAt: {
-          gte: eGamesCycle.cycleStartDate,
-          lte: eGamesCycle.cycleEndDate
-        }
+        AND: [
+          { userId: userId },
+          { categoryName: "E-Games" },
+          {
+            createdAt: {
+              gte: eGamesCycle.cycleStartDate,
+              lte: eGamesCycle.cycleEndDate
+            }
+          }
+        ]
       },
       {
-        categoryName: "Sports Betting",
-        createdAt: {
-          gte: sportsCycle.cycleStartDate,
-          lte: sportsCycle.cycleEndDate
-        }
+        AND: [
+          { userId: userId },
+          { categoryName: "Sports Betting" },
+          {
+            createdAt: {
+              gte: sportsCycle.cycleStartDate,
+              lte: sportsCycle.cycleEndDate
+            }
+          }
+        ]
       }
     ]
   },
@@ -3867,6 +3876,7 @@ console.log({commissionSummaries})
     pendingSettleCommission: true
   }
 });
+
 
   
       const pending = {
@@ -3898,24 +3908,32 @@ console.log({commissionSummaries})
 
       const operatorIds = operators.map(op => op.id);
 
-      const operatorSummaries = await prisma.commissionSummary.findMany({
+     const operatorSummaries = await prisma.commissionSummary.findMany({
   where: {
-    userId: { in: operatorIds },
     OR: [
       {
-        categoryName: "E-Games",
-        createdAt: {
-          gte: eGamesCycle.cycleStartDate,
-          lte: eGamesCycle.cycleEndDate
-        }
+        AND: [
+          { userId: { in: operatorIds } },
+          { categoryName: "E-Games" },
+          {
+            createdAt: {
+              gte: eGamesCycle.cycleStartDate,
+              lte: eGamesCycle.cycleEndDate
+            }
+          }
+        ]
       },
       {
-        categoryName: "Sports Betting",
-        createdAt: {
-          gte: sportsCycle.cycleStartDate,
-          lte: sportsCycle.cycleEndDate
-
-        }
+        AND: [
+          { userId: { in: operatorIds } },
+          { categoryName: "Sports Betting" },
+          {
+            createdAt: {
+              gte: sportsCycle.cycleStartDate,
+              lte: sportsCycle.cycleEndDate
+            }
+          }
+        ]
       }
     ]
   },
@@ -3927,6 +3945,7 @@ console.log({commissionSummaries})
     settledStatus: true
   }
 });
+
 
 
       let egamesGGR = 0;
