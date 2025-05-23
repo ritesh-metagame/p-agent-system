@@ -14,14 +14,15 @@ class GenerateCommission {
       console.log("date from",from, "date to",to);
 
       // 1. Get all transactions in date range
-      const transactions = await prisma.transaction.findMany({
-        where: {
-          betTime: {
-            gte: from,
-            lte: to,
-          },
-        },
-      });
+     const transactions = await prisma.transaction.findMany({
+  where: {
+    betTime: {
+      gte: new Date('2025-05-10T00:00:00Z'),
+      lte: new Date('2025-05-16T23:59:59Z'),
+    },
+  },
+});
+
 
       console.log(
         `📦 Found ${transactions.length} transactions on ${date.toDateString()}`
@@ -98,25 +99,25 @@ class GenerateCommission {
               pendingSettleCommission = sum.betAmount * 0.02;
             }
 
-            // await prisma.commissionSummary.create({
-            //   data: {
-            //     userId,
-            //     roleId: user.roleId,
-            //     categoryName,
-            //     totalDeposit: sum.deposit,
-            //     totalWithdrawals: sum.withdrawal,
-            //     totalBetAmount: sum.betAmount,
-            //     netGGR: sum.revenue,
-            //     grossCommission: 0, // optional logic
-            //     paymentGatewayFee: sum.pgFeeCommission,
-            //     netCommissionAvailablePayout: netCommission,
-            //     pendingSettleCommission: pendingSettleCommission,
-            //     settledStatus: "N",
-            //     siteId: null,
-            //     createdAt: date,
-            //     updatedAt: new Date(),
-            //   },
-            // });
+            await prisma.commissionSummary.create({
+              data: {
+                userId,
+                roleId: user.roleId,
+                categoryName,
+                totalDeposit: sum.deposit,
+                totalWithdrawals: sum.withdrawal,
+                totalBetAmount: sum.betAmount,
+                netGGR: sum.revenue,
+                grossCommission: 0, // optional logic
+                paymentGatewayFee: sum.pgFeeCommission,
+                netCommissionAvailablePayout: netCommission,
+                pendingSettleCommission: pendingSettleCommission,
+                settledStatus: "N",
+                siteId: null,
+                createdAt: date,
+                updatedAt: new Date(),
+              },
+            });
 
             console.log(
               `✅ Summary added for ${userId} (${roleKey}) in ${categoryName}`

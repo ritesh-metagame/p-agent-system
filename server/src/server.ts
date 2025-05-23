@@ -93,18 +93,21 @@ class Server {
     };
 
     async function insertTransactionsFromXLSX(filePath: string) {
-      // const workbook = xlsx.readFile(filePath);
-      // const sheetName = workbook.SheetNames[0];
-      // const sheet = workbook.Sheets[sheetName];
-      // const rawRows = xlsx.utils.sheet_to_json(sheet);
+     
+        const rawRows: any = await prisma.$queryRawUnsafe(`
+  SELECT * FROM bets
+  WHERE time_of_bet BETWEEN '2025-05-10 00:00:00' AND '2025-05-16 23:59:59'
+`);
 
-         const rawRows: any = await prisma.$queryRawUnsafe(`
-    SELECT * FROM bets
-  `);
+      
+      // console.log("Raw rows---:", rawRows);
 
 
-      for (const rawRow of rawRows) {
-        const row = cleanRowKeys(rawRow);
+      for (const row of rawRows) {
+                // console.log("Row data:", row);
+
+        // const row = cleanRowKeys(rawRow);
+
         const platformType = row["platform_name"];
         const normalizedPlatform =
           platformType === "egames"
@@ -127,12 +130,12 @@ class Server {
         );
 
         // Step 1: GA
-        const excelGaId = row["agent_code"];
-        const gaId = GAIDS.includes(excelGaId) ? excelGaId : null;
+        const gaId = row["agent_code"];
+        // const gaId = GAIDS.includes(excelGaId) ? excelGaId : null;
 
         if (!gaId) {
           console.warn(`
-            ⚠ GA ID ${excelGaId} not found in allowed GAIDS. Skipping transaction.
+            ⚠ GA ID ${gaId} not found in allowed GAIDS. Skipping transaction.
           `);
           continue;
         }
@@ -197,7 +200,7 @@ class Server {
         // Step 4: Build transaction object
         const transaction = {
           transactionId: String(row["transaction_id"]),
-          betTime: parseExcelDate(row["time_of_bet"]),
+          betTime: row["time_of_bet"],
           userId: row["User Id"],
           playerName: row["player_id"],
           platformType: normalizedPlatform,
