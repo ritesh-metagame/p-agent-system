@@ -482,7 +482,6 @@ class CommissionDao {
 
         settledData.push(...settledDataForNonSettled);
 
-        console.log("Settled Data:", settledData);
 
         settledSummaries = settledData;
       }
@@ -582,7 +581,6 @@ class CommissionDao {
 
       // settledData.push(...settledDataForNonSettled);
 
-      console.log("Settled Data:", settledData);
 
       settledSummaries = settledData;
 

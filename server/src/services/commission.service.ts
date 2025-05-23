@@ -1714,7 +1714,6 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
           settledData.push(...settledDataForNonSettled);
         }
 
-        console.log(`Settled Data: `, settledData)
 
         // Add settled data to categoryData
         settledData.forEach((summary) => {
@@ -1855,9 +1854,7 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
           undefined
         );
 
-        console.log("-----------------------------------------------------")
-        console.log({ settledPaymentGatewayFee, pendingPaymentGatewayFee });
-        console.log("-----------------------------------------------------")
+       
 
       }
 
@@ -3726,6 +3723,8 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
   }
 
   public async getLicenseBreakdown(userId: string, roleName: string) {
+
+    console.log("-------------------------->>>>>>>>>>>>>>>>>>>>>/////////////userId", userId, "roleName", roleName);
     try {
       roleName = roleName.toLowerCase();
       const result = {
@@ -3873,13 +3872,14 @@ for (const summary of operatorSummaries) {
     }
   } else if (summary.categoryName === "Sports Betting") {
     const bet = Math.floor(summary.totalBetAmount ?? 0);
-    const comm = Math.floor(summary.pendingSettleCommission ?? 0);
+    const comm = summary.pendingSettleCommission ?? 0;
 
     sportsGGR += bet;
     sportsCommission += comm;
 
+    console.log("pending commission-----------------", sportsCommission)
+
     if (summary.settledStatus === "Y") {
-      console.log("settled sports commission-------------------", comm)
       sportsCommission = comm - comm;
 
       settledSportsGGR += bet;
@@ -3887,7 +3887,6 @@ for (const summary of operatorSummaries) {
     }
   }
 }
-console.log("settled commission", settledEGamesCommission)
 
 // Assign values to your pending and settled trackers
 pending.eGamesGGR = egamesGGR;
@@ -3899,8 +3898,10 @@ settled.eGamesGGR = settledEGamesGGR; // as per your requirement
 settled.eGamesCommission = settledEGamesCommission;
 settled.sportsBet = settledSportsGGR; // as per your requirement
       settled.sportsCommission = settledSportsCommission;
+
+
+      console.log("pending commission", pending.eGamesCommission, "comm", pending.sportsCommission, "grossCommission", pending.eGamesGGR)
       
-      console.log("settled commission", settled.eGamesCommission)
 
 
       
@@ -3915,6 +3916,8 @@ settled.sportsBet = settledSportsGGR; // as per your requirement
         const pendingComm = Math.floor(summary.pendingSettleCommission ?? 0);
         const paymentGatewayFee = Math.floor(summary.paymentGatewayFee ?? 0);
         const isSettled = summary.settledStatus === "Y";
+
+        console.log("----------------------pending commission",pendingComm)
 
         console.log("pending commission", pendingComm, "comm", comm, "grossCommission", grossCommission)
       
@@ -3981,11 +3984,14 @@ settled.sportsBet = settledSportsGGR; // as per your requirement
           }
       
           pending.sportsBet += bet;
+
+          console.log("pending.sportsBet-------------------000000000000",pending.sportsBet)
       
           if (roleName === UserRole.GOLDEN) {
 
-            console.log("====================================",roleName)
             pending.sportsCommission += comm;
+                        console.log("====================================",pending.sportsCommission)
+
           } else if (roleName === UserRole.PLATINUM) {
             const user = await prisma.user.findUnique({
               where: { id: userId },
@@ -4012,7 +4018,10 @@ settled.sportsBet = settledSportsGGR; // as per your requirement
       
             pending.sportsCommission = pendingComm - parentCommission;
           } else {
+
             pending.sportsCommission = pendingComm;
+                                    console.log("pendingComm commission--------------------", pendingComm);
+
           }
         }
       }
