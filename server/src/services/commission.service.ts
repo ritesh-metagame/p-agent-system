@@ -3906,8 +3906,8 @@ let settledSportsCommission = 0;
 
 for (const summary of operatorSummaries) {
   if (summary.categoryName === "E-Games") {
-    const ggr = Math.floor(summary.netGGR ?? 0);
-    const comm = Math.floor(summary.pendingSettleCommission ?? 0);
+    const ggr = summary.netGGR ;
+    const comm = summary.pendingSettleCommission ;
 
     console.log("pending commission", comm, "ggr", ggr)
 
@@ -3920,7 +3920,7 @@ for (const summary of operatorSummaries) {
       settledEGamesCommission += comm;
     }
   } else if (summary.categoryName === "Sports Betting") {
-    const bet = Math.floor(summary.totalBetAmount ?? 0);
+    const bet = summary.totalBetAmount;
     const comm = summary.pendingSettleCommission ?? 0;
 
     sportsGGR += bet;
@@ -3958,12 +3958,12 @@ settled.sportsBet = settledSportsGGR; // as per your requirement
   
       for (const summary of summaries) {
         const category = summary.categoryName;
-        const grossCommission = Math.floor(summary.grossCommission ?? 0);
-        const ggr = Math.floor(summary.netGGR ?? 0);
-        const bet = Math.floor(summary.totalBetAmount ?? 0);
-        const comm = Math.floor(summary.netCommissionAvailablePayout ?? 0);
-        const pendingComm = Math.floor(summary.pendingSettleCommission ?? 0);
-        const paymentGatewayFee = Math.floor(summary.paymentGatewayFee ?? 0);
+        const grossCommission = summary.grossCommission ;
+        const ggr = summary.netGGR ;
+        const bet = summary.totalBetAmount ;
+        const comm = summary.netCommissionAvailablePayout ;
+        const pendingComm = summary.pendingSettleCommission ;
+        const paymentGatewayFee = summary.paymentGatewayFee ;
         const isSettled = summary.settledStatus === "Y";
 
         console.log("----------------------pending commission",pendingComm)
@@ -4007,7 +4007,7 @@ settled.sportsBet = settledSportsGGR; // as per your requirement
                 }
               });
       
-              parentCommission = Math.floor(parentSummary?.netCommissionAvailablePayout ?? 0);
+              parentCommission = parentSummary?.netCommissionAvailablePayout ;
             }
 
             console.log("parent commission", parentCommission, "comm", comm, "pendingComm", pendingComm);
@@ -4060,7 +4060,7 @@ settled.sportsBet = settledSportsGGR; // as per your requirement
                 }
               });
       
-              parentCommission = Math.floor(parentSummary?.netCommissionAvailablePayout ?? 0);
+              parentCommission = parentSummary?.netCommissionAvailablePayout ;
             }
 
             console.log("parent commission", parentCommission, "comm", comm, "pendingComm", pendingComm);
