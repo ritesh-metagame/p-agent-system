@@ -3738,8 +3738,8 @@ console.log({commissionSummaries})
       const eGamesCycle = await this.getPreviousCompletedCycleDates("E-Games");
       const sportsCycle = await this.getPreviousCompletedCycleDates("Sports Betting");
       
-      console.log("eGamesCycle", eGamesCycle);
-      console.log("sportsCycle", sportsCycle);
+      console.log("eGamesCycle----------------------", eGamesCycle);
+      console.log("sportsCycle----------------------", sportsCycle);
       roleName = roleName.toLowerCase();
       const result = {
         code: "2010",
@@ -3939,7 +3939,7 @@ for (const summary of operatorSummaries) {
     }
   } else if (summary.categoryName === "Sports Betting") {
     const bet = summary.totalBetAmount;
-    const comm = summary.pendingSettleCommission ?? 0;
+    const comm = summary.pendingSettleCommission ;
 
     sportsGGR += bet;
     sportsCommission += comm;
