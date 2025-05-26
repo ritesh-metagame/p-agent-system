@@ -11,6 +11,8 @@ class GenerateCommission {
       const from = startOfDay(date);
       const to = endOfDay(date);
 
+      console.log("date from",from, "date to",to);
+
       // 1. Get all transactions in date range
       const transactions = await prisma.transaction.findMany({
         where: {

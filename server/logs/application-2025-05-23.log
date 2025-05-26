@@ -123,6 +123,7 @@ info: 2025-05-23T08:51:03.356Z [loaders\index.ts] ✌️ Express loaded
 info: 2025-05-23T08:51:03.380Z [src\server.ts] 
 development Platform is running at http://localhost:8080 🛡
       
+<<<<<<< HEAD
 info: 2025-05-23T09:49:34.477Z [loaders\index.ts] ✌️ Express loaded
 info: 2025-05-23T09:49:34.498Z [src\server.ts] 
 development Platform is running at http://localhost:8080 🛡
@@ -216,5 +217,65 @@ development Platform is running at http://localhost:8080 🛡
       
 info: 2025-05-23T10:29:29.199Z [loaders\index.ts] ✌️ Express loaded
 info: 2025-05-23T10:29:29.211Z [src\server.ts] 
+=======
+info: 2025-05-23T11:24:56.622Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-23T11:24:56.635Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-23T11:26:14.986Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-23T11:26:14.974Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-23T11:34:32.502Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-23T11:34:32.513Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-23T11:38:27.299Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-23T11:38:27.310Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-23T11:40:09.779Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-23T11:40:09.791Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-23T11:41:46.415Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-23T11:41:46.425Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-23T11:50:13.454Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-23T11:50:13.442Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-23T11:59:33.919Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-23T11:59:33.931Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-23T12:09:50.045Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-23T12:09:50.035Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-23T12:40:08.675Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-23T12:40:08.661Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-23T12:46:09.648Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-23T12:46:09.637Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-23T12:49:24.073Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-23T12:49:24.083Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-23T13:13:24.931Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-23T13:13:24.920Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-23T13:18:29.327Z [src\server.ts] 
+development Platform is running at http://localhost:8080 🛡
+      
+info: 2025-05-23T13:18:29.315Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-23T13:26:26.792Z [loaders\index.ts] ✌️ Express loaded
+info: 2025-05-23T13:26:26.803Z [src\server.ts] 
+>>>>>>> 8ff38e37c6bac53ae2d612112aaad2ca1186e4a1
 development Platform is running at http://localhost:8080 🛡
       

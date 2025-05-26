@@ -1059,6 +1059,8 @@ class CommissionService {
       throw new Error("User or user role not found.");
     }
 
+    const {cycleStartDate, cycleEndDate} = await this.getPreviousCompletedCycleDates();
+
     const roleName = loggedInUser.role.name.toLowerCase() as UserRole;
     let allowedRole = "" as UserRole;
 
@@ -1352,6 +1354,39 @@ class CommissionService {
 
     let commissionSummaries: any[] = [];
 
+    const feeSummaries = await prisma.commissionSummary.findMany({
+      where: {
+        userId: {
+          in: filteredUserIds,
+        },
+        categoryName: {
+          in: ["Unknown"]
+        },
+        createdAt: {
+          gte: cycleStartDate,
+          lte: cycleEndDate,
+        },
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+            role: true,
+          },
+        },
+        role: true,
+        Site: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
 for (const [category, cycleType] of Object.entries(categoryCycles)) {
   const { cycleStartDate, cycleEndDate } = await this.getPreviousCompletedCycleDates(category);
 
@@ -1393,7 +1428,9 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
   commissionSummaries = commissionSummaries.concat(summaries);
 }
 
-    const pendingPaymentGatewayFees = commissionSummaries.filter(
+console.log({commissionSummaries})
+
+    const pendingPaymentGatewayFees = feeSummaries.filter(
       (summary) =>
         summary.user.role.name === UserRole.GOLDEN &&
         summary.settledStatus === "N"
@@ -1438,14 +1475,23 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
       }
     }
 
+    const settledPaymentGatewayFeeSum = settledSummaries.filter(
+      (summary) => summary.user.role.name === UserRole.GOLDEN &&
+        summary.settledStatus === "Y"
+    ).reduce(
+      (acc, summary) => acc + summary.paymentGatewayFee,
+      0
+    );
 
-    console.group(totalPending, totalPending);
+    console.log({ pendingPaymentGatewayFeeSum, settledPaymentGatewayFeeSum })
+
+    console.log({ totalPending, totalSettled })
 
     return {
       summaries: commissionSummaries,
       allTotal: totals,
       totalPending: totalPending > 0 ? totalPending - pendingPaymentGatewayFeeSum : 0,
-      totalSettled: totalSettled > 0 ? totalSettled - settledPaymentGatewayFee : 0,
+      totalSettled: totalSettled > 0 ? totalSettled - settledPaymentGatewayFeeSum : 0,
     };
     } catch (error) {
       throw new Error(`Error creating commission: ${error}`);
@@ -1710,7 +1756,6 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
           settledData.push(...settledDataForNonSettled);
         }
 
-        console.log(`Settled Data: `, settledData)
 
         // Add settled data to categoryData
         settledData.forEach((summary) => {
@@ -1853,9 +1898,7 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
           undefined
         );
 
-        console.log("-----------------------------------------------------")
-        console.log({ settledPaymentGatewayFee, pendingPaymentGatewayFee });
-        console.log("-----------------------------------------------------")
+       
 
       }
 
@@ -1951,6 +1994,41 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
       ]);
 
       let filteredUserIds = userIds.filter((id) => !settledIds.has(id));
+
+      const {cycleStartDate: startDateForPgFee, cycleEndDate: endDateForPgFee} = await this.getPreviousCompletedCycleDates()
+
+      const feeSummaries = await prisma.commissionSummary.findMany({
+        where: {
+          userId: {
+            in: filteredUserIds,
+          },
+          categoryName: {
+            in: ["Unknown"]
+          },
+          createdAt: {
+            gte: startDateForPgFee,
+            lte: endDateForPgFee,
+          },
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              firstName: true,
+              lastName: true,
+              role: true,
+            },
+          },
+          role: true,
+          Site: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
 
 
       // Get cycle dates for each category and fetch data
@@ -2211,6 +2289,17 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
 
       // console.log({ categoryTotals });
 
+      const pendingPgFee = feeSummaries.filter(
+        (summary) =>
+          summary.user.role.name === UserRole.GOLDEN &&
+          summary.settledStatus === "N"
+      );
+  
+      const pendingPaymentGatewayFeeSum = pendingPgFee.reduce(
+        (acc, summary) => acc + summary.paymentGatewayFee,
+        0
+      );
+
       return {
         columns: [
           "",
@@ -2251,12 +2340,12 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
           },
           {
             label: "Less: Total Payment Gateway Fees",
-            pendingSettlement:  totalPendingGrossCommission > 0 ? pendingPaymentGatewayFee : 0,
+            pendingSettlement:  totalPendingGrossCommission > 0 ? pendingPaymentGatewayFeeSum : 0,
             settledAllTime: totalSettledGrossCommission > 0 ? settledPaymentGatewayFee : 0,
           },
           ...(roleName !== UserRole.GOLDEN? [{
             label: "Net Commission",
-            pendingSettlement: totalPendingGrossCommission + ownCommissionData["E-Games"].pending + ownCommissionData["Sports Betting"].pending + ownCommissionData["Speciality Games - RNG"].pending + ownCommissionData["Speciality Games - Tote"].pending - pendingPaymentGatewayFee,
+            pendingSettlement: totalPendingGrossCommission + ownCommissionData["E-Games"].pending + ownCommissionData["Sports Betting"].pending + ownCommissionData["Speciality Games - RNG"].pending + ownCommissionData["Speciality Games - Tote"].pending > 0 ? totalPendingGrossCommission + ownCommissionData["E-Games"].pending + ownCommissionData["Sports Betting"].pending + ownCommissionData["Speciality Games - RNG"].pending + ownCommissionData["Speciality Games - Tote"].pending - pendingPaymentGatewayFeeSum : 0,
             settledAllTime:
               roleName === UserRole.GOLDEN
                 ? totalSettledGrossCommission - settledPaymentGatewayFee
@@ -2274,7 +2363,7 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
               roleName === UserRole.GOLDEN
                 ? "Net Commission"
                 : "Commission Available for Payout",
-            pendingSettlement: totalPendingNetCommissionPayout - ownCommission,
+            pendingSettlement: totalPendingGrossCommission + ownCommissionData["E-Games"].pending + ownCommissionData["Sports Betting"].pending + ownCommissionData["Speciality Games - RNG"].pending + ownCommissionData["Speciality Games - Tote"].pending > 0 ? totalPendingGrossCommission + ownCommissionData["E-Games"].pending + ownCommissionData["Sports Betting"].pending + ownCommissionData["Speciality Games - RNG"].pending + ownCommissionData["Speciality Games - Tote"].pending - pendingPaymentGatewayFeeSum - ownCommission : 0,
             settledAllTime:
               roleName === UserRole.GOLDEN
                 ? totalSettledGrossCommission - settledPaymentGatewayFee
@@ -2294,6 +2383,8 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
   ) {
     console.log({ roleName });
 
+    const {cycleStartDate, cycleEndDate} = await this.getPreviousCompletedCycleDates()
+
     let depositPgFeesTotal = 0;
     let withdrawPgFeesTotal = 0;
     let totalPgFees = 0;
@@ -2303,6 +2394,10 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
         where: {
           transactionType: {
             in: ["deposit", "withdraw"],
+          },
+          createdAt: {
+            gte: cycleStartDate,
+            lte: cycleEndDate,
           },
         },
         select: {
@@ -2365,60 +2460,6 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
 
       totalPgFees = depositPgFeesTotal + withdrawPgFeesTotal;
     }
-
-    // Get fees from commission_summary where deposits and withdrawals are not null
-    // const summaries = await prisma.commissionSummary.findMany({
-    //   where: {
-    //     userId: { in: userIds },
-    //     NOT: {
-    //       categoryName: {
-    //         in: [
-    //           "E-Games",
-    //           "Sports Betting",
-    //           "Speciality Games - Tote",
-    //           "Speciality Games - RNG",
-    //         ],
-    //       },
-    //     },
-    //     OR: [{ totalDeposit: { gt: 0 } }, { totalWithdrawals: { gt: 0 } }],
-    //     paymentGatewayFee: {
-    //       gt: 0,
-    //     },
-    //   },
-    //   select: {
-    //     totalDeposit: true,
-    //     totalWithdrawals: true,
-    //     paymentGatewayFee: true,
-    //   },
-    // });
-
-    // console.log({ summaries });
-
-    // Calculate total fees and transaction amounts
-    // const totals = summaries.reduce(
-    //   (acc, curr) => ({
-    //     totalDeposit: acc.totalDeposit + (curr.totalDeposit || 0),
-    //     totalWithdrawals: acc.totalWithdrawals + (curr.totalWithdrawals || 0),
-    //     totalFees: acc.totalFees + (curr.paymentGatewayFee || 0),
-    //   }),
-    //   {
-    //     totalDeposit: 0,
-    //     totalWithdrawals: 0,
-    //     totalFees: 0,
-    //   }
-    // );
-
-    // // Calculate proportional fees for deposits and withdrawals
-    // const totalTransactions = totals.totalDeposit + totals.totalWithdrawals;
-    // let depositFees = 0;
-    // let withdrawalFees = 0;
-
-    // if (totalTransactions > 0) {
-    //   depositFees =
-    //     totals.totalFees * (totals.totalDeposit / totalTransactions);
-    //   withdrawalFees =
-    //     totals.totalFees * (totals.totalWithdrawals / totalTransactions);
-    // }
 
     return {
       columns: ["", "Amount"],
@@ -3311,21 +3352,21 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
           currentDate.getMonth(),
           1
         );
-        cycleEndDate = new Date(
+        cycleEndDate = new Date(new Date(
           currentDate.getFullYear(),
           currentDate.getMonth(),
           15
-        );
+        ).setHours(23, 59, 59, 999))
       } else {
         // We're in first half, show second half of previous month
-        cycleStartDate = new Date(
+        cycleStartDate = new Date(new Date(
           currentDate.getFullYear(),
           currentDate.getMonth() - 1,
           16
-        );
-        cycleEndDate = endOfMonth(
+        ).setHours(0, 0, 0, 0));
+        cycleEndDate = new Date(endOfMonth(
           new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
-        );
+        ).setHours(23, 59, 59, 999));
       }
     }
 
@@ -3352,7 +3393,7 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
 
     return {
       cycleStartDate: startOfPrevWeek,
-      cycleEndDate: mostRecentSunday,
+      cycleEndDate: new Date(mostRecentSunday.setHours(23, 59, 59, 999)),
     };
   }
 
@@ -3691,7 +3732,14 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
   }
 
   public async getLicenseBreakdown(userId: string, roleName: string) {
+
     try {
+
+      const eGamesCycle = await this.getPreviousCompletedCycleDates("E-Games");
+      const sportsCycle = await this.getPreviousCompletedCycleDates("Sports Betting");
+      
+      console.log("eGamesCycle", eGamesCycle);
+      console.log("sportsCycle", sportsCycle);
       roleName = roleName.toLowerCase();
       const result = {
         code: "2010",
@@ -3752,22 +3800,48 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
           }
         ]
       });
-  
-      const summaries = await prisma.commissionSummary.findMany({
-        where: {
-          userId: userId
-        },
-        select: {
-          categoryName: true,
-          settledStatus: true,
-          netGGR: true,
-          totalBetAmount: true,
-          grossCommission: true,
-          netCommissionAvailablePayout: true,
-          paymentGatewayFee: true,
-          pendingSettleCommission: true // 🔧 added field
-        }
-      });
+  const summaries = await prisma.commissionSummary.findMany({
+  where: {
+    OR: [
+      {
+        AND: [
+          { userId: userId },
+          { categoryName: "E-Games" },
+          {
+            createdAt: {
+              gte: eGamesCycle.cycleStartDate,
+              lte: eGamesCycle.cycleEndDate
+            }
+          }
+        ]
+      },
+      {
+        AND: [
+          { userId: userId },
+          { categoryName: "Sports Betting" },
+          {
+            createdAt: {
+              gte: sportsCycle.cycleStartDate,
+              lte: sportsCycle.cycleEndDate
+            }
+          }
+        ]
+      }
+    ]
+  },
+  select: {
+    categoryName: true,
+    settledStatus: true,
+    netGGR: true,
+    totalBetAmount: true,
+    grossCommission: true,
+    netCommissionAvailablePayout: true,
+    paymentGatewayFee: true,
+    pendingSettleCommission: true
+  }
+});
+
+
   
       const pending = {
         eGamesGGR: 0,
@@ -3798,18 +3872,45 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
 
       const operatorIds = operators.map(op => op.id);
 
-      const operatorSummaries = await prisma.commissionSummary.findMany({
-        where: {
-          userId: { in: operatorIds }
-        },
-        select: {
-          categoryName: true,
-          netGGR: true,
-          totalBetAmount: true,
-          pendingSettleCommission: true,
-          settledStatus: true,
-        }
-      });
+     const operatorSummaries = await prisma.commissionSummary.findMany({
+  where: {
+    OR: [
+      {
+        AND: [
+          { userId: { in: operatorIds } },
+          { categoryName: "E-Games" },
+          {
+            createdAt: {
+              gte: eGamesCycle.cycleStartDate,
+              lte: eGamesCycle.cycleEndDate
+            }
+          }
+        ]
+      },
+      {
+        AND: [
+          { userId: { in: operatorIds } },
+          { categoryName: "Sports Betting" },
+          {
+            createdAt: {
+              gte: sportsCycle.cycleStartDate,
+              lte: sportsCycle.cycleEndDate
+            }
+          }
+        ]
+      }
+    ]
+  },
+  select: {
+    categoryName: true,
+    netGGR: true,
+    totalBetAmount: true,
+    pendingSettleCommission: true,
+    settledStatus: true
+  }
+});
+
+
 
       let egamesGGR = 0;
 let sportsGGR = 0;
@@ -3823,8 +3924,8 @@ let settledSportsCommission = 0;
 
 for (const summary of operatorSummaries) {
   if (summary.categoryName === "E-Games") {
-    const ggr = Math.floor(summary.netGGR ?? 0);
-    const comm = Math.floor(summary.pendingSettleCommission ?? 0);
+    const ggr = summary.netGGR ;
+    const comm = summary.pendingSettleCommission ;
 
     console.log("pending commission", comm, "ggr", ggr)
 
@@ -3837,14 +3938,15 @@ for (const summary of operatorSummaries) {
       settledEGamesCommission += comm;
     }
   } else if (summary.categoryName === "Sports Betting") {
-    const bet = Math.floor(summary.totalBetAmount ?? 0);
-    const comm = Math.floor(summary.pendingSettleCommission ?? 0);
+    const bet = summary.totalBetAmount;
+    const comm = summary.pendingSettleCommission ?? 0;
 
     sportsGGR += bet;
     sportsCommission += comm;
 
+    console.log("pending commission-----------------", sportsCommission)
+
     if (summary.settledStatus === "Y") {
-      console.log("settled sports commission-------------------", comm)
       sportsCommission = comm - comm;
 
       settledSportsGGR += bet;
@@ -3852,7 +3954,6 @@ for (const summary of operatorSummaries) {
     }
   }
 }
-console.log("settled commission", settledEGamesCommission)
 
 // Assign values to your pending and settled trackers
 pending.eGamesGGR = egamesGGR;
@@ -3864,8 +3965,10 @@ settled.eGamesGGR = settledEGamesGGR; // as per your requirement
 settled.eGamesCommission = settledEGamesCommission;
 settled.sportsBet = settledSportsGGR; // as per your requirement
       settled.sportsCommission = settledSportsCommission;
+
+
+      console.log("pending commission", pending.eGamesCommission, "comm", pending.sportsCommission, "grossCommission", pending.eGamesGGR)
       
-      console.log("settled commission", settled.eGamesCommission)
 
 
       
@@ -3873,13 +3976,15 @@ settled.sportsBet = settledSportsGGR; // as per your requirement
   
       for (const summary of summaries) {
         const category = summary.categoryName;
-        const grossCommission = Math.floor(summary.grossCommission ?? 0);
-        const ggr = Math.floor(summary.netGGR ?? 0);
-        const bet = Math.floor(summary.totalBetAmount ?? 0);
-        const comm = Math.floor(summary.netCommissionAvailablePayout ?? 0);
-        const pendingComm = Math.floor(summary.pendingSettleCommission ?? 0);
-        const paymentGatewayFee = Math.floor(summary.paymentGatewayFee ?? 0);
+        const grossCommission = summary.grossCommission ;
+        const ggr = summary.netGGR ;
+        const bet = summary.totalBetAmount ;
+        const comm = summary.netCommissionAvailablePayout ;
+        const pendingComm = summary.pendingSettleCommission ;
+        const paymentGatewayFee = summary.paymentGatewayFee ;
         const isSettled = summary.settledStatus === "Y";
+
+        console.log("----------------------pending commission",pendingComm)
 
         console.log("pending commission", pendingComm, "comm", comm, "grossCommission", grossCommission)
       
@@ -3920,7 +4025,7 @@ settled.sportsBet = settledSportsGGR; // as per your requirement
                 }
               });
       
-              parentCommission = Math.floor(parentSummary?.netCommissionAvailablePayout ?? 0);
+              parentCommission = parentSummary?.netCommissionAvailablePayout ;
             }
 
             console.log("parent commission", parentCommission, "comm", comm, "pendingComm", pendingComm);
@@ -3946,11 +4051,14 @@ settled.sportsBet = settledSportsGGR; // as per your requirement
           }
       
           pending.sportsBet += bet;
+
+          console.log("pending.sportsBet-------------------000000000000",pending.sportsBet)
       
           if (roleName === UserRole.GOLDEN) {
 
-            console.log("====================================",roleName)
             pending.sportsCommission += comm;
+                        console.log("====================================",pending.sportsCommission)
+
           } else if (roleName === UserRole.PLATINUM) {
             const user = await prisma.user.findUnique({
               where: { id: userId },
@@ -3970,14 +4078,17 @@ settled.sportsBet = settledSportsGGR; // as per your requirement
                 }
               });
       
-              parentCommission = Math.floor(parentSummary?.netCommissionAvailablePayout ?? 0);
+              parentCommission = parentSummary?.netCommissionAvailablePayout ;
             }
 
             console.log("parent commission", parentCommission, "comm", comm, "pendingComm", pendingComm);
       
             pending.sportsCommission = pendingComm - parentCommission;
           } else {
+
             pending.sportsCommission = pendingComm;
+                                    console.log("pendingComm commission--------------------", pendingComm);
+
           }
         }
       }
@@ -4045,1179 +4156,6 @@ settled.sportsBet = settledSportsGGR; // as per your requirement
     }
   }
   
-  
-  
-
-  // public async getLicenseBreakdownNew1(userId: string, roleName: string) {
-  //   try {
-  //     roleName = roleName.toLowerCase();
-  //     console.log({ roleName });
-
-  //     if (roleName === UserRole.SUPER_ADMIN) {
-  //       const operators = await prisma.user.findMany({
-  //         where: {
-  //           role: {
-  //             name: {
-  //               equals: UserRole.OPERATOR
-  //             }
-  //           }
-  //         },
-  //         select: {
-  //           id: true
-  //         }
-  //       });
-      
-  
-  //         const operatorNetGGRMap: Record<string, { eGames: number; sportsBetting: number }> = {};
-  
-  //         // Total accumulators
-  //         let totalEGamesGGR = 0;
-  //         let totalSportsBetting = 0;
-          
-  //         for (const operator of operators) {
-  //           const summaries = await prisma.commissionSummary.findMany({
-  //             where: {
-  //               userId: operator.id,
-  //               settledStatus: "N"
-
-  //             },
-  //             select: {
-  //               categoryName: true,
-  //               netGGR: true,
-  //               totalBetAmount: true,
-  //             }
-  //           });
-          
-  //           // Default totals
-  //           let eGamesTotal = 0;
-  //           let totalEgameCommission = 0;
-  //           let sportsBettingTotal = 0;
-          
-  //           // Sum netGGRs by category
-  //           for (const summary of summaries) {
-  //             if (summary.categoryName === "E-Games") {
-  //               eGamesTotal += summary.netGGR;
-  //             } else if (summary.categoryName === "Sports Betting") {
-  //               sportsBettingTotal += summary.totalBetAmount;
-  //             }
-  //           }
-          
-  //           // Update overall totals
-  //           totalEGamesGGR += eGamesTotal;
-  //           totalSportsBetting += sportsBettingTotal;
-          
-  //           // Store in final map
-  //           operatorNetGGRMap[operator.id] = {
-  //             eGames: eGamesTotal,
-  //             sportsBetting: sportsBettingTotal
-  //           };
-  
-            
-  //       }
-  //       const totalCommissionForEGames = totalEGamesGGR * 0.3;
-  //           const totalCommissionForSportsBetting = totalSportsBetting * 0.02;
-          
-  //       console.log("Total E-Games Net GGR:", totalEGamesGGR);
-  //       console.log("Total E-Games Commission:", totalCommissionForEGames);
-  //       console.log("Total Sports Betting Net GGR:", totalSportsBetting);
-  //       console.log("Total Sports Betting Commission:", totalCommissionForSportsBetting);
-  //      }
-
-  //      else if (roleName === UserRole.OPERATOR) {
-  //       const operatorSummaries = await prisma.commissionSummary.findMany({
-  //         where: {
-  //           userId: userId,
-  //           settledStatus: "N"
-  //         },
-  //         select: {
-  //           categoryName: true,
-  //           netGGR: true,
-  //           totalBetAmount: true
-  //         }
-  //       });
-      
-  //       let eGamesNetGGR = 0;
-  //       let sportsBettingTotalBet = 0;
-      
-  //       for (const summary of operatorSummaries) {
-  //         if (summary.categoryName === "E-Games") {
-  //           eGamesNetGGR += Math.floor(summary.netGGR);
-  //         } else if (summary.categoryName === "Sports Betting") {
-  //           sportsBettingTotalBet += Math.floor(summary.totalBetAmount ?? 0);
-  //         }
-  //       }
-      
-  //       const eGamesCommission = Math.floor(eGamesNetGGR * 0.3);
-  //       const sportsBettingCommission = Math.floor(sportsBettingTotalBet * 0.02);
-      
-  //       // Get settled commission data
-  //       const settledSummaries = await prisma.commissionSummary.findMany({
-  //         where: {
-  //           userId: userId,
-  //           settledStatus: "Y"
-  //         },
-  //         select: {
-  //           categoryName: true,
-  //           netGGR: true,
-  //           totalBetAmount: true,
-  //           netCommissionAvailablePayout:true
-  //         }
-  //       });
-      
-  //       let settleEGamesGGR = 0;
-  //       let settledEGamesCommission = 0
-  //       let settleSportsBettingTotalBet = 0;
-  //       let settledSportsBettingCommission = 0
-      
-  //       for (const summary of settledSummaries) {
-  //         if (summary.categoryName === "E-Games") {
-  //           settleEGamesGGR += Math.floor(summary.netGGR);
-  //           settledEGamesCommission = Math.floor(summary.netCommissionAvailablePayout)
-  //         } else if (summary.categoryName === "Sports Betting") {
-  //           settleSportsBettingTotalBet += Math.floor(summary.totalBetAmount ?? 0);
-  //           settledSportsBettingCommission +=Math.floor(summary.netCommissionAvailablePayout)
-  //         }
-  //       }
-      
-        
-      
-  //       console.log("Operator E-Games Net GGR:", eGamesNetGGR);
-  //       console.log("Operator E-Games Commission (30%):", eGamesCommission);
-  //       console.log("Operator Sports Betting Total Bet Amount:", sportsBettingTotalBet);
-  //       console.log("Operator Sports Betting Commission (2%):", sportsBettingCommission);
-      
-  //       console.log("Operator Settled E-Games GGR:", settleEGamesGGR);
-  //       console.log("Operator Settled E-Games Commission (30%):", settledEGamesCommission);
-  //       console.log("Operator Settled Sports Betting Total Bet:", settleSportsBettingTotalBet);
-  //       console.log("Operator Settled Sports Betting Commission (2%):", settledSportsBettingCommission);
-  //     }
-      
-  //     else if (roleName === UserRole.PLATINUM) {
-  //       // Step 1: Get the parent (Operator) ID
-  //       const platinumUser = await prisma.user.findUnique({
-  //         where: { id: userId },
-
-  //         select: { parentId: true }
-  //       });
-      
-  //       const parentId = platinumUser?.parentId;
-      
-  //       const platinumSummaries = await prisma.commissionSummary.findMany({
-  //         where: {
-  //           userId: userId,
-  //           settledStatus: "N"
-
-  //         },
-  //         select: {
-  //           categoryName: true,
-  //           netGGR: true,
-  //           totalBetAmount: true
-  //         }
-  //       });
-
-      
-  //       let eGamesNetGGR = 0;
-  //       let sportsBettingTotalBet = 0;
-      
-  //       for (const summary of platinumSummaries) {
-  //         if (summary.categoryName === "E-Games") {
-  //           eGamesNetGGR += Math.floor(summary.netGGR);
-  //         } else if (summary.categoryName === "Sports Betting") {
-  //           sportsBettingTotalBet += Math.floor(summary.totalBetAmount ?? 0);
-  //         }
-  //       }
-  //       console.log("-------------------------",eGamesNetGGR)
-
-  //       const eGamesCommission = Math.floor(eGamesNetGGR * 0.3);
-  //       const sportsBettingCommission = Math.floor(sportsBettingTotalBet * 0.02);
-      
-  //       let adjustedEGamesCommission = eGamesCommission;
-  //       let adjustedSportsBettingCommission = sportsBettingCommission;
-
-  //       console.log("-------------------------",adjustedEGamesCommission)
-
-      
-  //       // Step 2: Get parent's netCommissionAvailablePayout for each category
-  //       if (parentId) {
-  //         const parentSummaries = await prisma.commissionSummary.findMany({
-  //           where: {
-  //             userId: parentId,
-  //             settledStatus:"N"
-  //           },
-  //           select: {
-  //             categoryName: true,
-  //             netCommissionAvailablePayout: true
-  //           }
-  //         });
-      
-  //         for (const summary of parentSummaries) {
-  //           if (summary.categoryName === "E-Games") {
-  //             adjustedEGamesCommission -= Math.floor(summary.netCommissionAvailablePayout ?? 0);
-  //           } else if (summary.categoryName === "Sports Betting") {
-  //             adjustedSportsBettingCommission -= Math.floor(summary.netCommissionAvailablePayout ?? 0);
-  //           }
-  //         }
-  //       }
-      
-  //       // Step 3: Settled GGR & Commission
-  //       const settledSummaries = await prisma.commissionSummary.findMany({
-  //         where: {
-  //           userId: userId,
-  //           settledStatus: "Y"
-  //         },
-  //         select: {
-  //           categoryName: true,
-  //           netGGR: true,
-  //           totalBetAmount: true,
-  //           netCommissionAvailablePayout:true
-  //         }
-  //       });
-      
-  //       let settleAllTimeEGamesGGR = 0;
-  //       let settleAllTimeSportsBettingBet = 0;
-  //       let adjustedEGamesCommissionSettled = 0;
-  //       let adjustedSettleAllTimeSportsBettingCommission = 0
-      
-  //       for (const summary of settledSummaries) {
-  //         if (summary.categoryName === "E-Games") {
-  //           settleAllTimeEGamesGGR += Math.floor(summary.netGGR);
-  //           adjustedEGamesCommissionSettled = Math.floor(summary.netCommissionAvailablePayout ?? 0)
-
-  //         } else if (summary.categoryName === "Sports Betting") {
-  //           settleAllTimeSportsBettingBet += Math.floor(summary.totalBetAmount ?? 0);
-  //           adjustedSettleAllTimeSportsBettingCommission =  Math.floor(summary.netCommissionAvailablePayout ?? 0)
-
-  //         }
-  //       }
-  //       // Final Logs
-  //       console.log("Platinum E-Games Net GGR:", eGamesNetGGR);
-  //       console.log("Platinum Adjusted E-Games Commission:", adjustedEGamesCommission);
-  //       console.log("Platinum Sports Betting Total Bet Amount:", sportsBettingTotalBet);
-  //       console.log("Platinum Adjusted Sports Betting Commission:", adjustedSportsBettingCommission);
-  //       console.log("Platinum Settled E-Games GGR:", settleAllTimeEGamesGGR);
-  //       console.log("Platinum Settled E-Games Commission:", adjustedEGamesCommissionSettled);
-  //       console.log("Platinum Settled Sports Betting Total Bet:", settleAllTimeSportsBettingBet);
-  //       console.log("Platinum Settled Sports Betting Commission:", adjustedSettleAllTimeSportsBettingCommission);
-  //     }
-      
-
-  //     else if (roleName === UserRole.GOLDEN) {
-  //       const goldenSummaries = await prisma.commissionSummary.findMany({
-  //         where: {
-  //           userId: userId,
-  //           settledStatus :"N"
-  //         },
-  //         select: {
-  //           categoryName: true,
-  //           netGGR: true,
-  //           totalBetAmount: true,
-  //           netCommissionAvailablePayout: true
-  //         }
-  //       });
-      
-  //       let eGamesNetGGR = 0;
-  //       let sportsBettingTotalBet = 0;
-      
-  //       let eGamesCommission = 0;
-  //       let sportsBettingCommission = 0;
-
-  //       let eGamesNetGGRSettled = 0
-  //       let sportsBettingTotalBetSettled = 0;
-
-  //       let eGamesCommissionSettled = 0;
-  //       let sportsBettingCommissionSettled = 0;
-
-      
-  //       for (const summary of goldenSummaries) {
-  //         if (summary.categoryName === "E-Games") {
-  //           eGamesNetGGR += Math.floor(summary.netGGR ?? 0);
-  //           eGamesCommission += Math.floor(summary.netCommissionAvailablePayout ?? 0);
-  //         } else if (summary.categoryName === "Sports Betting") {
-  //           sportsBettingTotalBet += Math.floor(summary.totalBetAmount ?? 0);
-  //           sportsBettingCommission += Math.floor(summary.netCommissionAvailablePayout ?? 0);
-  //         }
-  //       }
-
-  //       const settledSummaries = await prisma.commissionSummary.findMany({
-  //         where: {
-  //           userId: userId,
-  //           settledStatus: "Y"
-  //         },
-  //         select: {
-  //           categoryName: true,
-  //           netGGR: true,
-  //           totalBetAmount: true,
-  //           netCommissionAvailablePayout:true
-  //         }
-  //       });
-      
-       
-      
-  //       for (const summary of settledSummaries) {
-  //         if (summary.categoryName === "E-Games") {
-  //           eGamesNetGGRSettled += Math.floor(summary.netGGR);
-  //           eGamesCommissionSettled = Math.floor(summary.netCommissionAvailablePayout ?? 0)
-
-  //         } else if (summary.categoryName === "Sports Betting") {
-  //           sportsBettingTotalBetSettled += Math.floor(summary.totalBetAmount ?? 0);
-  //           sportsBettingCommissionSettled =  Math.floor(summary.netCommissionAvailablePayout ?? 0)
-
-  //         }
-  //       }
-
-  //       function calculateProportionalSplit(eGames, sports, totalFee) {
-  //         const total = eGames + sports;
-  //         if (total === 0) return { eGamesShare: 0, sportsShare: 0 };
-        
-  //         const eGamesShare = Math.floor((eGames / total) * totalFee);
-  //         const sportsShare = Math.floor((sports / total) * totalFee);
-        
-  //         return { eGamesShare, sportsShare };
-  //       }
-        
-  //       const paymentGatewayFee = 2340; // Replace this with your actual fee
-  //       const { eGamesShare, sportsShare } = calculateProportionalSplit(
-  //         eGamesCommissionSettled,
-  //         sportsBettingCommissionSettled,
-  //         paymentGatewayFee
-  //       );
-        
-  //       // Final commissions after deducting fee
-  //       const eGamesNetCommission = eGamesCommissionSettled - eGamesShare;
-  //       const sportsNetCommission = sportsBettingCommissionSettled - sportsShare;
-        
-  //       console.log("eGames Final Commission:", eGamesNetCommission);
-  //       console.log("Sports Betting Final Commission:", sportsNetCommission);
-        
-
-        
-        
-      
-  //       console.log("Golden E-Games Net GGR:", eGamesNetGGR);
-  //       console.log("Golden E-Games Commission (from netCommissionAvailablePayout):", eGamesCommission);
-      
-  //       console.log("Golden Sports Betting Total Bet Amount:", sportsBettingTotalBet);
-  //       console.log("Golden Sports Betting Commission (from netCommissionAvailablePayout):", sportsBettingCommission);
-
-
-  //       console.log("Golden E-Games Net GGR settled:", eGamesNetGGRSettled);
-  //       console.log("Golden E-Games Commission settled (from netCommissionAvailablePayout):", eGamesCommissionSettled);
-      
-  //       console.log("Golden Sports Betting Total Bet Amount settled:", sportsBettingTotalBetSettled);
-  //       console.log("Golden Sports Betting Commission settled (from netCommissionAvailablePayout):", sportsBettingCommissionSettled);
-
-  //     }
-      
-      
-      
-
-     
-        
-
-  //     }
-
-  //   catch (error) {
-  //     throw new Error(`Error getting license breakdown: ${error}`);
-  //   }
-    
-  // }
-
-  // public async getLicenseBreakdownOld(userId: string, roleName: string) {
-  //   try {
-  //     roleName = roleName.toLowerCase();
-
-  //     // let userIds = [];
-
-  //     // if
-
-  //     // Initialize license data structure
-  //     const licenseData: Record<string, LicenseData> = {
-  //       "E-Games": {
-  //         type: "E-Games",
-  //         ggr: { pending: 0, allTime: 0 },
-  //         commission: { pending: 0, allTime: 0 },
-  //         commissionRate:
-  //           roleName === UserRole.SUPER_ADMIN
-  //             ? SUPER_ADMIN_DEFAULT_COMMISSION_RATES["E-Games"]
-  //             : 0,
-  //       },
-  //       "Sports Betting": {
-  //         type: "Sports Betting",
-  //         betAmount: { pending: 0, allTime: 0 },
-  //         commission: { pending: 0, allTime: 0 },
-  //         commissionRate:
-  //           roleName === UserRole.SUPER_ADMIN
-  //             ? SUPER_ADMIN_DEFAULT_COMMISSION_RATES["Sports Betting"]
-  //             : 0,
-  //       },
-  //       "Speciality Games - Tote": {
-  //         type: "Speciality Games - Tote",
-  //         betAmount: { pending: 0, allTime: 0 },
-  //         commission: { pending: 0, allTime: 0 },
-  //         commissionRate:
-  //           roleName === UserRole.SUPER_ADMIN
-  //             ? SUPER_ADMIN_DEFAULT_COMMISSION_RATES["Speciality Games - Tote"]
-  //             : 0,
-  //       },
-  //       "Speciality Games - RNG": {
-  //         type: "Speciality Games - RNG",
-  //         ggr: { pending: 0, allTime: 0 },
-  //         commission: { pending: 0, allTime: 0 },
-  //         commissionRate:
-  //           roleName === UserRole.SUPER_ADMIN
-  //             ? SUPER_ADMIN_DEFAULT_COMMISSION_RATES["Speciality Games - RNG"]
-  //             : 0,
-  //       },
-  //     };
-
-  //     let pIds = [];
-  //     let oIds = [];
-  //     let gIds = [];
-
-  //     let settledOids = [];
-  //     let settledPids = [];
-  //     let settledGids = [];
-
-  //     let pendingPaymentGatewayFee = 0;
-  //     let settledPaymentGatewayFee = 0;
-
-  //     // Get all relevant userIds based on role hierarchy
-  //     let userIds = [userId];
-
-  //     let settledCommissionSummary = [];
-
-  //     if (roleName === UserRole.SUPER_ADMIN) {
-  //       // For superadmin, get all operators and their children
-  //       const operators = await prisma.user.findMany({
-  //         where: { parentId: userId },
-  //         select: { id: true },
-  //       });
-  //       const operatorIds = operators.map((op) => op.id);
-
-  //       userIds = operatorIds;
-
-  //       const platinums = await prisma.user.findMany({
-  //         where: {
-  //           parentId: userId,
-  //           role: { name: UserRole.PLATINUM },
-  //         },
-  //         select: { id: true },
-  //       });
-  //       const platinumIds = platinums.map((p) => p.id);
-
-  //       userIds = [...userIds, ...platinumIds];
-
-  //       // Get all golds under these platinums
-  //       const golds = await prisma.user.findMany({
-  //         where: {
-  //           parentId: { in: platinumIds },
-  //           role: { name: UserRole.GOLDEN },
-  //         },
-  //         select: { id: true },
-  //       });
-  //       const goldIds = golds.map((g) => g.id);
-
-  //       console.log({ goldIds });
-
-  //       userIds = [...userIds, ...goldIds];
-
-  //       // Fetch settled data for platinums and their hierarchy
-  //       const settledData = await prisma.commissionSummary.findMany({
-  //         where: {
-  //           userId: { in: userIds },
-  //           settledStatus: "Y",
-  //         },
-  //         select: {
-  //           userId: true,
-  //           categoryName: true,
-  //           totalBetAmount: true,
-  //           netGGR: true,
-  //           grossCommission: true,
-  //           paymentGatewayFee: true,
-  //           netCommissionAvailablePayout: true,
-  //         },
-  //       });
-
-  //       const settledUserIds = settledData.map((data) => data.userId);
-
-  //       settledPids = settledUserIds;
-
-  //       // Fetch non-settled data for operators and their hierarchy
-  //       // Check if there are any non-settled data for the same users
-
-  //       const nonSettledGoldenChildren = await prisma.user.findMany({
-  //         where: {
-  //           parentId: {
-  //             in: settledPids,
-  //           },
-  //           role: { name: UserRole.GOLDEN },
-  //         },
-  //         select: { id: true },
-  //       });
-
-  //       settledGids = nonSettledGoldenChildren.map((golden) => golden.id);
-
-  //       if (settledData.length !== 0) {
-  //         const settledDataForNonSettled =
-  //           await prisma.commissionSummary.findMany({
-  //             where: {
-  //               userId: {
-  //                 in: [...nonSettledGoldenChildren.map((ch) => ch.id)],
-  //               },
-  //               settledStatus: "N",
-  //             },
-  //             select: {
-  //               userId: true,
-  //               categoryName: true,
-  //               totalBetAmount: true,
-  //               netGGR: true,
-  //               grossCommission: true,
-  //               paymentGatewayFee: true,
-  //               netCommissionAvailablePayout: true,
-  //             },
-  //           });
-
-  //         settledData.push(...settledDataForNonSettled);
-  //       }
-
-  //       console.log({ settledData });
-
-  //       settledCommissionSummary = settledData;
-  //       console.log({ settledCommissionSummary });
-
-  //       pIds = [userId];
-
-  //       const settledUserIdsSet = new Set(settledUserIds);
-
-  //       pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
-  //         operatorIds.filter((id) => !settledUserIdsSet.has(id)),
-  //         false,
-  //         undefined,
-  //         undefined
-  //       );
-
-  //       settledPaymentGatewayFee = await this.getPaymentGatewayFee(
-  //         operatorIds.filter((id) => settledUserIdsSet.has(id)),
-  //         true,
-  //         undefined,
-  //         undefined
-  //       );
-  //     } else if (roleName === UserRole.OPERATOR) {
-  //       // For operator, get all platinums and their children
-  //       const platinums = await prisma.user.findMany({
-  //         where: {
-  //           parentId: userId,
-  //           role: { name: UserRole.PLATINUM },
-  //         },
-  //         select: { id: true },
-  //       });
-  //       const platinumIds = platinums.map((p) => p.id);
-
-  //       console.log({ platinumIds });
-
-  //       userIds = [...userIds, ...platinumIds];
-
-  //       // Get all golds under these platinums
-  //       const golds = await prisma.user.findMany({
-  //         where: {
-  //           parentId: { in: platinumIds },
-  //           role: { name: UserRole.GOLDEN },
-  //         },
-  //         select: { id: true },
-  //       });
-  //       const goldIds = golds.map((g) => g.id);
-
-  //       console.log({ goldIds });
-
-  //       userIds = [...userIds, ...goldIds];
-
-  //       // Fetch settled data for platinums and their hierarchy
-  //       const settledData = await prisma.commissionSummary.findMany({
-  //         where: {
-  //           userId: { in: userIds },
-  //           settledStatus: "Y",
-  //         },
-  //         select: {
-  //           userId: true,
-  //           categoryName: true,
-  //           totalBetAmount: true,
-  //           netGGR: true,
-  //           grossCommission: true,
-  //           paymentGatewayFee: true,
-  //           netCommissionAvailablePayout: true,
-  //         },
-  //       });
-
-  //       const settledUserIds = settledData.map((data) => data.userId);
-
-  //       settledPids = settledUserIds;
-
-  //       // Fetch non-settled data for operators and their hierarchy
-  //       // Check if there are any non-settled data for the same users
-
-  //       const nonSettledGoldenChildren = await prisma.user.findMany({
-  //         where: {
-  //           parentId: {
-  //             in: settledPids,
-  //           },
-  //           role: { name: UserRole.GOLDEN },
-  //         },
-  //         select: { id: true },
-  //       });
-
-  //       settledGids = nonSettledGoldenChildren.map((golden) => golden.id);
-
-  //       if (settledData.length !== 0) {
-  //         const settledDataForNonSettled =
-  //           await prisma.commissionSummary.findMany({
-  //             where: {
-  //               userId: {
-  //                 in: [...nonSettledGoldenChildren.map((ch) => ch.id)],
-  //               },
-  //               settledStatus: "N",
-  //             },
-  //             select: {
-  //               userId: true,
-  //               categoryName: true,
-  //               totalBetAmount: true,
-  //               netGGR: true,
-  //               grossCommission: true,
-  //               paymentGatewayFee: true,
-  //               netCommissionAvailablePayout: true,
-  //             },
-  //           });
-
-  //         settledData.push(...settledDataForNonSettled);
-  //       }
-
-  //       console.log({ settledData });
-
-  //       settledCommissionSummary = settledData;
-  //       console.log({ settledCommissionSummary });
-
-  //       pIds = [userId];
-
-  //       pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
-  //         pIds,
-  //         false,
-  //         undefined,
-  //         undefined
-  //       );
-
-  //       settledPaymentGatewayFee = await this.getPaymentGatewayFee(
-  //         settledUserIds,
-  //         true,
-  //         undefined,
-  //         undefined
-  //       );
-  //     } else if (roleName === UserRole.PLATINUM) {
-  //       const oIds = await prisma.user.findMany({
-  //         where: {
-  //           children: {
-  //             some: { id: userId },
-  //           },
-  //         },
-  //         select: { id: true },
-  //       });
-
-  //       // For platinum, get all golds under this platinum
-  //       const golds = await prisma.user.findMany({
-  //         where: {
-  //           parentId: userId,
-  //           role: { name: UserRole.GOLDEN },
-  //         },
-  //         select: { id: true },
-  //       });
-  //       const goldIds = golds.map((g) => g.id);
-
-  //       console.log({ goldIds });
-
-  //       userIds = [...userIds, ...oIds.map((o) => o.id), ...goldIds];
-
-  //       // Fetch settled data for platinums and their hierarchy
-  //       const settledData = await prisma.commissionSummary.findMany({
-  //         where: {
-  //           userId: { in: [...goldIds] },
-  //           settledStatus: "Y",
-  //         },
-  //         select: {
-  //           userId: true,
-  //           categoryName: true,
-  //           totalBetAmount: true,
-  //           netGGR: true,
-  //           grossCommission: true,
-  //           paymentGatewayFee: true,
-  //           netCommissionAvailablePayout: true,
-  //         },
-  //       });
-
-  //       const settledUserIds = settledData.map((data) => data.userId);
-
-  //       settledPids = settledUserIds;
-
-  //       // Fetch non-settled data for operators and their hierarchy
-  //       // Check if there are any non-settled data for the same users
-
-  //       console.log({ settledData });
-
-  //       settledCommissionSummary = settledData;
-  //       console.log({ settledCommissionSummary });
-
-  //       pIds = [userId];
-
-  //       pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
-  //         goldIds,
-  //         false,
-  //         undefined,
-  //         undefined
-  //       );
-
-  //       settledPaymentGatewayFee = await this.getPaymentGatewayFee(
-  //         settledUserIds,
-  //         true,
-  //         undefined,
-  //         undefined
-  //       );
-  //     } else if (roleName === UserRole.GOLDEN) {
-  //       const pIds = await prisma.user.findMany({
-  //         where: {
-  //           children: {
-  //             some: { id: userId },
-  //           },
-  //         },
-  //         select: { id: true },
-  //       });
-
-  //       const oIds = await prisma.user.findMany({
-  //         where: {
-  //           children: {
-  //             some: {
-  //               id: {
-  //                 in: pIds.map((p) => p.id),
-  //               },
-  //             },
-  //           },
-  //         },
-  //         select: { id: true },
-  //       });
-
-  //       userIds = [
-  //         ...userId,
-  //         ...pIds.map((p) => p.id),
-  //         ...oIds.map((o) => o.id),
-  //       ];
-
-  //       const settledData = await prisma.commissionSummary.findMany({
-  //         where: {
-  //           userId: { in: [userId] },
-  //           settledStatus: "Y",
-  //         },
-  //         select: {
-  //           userId: true,
-  //           categoryName: true,
-  //           totalBetAmount: true,
-  //           netGGR: true,
-  //           grossCommission: true,
-  //           paymentGatewayFee: true,
-  //           netCommissionAvailablePayout: true,
-  //         },
-  //       });
-
-  //       const settledUserIds = settledData.map((data) => data.userId);
-
-  //       settledPids = settledUserIds;
-
-  //       // Fetch non-settled data for operators and their hierarchy
-  //       // Check if there are any non-settled data for the same users
-
-  //       console.log({ settledData });
-
-  //       settledCommissionSummary = settledData;
-  //       console.log({ settledCommissionSummary });
-  //     }
-
-  //     // Use provided date range or default to previous completed cycle
-  //     let cycleStartDate: Date;
-  //     let cycleEndDate: Date;
-
-  //     // // if (startDate && endDate) {
-  //     //   cycleStartDate = startDate;
-  //     //   cycleEndDate = endDate;
-  //     // } else {
-  //     const dates = await this.getPreviousCompletedCycleDates();
-  //     cycleStartDate = dates.cycleStartDate;
-  //     cycleEndDate = dates.cycleEndDate;
-
-  //     console.log(
-  //       "📆 Cycle Start Date:",
-  //       cycleStartDate,
-  //       "📆 Cycle End Date:",
-  //       cycleEndDate
-  //     );
-  //     // }
-
-  //     console.log({ userIds });
-
-  //     let settledIds = new Set([
-  //       ...settledOids,
-  //       ...settledPids,
-  //       ...settledGids,
-  //     ]);
-
-  //     let filteredUserIds = userIds.filter((id) => !settledIds.has(id));
-
-  //     // Get commission records for all relevant users
-  //     const pendingCommissionSummaries =
-  //       await prisma.commissionSummary.findMany({
-  //         where: {
-  //           userId: { in: filteredUserIds },
-  //           createdAt: {
-  //             gte: cycleStartDate, // Adjust this date as needed
-  //             lte: cycleEndDate,
-  //           },
-  //           categoryName: {
-  //             in: [
-  //               "E-Games",
-  //               "Sports Betting",
-  //               "Speciality Games - Tote",
-  //               "Speciality Games - RNG",
-  //             ],
-  //           },
-  //         },
-  //       });
-
-  //     console.log("🔃 Pending commissions: ", pendingCommissionSummaries);
-
-  //     console.log({settledCommissionSummary})
-
-  //     // const settledCommissions = await prisma.commissionSummary.findMany({
-  //     //   where: {
-  //     //     userId: {
-  //     //       in: roleName === UserRole.SUPER_ADMIN ? userIds : [userId],
-  //     //     },
-  //     //     settledStatus: "Y",
-  //     //     categoryName: {
-  //     //       in: [
-  //     //         "E-Games",
-  //     //         "Sports Betting",
-  //     //         "Speciality Games - Tote",
-  //     //         "Speciality Games - RNG",
-  //     //       ],
-  //     //     },
-  //     //   },
-  //     // });
-
-  //     // console.log({ commissionSummaries });
-
-  //     // Get default commission rates for superadmin
-  //     if (roleName === UserRole.SUPER_ADMIN) {
-  //       // First try to get system-wide commission rates
-  //       const defaultCommissions = await prisma.commission.findMany({
-  //         where: {
-  //           commissionPercentage: { gt: 0 },
-  //         },
-  //       });
-
-  //       // If no system-wide rates found, get commission rates from any operator's assigned site
-  //       if (defaultCommissions.length === 0) {
-  //         const operator = await prisma.user.findFirst({
-  //           where: { role: { name: "operator" } },
-  //           select: { id: true },
-  //         });
-
-  //         if (operator) {
-  //           const operatorCommissions = await prisma.commission.findMany({
-  //             where: {
-  //               userId: operator.id,
-  //               commissionPercentage: { gt: 0 },
-  //             },
-  //             include: {
-  //               category: {
-  //                 select: {
-  //                   name: true,
-  //                 },
-  //               },
-  //             },
-  //           });
-  //           setCommissionRates(operatorCommissions);
-  //         }
-  //       } else {
-  //         setCommissionRates(defaultCommissions);
-  //       }
-  //     } else {
-  //       // For non-superadmin roles, get commission percentages from their assigned sites
-  //       const commissions = await prisma.commission.findMany({
-  //         where: {
-  //           userId, // the user you're calculating for
-  //         },
-  //         select: {
-  //           userId: true,
-  //           categoryId: true,
-  //           commissionPercentage: true,
-  //           totalAssignedCommissionPercentage: true,
-  //           category: {
-  //             select: {
-  //               name: true,
-  //             },
-  //           },
-  //         },
-  //         orderBy: {
-  //           siteId: "asc", // make sure to order so we can pick the first entry per category
-  //         },
-  //       });
-
-  //       // Step 2: Filter to only the first site per category manually
-  //       const seenCategories = new Set();
-  //       const filtered = commissions.filter((item) => {
-  //         const key = `${item.userId}-${item.categoryId}`;
-  //         if (seenCategories.has(key)) return false;
-  //         seenCategories.add(key);
-  //         return true;
-  //       });
-
-  //       const categoryTotals = filtered.reduce((acc, item) => {
-  //         if (!acc[item.categoryId]) {
-  //           acc[item.categoryId] = {
-  //             category: item.categoryId,
-  //             categoryName: item.category.name,
-  //             commissionRate: 0,
-  //           };
-  //         }
-  //         acc[item.categoryId].commissionRate += Number(
-  //           item.totalAssignedCommissionPercentage || item.commissionPercentage
-  //         );
-  //         return acc;
-  //       }, {});
-
-  //       const result = Object.values(categoryTotals);
-
-  //       setCommissionRates(result);
-  //     }
-
-  //     function setCommissionRates(commissions: any[]) {
-  //       commissions.forEach((comm) => {
-  //         console.log({ comm });
-  //         if (!comm.category) return;
-  //         const categoryName = comm.category.name || comm.categoryName;
-  //         // console.log({ categoryName });
-  //         switch (categoryName) {
-  //           case "E-Games":
-  //             licenseData["E-Games"].commissionRate =
-  //               comm.commissionPercentage || comm.commissionRate;
-  //             break;
-  //           case "Sports Betting":
-  //             licenseData["Sports Betting"].commissionRate =
-  //               comm.commissionPercentage || comm.commissionRate;
-  //             break;
-  //           case "Speciality Games - Tote":
-  //             licenseData["Speciality Games - Tote"].commissionRate =
-  //               comm.commissionPercentage || comm.commissionRate;
-  //             break;
-  //           case "Speciality Games - RNG":
-  //             licenseData["Speciality Games - RNG"].commissionRate =
-  //               comm.commissionPercentage || comm.commissionRate;
-  //             break;
-  //         }
-  //       });
-  //     }
-
-  //     // Split summaries into pending and settled
-  //     const pendingSummaries = pendingCommissionSummaries.filter(
-  //       (summary) => summary.settledStatus !== "Y"
-  //     );
-  //     // const settledSummaries = settledCommissions.filter(
-  //     //   (summary) => summary.settledStatus === "Y"
-  //     // );
-
-  //     // console.log({ settledSummaries });
-
-  //     // Process pending summaries
-  //     pendingSummaries.forEach((summary) => {
-  //       const categoryName = summary.categoryName;
-  //       console.log({ categoryName });
-  //       switch (categoryName) {
-  //         case "E-Games":
-  //           const eGamesData = licenseData["E-Games"];
-  //           console.log({ eGamesData });
-  //           if (eGamesData.type === "E-Games") {
-  //             const ggr = summary.netGGR || 0;
-  //             console.log("🙌", { ggr });
-  //             roleName !== UserRole.SUPER_ADMIN
-  //               ? (eGamesData.ggr.pending = ggr)
-  //               : (eGamesData.ggr.pending += ggr);
-  //             roleName !== UserRole.SUPER_ADMIN
-  //               ? (eGamesData.commission.pending =
-  //                   ggr * (eGamesData.commissionRate / 100))
-  //               : (eGamesData.commission.pending +=
-  //                   ggr * (eGamesData.commissionRate / 100));
-  //           }
-  //           break;
-  //         case "Sports Betting":
-  //           const sportsData = licenseData["Sports Betting"];
-  //           console.log({ sportsData });
-  //           if (sportsData.type === "Sports Betting") {
-  //             const betAmount = summary.totalBetAmount || 0;
-  //             console.log("🙌", { betAmount });
-  //             roleName !== UserRole.SUPER_ADMIN
-  //               ? (sportsData.betAmount.pending = betAmount)
-  //               : (sportsData.betAmount.pending += betAmount);
-  //             roleName !== UserRole.SUPER_ADMIN
-  //               ? (sportsData.commission.pending =
-  //                   betAmount * (sportsData.commissionRate / 100))
-  //               : (sportsData.commission.pending +=
-  //                   betAmount * (sportsData.commissionRate / 100));
-  //           }
-  //           break;
-  //         case "Speciality Games - Tote":
-  //           const toteData = licenseData["Speciality Games - Tote"];
-  //           console.log({ toteData });
-  //           if (toteData.type === "Speciality Games - Tote") {
-  //             const betAmount = summary.totalBetAmount || 0;
-  //             roleName !== UserRole.SUPER_ADMIN
-  //               ? (toteData.betAmount.pending = betAmount)
-  //               : (toteData.betAmount.pending += betAmount);
-  //             roleName !== UserRole.SUPER_ADMIN
-  //               ? (toteData.commission.pending =
-  //                   betAmount * (toteData.commissionRate / 100))
-  //               : (toteData.commission.pending +=
-  //                   betAmount * (toteData.commissionRate / 100));
-  //           }
-  //           break;
-  //         case "Speciality Games - RNG":
-  //           const rngData = licenseData["Speciality Games - RNG"];
-  //           console.log({ rngData });
-  //           if (rngData.type === "Speciality Games - RNG") {
-  //             const ggr = summary.netGGR || 0;
-  //             roleName !== UserRole.SUPER_ADMIN
-  //               ? (rngData.ggr.pending = ggr)
-  //               : (rngData.ggr.pending += ggr);
-  //             roleName !== UserRole.SUPER_ADMIN
-  //               ? (rngData.commission.pending =
-  //                   ggr * (rngData.commissionRate / 100))
-  //               : (rngData.commission.pending +=
-  //                   ggr * (rngData.commissionRate / 100));
-  //           }
-  //           break;
-  //       }
-  //     });
-
-  //     // Process settled summaries
-  //     settledCommissionSummary.forEach((summary) => {
-  //       const categoryName = summary.categoryName;
-  //       switch (categoryName) {
-  //         case "E-Games":
-  //           const eGamesData = licenseData["E-Games"];
-  //           if (eGamesData.type === "E-Games") {
-  //             const ggr = summary.netGGR || 0;
-  //             roleName !== UserRole.SUPER_ADMIN
-  //               ? (eGamesData.ggr.allTime = ggr)
-  //               : (eGamesData.ggr.allTime += ggr);
-  //             roleName !== UserRole.SUPER_ADMIN
-  //               ? (eGamesData.commission.allTime +=
-  //                   summary.netCommissionAvailablePayout -
-  //                   settledPaymentGatewayFee)
-  //               : (eGamesData.commission.allTime +=
-  //                   summary.netCommissionAvailablePayout -
-  //                   settledPaymentGatewayFee);
-  //           }
-  //           break;
-  //         case "Sports Betting":
-  //           const sportsData = licenseData["Sports Betting"];
-  //           if (sportsData.type === "Sports Betting") {
-  //             const betAmount = summary.totalBetAmount || 0;
-  //             roleName !== UserRole.SUPER_ADMIN
-  //               ? (sportsData.betAmount.allTime = betAmount)
-  //               : (sportsData.betAmount.allTime += betAmount);
-  //             roleName !== UserRole.SUPER_ADMIN
-  //               ? (sportsData.commission.allTime +=
-  //                   summary.netCommissionAvailablePayout -
-  //                   settledPaymentGatewayFee)
-  //               : (sportsData.commission.allTime +=
-  //                   summary.netCommissionAvailablePayout -
-  //                   settledPaymentGatewayFee);
-  //           }
-  //           break;
-  //         case "Speciality Games - Tote":
-  //           const toteData = licenseData["Speciality Games - Tote"];
-  //           if (toteData.type === "Speciality Games - Tote") {
-  //             const betAmount = summary.totalBetAmount || 0;
-  //             roleName !== UserRole.SUPER_ADMIN
-  //               ? (toteData.betAmount.allTime = betAmount)
-  //               : (toteData.betAmount.allTime += betAmount);
-  //             roleName !== UserRole.SUPER_ADMIN
-  //               ? (toteData.commission.allTime +=
-  //                   summary.netCommissionAvailablePayout -
-  //                   settledPaymentGatewayFee)
-  //               : (toteData.commission.allTime +=
-  //                   summary.netCommissionAvailablePayout -
-  //                   settledPaymentGatewayFee);
-  //           }
-  //           break;
-  //         case "Speciality Games - RNG":
-  //           const rngData = licenseData["Speciality Games - RNG"];
-  //           if (rngData.type === "Speciality Games - RNG") {
-  //             const ggr = summary.netGGR || 0;
-  //             roleName !== UserRole.SUPER_ADMIN
-  //               ? (rngData.ggr.allTime = ggr)
-  //               : (rngData.ggr.allTime += ggr);
-  //             roleName !== UserRole.SUPER_ADMIN
-  //               ? (rngData.commission.allTime +=
-  //                   summary.netCommissionAvailablePayout -
-  //                   settledPaymentGatewayFee)
-  //               : (rngData.commission.allTime +=
-  //                   summary.netCommissionAvailablePayout -
-  //                   settledPaymentGatewayFee);
-  //           }
-  //           break;
-  //       }
-  //     });
-
-  //     // Return response structure
-  //     return {
-  //       code: "2010",
-  //       message: "License Commission Breakdown fetched successfully",
-  //       data: {
-  //         userId,
-  //         role: roleName,
-  //         data: Object.entries(licenseData).map(([license, data]) => ({
-  //           license,
-  //           fields: [
-  //             {
-  //               label:
-  //                 data.type === "E-Games" ||
-  //                 data.type === "Speciality Games - RNG"
-  //                   ? "GGR"
-  //                   : "Total Bet Amount",
-  //               pendingSettlement:
-  //                 data.type === "E-Games" ||
-  //                 data.type === "Speciality Games - RNG"
-  //                   ? data.ggr.pending
-  //                   : data.betAmount.pending,
-  //               settledAllTime:
-  //                 data.type === "E-Games" ||
-  //                 data.type === "Speciality Games - RNG"
-  //                   ? data.ggr.allTime
-  //                   : data.betAmount.allTime,
-  //             },
-  //             {
-  //               label: "Commission Rate",
-  //               value: `${data.commissionRate}%`,
-  //             },
-  //             {
-  //               label: "Total Commission",
-  //               pendingSettlement: data.commission.pending,
-  //               settledAllTime: data.commission.allTime,
-  //             },
-  //           ],
-  //         })),
-  //       },
-  //     };
-  //   } catch (error) {
-  //     throw new Error(`Error getting license breakdown: ${error}`);
-  //   }
-  // }
-
-  // Helper method to recursively get all children IDs
   private async getAllChildrenIds(
     userId: string,
     roleName: string

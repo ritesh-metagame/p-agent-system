@@ -10,11 +10,16 @@ class TransactionDao {
    * Get transactions between two dates and format them for table display or CSV download
    */
   public async getTransactionsBetweenDates(startDate: Date, endDate: Date) {
+
+    console.log("---------------------------------start date---------------------------------------", {startDate, endDate})
+
+    const endDateUpdated = new Date(endDate.setHours(23, 59, 59, 999))
+
     const transactions = await prisma.transaction.findMany({
       where: {
         betTime: {
           gte: startDate,
-          lte: endDate,
+          lte: endDateUpdated, // Include the entire end date
         },
       },
       orderBy: {
