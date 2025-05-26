@@ -1358,7 +1358,7 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
   const summaries = await prisma.commissionSummary.findMany({
     where: {
       userId: {
-        in: filteredUserIds,
+        in: userIds,
       },
       categoryName: category,
       settledStatus: "N",
@@ -1997,7 +1997,7 @@ for (const [category, cycleType] of Object.entries(categoryCycles)) {
         let pendingData = await prisma.commissionSummary.findMany({
           where: {
             userId: {
-              in: roleName === UserRole.GOLDEN ? [userId] : [...filteredUserIds],
+              in: roleName === UserRole.GOLDEN ? [userId] : [...userIds],
             },
             categoryName: category,
             createdAt: {
