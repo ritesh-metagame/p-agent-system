@@ -96,7 +96,7 @@ class Server {
      
         const rawRows: any = await prisma.$queryRawUnsafe(`
   SELECT * FROM bets
-  WHERE time_of_bet BETWEEN '2025-05-10 00:00:00' AND '2025-05-16 23:59:59'
+  WHERE time_of_bet BETWEEN '2025-05-26 00:00:00' AND '2025-05-26 23:59:59'
 `);
 
       
@@ -117,17 +117,21 @@ class Server {
               : platformType;
 
         const categoryId = categoryIdMap[platformType];
+        const refundAmount = new Decimal(row["refund_amount"] || 0);
+
         const betAmount = new Decimal(row["bet_amount"] || 0);
             const payoutAmount = new Decimal(row["payout_amount"] || 0);
 
             const revenue = betAmount.minus(payoutAmount);
 
 
-        const baseAmount = new Decimal(
-          platformType === "egames"
-            ? revenue || 0
-            : row["bet_amount"] || 0
-        );
+       const baseAmount = new Decimal(
+                          platformType === "egames"
+                          ? revenue || 0
+                          : platformType === "sports" || platformType === "sportsbet"
+                          ? betAmount.minus(refundAmount)
+                          : betAmount
+);
 
         // Step 1: GA
         const gaId = row["agent_code"];
@@ -146,7 +150,8 @@ class Server {
           },
         });
 
-        console.log(`Commission fetch: user=${gaId}, categoryId=${categoryId}`);
+       
+
 
         const gaPercentage = new Decimal(
           gaCommissionRecord?.commissionPercentage || 0
@@ -155,7 +160,15 @@ class Server {
 
         // Step 2: MA
         const gaUser = await prisma.user.findUnique({ where: { id: gaId } });
+                console.log(`Commission fetch: user=${gaId}, categoryId=${categoryId}, commissionRecord=${gaUser.username}`);
+
         const maId = gaUser?.parentId || null;
+
+         const maName = await prisma.user.findFirst({
+          where: {
+            id: maId,
+          },
+        });
 
         let maPercentage = new Decimal(0);
         let maCommission = new Decimal(0);
@@ -166,12 +179,15 @@ class Server {
               categoryId,
             },
           });
+         
 
           maPercentage = new Decimal(
             maCommissionRecord?.commissionPercentage || 0
           );
           maCommission = baseAmount.mul(maPercentage).div(100);
         }
+
+        let ownerName :string;
 
         // Step 3: Owner
         let ownerId = null;
@@ -181,6 +197,13 @@ class Server {
         if (maId) {
           const maUser = await prisma.user.findUnique({ where: { id: maId } });
           ownerId = maUser?.parentId || null;
+
+          const ownerUser = await prisma.user.findFirst({
+          where: {
+            id: ownerId,
+          },
+          });
+          ownerName = ownerUser?.username || null;
 
           if (ownerId) {
             const ownerCommissionRecord = await prisma.commission.findFirst({
@@ -218,17 +241,17 @@ class Server {
           settled: "N",
 
           gaId,
-          gaName: row["GA Name"] || null,
+          gaName: gaUser.username || null,
           gaPercentage,
           gaCommission,
 
           maId,
-          maName: row["MA Name"] || null,
+          maName: maName.username || null,
           maPercentage,
           maCommission,
 
           ownerId,
-          ownerName: row["Owner Name"] || null,
+          ownerName: ownerName || null,
           ownerPercentage,
           ownerCommission,
         };
