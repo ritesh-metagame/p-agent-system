@@ -9,7 +9,7 @@ class UserDao {
     try {
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        include: { role: true },
+        include: { role: true, commissionSummaries: true },
       });
 
 
