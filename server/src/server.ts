@@ -11,7 +11,7 @@ import "./main";
 import { Decimal } from "../prisma/generated/prisma/runtime/library";
 import fs from "fs";
 import csv from "csv-parser"; // install with: npm install csv-parser
-import { exportBetsWithAgentCodeToExcel } from "./common/config/db.config";
+// import { exportBetsWithAgentCodeToExcel } from "./common/config/db.config";
 
 const filePath = path.join(__dirname, "./data/bets_with_agent_code.xlsx");
 // import { redisService } from "./core/services/redis.service";

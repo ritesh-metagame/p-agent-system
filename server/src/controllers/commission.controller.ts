@@ -5,6 +5,7 @@ import { RoleDao } from "../daos/role.dao";
 import { prisma } from "../server";
 import { Response as ApiResponse } from "../common/config/response";
 import { ResponseCodes } from "../common/config/responseCodes";
+import { UserRole } from "../common/config/constants";
 
 class CommissionController {
   public static async getCommissionByUserId(
@@ -573,9 +574,11 @@ class CommissionController {
   ) {
     try {
       const { ids, childrenCommissionIds } = req.body as any;
-      const role = req.role as any
+      const user = req.user as any
+      const roleDao = new RoleDao();
+      const role = await roleDao.getRoleById(user.roleId)
       const commissionService = Container.get(CommissionService);
-      const result = await commissionService.markCommissionSummaryStatus(ids,childrenCommissionIds, role);
+      const result = await commissionService.markCommissionSummaryStatus(ids,childrenCommissionIds, role.name as UserRole);
 
       return new ApiResponse(
         ResponseCodes.UNSETTLED_DATA_UPDATE_SUCCESSFULLY.code,

@@ -781,6 +781,7 @@ class CommissionDao {
           netCommissionAvailablePayout: true,
           paymentGatewayFee: true,
           userId: true,
+          createdAt: true,
           user: {
             select: {
               role: {
@@ -793,12 +794,53 @@ class CommissionDao {
         },
       });
 
+      // Extract date from the first record
+      const recordDate = currentRecords[0]?.createdAt;
+      const startOfDay = new Date(recordDate);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(recordDate);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      // Extract userIds from current records
+      const userIds = currentRecords.map(record => record.userId)
+      console.log("Processing records for date:", startOfDay.toISOString().split('T')[0], "for users:", userIds);
+
+      // Find "Unknown" category records for the same users and date
+      const unknownCategoryRecords = await prisma.commissionSummary.findMany({
+        where: {
+          userId: { in: userIds },
+          categoryName: "Unknown",
+          createdAt: {
+            gte: startOfDay,
+            lte: endOfDay
+          },
+          settledStatus: "N" // Only get unsettled records
+        },
+        select: {
+          id: true,
+          pendingSettleCommission: true,
+          netCommissionAvailablePayout: true,
+          paymentGatewayFee: true,
+          userId: true,
+          user: {
+            select: {
+              role: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          }
+        },
+      });
+
+      console.log("Found Unknown category records:", unknownCategoryRecords.length);
+
       const paymentGatewayFees = await prisma.commissionSummary.findMany({
         where: {
           userId: currentRecords[0].userId // only include the records you're working with
         },
       });
-
 
       // Separate golden users from others
       const goldenRecords = currentRecords.filter(record => record.user.role.name === UserRole.GOLDEN);
@@ -828,6 +870,9 @@ class CommissionDao {
             data: {
               settledStatus: "Y",
               settledAt: new Date(),
+              settledBySuperadmin: roleName === UserRole.SUPER_ADMIN ? true : false,
+              settledByOperator: roleName === UserRole.OPERATOR ? true : false,
+              settledByPlatinum: roleName === UserRole.PLATINUM ? true : false,
               grossCommission:  record.netCommissionAvailablePayout - recordPaymentGatewayFee,
             },
           });
@@ -842,13 +887,45 @@ class CommissionDao {
             data: {
               settledStatus: "Y",
               settledAt: new Date(),
+              settledBySuperadmin: roleName === UserRole.SUPER_ADMIN ? true : false,
+              settledByOperator: roleName === UserRole.OPERATOR ? true : false,
+              settledByPlatinum: roleName === UserRole.PLATINUM ? true : false,
               pendingSettleCommission: (record.pendingSettleCommission || 0) - record.netCommissionAvailablePayout,
             },
           });
         })
       );
 
-      const childrenRecords = await prisma.commissionSummary.findMany({
+      // Process Unknown category records
+      const updatedUnknownRecords = await Promise.all(
+        unknownCategoryRecords.map(record => {
+          // Check if this is a Golden user record
+          const isGolden = record.user.role.name === UserRole.GOLDEN;
+          
+          // For Golden users, calculate payment gateway fee if total commission > 0
+          let updateData: any = {
+            settledStatus: "Y",
+            settledAt: new Date(),
+            settledBySuperadmin: roleName === UserRole.SUPER_ADMIN ? true : false,
+            settledByOperator: roleName === UserRole.OPERATOR ? true : false,
+            settledByPlatinum: roleName === UserRole.PLATINUM ? true : false,
+          };
+          
+          if (isGolden && totalGoldenNetCommission > 0) {
+            const ratio = record.netCommissionAvailablePayout / totalGoldenNetCommission;
+            const recordPaymentGatewayFee = totalPaymentGatewayFee * ratio;
+            updateData.grossCommission = record.netCommissionAvailablePayout - recordPaymentGatewayFee;
+          } else {
+            // For non-Golden users, update pending settle commission
+            updateData.pendingSettleCommission = (record.pendingSettleCommission || 0) - record.netCommissionAvailablePayout;
+          }
+          
+          return prisma.commissionSummary.update({
+            where: { id: record.id },
+            data: updateData,
+          });
+        })
+      );      const childrenRecords = await prisma.commissionSummary.findMany({
         where: {
           id: { in: childrenCommissionIds },
         },
@@ -858,6 +935,7 @@ class CommissionDao {
           netCommissionAvailablePayout: true,
           paymentGatewayFee: true,
           userId: true,
+          createdAt: true,
           user: {
             select: {
               role: {
@@ -870,20 +948,60 @@ class CommissionDao {
         },
       });
 
-      const updatedChildrenRecords = await Promise.all(
-        childrenRecords.map(record => {
+      console.log("Children Records:", childrenRecords);
+
+      console.log({roleName})
+
+      const childrenRecordData = {
+        settledBySuperadmin: roleName === UserRole.SUPER_ADMIN ? true : false,
+        settledByOperator: roleName === UserRole.OPERATOR ? true : false,
+        settledByPlatinum: roleName === UserRole.PLATINUM ? true : false,
+      }
+
+      console.log({childrenRecordData})
+
+      // Extract userIds from children records
+      const childrenUserIds = childrenRecords.map(record => record.userId);
+      
+      // Find Unknown category records for children userIds
+      const childrenUnknownCategoryRecords = await prisma.commissionSummary.findMany({
+        where: {
+          userId: { in: childrenUserIds },
+          categoryName: "Unknown",
+          createdAt: {
+            gte: startOfDay,
+            lte: endOfDay
+          },
+          // No settledStatus filter, get all records regardless of settled status
+        },
+        select: {
+          id: true,
+          userId: true
+        },
+      });
+      
+      console.log("Found Unknown category records for children:", childrenUnknownCategoryRecords.length);
+      
+      // Update unknown category records for children - only update settledBy fields
+      const updatedChildrenUnknownRecords = await Promise.all(
+        childrenUnknownCategoryRecords.map(record => {
           return prisma.commissionSummary.update({
             where: { id: record.id },
-            data: {
-              settledBySuperadmin: roleName === UserRole.SUPER_ADMIN ? true : false,
-              settledByOperator: roleName === UserRole.OPERATOR ? true : false,
-              settledByPlatinum: roleName === UserRole.PLATINUM ? true : false,
-            },
+            data: childrenRecordData, // Only updating settledBy fields based on role
           });
         })
       );
 
-      return [...updatedGoldenRecords, ...updatedOtherRecords, ...updatedChildrenRecords];
+      const updatedChildrenRecords = await Promise.all(
+        childrenRecords.map(record => {
+          return prisma.commissionSummary.update({
+            where: { id: record.id },
+            data: childrenRecordData,
+          });
+        })
+      );
+
+      return [...updatedGoldenRecords, ...updatedOtherRecords, ...updatedUnknownRecords, ...updatedChildrenRecords, ...updatedChildrenUnknownRecords];
     } catch (error) {
       console.error("Error updating settledStatus:", error);
       throw error;
