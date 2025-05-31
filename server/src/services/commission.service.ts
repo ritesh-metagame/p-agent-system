@@ -24,6 +24,7 @@ import {
 import {ResponseCodes} from "../common/config/responseCodes";
 import {Response} from "../common/config/response";
 import UserDao from "../daos/user.dao";
+import logger from "../common/logger";
 
 interface SummaryTotal {
     totalDeposit: number;
@@ -664,7 +665,7 @@ class CommissionService {
         try {
             const categories = [
                 "E-Games",
-                "Sports-Betting",
+                "Sports Betting",
                 "Speciality Games - RNG",
                 "Speciality Games - Tote",
             ];
@@ -677,13 +678,24 @@ class CommissionService {
             // });
 
             // Get all commission records based on role
-            let commissionSummaries;
+            let commissionSummaries = []
 
             let result;
 
             for (const category of categories) {
                 const {cycleStartDate, cycleEndDate} =
-                    await this.getRunningTallyPeriodStartDate(category);
+                    this.getRunningTallyPeriodStartDate(category);
+
+
+                const date = new Date(cycleStartDate);
+                const previousDayEnd = new Date(date);
+                previousDayEnd.setUTCDate(date.getUTCDate() - 1);
+                previousDayEnd.setUTCHours(23, 59, 59, 999);
+
+                console.log(`Running tally date range for category ${category}:`, {
+                    from: previousDayEnd,
+                    to: cycleEndDate,
+                })
 
                 // console.log("Running tally date range:", {
                 //   startDate: cycleStartDate.toISOString(),
@@ -694,12 +706,13 @@ class CommissionService {
                 switch (userRole) {
                     case UserRole.SUPER_ADMIN:
                         // Get all operators' summaries
-                        commissionSummaries = await prisma.commissionSummary.findMany({
+                        const superadminSummaries = await prisma.commissionSummary.findMany({
                             where: {
                                 createdAt: {
-                                    gte: cycleStartDate,
+                                    gte: previousDayEnd,
                                     lte: cycleEndDate,
                                 },
+                                categoryName: category,
                                 role: {
                                     name: UserRole.OPERATOR,
                                 },
@@ -707,18 +720,22 @@ class CommissionService {
                             select: {
                                 netCommissionAvailablePayout: true,
                                 categoryName: true,
+                                createdAt: true
                             },
                         });
+                        commissionSummaries.push(...superadminSummaries);
+                        console.log("Commission summaries for superadmin:", commissionSummaries);
                         break;
 
                     case UserRole.OPERATOR:
                         // Get direct platinum summaries
-                        commissionSummaries = await prisma.commissionSummary.findMany({
+                        const operatorSummaries = await prisma.commissionSummary.findMany({
                             where: {
                                 createdAt: {
-                                    gte: cycleStartDate,
+                                    gte: previousDayEnd,
                                     lte: cycleEndDate,
                                 },
+                                categoryName: category,
                                 user: {
                                     parentId: userId,
                                     role: {
@@ -731,16 +748,18 @@ class CommissionService {
                                 role: true,
                             },
                         });
+                        commissionSummaries.push(...operatorSummaries);
                         break;
 
                     case UserRole.PLATINUM:
                         // Get direct agent summaries
-                        commissionSummaries = await prisma.commissionSummary.findMany({
+                        const platinumSummaries = await prisma.commissionSummary.findMany({
                             where: {
                                 createdAt: {
-                                    gte: cycleStartDate,
+                                    gte: previousDayEnd,
                                     lte: cycleEndDate,
                                 },
+                                categoryName: category,
                                 user: {
                                     parentId: userId,
                                     role: {
@@ -753,6 +772,7 @@ class CommissionService {
                                 role: true,
                             },
                         });
+                        commissionSummaries.push(...platinumSummaries);
                         break;
 
                     case "agent":
@@ -797,6 +817,8 @@ class CommissionService {
                     to: cycleEndDate.toISOString(),
                 };
             }
+
+            console.log({commissionSummaries})
 
             // Calculate totals for each game category
             commissionSummaries.forEach((summary) => {
@@ -2892,8 +2914,7 @@ class CommissionService {
                         grossCommissions,
                         paymentGatewayFees: pendingPaymentGatewayFees,
                         ownCommission: ownCommission,
-                        netCommissions:
-                        netCommissionsAfterDeductingOwnCommission,
+                        netCommissions,
                         breakdownAction: "view",
                         releaseAction: "release_comms",
                     };
@@ -5027,6 +5048,8 @@ class CommissionService {
             startOfWeek.setDate(currentDate.getDate() - offset);
             startOfWeek.setHours(0, 0, 0, 0);
 
+            // console.log(`Showing running tally from start of week: ${startOfWeek.toISOString()} till today: ${currentDate.toISOString()} for category: ${categoryName}`);
+
             return {
                 cycleStartDate: startOfWeek,
                 cycleEndDate: currentDate,
@@ -5046,6 +5069,8 @@ class CommissionService {
             cycleStartDate.setDate(1); // Start from beginning of the month
         }
         cycleStartDate.setHours(0, 0, 0, 0);
+
+        // console.log(`Showing running tally from start of month: ${cycleStartDate.toISOString()} till today: ${currentDate.toISOString()} for category: ${categoryName}`);
 
         return {
             cycleStartDate,
