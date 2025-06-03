@@ -96,7 +96,7 @@ class Server {
      
         const rawRows: any = await prisma.$queryRawUnsafe(`
   SELECT * FROM bets
-  WHERE time_of_bet BETWEEN '2025-05-26 00:00:00' AND '2025-05-26 23:59:59'
+  WHERE time_of_bet BETWEEN '2025-05-26 00:00:00' AND '2025-06-02 23:59:59'
 `);
 
       
