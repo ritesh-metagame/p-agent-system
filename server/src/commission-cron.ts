@@ -8,12 +8,7 @@ import {DateTime} from "luxon";
 
 const commissionService = new CommissionService();
 
-const CRON_START_TIME = DateTime.fromObject(
-    {year: 2025, month: 5, day: 31, hour: 12, minute: 0, second: 0},
-    {zone: "Asia/Manila"}
-).toJSDate();
-
-const IGNORE_BEFORE_DATE = new Date("2025-05-30T00:00:00.000Z");
+const IGNORE_BEFORE_DATE = new Date("2025-05-26T00:00:00.000Z");
 const META_ID = "commission-meta";
 
 const logger = getLogger(module)
@@ -58,16 +53,13 @@ async function getBetsBetween(start: Date, end: Date): Promise<any[]> {
 }
 
 export async function runCommissionCron() {
-    const now = new Date();
-    if (now < CRON_START_TIME) {
-        logger.info("Waiting for cron start time:", CRON_START_TIME.toISOString());
-        return;
-    }
-
+    logger.info("Starting commission cron...");
     const lastProcessed = await getLastProcessedDate();
+    logger.info("Last processed date:", lastProcessed?.toISOString());
 
     if (!lastProcessed) {
         const firstBetTime = await getEarliestBetAfter(IGNORE_BEFORE_DATE);
+        logger.info("First bet time:", firstBetTime?.toISOString());
         if (!firstBetTime) {
             logger.silly("No bets found after 30 May. Skipping processing.");
             return;
@@ -93,6 +85,7 @@ const categoryIdMap: Record<string, string> = {
 
 async function processCommissionBetween(start: Date, end: Date) {
     const rawRows = await getBetsBetween(start, end);
+    logger.info(`Processing bets between ${start.toISOString()} and ${end.toISOString()} with ${rawRows.length} rows`);
 
     const involvedDates = new Set<string>(); // collect unique dates in UTC
 
@@ -102,10 +95,8 @@ async function processCommissionBetween(start: Date, end: Date) {
     }
 
     for (const row of rawRows) {
-        // console.log("Row data:", row);
 
-        // const row = cleanRowKeys(rawRow);
-
+        logger.info(`Processing transaction for time: ${row["time_of_bet"]}`);
         const platformType = row["platform_name"];
         const normalizedPlatform =
             platformType === "egames"
@@ -137,7 +128,7 @@ async function processCommissionBetween(start: Date, end: Date) {
 
         if (!gaId) {
             logger.warn(`
-            GA ID ${gaId} not found in allowed GAIDS. Skipping transaction.
+            GA ID ${gaId} not found. Skipping transaction.
           `);
             continue;
         }
@@ -158,7 +149,10 @@ async function processCommissionBetween(start: Date, end: Date) {
         const gaUser = await prisma.user.findUnique({where: {id: gaId}});
         logger.info(`Commission fetch: user=${gaId}, categoryId=${categoryId}, commissionRecord=${gaUser?.username || null}`);
 
-        if (!gaUser) continue;
+        if (!gaUser) {
+            logger.warn(`GA user ${gaId} not found. Skipping transaction.`);
+            continue;
+        }
 
         const maId = gaUser?.parentId || null;
 
@@ -218,8 +212,6 @@ async function processCommissionBetween(start: Date, end: Date) {
             }
         }
 
-        console.log({time_of_bet: row["time_of_bet"]});
-
         const betDateUtc = format(new Date(row["time_of_bet"]), "yyyy-MM-dd");
         involvedDates.add(betDateUtc); // collect the date
 
@@ -260,7 +252,7 @@ async function processCommissionBetween(start: Date, end: Date) {
         };
 
         try {
-            // console.log("Inserting transaction:", transaction.transactionId);
+            logger.info(`Inserting transaction for time: ${transaction.betTime}`);
             await prisma.transaction.create({data: transaction});
         } catch (err) {
             console.error(
@@ -271,8 +263,9 @@ async function processCommissionBetween(start: Date, end: Date) {
         }
     }
 
-    // After inserting all transactions, call createCommissionCategory for each involved date
+    logger.info(`Collected ${involvedDates.size} unique dates for commission summaries`);
     for (const date of involvedDates) {
+        logger.info(`Processing commission summary for date: ${date}`);
         try {
             logger.info(`🔄 Creating commission summary for date: ${date}`);
             await commissionService.createCommissionCategory(date);
@@ -281,31 +274,36 @@ async function processCommissionBetween(start: Date, end: Date) {
         }
     }
 
-    console.log("All transactions inserted successfully")
-
+    logger.info("All transactions inserted successfully")
 }
 
+export function scheduleDailyCommissionJob() {
+    const nowUTC = DateTime.now().setZone('UTC');
+    let target = nowUTC.set({hour: 18, minute: 30, second: 0, millisecond: 0}); // 6:30 PM UTC = 12:00 AM IST
 
-export function scheduleHourlyCommissionJob() {
-    const nowPH = DateTime.now().setZone('Asia/Manila');
-    let targetPH = nowPH.set({hour: 11, minute: 59, second: 0, millisecond: 0});
+    const initialRunTime = nowUTC.plus({minutes: 2}).set({second: 0, millisecond: 0});
 
-    // If it's already past 12:00 PM PH time today, schedule for tomorrow
-    if (nowPH > targetPH) {
-        targetPH = targetPH.plus({days: 1});
+    // If 6:30 PM UTC has already passed today, schedule for tomorrow
+    if (nowUTC > target) {
+        target = target.plus({days: 1});
     }
 
-    const delay = targetPH.toMillis() - DateTime.now().toMillis();
+    const delay = initialRunTime.toMillis() - nowUTC.toMillis();
 
-    console.log(`⏳ Scheduling hourly cron to start at ${targetPH.toFormat('yyyy-LL-dd HH:mm:ss')} (PH Time)`);
+    console.log(`⏳ First run scheduled after 2 minutes at ${initialRunTime.toFormat('yyyy-LL-dd HH:mm:ss')} UTC`);
+
+    // console.log(`⏳ Scheduling daily cron to start at ${target.toFormat('yyyy-LL-dd HH:mm:ss')} UTC (12:00 AM IST)`);
 
     setTimeout(() => {
-        logger.info(`✅ Starting hourly cron job at ${DateTime.now().setZone('Asia/Manila').toFormat('yyyy-LL-dd HH:mm:ss')} (PH Time)`);
+        logger.info(`✅ Running first cron job at ${DateTime.now().setZone('UTC').toFormat('yyyy-LL-dd HH:mm:ss')} UTC`);
 
-        // Schedule to run at 0th minute of every hour
-        cron.schedule('0 * * * *', runCommissionCron);
-
-        // Optional: run once immediately at 12:00 PM
+        // Run the task once after 2 minutes
         runCommissionCron();
+
+        // Set up the recurring daily job at 6:30 PM UTC = 12:00 AM IST
+        cron.schedule('30 18 * * *', () => {
+            logger.info(`🔁 Daily scheduled job started at ${DateTime.now().setZone('UTC').toFormat('yyyy-LL-dd HH:mm:ss')} UTC`);
+            runCommissionCron();
+        });
     }, delay);
 }

@@ -9,7 +9,7 @@ import cron from "node-cron";
 
 import {PrismaClient} from "./../prisma/generated/prisma";
 import "./main";
-import {runCommissionCron, scheduleHourlyCommissionJob} from "./commission-cron";
+import {scheduleDailyCommissionJob} from "./commission-cron";
 
 const log = logger(module);
 const prisma = new PrismaClient();
@@ -41,7 +41,7 @@ class Server {
         const appLoader = new AppLoader(this.app);
         await appLoader.load();
 
-        scheduleHourlyCommissionJob();
+        scheduleDailyCommissionJob();
 
         this.app
             .listen(config.port, () => {

@@ -2298,6 +2298,8 @@ class CommissionService {
         const {cycleStartDate, cycleEndDate} =
             await this.getPreviousCompletedCycleDates();
 
+        console.log(`Getting payment gateway fees for date range: ${cycleStartDate} to ${cycleEndDate}`);
+
         let depositPgFeesTotal = 0;
         let withdrawPgFeesTotal = 0;
         let totalPgFees = 0;
@@ -2308,9 +2310,9 @@ class CommissionService {
                     transactionType: {
                         in: ["deposit", "withdraw"],
                     },
-                    createdAt: {
-                        gte: cycleStartDate,
-                        lte: cycleEndDate,
+                    betTime: {
+                        gte: new Date(cycleStartDate),
+                        lte: new Date(cycleEndDate),
                     },
                 },
                 select: {
