@@ -3622,6 +3622,8 @@ class CommissionService {
                     pendingSettleCommission: true,
                 },
             });
+          
+        console.log("summaries----------------------", summaries);
 
             const pending = {
                 eGamesGGR: 0,
@@ -3802,7 +3804,8 @@ class CommissionService {
 
                         pending.eGamesCommission = pendingComm - parentCommission;
                     } else {
-                        pending.eGamesCommission = pendingComm;
+                      console.log("pendingComm commission--------------------",  pendingComm);
+                        pending.eGamesCommission += pendingComm;
                     }
                 } else if (category === "Sports Betting") {
                     if (isSettled) {
@@ -3848,7 +3851,7 @@ class CommissionService {
 
                         pending.sportsCommission = pendingComm - parentCommission;
                     } else {
-                        pending.sportsCommission = pendingComm;
+                        pending.sportsCommission += pendingComm;
                         // console.log("pendingComm commission--------------------", pendingComm);
                     }
                 }
