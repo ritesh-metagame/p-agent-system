@@ -3557,7 +3557,7 @@ class CommissionService {
                         },
                         {
                             label: "Commission Rate",
-                            value: `${(commissionRate * 100).toFixed(1)}%`,
+                            value: `${(commissionRate ).toFixed(1)}%`,
                         },
                         {
                             label: "Total Commission",
@@ -3880,37 +3880,79 @@ class CommissionService {
                 }
             }
 
+          const commissionData = await prisma.commission.findMany({
+  where: {
+    userId: userId, // Replace `user.id` with your logged-in user's ID
+  },
+  select: {
+    totalAssignedCommissionPercentage: true,
+    category: {
+      select: {
+        name: true,
+      },
+    },
+  },
+});
+
+
             // Determine commission rates
-            let eGamesRate = 0;
-            let sportsRate = 0;
+           let eGamesRate = 0;
+let sportsRate = 0;
+let rngRate = 0;
+let toteRate = 0;
 
-            switch (roleName) {
-                case UserRole.SUPER_ADMIN:
-                    eGamesRate = 0.3;
-                    sportsRate = 0.02;
-                    break;
-                case UserRole.OPERATOR:
-                    eGamesRate = 0.28;
-                    sportsRate = 0.019;
-                    break;
-                case UserRole.PLATINUM:
-                    eGamesRate = 0.25;
-                    sportsRate = 0.018;
-                    break;
-                case UserRole.GOLDEN:
-                    eGamesRate = 0.2;
-                    sportsRate = 0.017;
-                    break;
-                default:
-                    throw new Error("Invalid role");
-            }
+switch (roleName) {
+  case UserRole.SUPER_ADMIN:
+    eGamesRate = 0.3;
+    sportsRate = 0.02;
+    rngRate = 0.01; // Add if applicable
+    toteRate = 0.01;
+    break;
 
-            const expectedSettledEGamesCommission = Math.floor(
-                settled.eGamesGGR * eGamesRate
-            );
-            const expectedSettledSportsCommission = Math.floor(
-                settled.sportsBet * sportsRate
-            );
+  case UserRole.OPERATOR:
+  case UserRole.PLATINUM:
+  case UserRole.GOLDEN: {
+    // Fetch commission percentages dynamically
+    const commissions = await prisma.commission.findMany({
+      where: {
+        userId: userId, // replace with actual logged-in user ID
+      },
+      select: {
+        totalAssignedCommissionPercentage: true,
+        category: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    for (const row of commissions) {
+      switch (row.category.name) {
+        case "E-Games":
+          eGamesRate = row.totalAssignedCommissionPercentage;
+          break;
+        case "Sports Betting":
+          sportsRate = row.totalAssignedCommissionPercentage;
+          break;
+        case "Speciality Games - RNG":
+          rngRate = row.totalAssignedCommissionPercentage;
+          break;
+        case "Speciality Games - Tote":
+          toteRate = row.totalAssignedCommissionPercentage;
+          break;
+      }
+    }
+
+    break;
+  }
+
+  default:
+    throw new Error("Invalid role");
+}
+
+
+           
 
             result.data.data.push(
                 buildLicenseData(
