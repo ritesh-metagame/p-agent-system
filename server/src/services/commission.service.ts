@@ -798,7 +798,7 @@ class CommissionService {
                         "E-GAMES COMMISSION AS OF TODAY",
                         "SPORTS BETTING COMMISSION AS OF TODAY",
                     ],
-                    roleLabel: "Own Commission",
+                    roleLabel: this.getRoleLabelForUser(userRole),
                     tally: [
                         {
                             metric: "Commission Available for Payout",
@@ -3777,7 +3777,6 @@ class CommissionService {
                 const isSettled = summary.settledStatus === "Y";
 
 
-
                 if (category === "E-Games") {
                     if (isSettled) {
                         if (roleName === UserRole.GOLDEN) {
@@ -3799,38 +3798,36 @@ class CommissionService {
                             select: {parentId: true},
                         });
 
-                      let parentCommission = 0;
-                      if (user?.parentId) {
-                          
-                 
+                        let parentCommission = 0;
+                        if (user?.parentId) {
+
 
                             const parentSummary = await prisma.commissionSummary.findMany({
-                                    where: {
-                                      userId: user.parentId,
-                                      categoryName: "E-Games",
-                                      createdAt: {
+                                where: {
+                                    userId: user.parentId,
+                                    categoryName: "E-Games",
+                                    createdAt: {
                                         gte: eGamesCycle.cycleStartDate,
                                         lte: eGamesCycle.cycleEndDate,
-                                      },
                                     },
-                                    select: {
-                                      netCommissionAvailablePayout: true,
-                                    },
-                                  });
+                                },
+                                select: {
+                                    netCommissionAvailablePayout: true,
+                                },
+                            });
 
 
-                        for (const summary of parentSummary) {
-                           parentCommission += summary.netCommissionAvailablePayout;
+                            for (const summary of parentSummary) {
+                                parentCommission += summary.netCommissionAvailablePayout;
                             }
-                      }
+                        }
 
 
-
-                      pending.eGamesCommission += pendingComm;
-                      pending.eGamesCommission -= summary.netCommissionAvailablePayout;
+                        pending.eGamesCommission += pendingComm;
+                        pending.eGamesCommission -= summary.netCommissionAvailablePayout;
 
                     } else {
-                        pending.eGamesCommission +=pendingComm;
+                        pending.eGamesCommission += pendingComm;
                     }
                 } else if (category === "Sports Betting") {
                     if (isSettled) {
@@ -3861,11 +3858,11 @@ class CommissionService {
                             const parentSummary = await prisma.commissionSummary.findMany({
                                 where: {
                                     userId: user.parentId,
-                                categoryName: "Sports Betting",
+                                    categoryName: "Sports Betting",
                                     createdAt: {
                                         gte: sportsCycle.cycleStartDate,
                                         lte: sportsCycle.cycleEndDate,
-                                      },
+                                    },
                                     // settledStatus: "N"
                                 },
                                 select: {
@@ -3873,15 +3870,15 @@ class CommissionService {
                                 },
                             });
 
-                           for (const summary of parentSummary) {
-                           parentCommission += summary.netCommissionAvailablePayout;
+                            for (const summary of parentSummary) {
+                                parentCommission += summary.netCommissionAvailablePayout;
                             }
                         }
 
                         // console.log("parent commission", parentCommission, "comm", comm, "pendingComm", pendingComm);
 
-                      pending.sportsCommission += pendingComm;
-                      pending.sportsCommission -= summary.netCommissionAvailablePayout;
+                        pending.sportsCommission += pendingComm;
+                        pending.sportsCommission -= summary.netCommissionAvailablePayout;
 
                     } else {
                         pending.sportsCommission += pendingComm;
@@ -4863,14 +4860,8 @@ class CommissionService {
         switch (role.toLowerCase()) {
             case UserRole.SUPER_ADMIN:
                 return "ALL OPERATORS";
-            case UserRole.OPERATOR:
-                return "ALL PLATINUMS";
-            case UserRole.PLATINUM:
-                return "ALL AGENTS";
-            case "agent":
-                return "SELF";
             default:
-                return "";
+                return "Own Commission";
         }
     }
 
