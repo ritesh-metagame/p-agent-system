@@ -3912,20 +3912,20 @@ switch (roleName) {
   case UserRole.SUPER_ADMIN:
     eGamesRate = 30;
     sportsRate = 2;
-    rngRate = 0.01; // Add if applicable
+    rngRate = 0.01;
     toteRate = 0.01;
     break;
 
   case UserRole.OPERATOR:
   case UserRole.PLATINUM:
   case UserRole.GOLDEN: {
-    // Fetch commission percentages dynamically
     const commissions = await prisma.commission.findMany({
       where: {
-        userId: userId, // replace with actual logged-in user ID
+        userId: userId,
       },
       select: {
         totalAssignedCommissionPercentage: true,
+        commissionPercentage: true,
         category: {
           select: {
             name: true,
@@ -3935,18 +3935,23 @@ switch (roleName) {
     });
 
     for (const row of commissions) {
+      const percentage =
+        roleName === UserRole.GOLDEN
+          ? row.commissionPercentage
+          : row.totalAssignedCommissionPercentage;
+
       switch (row.category.name) {
         case "E-Games":
-          eGamesRate = row.totalAssignedCommissionPercentage;
+          eGamesRate = percentage;
           break;
         case "Sports Betting":
-          sportsRate = row.totalAssignedCommissionPercentage;
+          sportsRate = percentage;
           break;
         case "Speciality Games - RNG":
-          rngRate = row.totalAssignedCommissionPercentage;
+          rngRate = percentage;
           break;
         case "Speciality Games - Tote":
-          toteRate = row.totalAssignedCommissionPercentage;
+          toteRate = percentage;
           break;
       }
     }
@@ -3957,6 +3962,7 @@ switch (roleName) {
   default:
     throw new Error("Invalid role");
 }
+
 
 
            
