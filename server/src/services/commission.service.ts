@@ -3910,8 +3910,8 @@ let toteRate = 0;
 
 switch (roleName) {
   case UserRole.SUPER_ADMIN:
-    eGamesRate = 0.3;
-    sportsRate = 0.02;
+    eGamesRate = 30;
+    sportsRate = 2;
     rngRate = 0.01; // Add if applicable
     toteRate = 0.01;
     break;
