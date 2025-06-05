@@ -803,7 +803,7 @@ class CommissionService {
                         "E-GAMES COMMISSION AS OF TODAY",
                         "SPORTS BETTING COMMISSION AS OF TODAY",
                     ],
-                    roleLabel: this.getRoleLabelForUser(userRole),
+                    roleLabel: "Own Commission",
                     tally: [
                         {
                             metric: "Commission Available for Payout",
@@ -1408,10 +1408,8 @@ class CommissionService {
             return {
                 summaries: commissionSummaries,
                 allTotal: totals,
-                totalPending:
-                    totalPending > 0 ? totalPending - pendingPaymentGatewayFeeSum : 0,
-                totalSettled:
-                    totalSettled > 0 ? totalSettled - settledPaymentGatewayFeeSum : 0,
+                totalPending: totalPending - pendingPaymentGatewayFeeSum,
+                totalSettled: totalSettled - settledPaymentGatewayFeeSum,
             };
         } catch (error) {
             throw new Error(`Error creating commission: ${error}`);
