@@ -1918,6 +1918,15 @@ class CommissionService {
                     },
                 });
 
+                const totalPendingCommission = pendingData.reduce(
+                    (acc, curr) => acc + (curr.netCommissionAvailablePayout || 0),
+                    0
+                );
+
+                console.log(`Total Pending Commission for ${category}:`, totalPendingCommission);
+
+                // console.log(`Pending Data for ${category} for userIds: (${userIds})`, pendingData);
+
                 // if (category === "Sports Betting") {
                 //     console.log(`Category: ${category}, Pending Data:`, pendingData, `for userIds: (${userIds}) for cycle from ${cycleStartDate} to ${cycleEndDate}`);
                 // }
@@ -2085,6 +2094,8 @@ class CommissionService {
                         summary.netCommissionAvailablePayout || 0;
                 });
             }
+
+            console.log(`Category Totals: `, categoryTotals);
 
             const totalPendingGrossCommission =
                 categoryTotals.pending.egames.amount +
