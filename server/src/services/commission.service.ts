@@ -3766,9 +3766,7 @@ class CommissionService {
                 const paymentGatewayFee = summary.paymentGatewayFee;
                 const isSettled = summary.settledStatus === "Y";
 
-                // console.log("----------------------pending commission",pendingComm)
 
-                // console.log("pending commission", pendingComm, "comm", comm, "grossCommission", grossCommission)
 
                 if (category === "E-Games") {
                     if (isSettled) {
@@ -3791,25 +3789,36 @@ class CommissionService {
                             select: {parentId: true},
                         });
 
-                        let parentCommission = 0;
-                        if (user?.parentId) {
-                            const parentSummary = await prisma.commissionSummary.findFirst({
-                                where: {
-                                    userId: user.parentId,
-                                    categoryName: "E-Games",
-                                    // settledStatus: "N"
-                                },
-                                select: {
-                                    netCommissionAvailablePayout: true,
-                                },
-                            });
+                      let parentCommission = 0;
+                      if (user?.parentId) {
+                          
+                 
 
-                            parentCommission = parentSummary?.netCommissionAvailablePayout;
-                        }
+                            const parentSummary = await prisma.commissionSummary.findMany({
+                                    where: {
+                                      userId: user.parentId,
+                                      categoryName: "E-Games",
+                                      createdAt: {
+                                        gte: eGamesCycle.cycleStartDate,
+                                        lte: eGamesCycle.cycleEndDate,
+                                      },
+                                    },
+                                    select: {
+                                      netCommissionAvailablePayout: true,
+                                    },
+                                  });
 
-                        // console.log("parent commission", parentCommission, "comm", comm, "pendingComm", pendingComm);
 
-                        pending.eGamesCommission = pendingComm - parentCommission;
+                        for (const summary of parentSummary) {
+                           parentCommission += summary.netCommissionAvailablePayout;
+                            }
+                      }
+
+
+
+                      pending.eGamesCommission += pendingComm;
+                      pending.eGamesCommission -= summary.netCommissionAvailablePayout;
+
                     } else {
                         pending.eGamesCommission +=pendingComm;
                     }
@@ -3839,10 +3848,14 @@ class CommissionService {
 
                         let parentCommission = 0;
                         if (user?.parentId) {
-                            const parentSummary = await prisma.commissionSummary.findFirst({
+                            const parentSummary = await prisma.commissionSummary.findMany({
                                 where: {
                                     userId: user.parentId,
-                                    categoryName: "Sports Betting",
+                                categoryName: "Sports Betting",
+                                    createdAt: {
+                                        gte: sportsCycle.cycleStartDate,
+                                        lte: sportsCycle.cycleEndDate,
+                                      },
                                     // settledStatus: "N"
                                 },
                                 select: {
@@ -3850,12 +3863,16 @@ class CommissionService {
                                 },
                             });
 
-                            parentCommission = parentSummary?.netCommissionAvailablePayout;
+                           for (const summary of parentSummary) {
+                           parentCommission += summary.netCommissionAvailablePayout;
+                            }
                         }
 
                         // console.log("parent commission", parentCommission, "comm", comm, "pendingComm", pendingComm);
 
-                        pending.sportsCommission = pendingComm - parentCommission;
+                      pending.sportsCommission += pendingComm;
+                      pending.sportsCommission -= summary.netCommissionAvailablePayout;
+
                     } else {
                         pending.sportsCommission += pendingComm;
                         // console.log("pendingComm commission--------------------", pendingComm);
