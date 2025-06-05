@@ -737,10 +737,7 @@ class CommissionService {
                                 },
                                 categoryName: category,
                                 user: {
-                                    parentId: userId,
-                                    role: {
-                                        name: UserRole.PLATINUM,
-                                    },
+                                    id: userId,
                                 },
                             },
                             include: {
@@ -761,10 +758,7 @@ class CommissionService {
                                 },
                                 categoryName: category,
                                 user: {
-                                    parentId: userId,
-                                    role: {
-                                        name: UserRole.GOLDEN,
-                                    },
+                                    id: userId,
                                 },
                             },
                             include: {
@@ -775,7 +769,7 @@ class CommissionService {
                         commissionSummaries.push(...platinumSummaries);
                         break;
 
-                    case "agent":
+                    case UserRole.GOLDEN:
                         // Get own summaries
                         commissionSummaries = await prisma.commissionSummary.findMany({
                             where: {
@@ -783,6 +777,7 @@ class CommissionService {
                                     gte: cycleStartDate,
                                     lte: cycleEndDate,
                                 },
+                                categoryName: category,
                                 userId: userId,
                             },
                             include: {
@@ -1228,6 +1223,7 @@ class CommissionService {
                     categoryName: {
                         in: ["Unknown"],
                     },
+                    settledStatus: "N",
                     ...(roleName === UserRole.SUPER_ADMIN
                         ? {
                             settledBySuperadmin: false,
@@ -1323,8 +1319,7 @@ class CommissionService {
                     feeSummaries.length > 0
                         ? feeSummaries.filter(
                             (summary) =>
-                                summary?.user?.role.name === UserRole.GOLDEN &&
-                                summary?.settledStatus === "N"
+                                summary?.user?.role.name === UserRole.GOLDEN
                         )
                         : [];
 
@@ -1807,6 +1802,20 @@ class CommissionService {
                     categoryName: {
                         in: ["Unknown"],
                     },
+                    settledStatus: "N",
+                    ...(roleName === UserRole.SUPER_ADMIN
+                        ? {
+                            settledBySuperadmin: false,
+                        }
+                        : roleName === UserRole.OPERATOR
+                            ? {
+                                settledByOperator: false,
+                            }
+                            : roleName === UserRole.PLATINUM
+                                ? {
+                                    settledByPlatinum: false,
+                                }
+                                : {}),
                     createdAt: {
                         gte: startDateForPgFee,
                         lte: endDateForPgFee,
@@ -2948,6 +2957,7 @@ class CommissionService {
                         paymentGatewayFees: pendingPaymentGatewayFees,
                         ownCommission: ownCommission,
                         netCommissions,
+                        transferableAmount: netCommissions < 0 ? 0 : netCommissions,
                         breakdownAction: "view",
                         releaseAction: "release_comms",
                     };
