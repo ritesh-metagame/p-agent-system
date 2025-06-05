@@ -766,6 +766,8 @@ class CommissionService {
                                 role: true,
                             },
                         });
+                        // console.log(`Running tally for startDate: ${cycleStartDate} and endDate: ${cycleEndDate} and for category: ${category}`)
+                        // console.log(`Platinum Summaries: `, platinumSummaries)
                         commissionSummaries.push(...platinumSummaries);
                         break;
 
@@ -1849,6 +1851,8 @@ class CommissionService {
                 const cycleDates = await this.getPreviousCompletedCycleDates(category);
                 cycleStartDate = cycleDates.cycleStartDate;
                 cycleEndDate = cycleDates.cycleEndDate;
+
+                console.log(`Fetch total breakdown for category ${category} where start date is: ${cycleDates.cycleStartDate} and end date is: ${cycleDates.cycleEndDate}`);
 
                 // console.log({ settledPaymentGatewayFees });
 
@@ -3567,7 +3571,7 @@ class CommissionService {
                         },
                         {
                             label: "Commission Rate",
-                            value: `${(commissionRate ).toFixed(1)}%`,
+                            value: `${(commissionRate).toFixed(1)}%`,
                         },
                         {
                             label: "Total Commission",
@@ -3887,79 +3891,77 @@ class CommissionService {
                 }
             }
 
-          const commissionData = await prisma.commission.findMany({
-  where: {
-    userId: userId, // Replace `user.id` with your logged-in user's ID
-  },
-  select: {
-    totalAssignedCommissionPercentage: true,
-    category: {
-      select: {
-        name: true,
-      },
-    },
-  },
-});
+            const commissionData = await prisma.commission.findMany({
+                where: {
+                    userId: userId, // Replace `user.id` with your logged-in user's ID
+                },
+                select: {
+                    totalAssignedCommissionPercentage: true,
+                    category: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                },
+            });
 
 
             // Determine commission rates
-           let eGamesRate = 0;
-let sportsRate = 0;
-let rngRate = 0;
-let toteRate = 0;
+            let eGamesRate = 0;
+            let sportsRate = 0;
+            let rngRate = 0;
+            let toteRate = 0;
 
-switch (roleName) {
-  case UserRole.SUPER_ADMIN:
-    eGamesRate = 30;
-    sportsRate = 2;
-    rngRate = 0.01; // Add if applicable
-    toteRate = 0.01;
-    break;
+            switch (roleName) {
+                case UserRole.SUPER_ADMIN:
+                    eGamesRate = 30;
+                    sportsRate = 2;
+                    rngRate = 0.01; // Add if applicable
+                    toteRate = 0.01;
+                    break;
 
-  case UserRole.OPERATOR:
-  case UserRole.PLATINUM:
-  case UserRole.GOLDEN: {
-    // Fetch commission percentages dynamically
-    const commissions = await prisma.commission.findMany({
-      where: {
-        userId: userId, // replace with actual logged-in user ID
-      },
-      select: {
-        totalAssignedCommissionPercentage: true,
-        category: {
-          select: {
-            name: true,
-          },
-        },
-      },
-    });
+                case UserRole.OPERATOR:
+                case UserRole.PLATINUM:
+                case UserRole.GOLDEN: {
+                    // Fetch commission percentages dynamically
+                    const commissions = await prisma.commission.findMany({
+                        where: {
+                            userId: userId, // replace with actual logged-in user ID
+                        },
+                        select: {
+                            totalAssignedCommissionPercentage: true,
+                            category: {
+                                select: {
+                                    name: true,
+                                },
+                            },
+                        },
+                    });
 
-    for (const row of commissions) {
-      switch (row.category.name) {
-        case "E-Games":
-          eGamesRate = row.totalAssignedCommissionPercentage;
-          break;
-        case "Sports Betting":
-          sportsRate = row.totalAssignedCommissionPercentage;
-          break;
-        case "Speciality Games - RNG":
-          rngRate = row.totalAssignedCommissionPercentage;
-          break;
-        case "Speciality Games - Tote":
-          toteRate = row.totalAssignedCommissionPercentage;
-          break;
-      }
-    }
+                    for (const row of commissions) {
+                        switch (row.category.name) {
+                            case "E-Games":
+                                eGamesRate = row.totalAssignedCommissionPercentage;
+                                break;
+                            case "Sports Betting":
+                                sportsRate = row.totalAssignedCommissionPercentage;
+                                break;
+                            case "Speciality Games - RNG":
+                                rngRate = row.totalAssignedCommissionPercentage;
+                                break;
+                            case "Speciality Games - Tote":
+                                toteRate = row.totalAssignedCommissionPercentage;
+                                break;
+                        }
+                    }
 
-    break;
-  }
+                    break;
+                }
 
-  default:
-    throw new Error("Invalid role");
-}
+                default:
+                    throw new Error("Invalid role");
+            }
 
-
-           
 
             result.data.data.push(
                 buildLicenseData(
