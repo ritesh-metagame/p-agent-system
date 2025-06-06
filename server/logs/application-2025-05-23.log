@@ -123,7 +123,7 @@ info: 2025-05-23T08:51:03.356Z [loaders\index.ts] ✌️ Express loaded
 info: 2025-05-23T08:51:03.380Z [src\server.ts] 
 development Platform is running at http://localhost:8080 🛡
       
-<<<<<<< HEAD
+
 info: 2025-05-23T09:49:34.477Z [loaders\index.ts] ✌️ Express loaded
 info: 2025-05-23T09:49:34.498Z [src\server.ts] 
 development Platform is running at http://localhost:8080 🛡
@@ -276,6 +276,6 @@ development Platform is running at http://localhost:8080 🛡
 info: 2025-05-23T13:18:29.315Z [loaders\index.ts] ✌️ Express loaded
 info: 2025-05-23T13:26:26.792Z [loaders\index.ts] ✌️ Express loaded
 info: 2025-05-23T13:26:26.803Z [src\server.ts] 
->>>>>>> 8ff38e37c6bac53ae2d612112aaad2ca1186e4a1
+
 development Platform is running at http://localhost:8080 🛡
       
