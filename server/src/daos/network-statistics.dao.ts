@@ -138,9 +138,9 @@ export class NetworkStatisticsDao {
         {} as Record<string, any[]>
       );
 
-      // Calculate statistics for each non-gold user
+      // Calculate statistics for each non-golden user
       for (const user of users) {
-        if (user.role.name.toLowerCase() === "gold") continue;
+        if (user.role.name.toLowerCase() === UserRole.GOLDEN) continue;
 
         // Initialize statistics object
         const stats: any = {
@@ -154,20 +154,30 @@ export class NetworkStatisticsDao {
           platinumUserDeclinedCount: 0,
           platinumUserSuspendedCount: 0,
           platinumUserTotalCount: 0,
-          goldUserApprovedCount: 0,
-          goldUserPendingCount: 0,
-          goldUserDeclinedCount: 0,
-          goldUserSuspendedCount: 0,
-          goldUserTotalCount: 0,
+          goldenUserApprovedCount: 0,
+          goldenUserPendingCount: 0,
+          goldenUserDeclinedCount: 0,
+          goldenUserSuspendedCount: 0,
+          goldenUserTotalCount: 0,
         };
 
         // Helper function to update counts based on user status
         const updateCounts = (user: any, rolePrefix: string) => {
+          console.log(
+            `Updating counts for user ${user.id} with role ${user.role.name}`
+          );
+
+          console.log(
+            `User status: ${user.approved}, Role: ${user.role.name}, Parent ID: ${user.parentId}`)
+
           stats[`${rolePrefix}UserTotalCount`]++;
-          if (user.approved) {
+          if (user.approved === 1) {
             stats[`${rolePrefix}UserApprovedCount`]++;
-          } else {
+          } else if (user.approved === 0) {
             stats[`${rolePrefix}UserPendingCount`]++;
+          } else {
+            stats[`${rolePrefix}UserDeclinedCount`]++;
+            stats[`${rolePrefix}UserSuspendedCount`]++;
           }
         };
 
@@ -181,31 +191,41 @@ export class NetworkStatisticsDao {
           for (const child of children) {
             const childRoleName = child.role.name.toLowerCase();
 
-            if (parentRole === "superadmin" && childRoleName === "operator") {
-              updateCounts(child, "operator");
-              // Count platinum and gold under this operator
-              countDescendants(child.id, "operator");
-            } else if (
-              parentRole === "operator" &&
-              childRoleName === "platinum"
+            console.log(
+              `Counting child ${child.id} with role ${childRoleName} under parent ${currentUserId} with role ${parentRole}`
+            );
+
+            if (
+              parentRole === UserRole.SUPER_ADMIN &&
+              childRoleName === UserRole.OPERATOR
             ) {
-              updateCounts(child, "platinum");
-              // Count gold under this platinum
-              countDescendants(child.id, "platinum");
-            } else if (parentRole === "platinum" && childRoleName === "gold") {
-              updateCounts(child, "gold");
+              updateCounts(child, UserRole.OPERATOR);
+              // Count platinum and golden under this operator
+              countDescendants(child.id, UserRole.OPERATOR);
+            } else if (
+              parentRole === UserRole.OPERATOR &&
+              childRoleName === UserRole.PLATINUM
+            ) {
+              updateCounts(child, UserRole.PLATINUM);
+              // Count golden under this platinum
+              countDescendants(child.id, UserRole.PLATINUM);
+            } else if (
+              parentRole === UserRole.PLATINUM &&
+              childRoleName === UserRole.GOLDEN
+            ) {
+              updateCounts(child, UserRole.GOLDEN);
             }
           }
         };
 
         // Start counting based on user's role
         const userRole = user.role.name.toLowerCase();
-        if (userRole === "superadmin") {
-          countDescendants(user.id, "superadmin");
-        } else if (userRole === "operator") {
-          countDescendants(user.id, "operator");
-        } else if (userRole === "platinum") {
-          countDescendants(user.id, "platinum");
+        if (userRole === UserRole.SUPER_ADMIN) {
+          countDescendants(user.id, UserRole.SUPER_ADMIN);
+        } else if (userRole === UserRole.OPERATOR) {
+          countDescendants(user.id, UserRole.OPERATOR);
+        } else if (userRole === UserRole.PLATINUM) {
+          countDescendants(user.id, UserRole.PLATINUM);
         }
 
         // Create or update statistics entry

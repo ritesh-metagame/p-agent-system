@@ -11,6 +11,10 @@ model CommissionSummary {
   paymentGatewayFee            Float   @default(0)
   netCommissionAvailablePayout Float   @default(0)
   settledStatus                String?
+  pendingSettleCommission      Float   @default(0) // ← New field
+  settledBySuperadmin Boolean? @default(false) // ← New field
+  settledByOperator   Boolean? @default(false) // ← New field
+  settledByPlatinum   Boolean? @default(false) // ← New field
 
   // Relations
   user     User     @relation(fields: [userId], references: [id])

@@ -13,6 +13,7 @@ const log = getLogger(module);
 
 const excludedPathsFromMiddleware = [
   "/api/v1/auth/login",
+  "/api/v1/user/partner/register",
   // "/v1/category",
   "/",
 ];

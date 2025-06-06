@@ -14,9 +14,29 @@ class ResponseCodes {
     message: "Something went wrong",
   } as const;
 
+  static readonly PARTNER_NOT_FOUND = {
+    code: "5000",
+    message: "Partner not found",
+  } as const;
+
   static readonly USER_CREATED_SUCCESSFULLY = {
     code: "1004",
     message: "User created successfully",
+  } as const;
+
+  static readonly USER_APPROVAL_UPDATED_SUCCESSFULLY = {
+    code: "5151",
+    message: "User approval updated successfully",
+  } as const;
+
+  static readonly USER_CREATION_FAILED = {
+    code: "400",
+    message: "User creation failed",
+  } as const;
+
+  static readonly USER_COMMISSION_FETCHED_SUCCESSFULLY = {
+    code: "2010",
+    message: "Commission fetched successfully",
   } as const;
 
   static readonly SITE_CREATED_SUCCESSFULLY = {
@@ -72,9 +92,24 @@ class ResponseCodes {
     message: "Role fetch failed",
   } as const;
 
+  static readonly USER_NOT_APPROVED = {
+    code: "8787",
+    message: "User not approved",
+  } as const;
+
   static readonly USERS_FETCHED_SUCCESSFULLY = {
     code: "1014",
     message: "Users fetched successfully",
+  } as const;
+
+  static readonly USERS_PAYOUT_AND_WALLET_BALANCE_FETCHED_SUCCESSFULLY = {
+    code: "PB200",
+    message: "Users payout and wallet fetched successfully",
+  } as const;
+
+  static readonly USERS_PAYOUT_AND_WALLET_BALANCE_FETCHED_FAILED = {
+    code: "PB400",
+    message: "Users payout and wallet fetched failed",
   } as const;
 
   static readonly TRANSACTION_FETCHED_SUCCESSFULLY = {

@@ -12,6 +12,9 @@ import { SiteService } from "./site.service";
 import { CategoryDao } from "../daos/category.dao";
 import { toFloat } from "validator";
 import { prisma } from "../server";
+import * as ExcelJS from "exceljs";
+import { Response as expressResponse } from "express";
+import { NetworkStatisticsDao } from "../daos/network-statistics.dao";
 
 @Service()
 class UserService {
@@ -21,6 +24,7 @@ class UserService {
   private categoryService: CategoryService;
   private siteService: SiteService;
   private categoryDao: CategoryDao;
+  private networkStatisticsDao: NetworkStatisticsDao;
 
   constructor() {
     this.userDao = new UserDao();
@@ -29,6 +33,7 @@ class UserService {
     this.categoryService = Container.get(CategoryService);
     this.siteService = Container.get(SiteService);
     this.categoryDao = new CategoryDao();
+    this.networkStatisticsDao = new NetworkStatisticsDao();
   }
 
   public async createUser(
@@ -75,14 +80,13 @@ class UserService {
         throw new Error("Role not found");
       }
 
-      console.log({ userData });
-
       // Log settlement details validation
       if (currentUserRole.name === UserRole.SUPER_ADMIN) {
         if (
           !userData.eGamesCommissionComputationPeriod ||
           !userData.sportsBettingCommissionComputationPeriod ||
-          !userData.specialityGamesCommissionComputationPeriod
+          !userData.specialityGamesRngCommissionComputationPeriod ||
+          !userData.specialityGamesToteCommissionComputationPeriod
         ) {
           throw new Error(
             "Commission computation period is required for SUPER_ADMIN role"
@@ -92,7 +96,8 @@ class UserService {
         // Remove commission computation period for non-SUPER_ADMIN roles
         delete userData.eGamesCommissionComputationPeriod;
         delete userData.sportsBettingCommissionComputationPeriod;
-        delete userData.specialityGamesCommissionComputationPeriod;
+        delete userData.specialityGamesRngCommissionComputationPeriod;
+        delete userData.specialityGamesRngCommissionComputationPeriod;
       }
 
       // Hash password and fetch categories in parallel
@@ -102,6 +107,9 @@ class UserService {
         this.categoryDao.getAllCategories(),
       ]);
 
+      const GOLDEN_AFFILIATE_LINK = `${process.env.AFFILIATE_LINK_GOLDEN}`;
+      const AFFILIATE_LINK = `${process.env.AFFILIATE_LINK}?parentCode=${userData.username}`;
+
       // Prepare user data
       const data: Partial<User> = {
         username: userData.username,
@@ -110,9 +118,13 @@ class UserService {
         bankName: userData.bankName,
         accountNumber: userData.accountNumber,
         mobileNumber: userData.mobileNumber,
+        affiliateLink: role.name === UserRole.GOLDEN
+    ? process.env.AFFILIATE_LINK_GOLDEN
+    : AFFILIATE_LINK,
         password: hashedPassword,
         roleId: role.id,
         parentId: user.id,
+        approved: 1
       };
 
       // Put another check if user with username already exists return error message
@@ -172,15 +184,19 @@ class UserService {
                     userData: userData.commissions.eGames,
                   }
                 );
-                const eGamesCategory = findCategory("eGames");
+                const eGamesCategory = findCategory("E-Games");
                 if (eGamesCategory) {
+                  // Determine which field to populate based on role hierarchy
+                  const isGolden = role.name === UserRole.GOLDEN;
+                  
                   commissionData.push({
                     userId: newUser.id,
                     roleId: role.id,
                     siteId: siteId,
                     categoryId: eGamesCategory.id,
-                    commissionPercentage: toFloat(userData.commissions.eGames),
-                    settlementPeriod: userData.settlementDetails?.period,
+                    commissionPercentage: isGolden ? toFloat(userData.commissions.eGames) : 0,
+                    totalAssignedCommissionPercentage: !isGolden ? toFloat(userData.commissions.eGames) : 0,
+                    commissionComputationPeriod: userData.eGamesCommissionComputationPeriod || undefined,
                     settlementStartingFrom: userData.settlementDetails
                       ? new Date(userData.settlementDetails.startDate)
                       : undefined,
@@ -188,6 +204,27 @@ class UserService {
                       ? new Date(userData.settlementDetails.endDate)
                       : undefined,
                   });
+                  
+                  // Update parent's commission if "Own" values are provided
+                  if (userData.commissions.eGamesOwn !== undefined && currentUserRole.name !== UserRole.SUPER_ADMIN) {
+                    // Find parent's commission for this category and site
+                    const parentCommission = await tx.commission.findFirst({
+                      where: {
+                        userId: user.id,
+                        categoryId: eGamesCategory.id,
+                        siteId: siteId
+                      }
+                    });
+                    
+                    if (parentCommission) {
+                      await tx.commission.update({
+                        where: { id: parentCommission.id },
+                        data: {
+                          commissionPercentage: toFloat(userData.commissions.eGamesOwn)
+                        }
+                      });
+                    }
+                  }
                 }
               }
 
@@ -199,17 +236,19 @@ class UserService {
                     userData: userData.commissions.sportsBetting,
                   }
                 );
-                const sportsBettingCategory = findCategory("Sports-Betting");
+                const sportsBettingCategory = findCategory("Sports Betting");
                 if (sportsBettingCategory) {
+                  // Determine which field to populate based on role hierarchy
+                  const isGolden = role.name === UserRole.GOLDEN;
+                  
                   commissionData.push({
                     userId: newUser.id,
                     roleId: role.id,
                     siteId: siteId,
                     categoryId: sportsBettingCategory.id,
-                    commissionPercentage: toFloat(
-                      userData.commissions.sportsBetting
-                    ),
-                    settlementPeriod: userData.settlementDetails?.period,
+                    commissionPercentage: isGolden ? toFloat(userData.commissions.sportsBetting) : 0,
+                    totalAssignedCommissionPercentage: !isGolden ? toFloat(userData.commissions.sportsBetting) : 0,
+                    commissionComputationPeriod: userData.sportsBettingCommissionComputationPeriod || undefined,
                     settlementStartingFrom: userData.settlementDetails
                       ? new Date(userData.settlementDetails.startDate)
                       : undefined,
@@ -217,28 +256,106 @@ class UserService {
                       ? new Date(userData.settlementDetails.endDate)
                       : undefined,
                   });
+                  
+                  // Update parent's commission if "Own" values are provided
+                  if (userData.commissions.sportsBettingOwn !== undefined && currentUserRole.name !== UserRole.SUPER_ADMIN) {
+                    // Find parent's commission for this category and site
+                    const parentCommission = await tx.commission.findFirst({
+                      where: {
+                        userId: user.id,
+                        categoryId: sportsBettingCategory.id,
+                        siteId: siteId
+                      }
+                    });
+                    
+                    if (parentCommission) {
+                      await tx.commission.update({
+                        where: { id: parentCommission.id },
+                        data: {
+                          commissionPercentage: toFloat(userData.commissions.sportsBettingOwn)
+                        }
+                      });
+                    }
+                  }
+                }
+              }
+
+              if (userData.commissions.specialityGamesTote) {
+                console.debug(
+                  "[createUser] Preparing commission data for specialtyGames",
+                  {
+                    userData: userData.commissions.specialityGamesTote,
+                  }
+                );
+                const specialtyGamesToteCategory = findCategory(
+                  "Speciality Games - Tote"
+                );
+                if (specialtyGamesToteCategory) {
+                  // Determine which field to populate based on role hierarchy
+                  const isGolden = role.name === UserRole.GOLDEN;
+                  
+                  commissionData.push({
+                    userId: newUser.id,
+                    roleId: role.id,
+                    siteId: siteId,
+                    categoryId: specialtyGamesToteCategory.id,
+                    commissionPercentage: isGolden ? toFloat(userData.commissions.specialityGamesTote) : 0,
+                    totalAssignedCommissionPercentage: !isGolden ? toFloat(userData.commissions.specialityGamesTote) : 0,
+                    commissionComputationPeriod: userData.commissions.specialityGamesToteCommissionComputationPeriod || undefined,
+                    settlementStartingFrom: userData.settlementDetails
+                      ? new Date(userData.settlementDetails.startDate)
+                      : undefined,
+                    settlementEndingAt: userData.settlementDetails
+                      ? new Date(userData.settlementDetails.endDate)
+                      : undefined,
+                  });
+                  
+                  // Update parent's commission if "Own" values are provided
+                  if (userData.commissions.specialtyGamesToteOwn !== undefined && currentUserRole.name !== UserRole.SUPER_ADMIN) {
+                    // Find parent's commission for this category and site
+                    const parentCommission = await tx.commission.findFirst({
+                      where: {
+                        userId: user.id,
+                        categoryId: specialtyGamesToteCategory.id,
+                        siteId: siteId
+                      }
+                    });
+                    
+                    if (parentCommission) {
+                      await tx.commission.update({
+                        where: { id: parentCommission.id },
+                        data: {
+                          commissionPercentage: toFloat(userData.commissions.specialtyGamesToteOwn)
+                        }
+                      });
+                    }
+                  }
                 }
               }
 
               // Prepare commission data for specialtyGames if provided
-              if (userData.commissions.specialityGames) {
+              if (userData.commissions.specialityGamesRng) {
                 console.debug(
                   "[createUser] Preparing commission data for specialtyGames",
                   {
                     userData: userData.commissions.specialityGames,
                   }
                 );
-                const specialtyGamesCategory = findCategory("SpecialityGames");
-                if (specialtyGamesCategory) {
+                const specialtyGamesRngCategory = findCategory(
+                  "Speciality Games - RNG"
+                );
+                if (specialtyGamesRngCategory) {
+                  // Determine which field to populate based on role hierarchy
+                  const isGolden = role.name === UserRole.GOLDEN;
+                  
                   commissionData.push({
                     userId: newUser.id,
                     roleId: role.id,
                     siteId: siteId,
-                    categoryId: specialtyGamesCategory.id,
-                    commissionPercentage: toFloat(
-                      userData.commissions.specialityGames
-                    ),
-                    settlementPeriod: userData.settlementDetails?.period,
+                    categoryId: specialtyGamesRngCategory.id,
+                    commissionPercentage: isGolden ? toFloat(userData.commissions.specialityGamesRng) : 0,
+                    totalAssignedCommissionPercentage: !isGolden ? toFloat(userData.commissions.specialityGamesRng) : 0,
+                    commissionComputationPeriod: userData.specialityGamesRngCommissionComputationPeriod || undefined,
                     settlementStartingFrom: userData.settlementDetails
                       ? new Date(userData.settlementDetails.startDate)
                       : undefined,
@@ -246,6 +363,27 @@ class UserService {
                       ? new Date(userData.settlementDetails.endDate)
                       : undefined,
                   });
+                  
+                  // Update parent's commission if "Own" values are provided
+                  if (userData.commissions.specialtyGamesRngOwn !== undefined && currentUserRole.name !== UserRole.SUPER_ADMIN) {
+                    // Find parent's commission for this category and site
+                    const parentCommission = await tx.commission.findFirst({
+                      where: {
+                        userId: user.id,
+                        categoryId: specialtyGamesRngCategory.id,
+                        siteId: siteId
+                      }
+                    });
+                    
+                    if (parentCommission) {
+                      await tx.commission.update({
+                        where: { id: parentCommission.id },
+                        data: {
+                          commissionPercentage: toFloat(userData.commissions.specialtyGamesRngOwn)
+                        }
+                      });
+                    }
+                  }
                 }
               }
 
@@ -272,6 +410,18 @@ class UserService {
       );
 
       console.debug("[createUser] Transaction completed successfully");
+
+      // Update the parent user's network statistics
+      try {
+        console.debug("[createUser] Updating parent user's network statistics");
+        await this.networkStatisticsDao.calculateAndUpdateNetworkStatistics();
+        console.debug("[createUser] Network statistics updated successfully");
+      } catch (statsError) {
+        console.error("Error updating network statistics:", statsError);
+        // We don't want to fail the user creation if stats update fails
+        // Just log the error and continue
+      }
+
       return new Response(
         ResponseCodes.USER_CREATED_SUCCESSFULLY.code,
         ResponseCodes.USER_CREATED_SUCCESSFULLY.message,
@@ -280,6 +430,165 @@ class UserService {
     } catch (error) {
       console.error("Error creating user:", error);
       return error;
+    }
+  }
+
+  public async registerPartner(
+    registerData: Record<string, any>,
+  ) {
+    try {
+      const parentCode = registerData.parentCode;
+
+      const parentUser = await this.userDao.getUserByUsername(parentCode);
+
+      
+      const user = await this.userDao.getUserByUsername(registerData.username);
+
+      if (user) {
+        return new Response(
+          ResponseCodes.USER_ALREADY_EXISTS.code,
+          ResponseCodes.USER_ALREADY_EXISTS.message,
+          null
+        );
+      }
+
+      if (!parentCode || !parentUser) {
+        return new Response(
+          ResponseCodes.PARTNER_NOT_FOUND.code,
+          ResponseCodes.PARTNER_NOT_FOUND.message,
+          null
+        );
+      }
+
+      let role: Role;
+      switch (parentUser.role.name) {
+        case UserRole.SUPER_ADMIN:
+          role = await this.roleDao.getRoleByName(UserRole.OPERATOR);
+          break;
+        case UserRole.OPERATOR:
+          role = await this.roleDao.getRoleByName(UserRole.PLATINUM);
+          break;
+        case UserRole.PLATINUM:
+          role = await this.roleDao.getRoleByName(UserRole.GOLDEN);
+          break;
+        default:
+          throw new Error("Role not found");
+      }
+
+      const hashedPassword = await BcryptService.generateHash(registerData.password)
+
+      const GOLDEN_AFFILIATE_LINK = `${process.env.AFFILIATE_LINK_GOLDEN}`;
+      const AFFILIATE_LINK = `${process.env.AFFILIATE_LINK}?parentCode=${registerData.username}`;
+
+      
+
+        const registrationData: Partial<User> = {
+          firstName: registerData.firstName,
+          lastName: registerData.lastName,
+          username: registerData.username,
+          password: hashedPassword,
+          mobileNumber: registerData.mobileNumber,
+          roleId: role.id,
+          approved: 0,
+          parentId: parentUser.id,
+          affiliateLink: role.name === UserRole.GOLDEN
+          ? GOLDEN_AFFILIATE_LINK
+          : AFFILIATE_LINK
+      };
+
+      const newUser = await prisma.user.create({
+        data: registrationData as any,
+      })
+
+      try {
+        console.debug("[createUser] Updating parent user's network statistics");
+        await this.networkStatisticsDao.calculateAndUpdateNetworkStatistics();
+        console.debug("[createUser] Network statistics updated successfully");
+      } catch (statsError) {
+        console.error("Error updating network statistics:", statsError);
+        // We don't want to fail the user creation if stats update fails
+        // Just log the error and continue
+      }
+
+      return new Response(
+        ResponseCodes.USER_CREATED_SUCCESSFULLY.code,
+        ResponseCodes.USER_CREATED_SUCCESSFULLY.message,
+        newUser
+      )
+
+
+    } catch (error) {
+      console.log("Error registering partner:", error);
+      return error;
+    }
+  }
+
+  public async approvePartner(data: Record<string, any>) {
+    try {
+      const user = await this.userDao.getUserByUserId(data.userId);
+
+      if (!user) {
+        return new Response(
+          ResponseCodes.PARTNER_NOT_FOUND.code,
+          ResponseCodes.PARTNER_NOT_FOUND.message,
+          null
+        );
+      }
+
+      const updatedUser = await prisma.user.update({
+        where: { id: data.userId },
+        data: {
+          approved: data.status,
+        },
+      });
+
+      return new Response(
+        ResponseCodes.USER_APPROVAL_UPDATED_SUCCESSFULLY.code,
+        ResponseCodes.USER_APPROVAL_UPDATED_SUCCESSFULLY.message,
+        updatedUser
+      );
+    } catch (error) {
+      return error;
+    }
+  }
+  
+  public async getPartnersForApproval(user: User) {
+    try {
+      
+      const pendingPartners = await prisma.user.findMany({
+        where: {
+          parentId: user.id,
+          approved: 0,
+        },
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              username: true,
+              mobileNumber: true,
+              approved: true
+            }
+          
+      })
+
+      try {
+        console.debug("[createUser] Updating parent user's network statistics");
+        await this.networkStatisticsDao.calculateAndUpdateNetworkStatistics();
+        console.debug("[createUser] Network statistics updated successfully");
+      } catch (statsError) {
+        console.error("Error updating network statistics:", statsError);
+        // We don't want to fail the user creation if stats update fails
+        // Just log the error and continue
+      }
+
+      return new Response(
+        ResponseCodes.USERS_FETCHED_SUCCESSFULLY.code,
+        ResponseCodes.USERS_FETCHED_SUCCESSFULLY.message,
+        pendingPartners
+      );
+
+    } catch (error) {
+      return error
     }
   }
 
@@ -297,6 +606,23 @@ class UserService {
         ResponseCodes.USERS_FETCHED_FAILED.code,
         `Error fetching users: ${error.message}`,
         null
+      );
+    }
+  }
+
+  public async getUserPayoutAndWalletBalance(partnerId: string) {
+    try {
+      const users = await this.userDao.getUserPayoutAndWalletBalance(partnerId);
+
+      return new Response(
+        ResponseCodes.USERS_PAYOUT_AND_WALLET_BALANCE_FETCHED_SUCCESSFULLY.code,
+        ResponseCodes.USERS_PAYOUT_AND_WALLET_BALANCE_FETCHED_SUCCESSFULLY.message,
+        users
+      );
+    } catch (error) {
+      return new Response(
+        ResponseCodes.USERS_PAYOUT_AND_WALLET_BALANCE_FETCHED_FAILED.code,
+        ResponseCodes.USERS_PAYOUT_AND_WALLET_BALANCE_FETCHED_FAILED.message
       );
     }
   }
@@ -322,6 +648,143 @@ class UserService {
     }
   }
 
+  public async getDownloadReportLists(
+    user: any,
+    downlineId: string,
+    fromDateISO: any,
+    toDateISO: any,
+    res: expressResponse
+  ) {
+    try {
+      const users =
+        await this.commissionService.getCommissionPayoutReport(downlineId);
+      const breakdown =
+        await this.commissionService.getCommissionBreakdownForDownLoadReport(
+          user.id,
+          user.role.name,
+          fromDateISO,
+          toDateISO,
+          downlineId
+        );
+
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet("Commission Report");
+
+      // Utility function for header styling
+      const applyHeaderStyle = (row: ExcelJS.Row) => {
+        row.eachCell((cell) => {
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "002060" }, // Dark blue
+          };
+          cell.font = {
+            color: { argb: "FFFFFF" }, // White
+            bold: true,
+          };
+          cell.alignment = { vertical: "middle", horizontal: "center" };
+        });
+      };
+
+      // === 1. HEADER for Breakdown per Game Type ===
+      const row1 = sheet.addRow(["PERIOD", "START DATE", "END DATE"]);
+      applyHeaderStyle(row1);
+
+      sheet.addRow([]);
+      const gameTypeHeader = sheet.addRow(["BREAKDOWN PER GAME TYPE"]);
+      applyHeaderStyle(gameTypeHeader);
+
+      sheet.addRow([]);
+
+      // E-GAMES breakdown
+      const egamesTitleRow = sheet.addRow(["E-GAMES"]);
+      applyHeaderStyle(egamesTitleRow);
+
+      const egamesHeaderRow = sheet.addRow(["", "Amount", "Settled All"]);
+      applyHeaderStyle(egamesHeaderRow);
+
+      const egames = users?.data?.categories?.["E-GAMES"] || [];
+      egames.forEach((item) => {
+        sheet.addRow([item.label, item.allTime]);
+      });
+
+      sheet.addRow([]);
+
+      // SPORTS BETTING breakdown
+      const sportsTitleRow = sheet.addRow(["SPORTS BETTING"]);
+      applyHeaderStyle(sportsTitleRow);
+
+      const sportsHeaderRow = sheet.addRow(["", "Amount", "Settled All"]);
+      applyHeaderStyle(sportsHeaderRow);
+
+      const sports = users?.data?.categories?.["SPORTS BETTING"] || [];
+      sports.forEach((item) => {
+        sheet.addRow([item.label, item.allTime]);
+      });
+
+      sheet.addRow([]);
+      sheet.addRow([]);
+
+      // === 2. BREAKDOWN PER section ===
+      const breakdownPerRow = sheet.addRow(["BREAKDOWN PER"]);
+      applyHeaderStyle(breakdownPerRow);
+
+      const columnHeaders = sheet.addRow([
+        "NETWORK",
+        "NAME",
+        "TOTAL EGAMES GROSS COMMISSIONS",
+        "TOTAL SPORTS GROSS COMMISSIONS",
+        "LESS: PAYMENT GATEWAY FEES",
+        "TOTAL NET COMMISSIONS",
+      ]);
+      applyHeaderStyle(columnHeaders);
+
+      const sections = ["operator", "platinum", "gold"];
+      const userData = breakdown?.data?.data || {};
+
+      for (const section of sections) {
+        if (userData[section]?.length) {
+          userData[section].forEach((entry: any) => {
+            sheet.addRow([
+              entry.network,
+              entry.name,
+              entry.egamesCommission || 0,
+              entry.sportsCommission || 0,
+              entry.paymentGatewayFee || 0,
+              entry.finalNetCommission || 0,
+            ]);
+          });
+
+          if (section === "platinum") {
+            const totalRow = sheet.addRow(["PLATINUM PARTNER TOTAL"]);
+            totalRow.getCell(1).font = { bold: true };
+          }
+
+          if (section === "gold") {
+            const totalRow = sheet.addRow(["GOLDEN PARTNER TOTAL"]);
+            totalRow.getCell(1).font = { bold: true };
+          }
+        }
+      }
+
+      // === 3. Send as downloadable Excel file ===
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=commission-report-${downlineId}.xlsx`
+      );
+
+      await workbook.xlsx.write(res);
+      res.end();
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error generating report");
+    }
+  }
+
   public async getTransactionByCategory(categoryName?: string) {
     try {
       const users = await this.userDao.getTransactionsByCategoryName();
@@ -342,7 +805,7 @@ class UserService {
 
   public async getTransactionByCategoryAndAgent(
     categoryName?: string,
-    agent?: "gold" | "platinum" | "operator"
+    agent?: UserRole
   ) {
     try {
       const users = await this.userDao.getCategoryTransaction(
@@ -436,14 +899,6 @@ class UserService {
         );
       }
 
-      console.log(
-        "___________________________________________________________"
-      );
-      console.log({ userData });
-      console.log(
-        "___________________________________________________________"
-      );
-
       // Start a transaction for atomic updates
       const result = await prisma.$transaction(async (tx) => {
         // Update basic user information
@@ -479,53 +934,131 @@ class UserService {
 
           // Process each site's commissions
           for (const siteId of userData.siteIds || []) {
-            // Update eGames commission
-            if (userData.commissions.eGames !== undefined) {
-              const eGamesCategory = findCategory("eGames");
+            // Handle eGames commission
+            if (userData.commissions.eGames !== undefined || userData.commissions.eGamesOwn !== undefined) {
+              const eGamesCategory = findCategory("E-Games");
               if (eGamesCategory) {
-                await this.updateCommission(tx, {
-                  userId,
-                  siteId,
-                  categoryId: eGamesCategory.id,
-                  commissionPercentage: toFloat(userData.commissions.eGames),
-                  settlementPeriod: userData.settlementDetails?.period,
-                  updatedBy: currentUser.id,
-                });
+                // Update regular commission
+                if (userData.commissions.eGames !== undefined) {
+                  await this.updateCommission(tx, {
+                    userId,
+                    siteId,
+                    categoryId: eGamesCategory.id,
+                    totalAssignedCommissionPercentage: toFloat(userData.commissions.eGames),
+                    settlementPeriod: userData.settlementDetails?.period,
+                    updatedBy: currentUser.id,
+                    isOwnCommission: false
+                  });
+                }
+                
+                // Update own commission if provided
+                if (userData.commissions.eGamesOwn !== undefined) {
+                  await this.updateCommission(tx, {
+                    userId: currentUser.id, // Update current user's commission
+                    siteId,
+                    categoryId: eGamesCategory.id,
+                    totalAssignedCommissionPercentage: toFloat(userData.commissions.eGamesOwn),
+                    settlementPeriod: userData.settlementDetails?.period,
+                    updatedBy: currentUser.id,
+                    isOwnCommission: true
+                  });
+                }
               }
             }
 
-            // Update sportsBetting commission
-            if (userData.commissions.sportsBetting !== undefined) {
-              const sportsBettingCategory = findCategory("Sports-Betting");
+            // Handle sportsBetting commission
+            if (userData.commissions.sportsBetting !== undefined || userData.commissions.sportsBettingOwn !== undefined) {
+              const sportsBettingCategory = findCategory("Sports Betting");
               if (sportsBettingCategory) {
-                await this.updateCommission(tx, {
-                  userId,
-                  siteId,
-                  categoryId: sportsBettingCategory.id,
-                  commissionPercentage: toFloat(
-                    userData.commissions.sportsBetting
-                  ),
-                  settlementPeriod: userData.settlementDetails?.period,
-                  updatedBy: currentUser.id,
-                });
+                // Update regular commission
+                if (userData.commissions.sportsBetting !== undefined) {
+                  await this.updateCommission(tx, {
+                    userId,
+                    siteId,
+                    categoryId: sportsBettingCategory.id,
+                    totalAssignedCommissionPercentage: toFloat(userData.commissions.sportsBetting),
+                    settlementPeriod: userData.settlementDetails?.period,
+                    updatedBy: currentUser.id,
+                    isOwnCommission: false
+                  });
+                }
+                
+                // Update own commission if provided
+                if (userData.commissions.sportsBettingOwn !== undefined) {
+                  await this.updateCommission(tx, {
+                    userId: currentUser.id,
+                    siteId,
+                    categoryId: sportsBettingCategory.id,
+                    totalAssignedCommissionPercentage: toFloat(userData.commissions.sportsBettingOwn),
+                    settlementPeriod: userData.settlementDetails?.period,
+                    updatedBy: currentUser.id,
+                    isOwnCommission: true
+                  });
+                }
               }
             }
 
-            // Update specialtyGames commission
-            if (userData.commissions.specialityGames !== undefined) {
-              const specialtyGamesCategory = findCategory("SpecialityGames");
+            // Handle specialityGamesRng commission
+            if (userData.commissions.specialityGamesRng !== undefined || userData.commissions.specialityGamesRngOwn !== undefined) {
+              const specialityGamesRngCategory = findCategory("Speciality Games - RNG");
+              if (specialityGamesRngCategory) {
+                // Update regular commission
+                if (userData.commissions.specialityGamesRng !== undefined) {
+                  await this.updateCommission(tx, {
+                    userId,
+                    siteId,
+                    categoryId: specialityGamesRngCategory.id,
+                    totalAssignedCommissionPercentage: toFloat(userData.commissions.specialityGamesRng),
+                    settlementPeriod: userData.settlementDetails?.period,
+                    updatedBy: currentUser.id,
+                    isOwnCommission: false
+                  });
+                }
+                
+                // Update own commission if provided
+                if (userData.commissions.specialityGamesRngOwn !== undefined) {
+                  await this.updateCommission(tx, {
+                    userId: currentUser.id,
+                    siteId,
+                    categoryId: specialityGamesRngCategory.id,
+                    totalAssignedCommissionPercentage: toFloat(userData.commissions.specialityGamesRngOwn),
+                    settlementPeriod: userData.settlementDetails?.period,
+                    updatedBy: currentUser.id,
+                    isOwnCommission: true
+                  });
+                }
+              }
+            }
 
-              if (specialtyGamesCategory) {
-                await this.updateCommission(tx, {
-                  userId,
-                  siteId,
-                  categoryId: specialtyGamesCategory.id,
-                  commissionPercentage: toFloat(
-                    userData.commissions.specialtyGames
-                  ),
-                  settlementPeriod: userData.settlementDetails?.period,
-                  updatedBy: currentUser.id,
-                });
+            // Handle specialityGamesTote commission
+            if (userData.commissions.specialityGamesTote !== undefined || userData.commissions.specialityGamesToteOwn !== undefined) {
+              const specialityGamesToteCategory = findCategory("Speciality Games - Tote");
+              if (specialityGamesToteCategory) {
+                // Update regular commission
+                if (userData.commissions.specialityGamesTote !== undefined) {
+                  await this.updateCommission(tx, {
+                    userId,
+                    siteId,
+                    categoryId: specialityGamesToteCategory.id,
+                    totalAssignedCommissionPercentage: toFloat(userData.commissions.specialityGamesTote),
+                    settlementPeriod: userData.settlementDetails?.period,
+                    updatedBy: currentUser.id,
+                    isOwnCommission: false
+                  });
+                }
+                
+                // Update own commission if provided
+                if (userData.commissions.specialityGamesToteOwn !== undefined) {
+                  await this.updateCommission(tx, {
+                    userId: currentUser.id,
+                    siteId,
+                    categoryId: specialityGamesToteCategory.id,
+                    totalAssignedCommissionPercentage: toFloat(userData.commissions.specialityGamesToteOwn),
+                    settlementPeriod: userData.settlementDetails?.period,
+                    updatedBy: currentUser.id,
+                    isOwnCommission: true
+                  });
+                }
               }
             }
           }
@@ -555,11 +1088,24 @@ class UserService {
       userId: string;
       siteId: string;
       categoryId: string;
-      commissionPercentage: number;
+      commissionPercentage?: number;
+      totalAssignedCommissionPercentage: number;
       settlementPeriod?: string;
       updatedBy: string;
+      isOwnCommission?: boolean;
     }
   ) {
+    // Get user role to determine commission handling
+    const userRole = await tx.user.findUnique({
+      where: { id: data.userId },
+      include: { role: true }
+    });
+
+    // If it's an own commission update, always set commissionPercentage
+    // Otherwise follow the role-based logic
+    const isGolden = userRole?.role?.name === UserRole.GOLDEN;
+    const useCommissionPercentage = data.isOwnCommission || isGolden;
+
     // Try to find existing commission
     const existingCommission = await tx.commission.findFirst({
       where: {
@@ -574,7 +1120,8 @@ class UserService {
       return await tx.commission.update({
         where: { id: existingCommission.id },
         data: {
-          commissionPercentage: data.commissionPercentage,
+          commissionPercentage: useCommissionPercentage ? data.totalAssignedCommissionPercentage : 0,
+          totalAssignedCommissionPercentage: !useCommissionPercentage ? data.totalAssignedCommissionPercentage : 0,
           ...(data.settlementPeriod && {
             commissionComputationPeriod: data.settlementPeriod,
           }),
@@ -594,8 +1141,9 @@ class UserService {
       // Create new commission
       return await tx.commission.create({
         data: {
-          commissionPercentage: data.commissionPercentage,
-          commissionComputationPeriod: data.settlementPeriod || "MONTHLY",
+          commissionPercentage: useCommissionPercentage ? data.totalAssignedCommissionPercentage : 0,
+          totalAssignedCommissionPercentage: !useCommissionPercentage ? data.totalAssignedCommissionPercentage : 0,
+          commissionComputationPeriod: data.settlementPeriod,
           updatedBy: data.updatedBy,
           createdBy: data.updatedBy,
           site: {
@@ -608,14 +1156,7 @@ class UserService {
             connect: { id: data.categoryId },
           },
           role: {
-            connect: {
-              id: (
-                await tx.user.findUnique({
-                  where: { id: data.userId },
-                  select: { roleId: true },
-                })
-              ).roleId,
-            },
+            connect: { id: userRole.roleId },
           },
         },
       });
@@ -706,6 +1247,7 @@ class UserService {
         userDetails
       );
     } catch (error) {
+      console.log(error)
       return new Response(
         ResponseCodes.USERS_FETCHED_FAILED.code,
         `Error fetching user details: ${error.message}`,
@@ -719,11 +1261,24 @@ class UserService {
     userData: Record<string, any>,
     currentUser: User
   ) {
-    console.log({ username, userData, currentUser });
+    console.log({ userData });
 
     try {
       const existingUser = await prisma.user.findUnique({
         where: { username },
+        include: {
+          role: true,
+          commissions: true,
+          userSites: {
+            include: {
+              site: true,
+            },
+          },
+        },
+      });
+
+      const parentUser = await prisma.user.findUnique({
+        where: { id: existingUser?.parentId },
         include: {
           role: true,
           commissions: true,
@@ -837,20 +1392,12 @@ class UserService {
             {}
           );
 
-          console.log(
-            "___________________________________________________________"
-          );
-          console.log({ userData });
-          console.log(
-            "___________________________________________________________"
-          );
-
           // Process each site's commissions
           for (const siteId of siteIds) {
             // Handle eGames commission
-            const eGamesCategory = findCategory("eGames");
+            const eGamesCategory = findCategory("E-Games");
             if (eGamesCategory) {
-              const existingEGamesComm = existingCommissions["eGames"];
+              const existingEGamesComm = existingCommissions["E-Games"];
               if (
                 userData.commissions.eGames !== undefined ||
                 existingEGamesComm
@@ -859,6 +1406,9 @@ class UserService {
                   userId: existingUser.id,
                   siteId,
                   categoryId: eGamesCategory.id,
+                  totalAssignedCommissionPercentage: userData.commissions.eGames !== undefined
+                  ? toFloat(userData.commissions.eGames)
+                  : existingEGamesComm?.commissionPercentage || 0, 
                   commissionPercentage:
                     userData.commissions.eGames !== undefined
                       ? toFloat(userData.commissions.eGames)
@@ -869,13 +1419,34 @@ class UserService {
                   updatedBy: currentUser.id,
                 });
               }
+
+              // Update parent's commission if "Own" values are provided
+              if (userData.commissions.eGamesOwn !== undefined && currentUserRole.name !== UserRole.SUPER_ADMIN) {
+                // Find parent's commission for this category and site
+                const parentCommission = await tx.commission.findFirst({
+                  where: {
+                    userId: parentUser.id,
+                    categoryId: eGamesCategory.id,
+                    siteId: siteId
+                  }
+                });
+                
+                if (parentCommission) {
+                  await tx.commission.update({
+                    where: { id: parentCommission.id },
+                    data: {
+                      commissionPercentage: toFloat(userData.commissions.eGamesOwn)
+                    }
+                  });
+                }
+              }
             }
 
             // Handle sportsBetting commission
-            const sportsBettingCategory = findCategory("Sports-Betting");
+            const sportsBettingCategory = findCategory("Sports Betting");
             if (sportsBettingCategory) {
               const existingSportsBettingComm =
-                existingCommissions["Sports-Betting"];
+                existingCommissions["Sports Betting"];
               if (
                 userData.commissions.sportsBetting !== undefined ||
                 existingSportsBettingComm
@@ -884,7 +1455,7 @@ class UserService {
                   userId: existingUser.id,
                   siteId,
                   categoryId: sportsBettingCategory.id,
-                  commissionPercentage:
+                  totalAssignedCommissionPercentage:
                     userData.commissions.sportsBetting !== undefined
                       ? toFloat(userData.commissions.sportsBetting)
                       : existingSportsBettingComm?.commissionPercentage || 0,
@@ -894,31 +1465,131 @@ class UserService {
                   updatedBy: currentUser.id,
                 });
               }
+
+              // Update parent's commission if "Own" values are provided
+              if (userData.commissions.sportsBettingOwn !== undefined && currentUserRole.name !== UserRole.SUPER_ADMIN) {
+                // Find parent's commission for this category and site
+                const parentCommission = await tx.commission.findFirst({
+                  where: {
+                    userId: parentUser.id,
+                    categoryId: sportsBettingCategory.id,
+                    siteId: siteId
+                  }
+                });
+                
+                if (parentCommission) {
+                  await tx.commission.update({
+                    where: { id: parentCommission.id },
+                    data: {
+                      commissionPercentage: toFloat(userData.commissions.sportsBettingOwn)
+                    }
+                  });
+                }
+              }
             }
 
             // Handle specialtyGames commission
-            const specialtyGamesCategory = findCategory("SpecialityGames");
+            const specialtyGamesRngCategory = findCategory(
+              "Speciality Games - RNG"
+            );
+
+            console.log({ specialtyGamesRngCategory });
+
             // console.log({ specialtyGamesCategory });
-            if (specialtyGamesCategory) {
+            if (specialtyGamesRngCategory) {
               const existingSpecialityGamesComm =
-                existingCommissions["SpecialityGames"];
+                existingCommissions["Speciality Games - RNG"];
               if (
-                userData.commissions.specialtyGames !== undefined ||
+                userData.commissions.specialityGamesRng !== undefined ||
                 existingSpecialityGamesComm
               ) {
                 await this.updateCommission(tx, {
                   userId: existingUser.id,
                   siteId,
-                  categoryId: specialtyGamesCategory.id,
-                  commissionPercentage:
-                    userData.commissions.specialityGames !== undefined
-                      ? toFloat(userData.commissions.specialityGames)
+                  categoryId: specialtyGamesRngCategory.id,
+                  totalAssignedCommissionPercentage:
+                    userData.commissions.specialityGamesRng !== undefined
+                      ? toFloat(userData.commissions.specialityGamesRng)
                       : existingSpecialityGamesComm?.commissionPercentage || 0,
                   settlementPeriod:
                     userData.settlementDetails?.period ||
                     existingSpecialityGamesComm?.commissionComputationPeriod,
                   updatedBy: currentUser.id,
                 });
+              }
+
+              // Update parent's commission if "Own" values are provided
+              if (userData.commissions.specialityGamesRngOwn !== undefined && currentUserRole.name !== UserRole.SUPER_ADMIN) {
+                // Find parent's commission for this category and site
+                const parentCommission = await tx.commission.findFirst({
+                  where: {
+                    userId: parentUser.id,
+                    categoryId: specialtyGamesRngCategory.id,
+                    siteId: siteId
+                  }
+                });
+                
+                if (parentCommission) {
+                  await tx.commission.update({
+                    where: { id: parentCommission.id },
+                    data: {
+                      commissionPercentage: toFloat(userData.commissions.specialityGamesRngOwn)
+                    }
+                  });
+                }
+              }
+            }
+
+            // Handle specialtyGames commission
+            const specialtyGamesToteCategory = findCategory(
+              "Speciality Games - Tote"
+            );
+            // console.log({ specialtyGamesCategory });
+            if (specialtyGamesToteCategory) {
+              const existingSpecialityGamesComm =
+                existingCommissions["Speciality Games - Tote"];
+              if (
+                userData.commissions.specialityGamesTote !== undefined ||
+                existingSpecialityGamesComm
+              ) {
+                await this.updateCommission(tx, {
+                  userId: existingUser.id,
+                  siteId,
+                  categoryId: specialtyGamesToteCategory.id,
+                  totalAssignedCommissionPercentage:
+                    userData.commissions.specialityGamesTote !== undefined
+                      ? toFloat(userData.commissions.specialityGamesTote)
+                      : existingSpecialityGamesComm?.commissionPercentage || 0,
+                  settlementPeriod:
+                    userData.settlementDetails?.period ||
+                    existingSpecialityGamesComm?.commissionComputationPeriod,
+                  updatedBy: currentUser.id,
+                });
+              }
+
+              console.log({userDataCommissions: userData.commissions.specialityGamesToteOwn});
+
+              // Update parent's commission if "Own" values are provided
+              if (userData.commissions.specialityGamesToteOwn !== undefined && currentUserRole.name !== UserRole.SUPER_ADMIN) {
+                // Find parent's commission for this category and site
+                const parentCommission = await tx.commission.findFirst({
+                  where: {
+                    userId: parentUser.id,
+                    categoryId: specialtyGamesToteCategory.id,
+                    siteId: siteId
+                  }
+                });
+
+                console.log({parentCommission});
+                
+                if (parentCommission) {
+                  await tx.commission.update({
+                    where: { id: parentCommission.id },
+                    data: {
+                      commissionPercentage: toFloat(userData.commissions.specialityGamesToteOwn)
+                    }
+                  });
+                }
               }
             }
           }

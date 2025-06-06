@@ -2,8 +2,14 @@ enum UserRole {
   SUPER_ADMIN = "superadmin",
   OPERATOR = "operator",
   PLATINUM = "platinum",
-  GOLDEN = "gold",
+  GOLDEN = "golden",
   PLAYER = "player",
+}
+
+enum ApprovedStatus {
+  APPROVED = 1,
+  PENDING = 0,
+  REJECTED = -1,
 }
 
 enum CommissionComputationPeriod {
@@ -17,5 +23,6 @@ const DEFAULT_COMMISSION_COMPUTATION_PERIOD =
 export {
   UserRole,
   CommissionComputationPeriod,
+  ApprovedStatus,
   DEFAULT_COMMISSION_COMPUTATION_PERIOD,
 };

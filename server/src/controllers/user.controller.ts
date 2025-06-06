@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import Container from "typedi";
 import { UserService } from "../services/user.service";
+import { UserRole } from "../common/config/constants";
 
 class UserController {
   public static async createUser(
@@ -27,6 +28,70 @@ class UserController {
       next(error);
     }
   }
+
+  public static async registerPartner(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userData = {
+        ...req.body,
+      };
+
+      // const role = req.role;
+      // const user = req.user;
+
+      // console.log("Role in UserController:", role);
+
+      const userService = Container.get(UserService);
+
+      const response = await userService.registerPartner(userData);
+
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getPartnerApprovalList(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = req.user;
+
+      const userService = Container.get(UserService);
+
+      const response = await userService.getPartnersForApproval(user);
+
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async approvePartner(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = req.user;
+      const partnerId = req.body.partnerId;
+
+      const userService = Container.get(UserService);
+
+      const response = await userService.approvePartner(req.body);
+
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  
 
   public static async getPartners(
     req: Request,
@@ -104,7 +169,7 @@ class UserController {
 
       const response = await userService.getTransactionByCategoryAndAgent(
         categoryName as string,
-        agent as "gold" | "platinum" | "operator"
+        agent as UserRole
       );
 
       return response;
@@ -203,6 +268,53 @@ class UserController {
         profileData,
         currentUser
       );
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getPayoutAndWalletBalance(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = req.user;
+
+      console.log("User in UserController:", user);
+
+      const userService = Container.get(UserService);
+
+      const response = await userService.getUserPayoutAndWalletBalance(user.id);
+
+      return response;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getDownloadReportList(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { downlineId, fromDateISO, toDateISO } = req.body;
+      const user = req.user;
+
+      console.log("Userid in UserController:", user);
+
+      const userService = Container.get(UserService);
+
+      const response = await userService.getDownloadReportLists(
+        user,
+        downlineId,
+        fromDateISO,
+        toDateISO,
+        res
+      );
+
       return response;
     } catch (error) {
       next(error);

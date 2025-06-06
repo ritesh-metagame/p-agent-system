@@ -1,5 +1,6 @@
 import { prisma } from "../server";
 import type { User } from "../../prisma/generated/prisma";
+import { UserRole } from "../common/config/constants";
 
 class UserDao {
   constructor() {}
@@ -8,10 +9,9 @@ class UserDao {
     try {
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        include: { role: true },
+        include: { role: true, commissionSummaries: true },
       });
 
-      console.log("User fetched:", user);
 
       return user;
     } catch (error) {
@@ -19,16 +19,131 @@ class UserDao {
     }
   }
 
+  public async getUserPayoutAndWalletBalance(userId: string) {
+  try {
+    // Step 1: Fetch all commission summary records for this user
+    const summaries = await prisma.commissionSummary.findMany({
+      where: {
+        userId,
+      },
+    });
+
+    if (!summaries.length) {
+      console.warn(`⚠️ No commission summaries found for user: ${userId}`);
+      return { payout: 0, wallet: 0 };
+    }
+
+    // Step 2: Fetch the parentId and role of this user
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        parentId: true,
+        role: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      console.warn(`⚠️ User not found: ${userId}`);
+      return { payout: 0, wallet: 0 };
+    }
+
+    const roleName = user.role.name;
+
+    // Step 3: Role-based settlement check
+    const isSettled =
+      roleName === UserRole.OPERATOR
+        ? summaries.every((s) => s.settledBySuperadmin)
+        : roleName === UserRole.PLATINUM
+        ? summaries.every((s) => s.settledByOperator)
+        : roleName === UserRole.GOLDEN
+        ? summaries.every((s) => s.settledByPlatinum)
+        : true; // default true for other roles
+
+    if (!isSettled) {
+      console.warn(
+        `⚠️ Settlement not completed for role ${roleName}. Returning payout and wallet as 0.`
+      );
+      return { payout: 0, wallet: 0 };
+    }
+
+    // Step 4: Fetch parent's commission if applicable
+    const parentId = user.parentId;
+    let totalParentCommission = 0;
+
+    if (parentId) {
+      const parentSummaries = await prisma.commissionSummary.findMany({
+        where: { userId: parentId },
+      });
+
+      totalParentCommission = parentSummaries.reduce(
+        (acc, summary) =>
+          acc + Number(summary.netCommissionAvailablePayout || 0),
+        0
+      );
+    }
+
+    // Step 5: Initialize sums
+    let totalNetGGR = 0;
+    let totalBetAmount = 0;
+    let totalCommissionByUser = 0;
+    let totalPaymentGatewayFee = 0;
+    let wallet = 0;
+
+    for (const summary of summaries) {
+      if (summary.categoryName === "E-Games") {
+        totalNetGGR += Number(summary.netGGR || 0);
+      } else if (summary.categoryName === "Sports Betting") {
+        totalBetAmount += Number(summary.totalBetAmount || 0);
+      }
+
+      totalCommissionByUser += Number(summary.netCommissionAvailablePayout || 0);
+      totalPaymentGatewayFee += Number(summary.paymentGatewayFee || 0);
+    }
+
+    const totalEgamesAmount = totalNetGGR * 0.3;
+    const totalSportsBettingAmount = totalBetAmount * 0.02;
+    const totalCommissionAmount = totalEgamesAmount + totalSportsBettingAmount;
+
+    const payout =
+      totalCommissionAmount -
+      totalCommissionByUser -
+      totalParentCommission
+
+    // const payout =
+    //     totalCommissionAmount -
+    //     totalCommissionByUser -
+    //     totalParentCommission -
+    //     totalPaymentGatewayFee;
+
+    if (roleName === UserRole.GOLDEN) {
+      wallet = totalCommissionByUser;
+      // wallet = totalCommissionByUser - totalPaymentGatewayFee;
+    } else {
+      wallet = totalCommissionByUser;
+    }
+
+    return {
+      payout,
+      wallet,
+    };
+  } catch (err) {
+    console.error("🔥 Error calculating payout and wallet:", err);
+    throw err;
+  }
+}
+
+
   public async getUserByUsername(username: string) {
-    console.log("Username:", username); // Debugging line
     try {
       const user = await prisma.user.findUnique({
         where: { username },
         include: { role: true },
       });
-      console.log("Username1111111111111:", username); // Debugging line
 
-      console.log("User fetched:", user);
 
       return user;
     } catch (error) {
@@ -56,7 +171,7 @@ class UserDao {
   public async getUsersByParentId(parentId: string) {
     try {
       const users = await prisma.user.findMany({
-        where: { parentId },
+        where: { parentId, approved: 1 },
         include: {
           role: true,
           commissions: {
@@ -402,30 +517,27 @@ class UserDao {
     return results;
   }
 
-  public async getCategoryTransaction(
-    category: string,
-    agent: "gold" | "platinum" | "operator"
-  ) {
+  public async getCategoryTransaction(category: string, agent: UserRole) {
     try {
       let include: any = {};
       let selectField: string;
 
       switch (agent) {
-        case "gold":
+        case UserRole.GOLDEN:
           include.agentGolden = true;
           selectField = "agentGoldenId";
           break;
-        case "platinum":
+        case UserRole.PLATINUM:
           include.agentPlatinum = true;
           selectField = "agentPlatinumId";
           break;
-        case "operator":
+        case UserRole.OPERATOR:
           include.agentOperator = true;
           selectField = "agentOperatorId";
           break;
         default:
           throw new Error(
-            "Invalid agent type. Use: gold | platinum | operator"
+            "Invalid agent type. Use: golden | platinum | operator"
           );
       }
 

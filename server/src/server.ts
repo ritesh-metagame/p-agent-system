@@ -12,7 +12,7 @@ import { Decimal } from "../prisma/generated/prisma/runtime/library";
 import fs from "fs";
 import csv from "csv-parser"; // install with: npm install csv-parser
 
-const filePath = path.join(__dirname, "./data/sampledata.xlsx");
+const filePath = path.join(__dirname, "./data/bets_with_agent_code.xlsx");
 // import { redisService } from "./core/services/redis.service";
 
 const log = logger(module);
@@ -40,14 +40,33 @@ class Server {
       config.mongo.user!
     ).replace("<PASSWORD>", config.mongo.pass!) as string;
 
-    const siteIds = ["cm9jkon7w0001v9g86q7jdvc7"];
-    const GAIDS = ["cm9ljw2ad001yv96gwdkch2mn"];
-    const MAIDS = [
-      "cm9jvlj0g001sjf8g6b84k34b",
-      "cm9jvknlf001ijf8grhz4covw",
-      "cm9jvjkdn0018jf8g3p3gknz3",
+    const siteIds = [
+      "cm9cjqylv0002iob9krq51nvo",
+      "cm9cjrg5t0003iob9otfnpn8n",
+      "cm9cmuwr6000oiol5ob3lmprc",
+      "cm9cqlj9w000piol52m087niu",
     ];
-    const OWNERIDS = ["cm9jvi2ct000ijf8gjrzikjpo", "cm9jvf4t20004jf8g24j83ytf"];
+    // const GAIDS = ["cmakq6t0d001uv9aog3bq171j"];
+    const GAIDS = ["cmaywjc7100fdioys47zdd6sa"];
+    
+    const MAIDS = [
+      "cm9cjv0qc0013iob901spod6b",
+      "cm9cjvrs6001hiob9jccmjs6p",
+      "cm9cjwpmu0021iob9mantjcze",
+      "cm9cjxf2k002liob9184yl4h2",
+      "cm9cjy80z002ziob9d34nt51k",
+      "cm9i42r9l001qioxnto68zgkx",
+      "cm9ih2pip0001iovt3frdptyu",
+      "cm9ih93do000yiovt9tkdwjl3",
+    ];
+    const OWNERIDS = [
+      "cm9cjseyd0005iob9kv4hj608",
+      "cm9cjta0j000fiob9guy5sgvm",
+      "cm9cju1dr000piob90w4tt5q5",
+      "cm9cqnl55000riol58vg52wda",
+      "cm9i2urpd0001ioxnb1yd157w",
+      "cm9i4sxti0037ioxnct6eeu0t",
+    ];
 
     const getRandom = (arr: string[]) =>
       arr[Math.floor(Math.random() * arr.length)];
@@ -67,41 +86,102 @@ class Server {
       return cleaned;
     }
 
-    async function insertTransactionsFromXLSX(filePath: string) {
-      const workbook = xlsx.readFile(filePath);
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      const rawRows = xlsx.utils.sheet_to_json(sheet);
+    const categoryIdMap: Record<string, string> = {
+      egames: "8a2ac3c1-202d-11f0-81af-0a951197db91",
+      sportsbet: "8a2ac69c-202d-11f0-81af-0a951197db91",
+    };
 
-      for (const rawRow of rawRows) {
-        const row = cleanRowKeys(rawRow);
-        const platformType = row["Platform Type"];
-        const baseAmount = new Decimal(
+    async function insertTransactionsFromXLSX(filePath: string) {
+     
+        const rawRows: any = await prisma.$queryRawUnsafe(`
+  SELECT * FROM bets
+  WHERE time_of_bet BETWEEN '2025-05-26 00:00:00' AND '2025-06-03 23:59:59'
+`);
+
+      
+      // console.log("Raw rows---:", rawRows);
+
+
+      for (const row of rawRows) {
+                // console.log("Row data:", row);
+
+        // const row = cleanRowKeys(rawRow);
+
+        const platformType = row["platform_name"];
+        const normalizedPlatform =
           platformType === "egames"
-            ? row["Revenue"] || 0
-            : row["Bet Amount"] || 0
-        );
+            ? "E-Games"
+            : platformType === "sports" || platformType === "sportsbet"
+              ? "Sports Betting"
+              : platformType;
+
+        const categoryId = categoryIdMap[platformType];
+        const refundAmount = new Decimal(row["refund_amount"] || 0);
+
+        const betAmount = new Decimal(row["bet_amount"] || 0);
+            const payoutAmount = new Decimal(row["payout_amount"] || 0);
+
+            const revenue = betAmount.minus(payoutAmount);
+
+let betAfterRefund 
+        if (platformType === "sportsbet") {
+           betAfterRefund = betAmount.minus(refundAmount);
+        }
+       const baseAmount = new Decimal(
+                          platformType === "egames"
+                          ? revenue || 0
+                          : platformType === "sports" || platformType === "sportsbet"
+                          ? betAmount.minus(refundAmount)
+                          : betAmount
+);
 
         // Step 1: GA
-        const gaId = getRandom(GAIDS);
+        const gaId = row["agent_code"];
+        // const gaId = GAIDS.includes(excelGaId) ? excelGaId : null;
+
+        if (!gaId) {
+          console.warn(`
+            ⚠ GA ID ${gaId} not found in allowed GAIDS. Skipping transaction.
+          `);
+          continue;
+        }
         const gaCommissionRecord = await prisma.commission.findFirst({
-          where: { userId: gaId },
+          where: {
+            userId: gaId,
+            categoryId,
+          },
         });
+
+       
+
+
         const gaPercentage = new Decimal(
           gaCommissionRecord?.commissionPercentage || 0
         );
         const gaCommission = baseAmount.mul(gaPercentage).div(100);
 
-        // Step 2: MA (Parent of GA)
+        // Step 2: MA
         const gaUser = await prisma.user.findUnique({ where: { id: gaId } });
+                console.log(`Commission fetch: user=${gaId}, categoryId=${categoryId}, commissionRecord=${gaUser.username}`);
+
         const maId = gaUser?.parentId || null;
+
+         const maName = await prisma.user.findFirst({
+          where: {
+            id: maId,
+          },
+        });
 
         let maPercentage = new Decimal(0);
         let maCommission = new Decimal(0);
         if (maId) {
           const maCommissionRecord = await prisma.commission.findFirst({
-            where: { userId: maId },
+            where: {
+              userId: maId,
+              categoryId,
+            },
           });
+         
 
           maPercentage = new Decimal(
             maCommissionRecord?.commissionPercentage || 0
@@ -109,7 +189,9 @@ class Server {
           maCommission = baseAmount.mul(maPercentage).div(100);
         }
 
-        // Step 3: Owner (Parent of MA)
+        let ownerName :string;
+
+        // Step 3: Owner
         let ownerId = null;
         let ownerPercentage = new Decimal(0);
         let ownerCommission = new Decimal(0);
@@ -118,9 +200,19 @@ class Server {
           const maUser = await prisma.user.findUnique({ where: { id: maId } });
           ownerId = maUser?.parentId || null;
 
+          const ownerUser = await prisma.user.findFirst({
+          where: {
+            id: ownerId,
+          },
+          });
+          ownerName = ownerUser?.username || null;
+
           if (ownerId) {
             const ownerCommissionRecord = await prisma.commission.findFirst({
-              where: { userId: ownerId },
+              where: {
+                userId: ownerId,
+                categoryId,
+              },
             });
 
             ownerPercentage = new Decimal(
@@ -132,41 +224,42 @@ class Server {
 
         // Step 4: Build transaction object
         const transaction = {
-          transactionId: String(row["Trans ID"]),
-          betTime: parseExcelDate(row["Bet Time"]),
+          transactionId: String(row["transaction_id"]),
+          betTime: row["time_of_bet"],
           userId: row["User Id"],
-          playerName: row["Player Name"],
-          platformType,
-          transactionType: row["Transaction Type"] || "bet",
+          playerName: row["player_id"],
+          platformType: normalizedPlatform,
+          transactionType: row["transaction_type"] ,
 
-          deposit: new Decimal(row["Deposit"] || 0),
-          withdrawal: new Decimal(row["Withdraw"] || 0),
-          betAmount: new Decimal(row["Bet Amount"] || 0),
-          payoutAmount: new Decimal(row["Payout Amount"] || 0),
-          refundAmount: new Decimal(row["Refund Amount"] || 0),
-          revenue: new Decimal(row["Revenue"] || 0),
-          pgFeeCommission: new Decimal(row["PG Fee Commission"] || 0),
+          deposit: new Decimal(row["deposit_amount"] || 0),
+          withdrawal: new Decimal(row["withdraw_amount"] || 0),
+          betAmount: platformType === "sportsbet" ? betAfterRefund :  new Decimal(row["bet_amount"] || 0),
+          payoutAmount: new Decimal(row["payout_amount"] || 0),
+          refundAmount: new Decimal(row["refund_amount"] || 0),
+          revenue: revenue ,
+          pgFeeCommission: new Decimal(row["pg_fee_commission"] || 0),
 
-          status: row["Status"] || null,
-          settled: getRandomSettledStatus(),
+          status: row["status"] || null,
+          settled: "N",
 
           gaId,
-          gaName: row["GA Name"] || null,
+          gaName: gaUser.username || null,
           gaPercentage,
           gaCommission,
 
           maId,
-          maName: row["MA Name"] || null,
+          maName: maName.username || null,
           maPercentage,
           maCommission,
 
           ownerId,
-          ownerName: row["Owner Name"] || null,
+          ownerName: ownerName || null,
           ownerPercentage,
           ownerCommission,
         };
 
         try {
+          // console.log("Inserting transaction:", transaction.transactionId);
           await prisma.transaction.create({ data: transaction });
         } catch (err) {
           console.error(
@@ -175,10 +268,12 @@ class Server {
             err
           );
         }
-
-        console.log("✅ All transactions inserted successfully");
       }
+
+      console.log("✅ All transactions inserted successfully");
     }
+
+    //  exportBetsWithAgentCodeToExcel();
 
     // insertTransactionsFromXLSX(filePath)
     //   .then(() => {
@@ -191,7 +286,7 @@ class Server {
     this.app
       .listen(config.port, () => {
         log.info(`
-${process.env.NODE_ENV} Platform is running at http://localhost:${config.port} 🛡️
+${process.env.NODE_ENV} Platform is running at http://localhost:${config.port} 🛡
       `);
       })
       .on("error", (err) => {
