@@ -25,7 +25,7 @@ import {ResponseCodes} from "../common/config/responseCodes";
 import {Response} from "../common/config/response";
 import UserDao from "../daos/user.dao";
 import logger from "../common/logger";
-import { publicEncrypt } from "crypto";
+import {publicEncrypt} from "crypto";
 
 interface SummaryTotal {
     totalDeposit: number;
@@ -658,21 +658,6 @@ class CommissionService {
         }
     }
 
-    private async getCommissionSummariesForUserIds(cycleStartDate: Date, cycleEndDate: Date, category: string, userIds: string[]) {
-        return prisma.commissionSummary.findMany({
-            where: {
-                createdAt: {
-                    gte: cycleStartDate,
-                    lte: cycleEndDate,
-                },
-                categoryName: category,
-                userId: {
-                    in: userIds
-                }
-            },
-        });
-    }
-
     public async getRunningTally(
         userId: string,
         userRole: string,
@@ -704,158 +689,158 @@ class CommissionService {
                 switch (userRole) {
                     case UserRole.SUPER_ADMIN:
 
-                        // const userIds = []
+                        const userIds = []
 
-                        const userIds = await this.getDescendantUserIds([userId], [UserRole.OPERATOR, UserRole.PLATINUM, UserRole.GOLDEN])
+                        // const userIds = await this.getDescendantUserIds([userId], [UserRole.OPERATOR, UserRole.PLATINUM, UserRole.GOLDEN])
 
-                        // const oIds = await prisma.user.findMany({
-                        //     where: {
-                        //         parentId: userId,
-                        //         role: {
-                        //             name: UserRole.OPERATOR
-                        //         }
-                        //     },
-                        //     select: {
-                        //         id: true
-                        //     }
-                        // }).then((docs) => docs.map(doc => doc.id))
-                        //
-                        // const pIds = await prisma.user.findMany({
-                        //     where: {
-                        //         parentId: {
-                        //             in: oIds
-                        //         },
-                        //         role: {
-                        //             name: UserRole.PLATINUM
-                        //         }
-                        //     },
-                        //     select: {
-                        //         id: true
-                        //     }
-                        // }).then((docs) => docs.map((doc) => doc.id))
-                        //
-                        // const gIds = await prisma.user.findMany({
-                        //     where: {
-                        //         parentId: {
-                        //             in: pIds
-                        //         },
-                        //         role: {
-                        //             name: UserRole.GOLDEN
-                        //         }
-                        //     },
-                        //     select: {
-                        //         id: true
-                        //     }
-                        // }).then((docs) => docs.map((doc) => doc.id))
-                        //
-                        // userIds.push(...oIds, ...pIds, ...gIds)
+                        const oIds = await prisma.user.findMany({
+                            where: {
+                                parentId: userId,
+                                role: {
+                                    name: UserRole.OPERATOR
+                                }
+                            },
+                            select: {
+                                id: true
+                            }
+                        }).then((docs) => docs.map(doc => doc.id))
+
+                        const pIds = await prisma.user.findMany({
+                            where: {
+                                parentId: {
+                                    in: oIds
+                                },
+                                role: {
+                                    name: UserRole.PLATINUM
+                                }
+                            },
+                            select: {
+                                id: true
+                            }
+                        }).then((docs) => docs.map((doc) => doc.id))
+
+                        const gIds = await prisma.user.findMany({
+                            where: {
+                                parentId: {
+                                    in: pIds
+                                },
+                                role: {
+                                    name: UserRole.GOLDEN
+                                }
+                            },
+                            select: {
+                                id: true
+                            }
+                        }).then((docs) => docs.map((doc) => doc.id))
+
+                        userIds.push(...oIds, ...pIds, ...gIds)
 
                         // Get all children summaries
 
-                        const superadminSummaries = await this.getCommissionSummariesForUserIds(
-                            cycleStartDate,
-                            cycleEndDate,
-                            category,
-                            userIds
-                        )
+                        // const superadminSummaries = await this.getCommissionSummariesForUserIds(
+                        //     cycleStartDate,
+                        //     cycleEndDate,
+                        //     category,
+                        //     userIds
+                        // )
 
-                        // const superadminSummaries = await prisma.commissionSummary.findMany({
-                        //     where: {
-                        //         createdAt: {
-                        //             gte: cycleStartDate,
-                        //             lte: cycleEndDate,
-                        //         },
-                        //         categoryName: category,
-                        //         userId: {
-                        //             in: userIds
-                        //         }
-                        //     },
-                        //     select: {
-                        //         netCommissionAvailablePayout: true,
-                        //         categoryName: true,
-                        //         createdAt: true
-                        //     },
-                        // });
+                        const superadminSummaries = await prisma.commissionSummary.findMany({
+                            where: {
+                                createdAt: {
+                                    gte: cycleStartDate,
+                                    lte: cycleEndDate,
+                                },
+                                categoryName: category,
+                                userId: {
+                                    in: userIds
+                                }
+                            },
+                            select: {
+                                netCommissionAvailablePayout: true,
+                                categoryName: true,
+                                createdAt: true
+                            },
+                        });
                         commissionSummaries.push(...superadminSummaries);
                         // console.log("Commission summaries for superadmin:", commissionSummaries);
                         break;
 
                     case UserRole.OPERATOR:
                         // Get direct platinum summaries
-                        const operatorSummaries = await this.getCommissionSummariesForUserIds(
-                            cycleStartDate,
-                            cycleEndDate,
-                            category,
-                            [userId]
-                        )
-                        // const operatorSummaries = await prisma.commissionSummary.findMany({
-                        //     where: {
-                        //         createdAt: {
-                        //             gte: cycleStartDate,
-                        //             lte: cycleEndDate,
-                        //         },
-                        //         categoryName: category,
-                        //         user: {
-                        //             id: userId,
-                        //         },
-                        //     },
-                        //     include: {
-                        //         user: true,
-                        //         role: true,
-                        //     },
-                        // });
+                        // const operatorSummaries = await this.getCommissionSummariesForUserIds(
+                        //     cycleStartDate,
+                        //     cycleEndDate,
+                        //     category,
+                        //     [userId]
+                        // )
+                        const operatorSummaries = await prisma.commissionSummary.findMany({
+                            where: {
+                                createdAt: {
+                                    gte: cycleStartDate,
+                                    lte: cycleEndDate,
+                                },
+                                categoryName: category,
+                                user: {
+                                    id: userId,
+                                },
+                            },
+                            include: {
+                                user: true,
+                                role: true,
+                            },
+                        });
                         commissionSummaries.push(...operatorSummaries);
                         break;
 
                     case UserRole.PLATINUM:
                         // Get direct agent summaries
-                        const platinumSummaries = await this.getCommissionSummariesForUserIds(
-                            cycleStartDate,
-                            cycleEndDate,
-                            category,
-                            [userId]
-                        )
-                        // const platinumSummaries = await prisma.commissionSummary.findMany({
-                        //     where: {
-                        //         createdAt: {
-                        //             gte: cycleStartDate,
-                        //             lte: cycleEndDate,
-                        //         },
-                        //         categoryName: category,
-                        //         user: {
-                        //             id: userId,
-                        //         },
-                        //     },
-                        //     include: {
-                        //         user: true,
-                        //         role: true,
-                        //     },
-                        // });
+                        // const platinumSummaries = await this.getCommissionSummariesForUserIds(
+                        //     cycleStartDate,
+                        //     cycleEndDate,
+                        //     category,
+                        //     [userId]
+                        // )
+                        const platinumSummaries = await prisma.commissionSummary.findMany({
+                            where: {
+                                createdAt: {
+                                    gte: cycleStartDate,
+                                    lte: cycleEndDate,
+                                },
+                                categoryName: category,
+                                user: {
+                                    id: userId,
+                                },
+                            },
+                            include: {
+                                user: true,
+                                role: true,
+                            },
+                        });
                         commissionSummaries.push(...platinumSummaries);
                         break;
 
                     case UserRole.GOLDEN:
                         // Get own summaries
-                        const goldenSummaries = await this.getCommissionSummariesForUserIds(
-                            cycleStartDate,
-                            cycleEndDate,
-                            category,
-                            [userId]
-                        )
-                        // commissionSummaries = await prisma.commissionSummary.findMany({
-                        //     where: {
-                        //         createdAt: {
-                        //             gte: cycleStartDate,
-                        //             lte: cycleEndDate,
-                        //         },
-                        //         categoryName: category,
-                        //         userId: userId,
-                        //     },
-                        //     include: {
-                        //         user: true,
-                        //         role: true,
-                        //     },
-                        // });
+                        // const goldenSummaries = await this.getCommissionSummariesForUserIds(
+                        //     cycleStartDate,
+                        //     cycleEndDate,
+                        //     category,
+                        //     [userId]
+                        // )
+                        const goldenSummaries = await prisma.commissionSummary.findMany({
+                            where: {
+                                createdAt: {
+                                    gte: cycleStartDate,
+                                    lte: cycleEndDate,
+                                },
+                                categoryName: category,
+                                userId: userId,
+                            },
+                            include: {
+                                user: true,
+                                role: true,
+                            },
+                        });
                         commissionSummaries.push(...goldenSummaries);
                         break;
 
@@ -2285,20 +2270,20 @@ class CommissionService {
                     // },
                     ...(roleName !== UserRole.GOLDEN
                         ? [
-                            {
-                                label: "Net Commission",
-                                pendingSettlement: totalPendingGrossCommission +
-                                    ownCommissionData["E-Games"].pending +
-                                    ownCommissionData["Sports Betting"].pending +
-                                    ownCommissionData["Speciality Games - RNG"].pending +
-                                    ownCommissionData["Speciality Games - Tote"].pending
-                                ,
-                                settledAllTime:
-                                    roleName === UserRole.GOLDEN
-                                        ? totalSettledGrossCommission
-                                        : totalSettledNetCommissionPayoutWithoutPGFeeDeduction,
-                                note: "(Gross Commission less Payment Gateway Fees)",
-                            },
+                            // {
+                            //     label: "Net Commission",
+                            //     pendingSettlement: totalPendingGrossCommission +
+                            //         ownCommissionData["E-Games"].pending +
+                            //         ownCommissionData["Sports Betting"].pending +
+                            //         ownCommissionData["Speciality Games - RNG"].pending +
+                            //         ownCommissionData["Speciality Games - Tote"].pending
+                            //     ,
+                            //     settledAllTime:
+                            //         roleName === UserRole.GOLDEN
+                            //             ? totalSettledGrossCommission
+                            //             : totalSettledNetCommissionPayoutWithoutPGFeeDeduction,
+                            //     note: "(Gross Commission less Payment Gateway Fees)",
+                            // },
                             {
                                 label: "Less: Own Commission",
                                 pendingSettlement: pendingOwnCommission,
@@ -3008,7 +2993,7 @@ class CommissionService {
                         grossCommissions,
                         // paymentGatewayFees: pendingPaymentGatewayFees,
                         ownCommission: ownCommission,
-                        netCommissionsWithoutPGFeeDeduction,
+                        netCommissions: netCommissionsWithoutPGFeeDeduction,
                         transferableAmount: netCommissionsWithoutPGFeeDeduction < 0 ? 0 : netCommissionsWithoutPGFeeDeduction,
                         breakdownAction: "view",
                         releaseAction: "release_comms",
@@ -3280,17 +3265,6 @@ class CommissionService {
             throw new Error(`Error getting golden breakdown: ${error}`);
         }
     }
-
-    // public async getTopPerformer(date: string) {
-    //   try {
-    //     // Using the instance variable instead of creating a new instance
-    //     const newCommission =
-    //       await this.commissionSummaryDao.generateTopPerform@ers(date);
-    //     return newCommission;
-    //   } catch (error) {
-    //     throw new Error(`Error creating commission: ${error}`);
-    //   }
-    // }
 
     public async getCommissionBreakdown(
         userId: string,
@@ -3581,6 +3555,17 @@ class CommissionService {
         }
     }
 
+    // public async getTopPerformer(date: string) {
+    //   try {
+    //     // Using the instance variable instead of creating a new instance
+    //     const newCommission =
+    //       await this.commissionSummaryDao.generateTopPerform@ers(date);
+    //     return newCommission;
+    //   } catch (error) {
+    //     throw new Error(`Error creating commission: ${error}`);
+    //   }
+    // }
+
     public async getLicenseBreakdown(userId: string, roleName: string) {
         try {
             const eGamesCycle = await this.getPreviousCompletedCycleDates("E-Games");
@@ -3698,7 +3683,7 @@ class CommissionService {
                 eGamesGGR: 0,
                 eGamesCommission: 0,
                 sportsBet: 0,
-              sportsCommission: 0,
+                sportsCommission: 0,
                 ownerCommission: 0,
             };
 
@@ -3827,9 +3812,7 @@ class CommissionService {
                 const comm = summary.netCommissionAvailablePayout;
                 const pendingComm = summary.pendingSettleCommission;
                 const paymentGatewayFee = summary.paymentGatewayFee;
-              const isSettled = summary.settledStatus === "Y";
-
-              
+                const isSettled = summary.settledStatus === "Y";
 
 
                 if (category === "E-Games") {
@@ -3855,7 +3838,6 @@ class CommissionService {
 
                         let parentCommission = 0;
                         if (user?.parentId) {
-
 
 
                             const parentSummary = await prisma.commissionSummary.findMany({
@@ -3905,16 +3887,16 @@ class CommissionService {
                         // console.log("====================================",pending.sportsCommission)
                     } else if (roleName === UserRole.PLATINUM) {
                         const commission = await prisma.commission.findFirst({
-                          where: {
-                                            categoryId :"8a2ac69c-202d-11f0-81af-0a951197db91",
-                                            userId: userId,
-                                          },
-                                          select: {
-                                            totalAssignedCommissionPercentage: true,
-                                          },
-                                        });
+                            where: {
+                                categoryId: "8a2ac69c-202d-11f0-81af-0a951197db91",
+                                userId: userId,
+                            },
+                            select: {
+                                totalAssignedCommissionPercentage: true,
+                            },
+                        });
 
-                      pending.sportsCommission = pending.sportsBet * commission.totalAssignedCommissionPercentage /100;
+                        pending.sportsCommission = pending.sportsBet * commission.totalAssignedCommissionPercentage / 100;
 
 
                     } else {
@@ -4314,45 +4296,6 @@ class CommissionService {
         }
     }
 
-    // private async getDirectChildrenIds(userId: string, roleName: string): Promise<string[]> {
-    //   let childIds: string[] = [];
-
-    //   // Get only direct children based on role
-    //   switch (roleName.toLowerCase()) {
-    //     case UserRole.SUPER_ADMIN:
-    //       const operators = await prisma.user.findMany({
-    //         where: { role: { name: UserRole.OPERATOR } },
-    //         select: { id: true },
-    //       });
-    //       childIds = operators.map(op => op.id);
-    //       break;
-
-    //     case UserRole.OPERATOR:
-    //       const platinums = await prisma.user.findMany({
-    //         where: {
-    //           parentId: userId,
-    //           role: { name: UserRole.PLATINUM },
-    //         },
-    //         select: { id: true },
-    //       });
-    //       childIds = platinums.map(p => p.id);
-    //       break;
-
-    //     case UserRole.PLATINUM:
-    //       const golds = await prisma.user.findMany({
-    //         where: {
-    //           parentId: userId,
-    //           role: { name: UserRole.GOLDEN },
-    //         },
-    //         select: { id: true },
-    //       });
-    //       childIds = golds.map(g => g.id);
-    //       break;
-    //   }
-
-    //   return childIds;
-    // }
-
     public async downloadSettledCommissionReport(
         userId: string,
         roleName: string,
@@ -4471,6 +4414,45 @@ class CommissionService {
             );
         }
     }
+
+    // private async getDirectChildrenIds(userId: string, roleName: string): Promise<string[]> {
+    //   let childIds: string[] = [];
+
+    //   // Get only direct children based on role
+    //   switch (roleName.toLowerCase()) {
+    //     case UserRole.SUPER_ADMIN:
+    //       const operators = await prisma.user.findMany({
+    //         where: { role: { name: UserRole.OPERATOR } },
+    //         select: { id: true },
+    //       });
+    //       childIds = operators.map(op => op.id);
+    //       break;
+
+    //     case UserRole.OPERATOR:
+    //       const platinums = await prisma.user.findMany({
+    //         where: {
+    //           parentId: userId,
+    //           role: { name: UserRole.PLATINUM },
+    //         },
+    //         select: { id: true },
+    //       });
+    //       childIds = platinums.map(p => p.id);
+    //       break;
+
+    //     case UserRole.PLATINUM:
+    //       const golds = await prisma.user.findMany({
+    //         where: {
+    //           parentId: userId,
+    //           role: { name: UserRole.GOLDEN },
+    //         },
+    //         select: { id: true },
+    //       });
+    //       childIds = golds.map(g => g.id);
+    //       break;
+    //   }
+
+    //   return childIds;
+    // }
 
     public async getCommissionBreakdownForDownLoadReport(
         userId: string,
@@ -4759,6 +4741,21 @@ class CommissionService {
         } catch (error) {
             throw new Error(`Error getting commission breakdown: ${error}`);
         }
+    }
+
+    private async getCommissionSummariesForUserIds(cycleStartDate: Date, cycleEndDate: Date, category: string, userIds: string[]) {
+        return prisma.commissionSummary.findMany({
+            where: {
+                createdAt: {
+                    gte: cycleStartDate,
+                    lte: cycleEndDate,
+                },
+                categoryName: category,
+                userId: {
+                    in: userIds
+                }
+            },
+        });
     }
 
     private async getDescendantUserIds(
