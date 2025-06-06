@@ -25,6 +25,7 @@ import {ResponseCodes} from "../common/config/responseCodes";
 import {Response} from "../common/config/response";
 import UserDao from "../daos/user.dao";
 import logger from "../common/logger";
+import { publicEncrypt } from "crypto";
 
 interface SummaryTotal {
     totalDeposit: number;
@@ -3697,7 +3698,8 @@ class CommissionService {
                 eGamesGGR: 0,
                 eGamesCommission: 0,
                 sportsBet: 0,
-                sportsCommission: 0,
+              sportsCommission: 0,
+                ownerCommission: 0,
             };
 
             const settled = {
@@ -3825,7 +3827,9 @@ class CommissionService {
                 const comm = summary.netCommissionAvailablePayout;
                 const pendingComm = summary.pendingSettleCommission;
                 const paymentGatewayFee = summary.paymentGatewayFee;
-                const isSettled = summary.settledStatus === "Y";
+              const isSettled = summary.settledStatus === "Y";
+
+              
 
 
                 if (category === "E-Games") {
@@ -3851,6 +3855,7 @@ class CommissionService {
 
                         let parentCommission = 0;
                         if (user?.parentId) {
+
 
 
                             const parentSummary = await prisma.commissionSummary.findMany({
@@ -3899,37 +3904,18 @@ class CommissionService {
                         pending.sportsCommission += comm;
                         // console.log("====================================",pending.sportsCommission)
                     } else if (roleName === UserRole.PLATINUM) {
-                        const user = await prisma.user.findUnique({
-                            where: {id: userId},
-                            select: {parentId: true},
-                        });
+                        const commission = await prisma.commission.findFirst({
+                          where: {
+                                            categoryId :"8a2ac69c-202d-11f0-81af-0a951197db91",
+                                            userId: userId,
+                                          },
+                                          select: {
+                                            totalAssignedCommissionPercentage: true,
+                                          },
+                                        });
 
-                        let parentCommission = 0;
-                        if (user?.parentId) {
-                            const parentSummary = await prisma.commissionSummary.findMany({
-                                where: {
-                                    userId: user.parentId,
-                                    categoryName: "Sports Betting",
-                                    createdAt: {
-                                        gte: sportsCycle.cycleStartDate,
-                                        lte: sportsCycle.cycleEndDate,
-                                    },
-                                    // settledStatus: "N"
-                                },
-                                select: {
-                                    netCommissionAvailablePayout: true,
-                                },
-                            });
+                      pending.sportsCommission = pending.sportsBet * commission.totalAssignedCommissionPercentage /100;
 
-                            for (const summary of parentSummary) {
-                                parentCommission += summary.netCommissionAvailablePayout;
-                            }
-                        }
-
-                        // console.log("parent commission", parentCommission, "comm", comm, "pendingComm", pendingComm);
-
-                        pending.sportsCommission += pendingComm;
-                        pending.sportsCommission -= summary.netCommissionAvailablePayout;
 
                     } else {
                         pending.sportsCommission += pendingComm;
