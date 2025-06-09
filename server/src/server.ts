@@ -10,7 +10,8 @@ import { PrismaClient } from "./../prisma/generated/prisma";
 import "./main";
 import { Decimal } from "../prisma/generated/prisma/runtime/library";
 import fs from "fs";
-import csv from "csv-parser"; // install with: npm install csv-parser
+import csv from "csv-parser";
+import {scheduleDailyCommissionJob} from "./commission-cron"; // install with: npm install csv-parser
 
 const filePath = path.join(__dirname, "./data/bets_with_agent_code.xlsx");
 // import { redisService } from "./core/services/redis.service";
@@ -272,6 +273,8 @@ let betAfterRefund
 
       console.log("✅ All transactions inserted successfully");
     }
+
+    scheduleDailyCommissionJob();
 
     //  exportBetsWithAgentCodeToExcel();
 

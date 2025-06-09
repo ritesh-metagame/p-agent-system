@@ -55,13 +55,13 @@ async function getBetsBetween(start: Date, end: Date): Promise<any[]> {
 export async function runCommissionCron() {
     logger.info("Starting commission cron...");
     const lastProcessed = await getLastProcessedDate();
-    logger.info("Last processed date:", lastProcessed?.toISOString());
+    // logger.info("Last processed date:", lastProcessed?.toISOString());
 
     if (!lastProcessed) {
         const firstBetTime = await getEarliestBetAfter(IGNORE_BEFORE_DATE);
-        logger.info("First bet time:", firstBetTime?.toISOString());
+        // logger.info("First bet time:", firstBetTime?.toISOString());
         if (!firstBetTime) {
-            logger.silly("No bets found after 30 May. Skipping processing.");
+            // logger.silly("No bets found after 30 May. Skipping processing.");
             return;
         }
 
@@ -85,18 +85,20 @@ const categoryIdMap: Record<string, string> = {
 
 async function processCommissionBetween(start: Date, end: Date) {
     const rawRows = await getBetsBetween(start, end);
-    logger.info(`Processing bets between ${start.toISOString()} and ${end.toISOString()} with ${rawRows.length} rows`);
+    // logger.info(`Processing bets between ${start.toISOString()} and ${end.toISOString()} with ${rawRows.length} rows`);
 
     const involvedDates = new Set<string>(); // collect unique dates in UTC
 
     if (rawRows.length === 0) {
-        logger.info(`No bets between ${start.toISOString()} and ${end.toISOString()}`);
+        // logger.info(`No bets between ${start.toISOString()} and ${end.toISOString()}`);
         return;
     }
 
+    let totalRecord = 0;
+
     for (const row of rawRows) {
 
-        logger.info(`Processing transaction for time: ${row["time_of_bet"]}`);
+        // logger.info(`Processing transaction for time: ${row["time_of_bet"]}`);
         const platformType = row["platform_name"];
         const normalizedPlatform =
             platformType === "egames"
@@ -127,9 +129,9 @@ async function processCommissionBetween(start: Date, end: Date) {
         // const gaId = GAIDS.includes(excelGaId) ? excelGaId : null;
 
         if (!gaId) {
-            logger.warn(`
-            GA ID ${gaId} not found. Skipping transaction.
-          `);
+            //   logger.warn(`
+            //   GA ID ${gaId} not found. Skipping transaction.
+            // `);
             continue;
         }
         const gaCommissionRecord = await prisma.commission.findFirst({
@@ -147,10 +149,10 @@ async function processCommissionBetween(start: Date, end: Date) {
 
         // Step 2: MA
         const gaUser = await prisma.user.findUnique({where: {id: gaId}});
-        logger.info(`Commission fetch: user=${gaId}, categoryId=${categoryId}, commissionRecord=${gaUser?.username || null}`);
+        // logger.info(`Commission fetch: user=${gaId}, categoryId=${categoryId}, commissionRecord=${gaUser?.username || null}`);
 
         if (!gaUser) {
-            logger.warn(`GA user ${gaId} not found. Skipping transaction.`);
+            // logger.warn(`GA user ${gaId} not found. Skipping transaction.`);
             continue;
         }
 
@@ -252,8 +254,9 @@ async function processCommissionBetween(start: Date, end: Date) {
         };
 
         try {
-            logger.info(`Inserting transaction for time: ${transaction.betTime}`);
-            await prisma.transaction.create({data: transaction});
+            // logger.info(`Inserting transaction for time: ${transaction.betTime}`);
+            // await prisma.transaction.create({data: transaction});
+            totalRecord++
         } catch (err) {
             console.error(
                 "Error inserting transaction:",
@@ -263,14 +266,16 @@ async function processCommissionBetween(start: Date, end: Date) {
         }
     }
 
-    logger.info(`Collected ${involvedDates.size} unique dates for commission summaries`);
+    console.log({totalRecord})
+
+    // logger.info(`Collected ${involvedDates.size} unique dates for commission summaries`);
     for (const date of involvedDates) {
-        logger.info(`Processing commission summary for date: ${date}`);
+        // logger.info(`Processing commission summary for date: ${date}`);
         try {
-            logger.info(`🔄 Creating commission summary for date: ${date}`);
-            await commissionService.createCommissionCategory(date);
+            // logger.info(`🔄 Creating commission summary for date: ${date}`);
+            // await commissionService.createCommissionCategory(date);
         } catch (err) {
-            logger.error(`❌ Error creating commission for date ${date}:`, err);
+            // logger.error(`❌ Error creating commission for date ${date}:`, err);
         }
     }
 
