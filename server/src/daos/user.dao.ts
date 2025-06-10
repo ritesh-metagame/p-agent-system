@@ -111,11 +111,17 @@ class UserDao {
     const payout =
       totalCommissionAmount -
       totalCommissionByUser -
-      totalParentCommission -
-      totalPaymentGatewayFee;
+      totalParentCommission
+
+    // const payout =
+    //     totalCommissionAmount -
+    //     totalCommissionByUser -
+    //     totalParentCommission -
+    //     totalPaymentGatewayFee;
 
     if (roleName === UserRole.GOLDEN) {
-      wallet = totalCommissionByUser - totalPaymentGatewayFee;
+      wallet = totalCommissionByUser;
+      // wallet = totalCommissionByUser - totalPaymentGatewayFee;
     } else {
       wallet = totalCommissionByUser;
     }
