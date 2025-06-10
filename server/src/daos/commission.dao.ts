@@ -711,7 +711,7 @@ class CommissionDao {
     let totalPending = 0;
     let totalSettled = 0;
 
-    console.log("Settled Summaries:", settledSummaries);
+    // console.log("Settled Summaries:", settledSummaries);
 
     for (const summary of settledSummaries) {
       totalSettled += summary.netCommissionAvailablePayout;
