@@ -1153,6 +1153,11 @@ class CommissionService {
 
                 settledGids = nonSettledGoldenChildren.map((golden) => golden.id);
 
+                console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+                console.log({settledGids});
+                console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
+
                 if (settledData.length !== 0) {
                     const settledDataForNonSettled =
                         await prisma.commissionSummary.findMany({
@@ -1187,23 +1192,16 @@ class CommissionService {
 
                 // settledData.push(...settledDataForNonSettled);
 
-                // console.log("Settled Data:", settledData);
+                // const totalSettledAmount = settledData.reduce(
+                //     (acc, curr) => acc + (curr.netCommissionAvailablePayout || 0),
+                //     0
+                // );
+                //
+                // console.log(`Total settled data: `, totalSettledAmount)
 
                 settledSummaries = settledData;
 
-                pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
-                    goldens.map((golden) => golden.id),
-                    false,
-                    undefined,
-                    undefined
-                );
 
-                settledPaymentGatewayFee = await this.getPaymentGatewayFee(
-                    settledUserIds,
-                    true,
-                    undefined,
-                    undefined
-                );
             } else if (roleName === UserRole.PLATINUM) {
                 const goldens = await prisma.user.findMany({
                     where: {
@@ -1674,15 +1672,6 @@ class CommissionService {
                         userId: {in: [...pIds]},
                         settledStatus: "Y",
                     },
-                    select: {
-                        userId: true,
-                        categoryName: true,
-                        totalBetAmount: true,
-                        netGGR: true,
-                        grossCommission: true,
-                        paymentGatewayFee: true,
-                        netCommissionAvailablePayout: true,
-                    },
                 });
 
                 const settledUserIds = settledData.map((data) => data.userId);
@@ -1704,21 +1693,34 @@ class CommissionService {
 
                 settledGids = nonSettledGoldenChildren.map((golden) => golden.id);
 
+                console.log("++++++++++++++++++++++++++++--+++++++++++++++++++++++++++++++++++++")
+                console.log({settledGids});
+                console.log("++++++++++++++++++++++++++++--+++++++++++++++++++++++++++++++++++++")
+
+
                 if (settledData.length !== 0) {
                     const settledDataForNonSettled =
                         await prisma.commissionSummary.findMany({
                             where: {
                                 userId: {
-                                    in: [...nonSettledGoldenChildren.map((ch) => ch.id)],
+                                    in: settledGids,
                                 },
-                                settledBySuperadmin: true,
                                 settledByOperator: true,
+                                // settledBySuperadmin:
                                 // settledStatus: "N",
                             },
                             select: {
                                 userId: true,
+                                user: {
+                                    include: {
+                                        role: true,
+                                    },
+                                },
                                 categoryName: true,
                                 totalBetAmount: true,
+                                settledBySuperadmin: true,
+                                settledByOperator: true,
+                                settledByPlatinum: true,
                                 netGGR: true,
                                 grossCommission: true,
                                 paymentGatewayFee: true,
@@ -1728,6 +1730,15 @@ class CommissionService {
 
                     settledData.push(...settledDataForNonSettled);
                 }
+
+                const totalSettledAmount = settledData.reduce(
+                    (acc, curr) => acc + (curr.netCommissionAvailablePayout || 0),
+                    0
+                );
+
+                console.log(`Settled Data:---`, settledData)
+
+                // console.log(`Total settled data from total commission payout breakdown table: `, totalSettledAmount)
 
                 // Add settled data to categoryData
                 settledData.forEach((summary) => {
@@ -1740,20 +1751,6 @@ class CommissionService {
                 // pIds = [userId];
 
                 const settledUserIdsSet = new Set(settledUserIds);
-
-                pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
-                    pIds.filter((id) => !settledUserIdsSet.has(id)),
-                    false,
-                    undefined,
-                    undefined
-                );
-
-                settledPaymentGatewayFee = await this.getPaymentGatewayFee(
-                    [userId],
-                    true,
-                    undefined,
-                    undefined
-                );
             }
 
             if (roleName === UserRole.PLATINUM) {
@@ -1975,16 +1972,9 @@ class CommissionService {
                         settledStatus:
                             roleName === UserRole.GOLDEN ? {in: ["Y", "N"]} : "N",
                     },
-                    select: {
-                        categoryName: true,
-                        totalBetAmount: true,
-                        netGGR: true,
-                        grossCommission: true,
-                        paymentGatewayFee: true,
-                        netCommissionAvailablePayout: true,
-                        createdAt: true,
-                    },
                 });
+
+                // console.log(`Pending Data: `, pendingData)
 
                 const totalPendingCommission = pendingData.reduce(
                     (acc, curr) => acc + (curr.netCommissionAvailablePayout || 0),
@@ -2155,7 +2145,6 @@ class CommissionService {
                 });
             }
 
-            console.log(`Category Totals: `, categoryTotals);
 
             const totalPendingGrossCommission =
                 categoryTotals.pending.egames.amount +
@@ -2190,13 +2179,13 @@ class CommissionService {
             //   categoryTotalsSettled: categoryTotals.settled
             // })
 
-            const pendingOwnCommission =
+            const pendingOwnCommission = totalPendingGrossCommission == 0 ? 0 :
                 ownCommissionData["E-Games"].pending +
                 ownCommissionData["Sports Betting"].pending +
                 ownCommissionData["Speciality Games - RNG"].pending +
                 ownCommissionData["Speciality Games - Tote"].pending;
 
-            const totalPendingCommission =
+            const totalPendingCommission = totalPendingGrossCommission == 0 ? 0 :
                 totalPendingGrossCommission +
                 ownCommissionData["E-Games"].pending +
                 ownCommissionData["Sports Betting"].pending +
@@ -2207,10 +2196,30 @@ class CommissionService {
                 pendingPaymentGatewayFeeSum -
                 pendingOwnCommission
 
-            const finalPendingAmountWithoutPGFeeDeduction = totalPendingCommission -
+            const finalPendingAmountWithoutPGFeeDeduction = totalPendingCommission == 0 ? 0 : totalPendingCommission -
                 pendingOwnCommission
 
             // console.log({totalPendingCommission, finalPendingAmount, ownCommission, pendingPaymentGatewayFeeSum})
+
+            console.log(`Category Totals: `, categoryTotals);
+
+            const totalEGames = categoryTotals.pending.egames.amount == 0 ? 0 : categoryTotals.pending.egames.amount +
+                ownCommissionData["E-Games"].pending
+
+            const totalSportsBetting = categoryTotals.pending.sports.amount == 0 ? 0 : categoryTotals.pending.sports.amount +
+                ownCommissionData["Sports Betting"].pending
+
+            const totalRng = categoryTotals.pending.specialtyGamesRng.amount == 0 ? 0 : categoryTotals.pending.specialtyGamesRng.amount +
+                ownCommissionData["Speciality Games - RNG"].pending
+
+            const totalTote = categoryTotals.pending.specialtyGamesTote.amount == 0 ? 0 : categoryTotals.pending.specialtyGamesTote.amount +
+                ownCommissionData["Speciality Games - Tote"].pending
+
+            const totalPendingGross = totalPendingCommission == 0 ? 0 : totalPendingGrossCommission +
+                ownCommissionData["E-Games"].pending +
+                ownCommissionData["Sports Betting"].pending +
+                ownCommissionData["Speciality Games - RNG"].pending +
+                ownCommissionData["Speciality Games - Tote"].pending
 
             return {
                 columns: [
@@ -2227,63 +2236,31 @@ class CommissionService {
                 rows: [
                     {
                         label: "Total EGames",
-                        pendingSettlement:
-                            categoryTotals.pending.egames.amount +
-                            ownCommissionData["E-Games"].pending,
+                        pendingSettlement: totalEGames,
                         settledAllTime: categoryTotals.settled.egames.amount,
                     },
                     {
                         label: "Total Sports Betting",
-                        pendingSettlement:
-                            categoryTotals.pending.sports.amount +
-                            ownCommissionData["Sports Betting"].pending,
+                        pendingSettlement: totalSportsBetting,
                         settledAllTime: categoryTotals.settled.sports.amount,
                     },
                     {
                         label: "Total Speciality Games - RNG",
-                        pendingSettlement:
-                            categoryTotals.pending.specialtyGamesRng.amount +
-                            ownCommissionData["Speciality Games - RNG"].pending,
+                        pendingSettlement: totalRng,
                         settledAllTime: categoryTotals.settled.specialtyGamesRng.amount,
                     },
                     {
                         label: "Total Speciality Games - Tote",
-                        pendingSettlement:
-                            categoryTotals.pending.specialtyGamesTote.amount +
-                            ownCommissionData["Speciality Games - Tote"].pending,
+                        pendingSettlement: totalTote,
                         settledAllTime: categoryTotals.settled.specialtyGamesTote.amount,
                     },
                     {
                         label: "Gross Commissions",
-                        pendingSettlement:
-                            totalPendingGrossCommission +
-                            ownCommissionData["E-Games"].pending +
-                            ownCommissionData["Sports Betting"].pending +
-                            ownCommissionData["Speciality Games - RNG"].pending +
-                            ownCommissionData["Speciality Games - Tote"].pending,
+                        pendingSettlement: totalPendingGross,
                         settledAllTime: totalSettledGrossCommission,
                     },
-                    // {
-                    //     label: "Less: Total Payment Gateway Fees",
-                    //     pendingSettlement: pendingPaymentGatewayFeeSum,
-                    //     settledAllTime: settledPaymentGatewayFee,
-                    // },
                     ...(roleName !== UserRole.GOLDEN
                         ? [
-                            // {
-                            //     label: "Net Commission",
-                            //     pendingSettlement: totalPendingGrossCommission +
-                            //         ownCommissionData["E-Games"].pending +
-                            //         ownCommissionData["Sports Betting"].pending +
-                            //         ownCommissionData["Speciality Games - RNG"].pending +
-                            //         ownCommissionData["Speciality Games - Tote"].pending
-                            //     ,
-                            //     settledAllTime:
-                            //         roleName === UserRole.GOLDEN
-                            //             ? totalSettledGrossCommission
-                            //             : totalSettledNetCommissionPayoutWithoutPGFeeDeduction,
-                            //     note: "(Gross Commission less Payment Gateway Fees)",
-                            // },
                             {
                                 label: "Less: Own Commission",
                                 pendingSettlement: pendingOwnCommission,
