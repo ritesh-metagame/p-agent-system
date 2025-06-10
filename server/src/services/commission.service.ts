@@ -3641,7 +3641,10 @@ class CommissionService {
                     grossCommission: true,
                     netCommissionAvailablePayout: true,
                     paymentGatewayFee: true,
-                    pendingSettleCommission: true,
+                  pendingSettleCommission: true,
+                  settledBySuperadmin: true,
+                  settledByOperator: true,
+                    settledByPlatinum: true,
                 },
             });
 
@@ -3779,22 +3782,24 @@ class CommissionService {
                 const pendingComm = summary.pendingSettleCommission;
                 const paymentGatewayFee = summary.paymentGatewayFee;
               const isSettled = summary.settledStatus === "Y";
-
+              const settledBySuperadmin = summary.settledBySuperadmin 
+              const settledByOperator = summary.settledByOperator;
+              const settledByPlatinum = summary.settledByPlatinum;
+ 
               
 
 
-                if (category === "E-Games") {
-                    if (isSettled) {
-                        if (roleName === UserRole.GOLDEN) {
-                            settled.eGamesCommission = grossCommission;
-                            settled.eGamesGGR += ggr;
-                        } else {
-                            settled.eGamesGGR += ggr;
-                            settled.eGamesCommission += comm;
-                        }
-                    }
+              if (category === "E-Games") {
+                if (settledByOperator)
+                {
+                pending.eGamesGGR = 0;
 
-                    pending.eGamesGGR += ggr;
+                }             
+               pending.eGamesGGR += ggr;
+
+
+                    
+
 
                     if (roleName === UserRole.GOLDEN) {
                         pending.eGamesCommission += comm;
