@@ -3777,6 +3777,10 @@ class CommissionService {
                                         userId: {in: childUserIds},
                                         categoryName: 'E-Games',
                                         settledStatus: 'N',
+                                        createdAt: {
+                                              gte: eGamesCycle.cycleStartDate,
+                                              lte: eGamesCycle.cycleEndDate,
+                                          },
                                     },
                                     select: {
                                         pendingSettleCommission: true,
@@ -3803,7 +3807,11 @@ class CommissionService {
                                     where: {
                                         userId: {in: childUserIds},
                                         categoryName: 'E-Games',
-                                        settledStatus: 'N',
+                                    settledStatus: 'N',
+                                        createdAt: {
+                                                      gte: eGamesCycle.cycleStartDate,
+                                                      lte: eGamesCycle.cycleEndDate,
+                                                  },
                                     },
                                     select: {
                                         pendingSettleCommission: true,
@@ -3835,7 +3843,11 @@ class CommissionService {
                                 where: {
                                     userId: {in: childUserIds},
                                     categoryName: 'E-Games',
-                                    settledStatus: 'N',
+                                settledStatus: 'N',
+                                    createdAt: {
+                                            gte: eGamesCycle.cycleStartDate,
+                                            lte: eGamesCycle.cycleEndDate,
+                                        },
                                 },
                                 select: {
                                     pendingSettleCommission: true,
@@ -3845,7 +3857,11 @@ class CommissionService {
                             const ParentSummaries = await prisma.commissionSummary.findMany({
                                 where: {
                                     userId: userId,
-                                    categoryName: 'E-Games',
+                                categoryName: 'E-Games',
+                                    createdAt: {
+                                            gte: eGamesCycle.cycleStartDate,
+                                            lte: eGamesCycle.cycleEndDate,
+                                        },
                                 },
                                 select: {
                                     netCommissionAvailablePayout: true,
@@ -3883,7 +3899,11 @@ class CommissionService {
                                     where: {
                                         userId: {in: childUserIds},
                                         categoryName: 'Sports Betting',
-                                        settledStatus: 'N',
+                                    settledStatus: 'N',
+                                        createdAt: {
+                                              gte: sportsCycle.cycleStartDate,
+                                              lte: sportsCycle.cycleEndDate,
+                                          },
                                     },
                                     select: {
                                         totalBetAmount: true,
@@ -3911,7 +3931,11 @@ class CommissionService {
                                     where: {
                                         userId: {in: childUserIds},
                                         categoryName: 'Sports Betting',
-                                        settledStatus: 'N',
+                                    settledStatus: 'N',
+                                        createdAt: {
+                                              gte: sportsCycle.cycleStartDate,
+                                              lte: sportsCycle.cycleEndDate,
+                                          },
                                     },
                                     select: {
                                         totalBetAmount: true,
@@ -3944,7 +3968,11 @@ class CommissionService {
                                 const childSummaries = await prisma.commissionSummary.findMany({
                                     where: {
                                         userId: {in: childUserIds},
-                                        categoryName: 'Sports Betting',
+                                    categoryName: 'Sports Betting',
+                                        createdAt: {
+                                              gte: sportsCycle.cycleStartDate,
+                                              lte: sportsCycle.cycleEndDate,
+                                          },
                                     },
                                     select: {
                                         totalBetAmount: true,
@@ -3956,6 +3984,10 @@ class CommissionService {
                                 where: {
                                     userId: userId,
                                   categoryName: 'Sports Betting',
+                                  createdAt: {
+                                              gte: sportsCycle.cycleStartDate,
+                                              lte: sportsCycle.cycleEndDate,
+                                          },
                                     
                                 },
                                 select: {
@@ -3982,7 +4014,11 @@ class CommissionService {
                                     where: {
                                         userId: {in: childUserIds},
                                         categoryName: 'Sports Betting',
-                                        settledStatus: 'N',
+                                    settledStatus: 'N',
+                                        createdAt: {
+                                              gte: sportsCycle.cycleStartDate,
+                                              lte: sportsCycle.cycleEndDate,
+                                          },
                                     },
                                     select: {
                                         totalBetAmount: true,
@@ -4010,7 +4046,11 @@ class CommissionService {
                                     where: {
                                         userId: {in: childUserIds},
                                         categoryName: 'Sports Betting',
-                                        settledStatus: 'N',
+                                    settledStatus: 'N',
+                                        createdAt: {
+                                              gte: sportsCycle.cycleStartDate,
+                                              lte: sportsCycle.cycleEndDate,
+                                          },
                                     },
                                     select: {
                                         totalBetAmount: true,
@@ -4022,7 +4062,11 @@ class CommissionService {
                                const ParentSummaries = await prisma.commissionSummary.findMany({
                                 where: {
                                     userId: userId,
-                                  categoryName: 'Sports Betting',
+                                   categoryName: 'Sports Betting',
+                                  createdAt: {
+                                              gte: sportsCycle.cycleStartDate,
+                                              lte: sportsCycle.cycleEndDate,
+                                          },
                                     
                                 },
                                 select: {
