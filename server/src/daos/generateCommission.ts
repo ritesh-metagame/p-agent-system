@@ -5,6 +5,9 @@ import {startOfDay, endOfDay} from "date-fns";
 import {UserRole} from "../common/config/constants";
 import Decimal from "decimal.js";
 
+// Set global rounding mode
+Decimal.set({rounding: Decimal.ROUND_UP});
+
 class GenerateCommission {
     public async generateCommissionSummariesByDate(dateInput: string | Date) {
         try {
@@ -37,15 +40,22 @@ class GenerateCommission {
                         betAmount: new Decimal(0),
                         revenue: new Decimal(0),
                         pgFeeCommission: new Decimal(0),
+                        ownerCommission: new Decimal(0),
+                        maCommission: new Decimal(0),
+                        gaCommission: new Decimal(0)
                     };
 
                     grouped.set(key, {
-                        deposit: existing.deposit.plus(txn.deposit || 0),
-                        withdrawal: existing.withdrawal.plus(txn.withdrawal || 0),
-                        betAmount: existing.betAmount.plus(txn.betAmount || 0),
-                        revenue: existing.revenue.plus(txn.revenue || 0),
-                        pgFeeCommission: existing.pgFeeCommission.plus(txn.pgFeeCommission || 0),
+                        deposit: existing.deposit.plus(txn.deposit || 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP),
+                        withdrawal: existing.withdrawal.plus(txn.withdrawal || 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP),
+                        betAmount: existing.betAmount.plus(txn.betAmount || 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP),
+                        revenue: existing.revenue.plus(txn.revenue || 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP),
+                        pgFeeCommission: existing.pgFeeCommission.plus(txn.pgFeeCommission || 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP),
+                        ownerCommission: existing.ownerCommission.plus(txn.ownerCommission || 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP),
+                        maCommission: existing.maCommission.plus(txn.maCommission || 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP),
+                        gaCommission: existing.gaCommission.plus(txn.gaCommission || 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP)
                     });
+
                 }
 
                 for (const [key, sum] of grouped.entries()) {
@@ -62,6 +72,7 @@ class GenerateCommission {
                         }
 
                         let netCommission = new Decimal(0);
+
                         for (const txn of transactions) {
                             const txnUserId = txn[roleKey as keyof typeof txn] as string;
                             const txnCategory = txn.platformType || "Unknown";
@@ -118,15 +129,15 @@ class GenerateCommission {
                                 userId,
                                 roleId: user.roleId,
                                 categoryName,
-                                totalDeposit: sum.deposit.toDecimalPlaces(2).toNumber(),
-                                totalWithdrawals: sum.withdrawal.toDecimalPlaces(2).toNumber(),
-                                totalBetAmount: sum.betAmount.toDecimalPlaces(2).toNumber(),
-                                netGGR: sum.revenue.toDecimalPlaces(2).toNumber(),
+                                totalDeposit: new Decimal(sum.deposit).toDecimalPlaces(2, Decimal.ROUND_UP).toNumber(),
+                                totalWithdrawals: new Decimal(sum.withdrawal).toDecimalPlaces(2, Decimal.ROUND_UP).toNumber(),
+                                totalBetAmount: new Decimal(sum.betAmount).toDecimalPlaces(2, Decimal.ROUND_UP).toNumber(),
+                                netGGR: new Decimal(sum.revenue).toDecimalPlaces(2, Decimal.ROUND_UP).toNumber(),
                                 grossCommission: 0,
-                                paymentGatewayFee: sum.pgFeeCommission.toDecimalPlaces(2).toNumber(),
-                                netCommissionAvailablePayout: netCommission.toDecimalPlaces(2).toNumber(),
-                                pendingSettleCommission: pendingSettleCommission.toDecimalPlaces(2).toNumber(),
-                                parentCommission: parentCommission.toDecimalPlaces(2).toNumber(),
+                                paymentGatewayFee: new Decimal(sum.pgFeeCommission).toDecimalPlaces(2, Decimal.ROUND_UP).toNumber(),
+                                netCommissionAvailablePayout: new Decimal(netCommission).toDecimalPlaces(2, Decimal.ROUND_UP).toNumber(),
+                                pendingSettleCommission: new Decimal(pendingSettleCommission).toDecimalPlaces(2, Decimal.ROUND_UP).toNumber(),
+                                parentCommission: user.role.name === UserRole.PLATINUM ? sum.ownerCommission.toNumber() : user.role.name === UserRole.GOLDEN ? sum.maCommission.toNumber() : Number(0),
                                 settledStatus: "N",
                                 siteId: null,
                                 createdAt: date,

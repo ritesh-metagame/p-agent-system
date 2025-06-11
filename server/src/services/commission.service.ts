@@ -2018,7 +2018,9 @@ class CommissionService {
                         if (roleName === UserRole.PLATINUM) return userIds.includes(doc.userId);
                         return false;
                     })
-                    .reduce((acc, curr) => acc + (curr.parentCommission || 0), 0);
+                    .reduce((acc, curr) => {
+                        return acc + (curr.parentCommission || 0)
+                    }, 0);
 
                 pendingData.map((doc) => {
                     console.log(`${category} parent commission: `, doc.parentCommission);
@@ -2050,6 +2052,8 @@ class CommissionService {
 
                 categoryData[category].pending = pendingData;
             }
+
+            console.log(`Own commission: `, ownCommissionData)
 
             const cycleDates = await this.getPreviousCompletedCycleDates("E-Games");
 
@@ -3762,6 +3766,10 @@ class CommissionService {
                                         userId: {in: childUserIds},
                                         categoryName: 'E-Games',
                                         settledStatus: 'N',
+                                        createdAt: {
+                                            gte: eGamesCycle.cycleStartDate,
+                                            lte: eGamesCycle.cycleEndDate,
+                                        },
                                     },
                                     select: {
                                         pendingSettleCommission: true,
@@ -3789,6 +3797,10 @@ class CommissionService {
                                         userId: {in: childUserIds},
                                         categoryName: 'E-Games',
                                         settledStatus: 'N',
+                                        createdAt: {
+                                            gte: eGamesCycle.cycleStartDate,
+                                            lte: eGamesCycle.cycleEndDate,
+                                        },
                                     },
                                     select: {
                                         pendingSettleCommission: true,
@@ -3821,6 +3833,10 @@ class CommissionService {
                                     userId: {in: childUserIds},
                                     categoryName: 'E-Games',
                                     settledStatus: 'N',
+                                    createdAt: {
+                                        gte: eGamesCycle.cycleStartDate,
+                                        lte: eGamesCycle.cycleEndDate,
+                                    },
                                 },
                                 select: {
                                     pendingSettleCommission: true,
@@ -3831,6 +3847,10 @@ class CommissionService {
                                 where: {
                                     userId: userId,
                                     categoryName: 'E-Games',
+                                    createdAt: {
+                                        gte: eGamesCycle.cycleStartDate,
+                                        lte: eGamesCycle.cycleEndDate,
+                                    },
                                 },
                                 select: {
                                     netCommissionAvailablePayout: true,
@@ -3869,6 +3889,10 @@ class CommissionService {
                                         userId: {in: childUserIds},
                                         categoryName: 'Sports Betting',
                                         settledStatus: 'N',
+                                        createdAt: {
+                                            gte: sportsCycle.cycleStartDate,
+                                            lte: sportsCycle.cycleEndDate,
+                                        },
                                     },
                                     select: {
                                         totalBetAmount: true,
@@ -3897,6 +3921,10 @@ class CommissionService {
                                         userId: {in: childUserIds},
                                         categoryName: 'Sports Betting',
                                         settledStatus: 'N',
+                                        createdAt: {
+                                            gte: sportsCycle.cycleStartDate,
+                                            lte: sportsCycle.cycleEndDate,
+                                        },
                                     },
                                     select: {
                                         totalBetAmount: true,
@@ -3930,6 +3958,10 @@ class CommissionService {
                                     where: {
                                         userId: {in: childUserIds},
                                         categoryName: 'Sports Betting',
+                                        createdAt: {
+                                            gte: sportsCycle.cycleStartDate,
+                                            lte: sportsCycle.cycleEndDate,
+                                        },
                                     },
                                     select: {
                                         totalBetAmount: true,
@@ -3941,6 +3973,10 @@ class CommissionService {
                                     where: {
                                         userId: userId,
                                         categoryName: 'Sports Betting',
+                                        createdAt: {
+                                            gte: sportsCycle.cycleStartDate,
+                                            lte: sportsCycle.cycleEndDate,
+                                        },
 
                                     },
                                     select: {
@@ -3969,6 +4005,10 @@ class CommissionService {
                                         userId: {in: childUserIds},
                                         categoryName: 'Sports Betting',
                                         settledStatus: 'N',
+                                        createdAt: {
+                                            gte: sportsCycle.cycleStartDate,
+                                            lte: sportsCycle.cycleEndDate,
+                                        },
                                     },
                                     select: {
                                         totalBetAmount: true,
@@ -3997,6 +4037,10 @@ class CommissionService {
                                         userId: {in: childUserIds},
                                         categoryName: 'Sports Betting',
                                         settledStatus: 'N',
+                                        createdAt: {
+                                            gte: sportsCycle.cycleStartDate,
+                                            lte: sportsCycle.cycleEndDate,
+                                        },
                                     },
                                     select: {
                                         totalBetAmount: true,
@@ -4009,6 +4053,10 @@ class CommissionService {
                                     where: {
                                         userId: userId,
                                         categoryName: 'Sports Betting',
+                                        createdAt: {
+                                            gte: sportsCycle.cycleStartDate,
+                                            lte: sportsCycle.cycleEndDate,
+                                        },
 
                                     },
                                     select: {
