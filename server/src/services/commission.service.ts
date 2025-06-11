@@ -1893,7 +1893,7 @@ class CommissionService {
                 );
 
                 const commission =
-                    ownCommissionSummaryData.reduce((acc, curr) => acc + curr, 0) || 0;
+                    ownCommissionSummaryData.reduce((acc, curr) => acc + curr, 0p) || 0;
 
                 // console.log({category: ownCommissionData[category]}, category, ownCommissionData, "<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>")
 
