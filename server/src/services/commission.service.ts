@@ -3831,6 +3831,7 @@ class CommissionService {
 
         const totalPendingCommission = childSummaries.reduce((sum, summary) => sum + Number(summary.pendingSettleCommission || 0), 0);
         const totalNetCommission = childSummaries.reduce((sum, summary) => sum + Number(summary.netGGR || 0), 0);
+        console.log("totalNetCommission----------------", totalNetCommission)
 
         pending.eGamesGGR = totalNetCommission;
         pending.eGamesCommission = totalPendingCommission;
