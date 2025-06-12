@@ -1155,7 +1155,7 @@ class CommissionService {
                         parentId: {in: platinums.map((platinum) => platinum.id)},
                         role: {name: UserRole.GOLDEN},
                     },
-                    select: {id: true},
+                    select: {id: true, parentId: true},
                 });
 
                 userIds = userIds.concat(goldens.map((golden) => golden.id));
@@ -1241,16 +1241,54 @@ class CommissionService {
                     settledData.push(...settledDataForNonSettled);
                 }
 
-                // settledData.push(...settledDataForNonSettled);
 
-                // const totalSettledAmount = settledData.reduce(
-                //     (acc, curr) => acc + (curr.netCommissionAvailablePayout || 0),
-                //     0
-                // );
-                //
-                // console.log(`Total settled data: `, totalSettledAmount)
+// Step 1: Build Platinum-wise group map
+                const platinumGroupsMap = new Map<string, Set<string>>();
 
-                settledSummaries = settledData;
+                for (const platinum of platinums) {
+                    const platinumId = platinum.id;
+
+                    const gChildren = goldens
+                        .filter(g => g.parentId === platinumId)
+                        .map(g => g.id);
+
+                    const groupUserIds = new Set([platinumId, ...gChildren]);
+                    platinumGroupsMap.set(platinumId, groupUserIds);
+                }
+
+// Step 2: Group settledData by platinum
+                const groupedByPlatinum = new Map<string, typeof settledData>();
+
+                for (const summary of settledData) {
+                    const summaryUserId = summary.userId;
+
+                    for (const [platinumId, groupSet] of platinumGroupsMap.entries()) {
+                        if (groupSet.has(summaryUserId)) {
+                            if (!groupedByPlatinum.has(platinumId)) {
+                                groupedByPlatinum.set(platinumId, []);
+                            }
+                            groupedByPlatinum.get(platinumId)!.push(summary);
+                            break; // stop after first match
+                        }
+                    }
+                }
+
+// Step 3: Filter groups with positive total netCommissionAvailablePayout
+                let filteredPlatinumSummaries: typeof settledData = [];
+
+                for (const [platinumId, groupSummaries] of groupedByPlatinum.entries()) {
+                    const totalNetPayout = groupSummaries.reduce(
+                        (sum, s) => sum + (s.netCommissionAvailablePayout || 0),
+                        0
+                    );
+
+                    if (totalNetPayout >= 0) {
+                        filteredPlatinumSummaries.push(...groupSummaries);
+                    }
+                }
+
+// Final filtered list
+                settledSummaries = filteredPlatinumSummaries;
 
 
             } else if (roleName === UserRole.PLATINUM) {
@@ -1284,29 +1322,44 @@ class CommissionService {
                     },
                 });
 
-                // console.log("Settled Data: For Platinum", settledData);
+                // Step 3: Group settled summaries by golden userId
+                const groupedByGolden = new Map<string, typeof settledData>();
 
-                settledSummaries = settledData;
+                for (const summary of settledData) {
+                    const goldenId = summary.userId;
+                    if (!groupedByGolden.has(goldenId)) {
+                        groupedByGolden.set(goldenId, []);
+                    }
+                    groupedByGolden.get(goldenId)!.push(summary);
+                }
 
-                settledGids = settledData.map((data) => data.userId);
+// Now, `groupedByGolden` has keys as golden userIds and values as array of their summaries.
 
-                // gIds = [...goldens.map((golden) => golden.id)];
+// Optional: Filter out groups with negative total netCommissionAvailablePayout
+                const filteredSummaries: typeof settledData = [];
 
-                pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
-                    userIds,
-                    false,
-                    undefined,
-                    undefined,
-                    roleName
-                );
+                for (const [goldenId, summaries] of groupedByGolden.entries()) {
+                    const totalNetPayout = summaries.reduce(
+                        (acc, s) => acc + (s.netCommissionAvailablePayout || 0),
+                        0
+                    );
 
-                settledPaymentGatewayFee = await this.getPaymentGatewayFee(
-                    userIds,
-                    true,
-                    undefined,
-                    undefined,
-                    roleName
-                );
+                    if (totalNetPayout >= 0) {
+                        filteredSummaries.push(...summaries);
+                    }
+                }
+
+// Final settled summaries after filtering
+                settledSummaries = filteredSummaries;
+
+// Also update settledGids if you want to reflect filtered users only
+                const filteredGoldenIds = Array.from(groupedByGolden.entries())
+                    .filter(([_, summaries]) =>
+                        summaries.reduce((acc, s) => acc + (s.netCommissionAvailablePayout || 0), 0) >= 0
+                    )
+                    .map(([goldenId]) => goldenId);
+
+                settledGids = filteredGoldenIds;
             }
 
             let settledIds = new Set([
@@ -1416,7 +1469,7 @@ class CommissionService {
                 allTotal: totals,
                 // totalPending: totalPending - pendingPaymentGatewayFeeSum,
                 // totalSettled: totalSettled - settledPaymentGatewayFeeSum,
-                totalPending: totalPending,
+                totalPending: totalPending < 0 ? 0 : totalPending,
                 totalSettled: totalSettled,
             };
         } catch (error) {
@@ -1463,7 +1516,7 @@ class CommissionService {
                         parentId: userId,
                         role: {name: UserRole.OPERATOR},
                     },
-                    select: {id: true},
+                    select: {id: true, parentId: true},
                 });
                 userIds = operators.map((op) => op.id);
                 oIds = userIds;
@@ -1473,7 +1526,7 @@ class CommissionService {
                         parentId: {in: operators.map((op) => op.id)},
                         role: {name: UserRole.PLATINUM},
                     },
-                    select: {id: true},
+                    select: {id: true, parentId: true},
                 });
 
                 userIds = userIds.concat(platinums.map((platinum) => platinum.id));
@@ -1483,7 +1536,7 @@ class CommissionService {
                         parentId: {in: platinums.map((platinum) => platinum.id)},
                         role: {name: UserRole.GOLDEN},
                     },
-                    select: {id: true},
+                    select: {id: true, parentId: true},
                 });
 
                 gIds = goldens.map((golden) => golden.id);
@@ -1491,7 +1544,7 @@ class CommissionService {
                 userIds = userIds.concat(goldens.map((golden) => golden.id));
 
                 // Fetch settled data for operators and their hierarchy
-                const settledData = await prisma.commissionSummary.findMany({
+                let settledData = await prisma.commissionSummary.findMany({
                     where: {
                         userId: {in: oIds},
                         settledStatus: "Y",
@@ -1570,6 +1623,63 @@ class CommissionService {
                     settledData.push(...settledDataForNonSettled);
                 }
 
+                // Prepare lists for operators, platinums, goldens
+                const operatorIdsSet = new Set(oIds);
+                const platinumIdsSet = new Set(platinums.map(p => p.id));
+                const goldenIdsSet = new Set(gIds);
+
+// Build map: operatorId -> Set of userIds (operator + its platinums + goldens)
+                const operatorGroupsMap = new Map<string, Set<string>>();
+
+                for (const oprId of operatorIdsSet) {
+                    // Find platinums with parentId = oprId
+                    const platinumsForOperator = platinums.filter(p => p.parentId === oprId).map(p => p.id);
+                    const platinumSet = new Set(platinumsForOperator);
+
+                    // Find goldens with parentId in platinumsForOperator
+                    const goldensForOperator = goldens.filter(g => platinumSet.has(g.parentId)).map(g => g.id);
+
+                    const groupSet = new Set([oprId, ...platinumsForOperator, ...goldensForOperator]);
+                    operatorGroupsMap.set(oprId, groupSet);
+                }
+
+                const groupedSettledSummaries = new Map<string, typeof settledData>();
+
+                for (const summary of settledData) {
+                    const userId = summary.userId;
+
+                    let operatorId: string | null = null;
+                    for (const [oprId, groupSet] of operatorGroupsMap.entries()) {
+                        if (groupSet.has(userId)) {
+                            operatorId = oprId;
+                            break;
+                        }
+                    }
+
+                    if (!operatorId) continue;
+
+                    if (!groupedSettledSummaries.has(operatorId)) {
+                        groupedSettledSummaries.set(operatorId, []);
+                    }
+
+                    groupedSettledSummaries.get(operatorId)!.push(summary);
+                }
+
+                let filteredSettledSummaries: typeof settledData = [];
+
+                for (const [oprId, summaries] of groupedSettledSummaries.entries()) {
+                    const totalNetPayout = summaries.reduce(
+                        (acc, s) => acc + (s.netCommissionAvailablePayout || 0),
+                        0
+                    );
+
+                    if (totalNetPayout >= 0) {
+                        filteredSettledSummaries = filteredSettledSummaries.concat(summaries);
+                    }
+                }
+
+                settledData = filteredSettledSummaries;
+
                 // Add settled data to categoryData
                 settledData.forEach((summary) => {
                     if (!categoryData[summary.categoryName]) {
@@ -1581,22 +1691,6 @@ class CommissionService {
                 const settledUserIdsSet = new Set(settledUserIds);
 
                 const nonSettledOIds = oIds.filter((id) => !settledUserIdsSet.has(id));
-
-                // console.log({settledData})
-
-                pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
-                    nonSettledOIds,
-                    false,
-                    undefined,
-                    undefined
-                );
-
-                settledPaymentGatewayFee = await this.getPaymentGatewayFee(
-                    oIds.filter((id) => settledUserIdsSet.has(id)),
-                    true,
-                    undefined,
-                    undefined
-                );
             }
 
             if (roleName === UserRole.OPERATOR) {
@@ -1617,7 +1711,7 @@ class CommissionService {
                         parentId: {in: platinums.map((platinum) => platinum.id)},
                         role: {name: UserRole.GOLDEN},
                     },
-                    select: {id: true},
+                    select: {id: true, parentId: true},
                 });
 
                 userIds = userIds.concat(goldens.map((golden) => golden.id));
@@ -1687,14 +1781,60 @@ class CommissionService {
                     settledData.push(...settledDataForNonSettled);
                 }
 
-                const totalSettledAmount = settledData.reduce(
-                    (acc, curr) => acc + (curr.netCommissionAvailablePayout || 0),
-                    0
-                );
+                // Step 1: Build Platinum-wise group map
+                const platinumGroupsMap = new Map<string, Set<string>>();
 
-                console.log(`Settled Data:---`, settledData)
+                for (const platinum of platinums) {
+                    const platinumId = platinum.id;
 
-                // console.log(`Total settled data from total commission payout breakdown table: `, totalSettledAmount)
+                    const goldensForPlatinum = goldens
+                        .filter(g => g.parentId === platinumId)
+                        .map(g => g.id);
+
+                    const groupUserIds = new Set([platinumId, ...goldensForPlatinum]);
+                    platinumGroupsMap.set(platinumId, groupUserIds);
+                }
+
+// Step 2: Group settledSummaries by platinum
+                const groupedSettledSummaries = new Map<string, any[]>();
+
+                for (const summary of settledData) {
+                    const summaryUserId = summary.userId;
+
+                    let platinumId: string | null = null;
+                    for (const [pId, groupSet] of platinumGroupsMap.entries()) {
+                        if (groupSet.has(summaryUserId)) {
+                            platinumId = pId;
+                            break;
+                        }
+                    }
+
+                    if (!platinumId) continue;
+
+                    if (!groupedSettledSummaries.has(platinumId)) {
+                        groupedSettledSummaries.set(platinumId, []);
+                    }
+
+                    groupedSettledSummaries.get(platinumId)!.push(summary);
+                }
+
+// Step 3: Filter out groups with negative total netCommissionAvailablePayout
+                let filteredSettledSummaries: any[] = [];
+
+                for (const [pId, groupSummaries] of groupedSettledSummaries.entries()) {
+                    const total = groupSummaries.reduce(
+                        (acc, s) => acc + (s.netCommissionAvailablePayout || 0),
+                        0
+                    );
+
+                    if (total >= 0) {
+                        filteredSettledSummaries = filteredSettledSummaries.concat(groupSummaries);
+                    }
+                }
+
+// Step 4: Replace original settledData with filtered result
+                settledData.length = 0;
+                settledData.push(...filteredSettledSummaries);
 
                 // Add settled data to categoryData
                 settledData.forEach((summary) => {
@@ -1739,8 +1879,43 @@ class CommissionService {
 
                 settledGids = settledData.map((data) => data.userId);
 
-                // Add settled data to categoryData
-                settledData.forEach((summary) => {
+                // Step 1: Build group map for each golden user (each is its own group)
+                const goldenGroupsMap = new Map<string, Set<string>>();
+
+                for (const golden of goldens) {
+                    goldenGroupsMap.set(golden.id, new Set([golden.id]));
+                }
+
+// Step 2: Group settled summaries by golden
+                const groupedSettledSummaries = new Map<string, any[]>();
+
+                for (const summary of settledData) {
+                    const summaryUserId = summary.userId;
+
+                    if (goldenGroupsMap.has(summaryUserId)) {
+                        if (!groupedSettledSummaries.has(summaryUserId)) {
+                            groupedSettledSummaries.set(summaryUserId, []);
+                        }
+                        groupedSettledSummaries.get(summaryUserId)!.push(summary);
+                    }
+                }
+
+// Step 3: Filter out groups with negative total netCommissionAvailablePayout
+                let filteredSettledSummaries: any[] = [];
+
+                for (const [gId, groupSummaries] of groupedSettledSummaries.entries()) {
+                    const total = groupSummaries.reduce(
+                        (acc, s) => acc + (s.netCommissionAvailablePayout || 0),
+                        0
+                    );
+
+                    if (total >= 0) {
+                        filteredSettledSummaries = filteredSettledSummaries.concat(groupSummaries);
+                    }
+                }
+
+// Step 4: Push to categoryData (after filtering)
+                filteredSettledSummaries.forEach((summary) => {
                     if (!categoryData[summary.categoryName]) {
                         categoryData[summary.categoryName] = {pending: [], settled: []};
                     }
@@ -1750,20 +1925,6 @@ class CommissionService {
                 gIds = [...goldens.map((golden) => golden.id)];
 
                 const settledUserIdsSet = new Set(settledGids);
-
-                pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
-                    gIds.filter((id) => !settledUserIdsSet.has(id)),
-                    false,
-                    undefined,
-                    undefined
-                );
-
-                settledPaymentGatewayFee = await this.getPaymentGatewayFee(
-                    [userId],
-                    true,
-                    undefined,
-                    undefined
-                );
             }
 
             if (roleName === UserRole.GOLDEN) {
@@ -1857,7 +2018,9 @@ class CommissionService {
                         if (roleName === UserRole.PLATINUM) return userIds.includes(doc.userId);
                         return false;
                     })
-                    .reduce((acc, curr) => acc + (curr.parentCommission || 0), 0);
+                    .reduce((acc, curr) => {
+                        return acc + (curr.parentCommission || 0)
+                    }, 0);
 
                 pendingData.map((doc) => {
                     console.log(`${category} parent commission: `, doc.parentCommission);
@@ -1889,6 +2052,8 @@ class CommissionService {
 
                 categoryData[category].pending = pendingData;
             }
+
+            console.log(`Own commission: `, ownCommissionData)
 
             const cycleDates = await this.getPreviousCompletedCycleDates("E-Games");
 
@@ -2111,6 +2276,8 @@ class CommissionService {
                 ownCommissionData["Speciality Games - RNG"].pending +
                 ownCommissionData["Speciality Games - Tote"].pending
 
+            const transferableAmount = finalPendingAmountWithoutPGFeeDeduction >= 0 ? finalPendingAmountWithoutPGFeeDeduction : 0
+
             return {
                 columns: [
                     "",
@@ -2171,6 +2338,16 @@ class CommissionService {
                                 : totalSettledNetCommissionPayoutWithoutPGFeeDeduction,
                         note: "(Gross Commission less Payment Gateway Fees)",
                     },
+                    ...(roleName !== UserRole.GOLDEN
+                        ? [
+                            {
+                                label: "Transferable Amount",
+                                pendingSettlement: transferableAmount,
+                                settledAllTime: 0,
+                                note: "(Gross Commission less Payment Gateway Fees)",
+                            },
+                        ]
+                        : []),
                 ],
             };
         } catch (error) {
@@ -3589,6 +3766,10 @@ class CommissionService {
                                         userId: {in: childUserIds},
                                         categoryName: 'E-Games',
                                         settledStatus: 'N',
+                                        createdAt: {
+                                            gte: eGamesCycle.cycleStartDate,
+                                            lte: eGamesCycle.cycleEndDate,
+                                        },
                                     },
                                     select: {
                                         pendingSettleCommission: true,
@@ -3616,6 +3797,10 @@ class CommissionService {
                                         userId: {in: childUserIds},
                                         categoryName: 'E-Games',
                                         settledStatus: 'N',
+                                        createdAt: {
+                                            gte: eGamesCycle.cycleStartDate,
+                                            lte: eGamesCycle.cycleEndDate,
+                                        },
                                     },
                                     select: {
                                         pendingSettleCommission: true,
@@ -3648,6 +3833,10 @@ class CommissionService {
                                     userId: {in: childUserIds},
                                     categoryName: 'E-Games',
                                     settledStatus: 'N',
+                                    createdAt: {
+                                        gte: eGamesCycle.cycleStartDate,
+                                        lte: eGamesCycle.cycleEndDate,
+                                    },
                                 },
                                 select: {
                                     pendingSettleCommission: true,
@@ -3661,6 +3850,10 @@ class CommissionService {
                                 where: {
                                     userId: userId,
                                     categoryName: 'E-Games',
+                                    createdAt: {
+                                        gte: eGamesCycle.cycleStartDate,
+                                        lte: eGamesCycle.cycleEndDate,
+                                    },
                                 },
                                 select: {
                                     netCommissionAvailablePayout: true,
@@ -3724,6 +3917,10 @@ class CommissionService {
                                         userId: {in: childUserIds},
                                         categoryName: 'Sports Betting',
                                         settledStatus: 'N',
+                                        createdAt: {
+                                            gte: sportsCycle.cycleStartDate,
+                                            lte: sportsCycle.cycleEndDate,
+                                        },
                                     },
                                     select: {
                                         totalBetAmount: true,
@@ -3752,6 +3949,10 @@ class CommissionService {
                                         userId: {in: childUserIds},
                                         categoryName: 'Sports Betting',
                                         settledStatus: 'N',
+                                        createdAt: {
+                                            gte: sportsCycle.cycleStartDate,
+                                            lte: sportsCycle.cycleEndDate,
+                                        },
                                     },
                                     select: {
                                         totalBetAmount: true,

@@ -1,14 +1,14 @@
 model Category {
-  id                  String              @id @default(cuid())
-  name                String              @unique
-  description         String?
-  commissions         Commission[]
-  categorySummaries   CategorySummary[]
-  categoryLogs        CategoryLog[]
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @default(now()) @updatedAt
-  createdBy           String              @default("system") @map("created_by")
-  updatedBy           String              @default("system") @map("updated_by")
+  id                String            @id @default(cuid())
+  name              String            @unique
+  description       String?
+  commissions       Commission[]
+  categorySummaries CategorySummary[]
+  categoryLogs      CategoryLog[]
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @default(now()) @updatedAt
+  createdBy         String            @default("system") @map("created_by")
+  updatedBy         String            @default("system") @map("updated_by")
 }
 
 model Role {
@@ -38,6 +38,7 @@ model Site {
   betSummaries          BetSummary[]
   commissionSummaries   CommissionSummary[]
   topPerformerSummaries TopPerformerSummary[]
+  active                Boolean?              @default(true)
   // networkStatistics NetworkStatistics[]
   siteLogs              SiteLog[]
   createdAt             DateTime              @default(now())
