@@ -1469,7 +1469,7 @@ class CommissionService {
                 allTotal: totals,
                 // totalPending: totalPending - pendingPaymentGatewayFeeSum,
                 // totalSettled: totalSettled - settledPaymentGatewayFeeSum,
-                totalPending: totalPending,
+                totalPending: totalPending < 0 ? 0 : totalPending,
                 totalSettled: totalSettled,
             };
         } catch (error) {
