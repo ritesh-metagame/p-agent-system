@@ -135,7 +135,7 @@ class GenerateCommission {
                                 }
                             })).commissionPercentage
 
-                            console.log(`<UNK> Found ${parentSportsBettingCommission}%`);
+                            console.log(`<UNK>------------------ Found ${parentSportsBettingCommission}%`);
 
                             const parentRNGCommission = (await prisma.commission.findFirst({
                                 where: {
@@ -177,6 +177,9 @@ class GenerateCommission {
                                     (sum.totalBet * parentToteCommission) / 100;
                                 console.log(`Speciality Games - Tote commission: ${(sum.totalBet * parentToteCommission) / 100}`)
                             } else if (categoryName === "Sports Betting") {
+
+                              console.log(`Sports Betting total---->>>>>>>>>>>>>>>>>.: ${sum.totalBet}%`)
+                              console.log(`Sports Betting parent commission-------------: ${parentSportsBettingCommission}%`)
                                 parentCommission =
                                     (sum.totalBet * parentSportsBettingCommission) / 100;
                                 console.log(`Sports Betting commission: ${(sum.totalBet * parentSportsBettingCommission) / 100}`)

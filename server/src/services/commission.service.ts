@@ -3670,9 +3670,17 @@ class CommissionService {
                             const totalPendingCommission = childSummaries.reduce((sum, summary) => sum + Number(summary.pendingSettleCommission || 0), 0);
                             const totalNetCommission = childSummaries.reduce((sum, summary) => sum + Number(summary.netGGR || 0), 0);
 
+                          if (!settledBySuperadmin) {
                             pending.eGamesGGR = totalNetCommission;
-                            // pending.eGamesCommission = totalPendingCommission - parentPendingCommission
-                            pending.eGamesCommission = totalPendingCommission - parentPendingCommission;
+                            pending.eGamesCommission = totalPendingCommission - parentPendingCommission
+                          } else if (settledBySuperadmin && !settledByOperator) { 
+                              pending.eGamesGGR = totalNetCommission;
+                             pending.eGamesCommission = totalPendingCommission - parentPendingCommission
+                          }
+
+                            
+                            pending.eGamesGGR = totalNetCommission;
+                             pending.eGamesCommission = totalPendingCommission 
 
                             ;
                         }
@@ -3743,116 +3751,180 @@ class CommissionService {
                         pending.sportsBet += bet;
                         pending.sportsCommission += comm;
                     } else if (roleName === UserRole.PLATINUM) {
-                        if (!settledBySuperadmin) {
-                            //  pending.sportsBet += bet;
-                            //  pending.sportsCommission += pendingComm
-                            const childUsers = await prisma.user.findMany({
-                                where: {parentId: userId},
-                                select: {id: true},
-                            });
-                            const childUserIds = childUsers.map(user => user.id);
+                      if (!settledBySuperadmin) {
+                        //  pending.sportsBet += bet;
+                        //  pending.sportsCommission += pendingComm
+                        const childUsers = await prisma.user.findMany({
+                          where: { parentId: userId },
+                          select: { id: true },
+                        });
+                        const childUserIds = childUsers.map(user => user.id);
 
-                            if (childUserIds.length > 0) {
-                                const childSummaries = await prisma.commissionSummary.findMany({
-                                    where: {
-                                        userId: {in: childUserIds},
-                                        categoryName: 'Sports Betting',
-                                    },
-                                    select: {
-                                        totalBetAmount: true,
-                                        netCommissionAvailablePayout: true,
-                                    },
-                                });
+                        if (childUserIds.length > 0) {
+                          const childSummaries = await prisma.commissionSummary.findMany({
+                            where: {
+                              userId: { in: childUserIds },
+                              categoryName: 'Sports Betting',
+                            },
+                            select: {
+                              totalBetAmount: true,
+                              netCommissionAvailablePayout: true,
+                            },
+                          });
 
-                                const ParentSummaries = await prisma.commissionSummary.findMany({
-                                    where: {
-                                        userId: userId,
-                                        categoryName: 'Sports Betting',
+                          const ParentSummaries = await prisma.commissionSummary.findMany({
+                            where: {
+                              userId: userId,
+                              categoryName: 'Sports Betting',
 
-                                    },
-                                    select: {
-                                        netCommissionAvailablePayout: true,
-                                    },
-                                });
-                                const parentPendingCommission = ParentSummaries.reduce((sum, summary) => sum + Number(summary.netCommissionAvailablePayout || 0), 0);
+                            },
+                            select: {
+                              netCommissionAvailablePayout: true,
+                            },
+                          });
+                          const parentPendingCommission = ParentSummaries.reduce((sum, summary) => sum + Number(summary.netCommissionAvailablePayout || 0), 0);
 
-                                const totalPendingBet = childSummaries.reduce((sum, summary) => sum + Number(summary.totalBetAmount || 0), 0);
-                                const totalNetCommission = childSummaries.reduce((sum, summary) => sum + Number(summary.netCommissionAvailablePayout || 0), 0);
+                          const totalPendingBet = childSummaries.reduce((sum, summary) => sum + Number(summary.totalBetAmount || 0), 0);
+                          const totalNetCommission = childSummaries.reduce((sum, summary) => sum + Number(summary.netCommissionAvailablePayout || 0), 0);
 
-                                pending.sportsBet = totalPendingBet;
-                                pending.sportsCommission = totalNetCommission + parentPendingCommission;
-                                ;
-                            }
-                        } else if (settledBySuperadmin && !settledByOperator) {
-                            const childUsers = await prisma.user.findMany({
-                                where: {parentId: userId},
-                                select: {id: true},
-                            });
-                            const childUserIds = childUsers.map(user => user.id);
-
-                            if (childUserIds.length > 0) {
-                                const childSummaries = await prisma.commissionSummary.findMany({
-                                    where: {
-                                        userId: {in: childUserIds},
-                                        categoryName: 'Sports Betting',
-                                        settledStatus: 'N',
-                                    },
-                                    select: {
-                                        totalBetAmount: true,
-                                        netCommissionAvailablePayout: true,
-                                        pendingSettleCommission: true,
-                                    },
-                                });
-
-                                const totalPendingBet = childSummaries.reduce((sum, summary) => sum + Number(summary.totalBetAmount || 0), 0);
-                                const totalNetCommission = childSummaries.reduce((sum, summary) => sum + Number(summary.pendingSettleCommission || 0), 0);
-
-                                pending.sportsBet = totalPendingBet;
-                                pending.sportsCommission = totalNetCommission;
-                            }
-                        } else if (settledBySuperadmin && settledByOperator) {
-                            pending.sportsBet += bet;
-                            const childUsers = await prisma.user.findMany({
-                                where: {parentId: userId},
-                                select: {id: true},
-                            });
-                            const childUserIds = childUsers.map(user => user.id);
-
-                            if (childUserIds.length > 0) {
-                                const childSummaries = await prisma.commissionSummary.findMany({
-                                    where: {
-                                        userId: {in: childUserIds},
-                                        categoryName: 'Sports Betting',
-                                        settledStatus: 'N',
-                                    },
-                                    select: {
-                                        totalBetAmount: true,
-                                        netCommissionAvailablePayout: true,
-                                        pendingSettleCommission: true,
-                                    },
-                                });
-
-                                const ParentSummaries = await prisma.commissionSummary.findMany({
-                                    where: {
-                                        userId: userId,
-                                        categoryName: 'Sports Betting',
-
-                                    },
-                                    select: {
-                                        netCommissionAvailablePayout: true,
-                                    },
-                                });
-                                const parentPendingCommission = ParentSummaries.reduce((sum, summary) => sum + Number(summary.netCommissionAvailablePayout || 0), 0);
-                                const totalPendingBet = childSummaries.reduce((sum, summary) => sum + Number(summary.totalBetAmount || 0), 0);
-                                const totalNetCommission = childSummaries.reduce((sum, summary) => sum + Number(summary.netCommissionAvailablePayout || 0), 0);
-                                pending.sportsCommission = totalNetCommission + parentPendingCommission;
-                                ;
-
-
-                                pending.sportsBet = totalPendingBet;
-                                // pending.sportsCommission = totalNetCommission;
-                            }
+                          pending.sportsBet = totalPendingBet;
+                          pending.sportsCommission = totalNetCommission + parentPendingCommission;
+                          ;
                         }
+                      } else if (settledBySuperadmin && !settledByOperator) {
+                        const childUsers = await prisma.user.findMany({
+                          where: { parentId: userId },
+                          select: { id: true },
+                        });
+                        const childUserIds = childUsers.map(user => user.id);
+
+                        if (childUserIds.length > 0) {
+                          const childSummaries = await prisma.commissionSummary.findMany({
+                            where: {
+                              userId: { in: childUserIds },
+                              categoryName: 'Sports Betting',
+                              settledStatus: 'N',
+                            },
+                            select: {
+                              totalBetAmount: true,
+                              netCommissionAvailablePayout: true,
+                              pendingSettleCommission: true,
+                            },
+                          });
+                              
+                          const ParentSummaries = await prisma.commissionSummary.findMany({
+                            where: {
+                              userId: userId,
+                              categoryName: 'Sports Betting',
+
+                            },
+                            select: {
+                              netCommissionAvailablePayout: true,
+                            },
+                          });
+
+                          const parentPendingCommission = ParentSummaries.reduce((sum, summary) => sum + Number(summary.netCommissionAvailablePayout || 0), 0);
+
+
+                          const totalPendingBet = childSummaries.reduce((sum, summary) => sum + Number(summary.totalBetAmount || 0), 0);
+                          const totalNetCommission = childSummaries.reduce((sum, summary) => sum + Number(summary.pendingSettleCommission || 0), 0);
+
+                          pending.sportsBet = totalPendingBet;
+                          pending.sportsCommission = totalNetCommission + parentPendingCommission;
+                        }
+                      } else if (settledBySuperadmin && settledByOperator && !settledByPlatinum) {
+
+                        console.log("pending commission--------------------------->>>>>>>>>>.", pending.sportsCommission)
+                        pending.sportsBet += bet;
+                        const childUsers = await prisma.user.findMany({
+                          where: { parentId: userId },
+                          select: { id: true },
+                        });
+                        const childUserIds = childUsers.map(user => user.id);
+
+                        if (childUserIds.length > 0) {
+                          const childSummaries = await prisma.commissionSummary.findMany({
+                            where: {
+                              userId: { in: childUserIds },
+                              categoryName: 'Sports Betting',
+                              settledStatus: 'N',
+                            },
+                            select: {
+                              totalBetAmount: true,
+                              netCommissionAvailablePayout: true,
+                              pendingSettleCommission: true,
+                            },
+                          });
+
+                          const ParentSummaries = await prisma.commissionSummary.findMany({
+                            where: {
+                              userId: userId,
+                              categoryName: 'Sports Betting',
+
+                            },
+                            select: {
+                              netCommissionAvailablePayout: true,
+                            },
+                          });
+                          const parentPendingCommission = ParentSummaries.reduce((sum, summary) => sum + Number(summary.netCommissionAvailablePayout || 0), 0);
+                          const totalPendingBet = childSummaries.reduce((sum, summary) => sum + Number(summary.totalBetAmount || 0), 0);
+                          const totalNetCommission = childSummaries.reduce((sum, summary) => sum + Number(summary.netCommissionAvailablePayout || 0), 0);
+                                pending.sportsCommission = totalNetCommission + parentPendingCommission;
+                          ;
+
+
+                          pending.sportsBet = totalPendingBet;
+                          // pending.sportsCommission = totalNetCommission;
+                        }
+                      }
+
+                      else  {
+                        const childUsers = await prisma.user.findMany({
+                          where: { parentId: userId },
+                          select: { id: true },
+                        });
+                        const childUserIds = childUsers.map(user => user.id);
+
+                        if (childUserIds.length > 0) {
+                          const childSummaries = await prisma.commissionSummary.findMany({
+                            where: {
+                              userId: { in: childUserIds },
+                              categoryName: 'Sports Betting',
+                              settledStatus: 'N',
+                            },
+                            select: {
+                              totalBetAmount: true,
+                              netCommissionAvailablePayout: true,
+                              pendingSettleCommission: true,
+                            },
+                          });
+
+                          const ParentSummaries = await prisma.commissionSummary.findMany({
+                            where: {
+                              userId: userId,
+                              categoryName: 'Sports Betting',
+
+                            },
+                            select: {
+                              netCommissionAvailablePayout: true,
+                            },
+                          });
+                          const parentPendingCommission = ParentSummaries.reduce((sum, summary) => sum + Number(summary.netCommissionAvailablePayout || 0), 0);
+                          const totalPendingBet = childSummaries.reduce((sum, summary) => sum + Number(summary.totalBetAmount || 0), 0);
+                          const totalNetCommission = childSummaries.reduce((sum, summary) => sum + Number(summary.netCommissionAvailablePayout || 0), 0);
+
+                          pending.sportsCommission = totalNetCommission ;
+
+                          console.log("pending commission----------------->>>>>>>>>>.", pending.sportsCommission)
+
+                          ;
+
+
+                          pending.sportsBet = totalPendingBet;
+                          // pending.sportsCommission = totalNetCommission;
+                        }
+                       }
+
                     }
                 }
 
