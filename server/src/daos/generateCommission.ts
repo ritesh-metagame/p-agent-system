@@ -3,10 +3,12 @@
 import {prisma} from "../server";
 import {startOfDay, endOfDay} from "date-fns";
 import {UserRole} from "../common/config/constants";
-import Decimal from "decimal.js";
+import {Decimal} from "../../prisma/generated/prisma/runtime/library";
+// import {Decimal} from "@prisma/client/runtime/binary";
+// import Decimal from "decimal.js";
 
 // Set global rounding mode
-Decimal.set({rounding: Decimal.ROUND_UP});
+// Decimal.set({rounding: Decimal.ROUND_UP});
 
 class GenerateCommission {
     public async generateCommissionSummariesByDate(dateInput: string | Date) {
@@ -15,13 +17,13 @@ class GenerateCommission {
             const from = startOfDay(date);
             const to = endOfDay(date);
 
-            console.log("date from", from, "date to", to);
+            // console.log("date from", from, "date to", to);
 
             const transactions = await prisma.transaction.findMany({
                 where: {betTime: {gte: from, lte: to}},
             });
 
-            console.log(`📦 Found ${transactions.length} transactions on ${date.toDateString()}`);
+            // console.log(`📦 Found ${transactions.length} transactions on ${date.toDateString()}`);
 
             const roleTargets = ["ownerId", "maId", "gaId"];
 
@@ -45,15 +47,22 @@ class GenerateCommission {
                         gaCommission: new Decimal(0)
                     };
 
+                    let totalOwnerCommission = new Decimal(0)
+                    if (txn.maName === "PLA1" && txn.platformType === "E-Games") {
+                        // @ts-ignore
+                        totalOwnerCommission += txn.ownerCommission
+                        console.log(`Total Owner Commission: `, totalOwnerCommission)
+                    }
+
                     grouped.set(key, {
-                        deposit: existing.deposit.plus(txn.deposit || 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP),
-                        withdrawal: existing.withdrawal.plus(txn.withdrawal || 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP),
-                        betAmount: existing.betAmount.plus(txn.betAmount || 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP),
-                        revenue: existing.revenue.plus(txn.revenue || 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP),
-                        pgFeeCommission: existing.pgFeeCommission.plus(txn.pgFeeCommission || 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP),
-                        ownerCommission: existing.ownerCommission.plus(txn.ownerCommission || 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP),
-                        maCommission: existing.maCommission.plus(txn.maCommission || 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP),
-                        gaCommission: existing.gaCommission.plus(txn.gaCommission || 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP)
+                        deposit: existing.deposit.plus(txn.deposit || 0),
+                        withdrawal: existing.withdrawal.plus(txn.withdrawal || 0),
+                        betAmount: existing.betAmount.plus(txn.betAmount || 0),
+                        revenue: existing.revenue.plus(txn.revenue || 0),
+                        pgFeeCommission: existing.pgFeeCommission.plus(txn.pgFeeCommission || 0),
+                        ownerCommission: existing.ownerCommission.plus(txn.ownerCommission || 0),
+                        maCommission: existing.maCommission.plus(txn.maCommission || 0),
+                        gaCommission: existing.gaCommission.plus(txn.gaCommission || 0)
                     });
 
                 }
@@ -67,7 +76,7 @@ class GenerateCommission {
                         });
 
                         if (!user) {
-                            console.warn(`⚠️ Role user not found: ${userId}`);
+                            // console.warn(`⚠️ Role user not found: ${userId}`);
                             continue;
                         }
 
