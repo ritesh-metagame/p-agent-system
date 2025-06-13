@@ -25,6 +25,7 @@ class UserDao {
     const summaries = await prisma.commissionSummary.findMany({
       where: {
         userId,
+         // Only consider pending summaries
       },
     });
 
@@ -61,14 +62,17 @@ class UserDao {
         ? summaries.every((s) => s.settledByOperator)
         : roleName === UserRole.GOLDEN
         ? summaries.every((s) => s.settledByPlatinum)
-        : true; // default true for other roles
+            : true; // default true for other roles
+    
+    console.log(
+      `Role: ${roleName}, Settled: ${isSettled}, Summaries Count: ${summaries.length}`)
 
-    if (!isSettled) {
-      console.warn(
-        `⚠️ Settlement not completed for role ${roleName}. Returning payout and wallet as 0.`
-      );
-      return { payout: 0, wallet: 0 };
-    }
+    // if (!isSettled) {
+    //   console.warn(
+    //     `⚠️ Settlement not completed for role ${roleName}. Returning payout and wallet as 0.`
+    //   );
+    //   return { payout: 0, wallet: 0 };
+    // }
 
     // Step 4: Fetch parent's commission if applicable
     const parentId = user.parentId;
@@ -92,32 +96,26 @@ class UserDao {
     let totalCommissionByUser = 0;
     let totalPaymentGatewayFee = 0;
     let wallet = 0;
+    let totalPayout = 0;
 
     for (const summary of summaries) {
       if (summary.categoryName === "E-Games") {
-        totalNetGGR += Number(summary.netGGR || 0);
+        totalCommissionByUser += Number(summary.netCommissionAvailablePayout || 0);
+        totalPayout += Number(summary.pendingSettleCommission || 0);
       } else if (summary.categoryName === "Sports Betting") {
-        totalBetAmount += Number(summary.totalBetAmount || 0);
+        totalCommissionByUser += Number(summary.netCommissionAvailablePayout || 0);
       }
 
-      totalCommissionByUser += Number(summary.netCommissionAvailablePayout || 0);
-      totalPaymentGatewayFee += Number(summary.paymentGatewayFee || 0);
+      
     }
 
-    const totalEgamesAmount = totalNetGGR * 0.3;
-    const totalSportsBettingAmount = totalBetAmount * 0.02;
-    const totalCommissionAmount = totalEgamesAmount + totalSportsBettingAmount;
+    
 
     const payout =
-      totalCommissionAmount -
-      totalCommissionByUser -
-      totalParentCommission
+      totalPayout  - totalParentCommission;
+      
 
-    // const payout =
-    //     totalCommissionAmount -
-    //     totalCommissionByUser -
-    //     totalParentCommission -
-    //     totalPaymentGatewayFee;
+   
 
     if (roleName === UserRole.GOLDEN) {
       wallet = totalCommissionByUser;
