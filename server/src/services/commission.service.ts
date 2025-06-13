@@ -1524,6 +1524,8 @@ class CommissionService {
                     select: {id: true, parentId: true},
                 });
 
+                pIds = platinums.map(doc => doc.id);
+
                 userIds = userIds.concat(platinums.map((platinum) => platinum.id));
 
                 const goldens = await prisma.user.findMany({
@@ -1709,6 +1711,8 @@ class CommissionService {
                     select: {id: true, parentId: true},
                 });
 
+                gIds = goldens.map((golden) => golden.id)
+
                 userIds = userIds.concat(goldens.map((golden) => golden.id));
 
                 // Fetch settled data for platinums and their hierarchy
@@ -1737,10 +1741,6 @@ class CommissionService {
                 });
 
                 settledGids = nonSettledGoldenChildren.map((golden) => golden.id);
-
-                console.log("++++++++++++++++++++++++++++--+++++++++++++++++++++++++++++++++++++")
-                console.log({settledGids});
-                console.log("++++++++++++++++++++++++++++--+++++++++++++++++++++++++++++++++++++")
 
 
                 if (settledData.length !== 0) {
@@ -1955,6 +1955,8 @@ class CommissionService {
                 ...settledGids,
             ]);
 
+            const groupDataMap: Record<string, { userIds: string[], dataByCategory: Record<string, any[]> }> = {};
+
             // Get cycle dates for each category and fetch data
             for (const category of Object.keys(categoryData)) {
                 // Get category-specific cycle dates
@@ -1989,47 +1991,97 @@ class CommissionService {
                     },
                 });
 
-                const commission = pendingData
-                    .filter(doc => {
-                        if (roleName === UserRole.SUPER_ADMIN) return oIds.includes(doc.userId);
-                        if (roleName === UserRole.OPERATOR) return pIds.includes(doc.userId);
-                        if (roleName === UserRole.PLATINUM) return userIds.includes(doc.userId);
-                        return false;
-                    })
-                    .reduce((acc, curr) => {
-                        return acc + (curr.parentCommission || 0)
-                    }, 0);
-
-                roleName !== UserRole.SUPER_ADMIN &&
-                roleName !== UserRole.GOLDEN &&
-                category !== "Unknown"
-                    ? (ownCommissionData[category].pending = commission || 0)
-                    : 0;
-
-
-                let filteredPendingData = [];
+                let relevantUserIds: string[] = [];
 
                 if (roleName === UserRole.SUPER_ADMIN) {
-                    filteredPendingData = pendingData.filter(doc =>
-                        oIds.includes(doc.userId) || // Operator
-                        pIds.includes(doc.userId) || // Operator's Platinums
-                        gIds.includes(doc.userId)    // Goldens under those Platinums
-                    );
+                    relevantUserIds = [...oIds];
                 } else if (roleName === UserRole.OPERATOR) {
-                    filteredPendingData = pendingData.filter(doc =>
-                        pIds.includes(doc.userId) || // Operator's Platinums
-                        gIds.includes(doc.userId)    // Goldens under those Platinums
-                    );
+                    relevantUserIds = [...pIds];
                 } else if (roleName === UserRole.PLATINUM) {
-                    filteredPendingData = pendingData.filter(doc =>
-                        userIds.includes(doc.userId) // Their Goldens
+                    relevantUserIds = [...userIds]; // Platinum’s goldens
+                }
+
+                const commission = pendingData
+                    .filter(doc => relevantUserIds.includes(doc.userId))
+                    .reduce((acc, curr) => acc + (curr.parentCommission || 0), 0);
+
+                if (
+                    roleName !== UserRole.SUPER_ADMIN &&
+                    roleName !== UserRole.GOLDEN &&
+                    category !== "Unknown" &&
+                    commission > 0
+                ) {
+                    ownCommissionData[category].pending = commission;
+                }
+
+                const allUserIds = [...oIds, ...pIds, ...gIds];
+                const allUsers = await prisma.user.findMany({
+                    where: {id: {in: allUserIds}},
+                    select: {id: true, parentId: true},
+                });
+
+                const userMap = Object.fromEntries(allUsers.map(u => [u.id, u]));
+
+                if (roleName === UserRole.SUPER_ADMIN) {
+                    for (const oprId of oIds) {
+                        const operatorPlas = pIds.filter(pid => userMap[pid]?.parentId === oprId);
+                        const goldenIds = gIds.filter(gid =>
+                            operatorPlas.includes(userMap[gid]?.parentId)
+                        );
+
+                        const groupUserIds = [oprId, ...operatorPlas, ...goldenIds];
+                        const groupKey = groupUserIds.sort().join(",");
+
+                        const filteredData = pendingData.filter(doc =>
+                            groupUserIds.includes(doc.userId)
+                        );
+
+                        if (!groupDataMap[groupKey]) {
+                            groupDataMap[groupKey] = {
+                                userIds: groupUserIds,
+                                dataByCategory: {},
+                            };
+                        }
+
+                        groupDataMap[groupKey].dataByCategory[category] = filteredData;
+                    }
+                }
+
+                if (roleName === UserRole.OPERATOR) {
+                    for (const platId of pIds) {
+                        const goldenIds = gIds.filter(gid => userMap[gid]?.parentId === platId);
+                        const groupUserIds = [platId, ...goldenIds];
+                        const groupKey = groupUserIds.sort().join(",");
+
+                        const filteredData = pendingData.filter(doc => groupUserIds.includes(doc.userId));
+
+                        if (!groupDataMap[groupKey]) {
+                            groupDataMap[groupKey] = {
+                                userIds: groupUserIds,
+                                dataByCategory: {},
+                            };
+                        }
+                        groupDataMap[groupKey].dataByCategory[category] = filteredData;
+                    }
+                }
+            }
+
+            // Now sum across categories per group
+            for (const [groupKey, groupInfo] of Object.entries(groupDataMap)) {
+                let totalGroupSum = 0;
+                for (const cat of Object.keys(groupInfo.dataByCategory)) {
+                    totalGroupSum += groupInfo.dataByCategory[cat].reduce(
+                        (acc, doc) => acc + (doc.netCommissionAvailablePayout || 0), 0
                     );
                 }
 
-                categoryData[category].pending = pendingData;
+                if (totalGroupSum > 0) {
+                    // Add their data back into `categoryData` if group is positive
+                    for (const cat of Object.keys(groupInfo.dataByCategory)) {
+                        categoryData[cat].pending.push(...groupInfo.dataByCategory[cat]);
+                    }
+                }
             }
-
-            console.log(`Own commission: `, ownCommissionData)
 
             const cycleDates = await this.getPreviousCompletedCycleDates("E-Games");
 
