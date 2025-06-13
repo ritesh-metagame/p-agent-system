@@ -2064,7 +2064,37 @@ class CommissionService {
                         groupDataMap[groupKey].dataByCategory[category] = filteredData;
                     }
                 }
+
+                if (roleName === UserRole.PLATINUM) {
+                    const goldenIds = gIds.filter(gid => userMap[gid]?.parentId === userId);
+                    const groupUserIds = [...goldenIds];
+                    const groupKey = groupUserIds.sort().join(",");
+
+                    const filteredData = pendingData.filter(doc => groupUserIds.includes(doc.userId));
+
+                    if (!groupDataMap[groupKey]) {
+                        groupDataMap[groupKey] = {
+                            userIds: groupUserIds,
+                            dataByCategory: {},
+                        };
+                    }
+
+                    groupDataMap[groupKey].dataByCategory[category] = filteredData;
+                } else if (roleName === UserRole.GOLDEN) {
+                    // ✅ NEW: For GOLDEN, directly include all pendingData
+                    categoryData[category].pending.push(...pendingData);
+                }
+
             }
+
+            const groupKeys = Object.keys(groupDataMap);
+
+// Count how many groups have any data at all
+            const groupsWithData = Object.values(groupDataMap).filter(group =>
+                Object.values(group.dataByCategory).some(arr => arr.length > 0)
+            );
+
+            const isSingleDataGroup = groupsWithData.length === 1;
 
             // Now sum across categories per group
             for (const [groupKey, groupInfo] of Object.entries(groupDataMap)) {
@@ -2075,7 +2105,12 @@ class CommissionService {
                     );
                 }
 
-                if (totalGroupSum > 0) {
+                const shouldInclude =
+                    groupKeys.length === 1 ||
+                    isSingleDataGroup && groupsWithData[0] === groupInfo || // the only group with data
+                    totalGroupSum > 0;
+
+                if (shouldInclude) {
                     // Add their data back into `categoryData` if group is positive
                     for (const cat of Object.keys(groupInfo.dataByCategory)) {
                         categoryData[cat].pending.push(...groupInfo.dataByCategory[cat]);
