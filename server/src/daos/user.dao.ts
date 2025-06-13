@@ -1,9 +1,12 @@
 import { prisma } from "../server";
 import type { User } from "../../prisma/generated/prisma";
-import { UserRole } from "../common/config/constants";
+import { DEFAULT_COMMISSION_COMPUTATION_PERIOD, UserRole } from "../common/config/constants";
+import { CommissionService } from "../services/commission.service";
+import { endOfMonth } from "date-fns";
 
 class UserDao {
-  constructor() {}
+  constructor() {
+  }
 
   public async getUserByUserId(userId: string) {
     try {
@@ -19,23 +22,111 @@ class UserDao {
     }
   }
 
-  public async getUserPayoutAndWalletBalance(userId: string) {
-  try {
-    // Step 1: Fetch all commission summary records for this user
-    const summaries = await prisma.commissionSummary.findMany({
-      where: {
-        userId,
-         // Only consider pending summaries
-      },
-    });
+   private getWeeklyCompletedCycleDates(currentDate: Date) {
+          // Get today's day of the week (0 = Sunday, 1 = Monday, etc.)
+          const today = currentDate.getDay();
+  
+          // Calculate the date of the most recent Sunday (end of the previous week)
+          const daysToSubtract = today === 0 ? 7 : today; // If today is Sunday, get last week's Sunday
+          const mostRecentSunday = new Date(currentDate);
+          mostRecentSunday.setDate(currentDate.getDate() - daysToSubtract);
+  
+          // Set hours to end of day
+          mostRecentSunday.setHours(23, 59, 59, 999);
+  
+          // Calculate the start of that week (Monday)
+          const startOfPrevWeek = new Date(mostRecentSunday);
+          startOfPrevWeek.setDate(mostRecentSunday.getDate() - 6);
+          startOfPrevWeek.setHours(0, 0, 0, 0);
+  
+          return {
+              cycleStartDate: startOfPrevWeek,
+              cycleEndDate: new Date(mostRecentSunday.setHours(23, 59, 59, 999)),
+          };
+      }
 
-    if (!summaries.length) {
-      console.warn(`⚠️ No commission summaries found for user: ${userId}`);
-      return { payout: 0, wallet: 0 };
+  private async getPreviousCompletedCycleDates(categoryName?: string) {
+        const currentDate = new Date();
+
+        // If in test mode, return dates from 1 month back
+        if (process.env.VIEW_MODE === "test") {
+            const oneMonthAgo = new Date(currentDate);
+            oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 8);
+            return {
+                cycleStartDate: oneMonthAgo,
+                cycleEndDate: currentDate,
+            };
+        }
+
+        // For weekly computation categories (Sports Betting and Speciality Games - Tote)
+        if (
+            categoryName === "Sports Betting" ||
+            categoryName === "Speciality Games - Tote"
+        ) {
+            return this.getWeeklyCompletedCycleDates(currentDate);
+        }
+
+        // For bi-monthly computation categories (default, E-Sports and Speciality Games - RNG)
+        // Production mode - use cycle-based dates
+        const currentDay = currentDate.getDate();
+        let cycleStartDate: Date;
+        let cycleEndDate: Date;
+
+        if (DEFAULT_COMMISSION_COMPUTATION_PERIOD.toString() === "MONTHLY") {
+            const prevMonth = new Date(
+                currentDate.getFullYear(),
+                currentDate.getMonth() - 1,
+                1
+            );
+            cycleStartDate = new Date(
+                prevMonth.getFullYear(),
+                prevMonth.getMonth(),
+                1
+            );
+            cycleEndDate = endOfMonth(prevMonth);
+        } else {
+            if (currentDay >= 16) {
+                // We're in the second half, show first half of current month
+                cycleStartDate = new Date(
+                    currentDate.getFullYear(),
+                    currentDate.getMonth(),
+                    1
+                );
+                cycleEndDate = new Date(
+                    new Date(
+                        currentDate.getFullYear(),
+                        currentDate.getMonth(),
+                        15
+                    ).setHours(23, 59, 59, 999)
+                );
+            } else {
+                // We're in first half, show second half of previous month
+                cycleStartDate = new Date(
+                    new Date(
+                        currentDate.getFullYear(),
+                        currentDate.getMonth() - 1,
+                        16
+                    ).setHours(0, 0, 0, 0)
+                );
+                cycleEndDate = new Date(
+                    endOfMonth(
+                        new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
+                    ).setHours(23, 59, 59, 999)
+                );
+            }
+        }
+
+        return {cycleStartDate, cycleEndDate};
     }
 
-    // Step 2: Fetch the parentId and role of this user
-    const user = await prisma.user.findUnique({
+  public async getUserPayoutAndWalletBalance(userId: string) {
+    try {
+
+      const eGamesCycle = await this.getPreviousCompletedCycleDates("E-Games");
+            const sportsCycle =
+                await this.getPreviousCompletedCycleDates("Sports Betting");
+
+      const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
         parentId: true,
@@ -52,7 +143,101 @@ class UserDao {
       return { payout: 0, wallet: 0 };
     }
 
-    const roleName = user.role.name;
+      const roleName = user.role.name;
+    
+      let targetUserIds = [];
+
+            if (roleName === UserRole.OPERATOR) {
+              // Fetch Platinum Users under Operator
+              const platinumUsers = await prisma.user.findMany({
+                where: {
+                  parentId: userId,
+                  
+                },
+                select: { id: true },
+              });
+
+              const platinumIds = platinumUsers.map(u => u.id);
+
+              // Fetch Golden Users under each Platinum User
+              const goldenUsers = await prisma.user.findMany({
+                where: {
+                  parentId: { in: platinumIds },
+                },
+                select: { id: true },
+              });
+
+              const goldenIds = goldenUsers.map(u => u.id);
+
+              // Total downline (platinum + golden)
+              targetUserIds = [...platinumIds, ...goldenIds];
+  
+                } else if (roleName === UserRole.PLATINUM) {
+                  // Platinum can see only its direct golden users
+                  const goldenUsers = await prisma.user.findMany({
+                    where: {
+                      parentId: userId,
+                    },
+                    select: { id: true },
+                  });
+
+                  targetUserIds = goldenUsers.map(u => u.id);
+
+                } 
+
+    // Step 1: Fetch all commission summary records for this user
+    const summaries = await prisma.commissionSummary.findMany({
+  where: {
+    userId,
+    OR: [
+      {
+        categoryName: 'E-Games',
+        createdAt: {
+          gte: eGamesCycle.cycleStartDate,
+          lte: eGamesCycle.cycleEndDate,
+        },
+      },
+      {
+        categoryName: 'Sports Betting',
+        createdAt: {
+          gte: sportsCycle.cycleStartDate,
+          lte: sportsCycle.cycleEndDate,
+        },
+      },
+    ],
+  },
+});
+
+
+    if (!summaries.length) {
+      console.warn(`⚠️ No commission summaries found for user: ${userId}`);
+      return { payout: 0, wallet: 0 };
+      }
+      
+      const payoutSummaries = await prisma.commissionSummary.findMany({
+  where: {
+    settledStatus: 'N',
+    userId: { in: targetUserIds },
+    ...(roleName === UserRole.OPERATOR ? { settledByOperator: false } : {}),
+    OR: [
+      {
+        categoryName: 'E-Games',
+        createdAt: {
+          gte: eGamesCycle.cycleStartDate,
+          lte: eGamesCycle.cycleEndDate,
+        },
+      },
+      {
+        categoryName: 'Sports Betting',
+        createdAt: {
+          gte: sportsCycle.cycleStartDate,
+          lte: sportsCycle.cycleEndDate,
+        },
+      },
+    ],
+  },
+});
+
 
     // Step 3: Role-based settlement check
     const isSettled =
@@ -65,45 +250,39 @@ class UserDao {
             : true; // default true for other roles
     
     console.log(
-      `Role: ${roleName}, Settled: ${isSettled}, Summaries Count: ${summaries.length}`)
+      `Role0000000000000ooooooooooooooooookkkkkkkkkkkkkkkkkkkkkkknnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn: ${roleName}, Settled: ${isSettled}, Summaries Count: ${summaries.length}`)
 
-    // if (!isSettled) {
-    //   console.warn(
-    //     `⚠️ Settlement not completed for role ${roleName}. Returning payout and wallet as 0.`
-    //   );
-    //   return { payout: 0, wallet: 0 };
-    // }
-
-    // Step 4: Fetch parent's commission if applicable
-    const parentId = user.parentId;
-    let totalParentCommission = 0;
-
-    if (parentId) {
-      const parentSummaries = await prisma.commissionSummary.findMany({
-        where: { userId: parentId },
-      });
-
-      totalParentCommission = parentSummaries.reduce(
-        (acc, summary) =>
-          acc + Number(summary.netCommissionAvailablePayout || 0),
-        0
+    if (!isSettled) {
+      console.warn(
+        `⚠️ Settlement not completed for role ${roleName}. Returning payout and wallet as 0.`
       );
+      return { payout: 0, wallet: 0 };
     }
 
+  
+
     // Step 5: Initialize sums
-    let totalNetGGR = 0;
-    let totalBetAmount = 0;
+   
     let totalCommissionByUser = 0;
-    let totalPaymentGatewayFee = 0;
+
     let wallet = 0;
     let totalPayout = 0;
 
     for (const summary of summaries) {
       if (summary.categoryName === "E-Games") {
         totalCommissionByUser += Number(summary.netCommissionAvailablePayout || 0);
-        totalPayout += Number(summary.pendingSettleCommission || 0);
       } else if (summary.categoryName === "Sports Betting") {
         totalCommissionByUser += Number(summary.netCommissionAvailablePayout || 0);
+      }
+
+      
+      }
+      
+      for (const summary of payoutSummaries) {
+      if (summary.categoryName === "E-Games") {
+        totalPayout += Number(summary.netCommissionAvailablePayout || 0);
+      } else if (summary.categoryName === "Sports Betting") {
+        totalPayout += Number(summary.netCommissionAvailablePayout || 0);
       }
 
       
@@ -112,7 +291,7 @@ class UserDao {
     
 
     const payout =
-      totalPayout  - totalParentCommission;
+      totalPayout  ;
       
 
    
