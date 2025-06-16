@@ -320,14 +320,18 @@ class UserDao {
       sportsSum += payout;
     }
   }
-// Total for this Platinum group
-        let groupTotal = eGamesSum + sportsSum;
-        if (groupTotal <= 0) {
-    groupTotal = 0;
-  }
+  // If category sums are negative, treat them as 0 individually
+  if (eGamesSum < 0) eGamesSum = 0;
+  if (sportsSum < 0) sportsSum = 0;
+
+  // Now add corrected values
+  const groupTotal = eGamesSum + sportsSum;
+
   console.log(`Platinum ${group.platinumId}: E-Games = ${eGamesSum}, Sports = ${sportsSum}`);
 
-  totalPayout += groupTotal;
+        totalPayout += groupTotal;
+        
+        console.log(`Total Payout for Platinum ${group.platinumId}: ${totalPayout}`);
 }
 
       
