@@ -146,6 +146,8 @@ class UserDao {
       const roleName = user.role.name;
     
       let targetUserIds = [];
+      let platinumGroups = [];
+
 
             if (roleName === UserRole.OPERATOR) {
               // Fetch Platinum Users under Operator
@@ -156,6 +158,21 @@ class UserDao {
                 },
                 select: { id: true },
               });
+              for (const platinum of platinumUsers) {
+    // Fetch Golden Users under this Platinum
+    const goldenUser = await prisma.user.findMany({
+      where: { parentId: platinum.id },
+      select: { id: true },
+    });
+                const goldenId = goldenUser.map(g => g.id);
+                
+                  // Each group contains Platinum + its Goldens
+    platinumGroups.push({
+      platinumId: platinum.id,
+      downlineIds: [platinum.id, ...goldenId],
+    });
+  }
+
 
               const platinumIds = platinumUsers.map(u => u.id);
 
@@ -171,6 +188,8 @@ class UserDao {
 
               // Total downline (platinum + golden)
               targetUserIds = [...platinumIds, ...goldenIds];
+
+              
   
                 } else if (roleName === UserRole.PLATINUM) {
                   // Platinum can see only its direct golden users
@@ -181,7 +200,14 @@ class UserDao {
                     select: { id: true },
                   });
 
-                  targetUserIds = goldenUsers.map(u => u.id);
+              targetUserIds = goldenUsers.map(u => u.id);
+              const goldenIds = goldenUsers.map(g => g.id);
+
+  platinumGroups.push({
+    platinumId: userId,  // Treat Platinum as its own "group"
+    downlineIds: [userId, ...goldenIds],
+  });
+              
 
                 } 
 
@@ -277,6 +303,34 @@ class UserDao {
 
       
       }
+      for (const group of platinumGroups) {
+  const groupSummaries = payoutSummaries.filter(summary =>
+    group.downlineIds.includes(summary.userId)
+  );
+
+  let eGamesSum = 0;
+  let sportsSum = 0;
+
+  for (const summary of groupSummaries) {
+    const payout = Number(summary.netCommissionAvailablePayout || 0);
+
+    if (summary.categoryName === 'E-Games') {
+      eGamesSum += payout;
+    } else if (summary.categoryName === 'Sports Betting') {
+      sportsSum += payout;
+    }
+  }
+// Total for this Platinum group
+        let groupTotal = eGamesSum + sportsSum;
+        if (groupTotal <= 0) {
+    groupTotal = 0;
+  }
+  console.log(`Platinum ${group.platinumId}: E-Games = ${eGamesSum}, Sports = ${sportsSum}`);
+
+  totalPayout += groupTotal;
+}
+
+      
       
     //   for (const summary of payoutSummaries) {
     //   if (summary.categoryName === "E-Games") {
@@ -286,19 +340,11 @@ class UserDao {
     //   }
 
       
-      // }
-      
-      for (const summary of payoutSummaries) {
-  if (summary.categoryName === "E-Games" || summary.categoryName === "Sports Betting") {
-    const payout = Number(summary.netCommissionAvailablePayout || 0);
-    totalPayout += payout > 0 ? payout : 0; // Consider negative as 0
-  }
-}
+    // }
 
 
-    
-
-    const payout = totalPayout  ;
+    const payout =
+      totalPayout  ;
       
 
    
