@@ -49,7 +49,7 @@ This document provides a comprehensive guide to understanding how the P-Agent Sy
 │  /api/v1/user/*             │  /api/v1/category/*           │
 │  /api/v1/site/*             │  /api/v1/role/*               │
 │  /api/v1/player/*           │  /api/v1/transactions/*       │
-│  /api/v1/network-statistics/*  │  /api/v1/top-performers/* │
+│  /api/v1/network-statistics/*  │  /api/v1/top-performers/*  │
 └─────────────────────┬───────────────────────────────────────┘
                       │ Route-specific Requests
                       ▼
