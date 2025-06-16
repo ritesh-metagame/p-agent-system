@@ -2587,7 +2587,7 @@ class CommissionService {
                     where: {
                         parentId: userId,
                     },
-                    select: {id: true},
+                    select: {id: true, username: true},
                 })
                 .then((users) => users.map((user) => user.id));
 
@@ -2597,6 +2597,15 @@ class CommissionService {
                 let gIds = []
 
                 let restUserIds = [];
+
+                const username = (await prisma.user.findMany({
+                    where: {
+                        id: id
+                    },
+                    select: {
+                        username: true
+                    }
+                })).map(doc => doc.username)[0]
 
                 if (roleName === UserRole.SUPER_ADMIN) {
                     oIds = [id];
@@ -2628,7 +2637,7 @@ class CommissionService {
                     // console.log({restUserIds})
                 }
                 if (roleName === UserRole.OPERATOR) {
-                    const pIds = [id];
+                    pIds = [id];
 
                     const goldens = await prisma.user.findMany({
                         where: {
@@ -2636,6 +2645,8 @@ class CommissionService {
                         },
                         select: {id: true},
                     });
+
+                    gIds = goldens.map((golden) => golden.id);
 
                     restUserIds = goldens.map((golden) => golden.id);
                 }
@@ -2662,9 +2673,13 @@ class CommissionService {
 
                 const directChildrenSummaryIds = []
 
+                const restCommissionIds = []
+
                 for (const category of categories) {
                     const {cycleStartDate, cycleEndDate} =
                         await this.getPreviousCompletedCycleDates(category);
+
+                    console.log([...oIds, ...pIds, ...gIds])
 
                     const summaries = await prisma.commissionSummary.findMany({
                         where: {
@@ -2691,7 +2706,11 @@ class CommissionService {
                         },
                     });
 
-                    directChildrenSummaryIds.push(...summaries.filter(s => s.user.id = id).map(d => d.id))
+                    console.log({summaries})
+
+                    directChildrenSummaryIds.push(...summaries.filter(s => s.user.id == id).map(d => d.id))
+
+                    restCommissionIds.push(...summaries.filter(s => s.user.id !== id).map(d => d.id))
 
                     const isSettledBySuperAdmin = ownCommissionData[category].settledBySuperAdmin;
                     const isSettledByOperator = ownCommissionData[category].settledByOperator;
@@ -2720,6 +2739,58 @@ class CommissionService {
                         );
 
                         const groupUserIds = [id, ...operatorPlas, ...goldenIds];
+                        const groupKey = groupUserIds.sort().join(",");
+
+                        const filteredData = summaries.filter(doc =>
+                            groupUserIds.includes(doc.user.id)
+                        );
+
+                        if (!groupDataMap[groupKey]) {
+                            groupDataMap[groupKey] = {
+                                userIds: groupUserIds,
+                                dataByCategory: {},
+                            };
+                        }
+
+                        groupDataMap[groupKey].dataByCategory[category] = filteredData;
+
+                    }
+
+                    if (roleName === UserRole.OPERATOR) {
+                        const goldenIds = gIds.filter(gid =>
+                            pIds.includes(userMap[gid]?.parentId)
+                        );
+
+                        console.log({goldenIds})
+
+                        const groupUserIds = [id, ...goldenIds];
+
+                        console.log({groupUserIds})
+
+                        const groupKey = groupUserIds.sort().join(",");
+
+                        console.log({groupKey})
+
+                        const filteredData = summaries.filter(doc =>
+                            groupUserIds.includes(doc.user.id)
+                        );
+
+                        console.log({filteredData})
+
+                        if (!groupDataMap[groupKey]) {
+                            groupDataMap[groupKey] = {
+                                userIds: groupUserIds,
+                                dataByCategory: {},
+                            };
+                        }
+
+                        groupDataMap[groupKey].dataByCategory[category] = filteredData;
+
+                    }
+
+                    if (roleName === UserRole.PLATINUM) {
+
+                        const groupUserIds = [...gIds];
                         const groupKey = groupUserIds.sort().join(",");
 
                         const filteredData = summaries.filter(doc =>
@@ -2773,7 +2844,8 @@ class CommissionService {
 
                 return {
                     ids: directChildrenSummaryIds,
-                    // restCommissionIds: summariesByUser.restCommissionIds,
+                    network: username,
+                    restCommissionIds: restCommissionIds,
                     grossCommissions: grossCommissionSum,
                     // paymentGatewayFees: pendingPaymentGatewayFees,
                     ownCommission: ownCommission,
