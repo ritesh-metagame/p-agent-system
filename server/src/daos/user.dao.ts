@@ -278,20 +278,27 @@ class UserDao {
       
       }
       
-      for (const summary of payoutSummaries) {
-      if (summary.categoryName === "E-Games") {
-        totalPayout += Number(summary.netCommissionAvailablePayout || 0);
-      } else if (summary.categoryName === "Sports Betting") {
-        totalPayout += Number(summary.netCommissionAvailablePayout || 0);
-      }
+    //   for (const summary of payoutSummaries) {
+    //   if (summary.categoryName === "E-Games") {
+    //     totalPayout += Number(summary.netCommissionAvailablePayout || 0);
+    //   } else if (summary.categoryName === "Sports Betting") {
+    //     totalPayout += Number(summary.netCommissionAvailablePayout || 0);
+    //   }
 
       
-    }
+      // }
+      
+      for (const summary of payoutSummaries) {
+  if (summary.categoryName === "E-Games" || summary.categoryName === "Sports Betting") {
+    const payout = Number(summary.netCommissionAvailablePayout || 0);
+    totalPayout += payout > 0 ? payout : 0; // Consider negative as 0
+  }
+}
+
 
     
 
-    const payout =
-      totalPayout  ;
+    const payout = totalPayout  ;
       
 
    
