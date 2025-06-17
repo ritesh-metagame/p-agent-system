@@ -1136,13 +1136,27 @@ class CommissionService {
                 let filteredSettledSummaries: any[] = [];
 
                 for (const [_, groupSummaries] of groupedSettledSummaries.entries()) {
-                    const total = groupSummaries.reduce(
-                        (acc, s) => acc + (s.netCommissionAvailablePayout || 0),
-                        0
-                    );
+                    const categoryGroupMap: Record<string, any[]> = {};
 
-                    if (total >= 0) {
-                        filteredSettledSummaries = filteredSettledSummaries.concat(groupSummaries);
+                    // Group summaries by category
+                    for (const summary of groupSummaries) {
+                        const category = summary.categoryName;
+                        if (!categoryGroupMap[category]) {
+                            categoryGroupMap[category] = [];
+                        }
+                        categoryGroupMap[category].push(summary);
+                    }
+
+                    // Filter by category totals
+                    for (const [category, summaries] of Object.entries(categoryGroupMap)) {
+                        const categoryTotal = summaries.reduce(
+                            (acc, s) => acc + (s.netCommissionAvailablePayout || 0),
+                            0
+                        );
+
+                        if (categoryTotal >= 0) {
+                            filteredSettledSummaries = filteredSettledSummaries.concat(summaries);
+                        }
                     }
                 }
 
@@ -1291,13 +1305,27 @@ class CommissionService {
                 let filteredPlatinumSummaries: typeof settledData = [];
 
                 for (const [platinumId, groupSummaries] of groupedByPlatinum.entries()) {
-                    const totalNetPayout = groupSummaries.reduce(
-                        (sum, s) => sum + (s.netCommissionAvailablePayout || 0),
-                        0
-                    );
+                    const categoryGroupMap: Record<string, any[]> = {};
 
-                    if (totalNetPayout >= 0) {
-                        filteredPlatinumSummaries.push(...groupSummaries);
+                    // Group summaries by category
+                    for (const summary of groupSummaries) {
+                        const category = summary.categoryName;
+                        if (!categoryGroupMap[category]) {
+                            categoryGroupMap[category] = [];
+                        }
+                        categoryGroupMap[category].push(summary);
+                    }
+
+                    // Filter by category totals
+                    for (const [category, summaries] of Object.entries(categoryGroupMap)) {
+                        const categoryTotal = summaries.reduce(
+                            (acc, s) => acc + (s.netCommissionAvailablePayout || 0),
+                            0
+                        );
+
+                        if (categoryTotal >= 0) {
+                            filteredPlatinumSummaries = filteredPlatinumSummaries.concat(summaries);
+                        }
                     }
                 }
 
@@ -1353,16 +1381,30 @@ class CommissionService {
 // Now, `groupedByGolden` has keys as golden userIds and values as array of their summaries.
 
 // Optional: Filter out groups with negative total netCommissionAvailablePayout
-                const filteredSummaries: typeof settledData = [];
+                let filteredSummaries: typeof settledData = [];
 
                 for (const [goldenId, summaries] of groupedByGolden.entries()) {
-                    const totalNetPayout = summaries.reduce(
-                        (acc, s) => acc + (s.netCommissionAvailablePayout || 0),
-                        0
-                    );
+                    const categoryGroupMap: Record<string, any[]> = {};
 
-                    if (totalNetPayout >= 0) {
-                        filteredSummaries.push(...summaries);
+                    // Group summaries by category
+                    for (const summary of summaries) {
+                        const category = summary.categoryName;
+                        if (!categoryGroupMap[category]) {
+                            categoryGroupMap[category] = [];
+                        }
+                        categoryGroupMap[category].push(summary);
+                    }
+
+                    // Filter by category totals
+                    for (const [category, summaries] of Object.entries(categoryGroupMap)) {
+                        const categoryTotal = summaries.reduce(
+                            (acc, s) => acc + (s.netCommissionAvailablePayout || 0),
+                            0
+                        );
+
+                        if (categoryTotal >= 0) {
+                            filteredSummaries = filteredSummaries.concat(summaries);
+                        }
                     }
                 }
 
@@ -1485,6 +1527,23 @@ class CommissionService {
                         }
                         groupDataMap[groupKey].dataByCategory[category] = filteredData;
                     }
+                }
+
+                if (roleName === UserRole.PLATINUM) {
+                    const goldenIds = gIds.filter(gid => userMap[gid]?.parentId === userId);
+                    const groupUserIds = [userId, ...goldenIds];
+                    const groupKey = groupUserIds.sort().join(",");
+
+                    const filteredData = summaries.filter(doc => groupUserIds.includes(doc.userId));
+
+                    if (!groupDataMap[groupKey]) {
+                        groupDataMap[groupKey] = {
+                            userIds: groupUserIds,
+                            dataByCategory: {},
+                        };
+                    }
+                    groupDataMap[groupKey].dataByCategory[category] = filteredData;
+
                 }
 
                 // commissionSummaries = commissionSummaries.concat(summaries);
@@ -2022,13 +2081,6 @@ class CommissionService {
                 });
 
                 gIds = [userId];
-
-                pendingPaymentGatewayFee = await this.getPaymentGatewayFee(
-                    gIds,
-                    false,
-                    undefined,
-                    undefined
-                );
             }
 
             let cycleStartDate: Date;
@@ -2048,8 +2100,6 @@ class CommissionService {
                 const cycleDates = await this.getPreviousCompletedCycleDates(category);
                 cycleStartDate = cycleDates.cycleStartDate;
                 cycleEndDate = cycleDates.cycleEndDate;
-
-                console.log({cycleStartDate, cycleEndDate});
 
                 // Get pending settlement data for this category
                 let pendingData = await prisma.commissionSummary.findMany({
@@ -2093,8 +2143,7 @@ class CommissionService {
                 if (
                     roleName !== UserRole.SUPER_ADMIN &&
                     roleName !== UserRole.GOLDEN &&
-                    category !== "Unknown" &&
-                    commission > 0
+                    category !== "Unknown"
                 ) {
                     ownCommissionData[category].pending = commission;
                 }
@@ -2165,9 +2214,22 @@ class CommissionService {
                     }
 
                     groupDataMap[groupKey].dataByCategory[category] = filteredData;
-                } else if (roleName === UserRole.GOLDEN) {
-                    // ✅ NEW: For GOLDEN, directly include all pendingData
-                    categoryData[category].pending.push(...pendingData);
+                }
+                if (roleName === UserRole.GOLDEN) {
+
+                    const groupUserIds = [userId];
+                    const groupKey = groupUserIds.sort().join(",");
+
+                    const filteredData = pendingData.filter(doc => groupUserIds.includes(doc.userId));
+
+                    if (!groupDataMap[groupKey]) {
+                        groupDataMap[groupKey] = {
+                            userIds: groupUserIds,
+                            dataByCategory: {},
+                        };
+                    }
+
+                    groupDataMap[groupKey].dataByCategory[category] = filteredData;
                 }
 
             }
@@ -2181,27 +2243,27 @@ class CommissionService {
 
             const isSingleDataGroup = groupsWithData.length === 1;
 
-            // Now sum across categories per group
-            for (const [groupKey, groupInfo] of Object.entries(groupDataMap)) {
-                let totalGroupSum = 0;
-                for (const cat of Object.keys(groupInfo.dataByCategory)) {
-                    totalGroupSum += groupInfo.dataByCategory[cat].reduce(
-                        (acc, doc) => acc + (doc.netCommissionAvailablePayout || 0), 0
-                    );
-                }
-
-                const shouldInclude =
-                    groupKeys.length === 1 ||
-                    isSingleDataGroup && groupsWithData[0] === groupInfo || // the only group with data
-                    totalGroupSum > 0;
-
-                if (shouldInclude) {
-                    // Add their data back into `categoryData` if group is positive
-                    for (const cat of Object.keys(groupInfo.dataByCategory)) {
-                        categoryData[cat].pending.push(...groupInfo.dataByCategory[cat]);
-                    }
-                }
-            }
+            // // Now sum across categories per group
+            // for (const [groupKey, groupInfo] of Object.entries(groupDataMap)) {
+            //     let totalGroupSum = 0;
+            //     for (const cat of Object.keys(groupInfo.dataByCategory)) {
+            //         totalGroupSum += groupInfo.dataByCategory[cat].reduce(
+            //             (acc, doc) => acc + (doc.netCommissionAvailablePayout || 0), 0
+            //         );
+            //     }
+            //
+            //     const shouldInclude =
+            //         groupKeys.length === 1 ||
+            //         isSingleDataGroup && groupsWithData[0] === groupInfo || // the only group with data
+            //         totalGroupSum > 0;
+            //
+            //     if (shouldInclude) {
+            //         // Add their data back into `categoryData` if group is positive
+            //         for (const cat of Object.keys(groupInfo.dataByCategory)) {
+            //             categoryData[cat].pending.push(...groupInfo.dataByCategory[cat]);
+            //         }
+            //     }
+            // }
 
             const userCategoryCommissionMap = new Map<string, number>();
 
@@ -2261,6 +2323,8 @@ class CommissionService {
             const totalRng = resultByCategory["Speciality Games - RNG"];
             const totalTote = resultByCategory["Speciality Games - Tote"];
 
+            console.log({totalEGames, totalSportsBetting, ownCommissionData});
+
             // Initialize category totals
             const categoryTotals = {
                 pending: {
@@ -2302,12 +2366,15 @@ class CommissionService {
                 ownCommissionData["Speciality Games - RNG"].pending +
                 ownCommissionData["Speciality Games - Tote"].pending;
 
+            const ownCommission = Object.keys(ownCommissionData).reduce((sum, category) => {
+                return sum + (Math.max(0, ownCommissionData[category]?.pending) || 0);
+            }, 0);
+
             const totalPendingCommission = totalPendingGrossCommission == 0 ? 0 :
                 totalPendingGrossCommission +
-                ownCommissionData["E-Games"].pending +
-                ownCommissionData["Sports Betting"].pending +
-                ownCommissionData["Speciality Games - RNG"].pending +
-                ownCommissionData["Speciality Games - Tote"].pending;
+                ownCommission;
+
+            const totalPendingGrossCommissionIncludingOwnCommission = totalPendingGrossCommission + ownCommission;
 
             // const finalPendingAmount = totalPendingCommission -
             //     pendingPaymentGatewayFeeSum -
@@ -2350,27 +2417,27 @@ class CommissionService {
                 rows: [
                     {
                         label: "Total EGames",
-                        pendingSettlement: totalEGames,
+                        pendingSettlement: totalPendingEGames,
                         settledAllTime: categoryTotals.settled.egames.amount,
                     },
                     {
                         label: "Total Sports Betting",
-                        pendingSettlement: totalSportsBetting,
+                        pendingSettlement: totalPendingSportsBetting,
                         settledAllTime: categoryTotals.settled.sports.amount,
                     },
                     {
                         label: "Total Speciality Games - RNG",
-                        pendingSettlement: totalRng,
+                        pendingSettlement: totalPendingRng,
                         settledAllTime: categoryTotals.settled.specialtyGamesRng.amount,
                     },
                     {
                         label: "Total Speciality Games - Tote",
-                        pendingSettlement: totalTote,
+                        pendingSettlement: totalPendingTote,
                         settledAllTime: categoryTotals.settled.specialtyGamesTote.amount,
                     },
                     {
                         label: "Gross Commissions",
-                        pendingSettlement: totalPendingGrossCommission,
+                        pendingSettlement: totalPendingGrossCommissionIncludingOwnCommission,
                         settledAllTime: 0,
                     },
                     ...(roleName !== UserRole.GOLDEN
@@ -2647,8 +2714,6 @@ class CommissionService {
                     });
 
                     gIds = goldens.map((golden) => golden.id);
-
-                    restUserIds = goldens.map((golden) => golden.id);
                 }
 
                 if (roleName === UserRole.PLATINUM) {
@@ -2675,11 +2740,16 @@ class CommissionService {
 
                 const restCommissionIds = []
 
+                const ownCommission = {
+                    "E-Games": 0,
+                    "Sports Betting": 0,
+                    "Speciality Games - RNG": 0,
+                    "Speciality Games - Tote": 0,
+                }
+
                 for (const category of categories) {
                     const {cycleStartDate, cycleEndDate} =
                         await this.getPreviousCompletedCycleDates(category);
-
-                    console.log([...oIds, ...pIds, ...gIds])
 
                     const summaries = await prisma.commissionSummary.findMany({
                         where: {
@@ -2706,11 +2776,18 @@ class CommissionService {
                         },
                     });
 
-                    console.log({summaries})
-
                     directChildrenSummaryIds.push(...summaries.filter(s => s.user.id == id).map(d => d.id))
 
                     restCommissionIds.push(...summaries.filter(s => s.user.id !== id).map(d => d.id))
+
+                    const selfSummaries = summaries.filter(s => s.user.id == id)
+
+                    if (!selfSummaries.length) continue;
+
+
+                    const commissionUserIds = summaries.map(s => s.user.id)
+
+                    selfSummaries.reduce((acc, curr) => ownCommission[category] += (curr.parentCommission || 0), 0)
 
                     const isSettledBySuperAdmin = ownCommissionData[category].settledBySuperAdmin;
                     const isSettledByOperator = ownCommissionData[category].settledByOperator;
@@ -2761,21 +2838,13 @@ class CommissionService {
                             pIds.includes(userMap[gid]?.parentId)
                         );
 
-                        console.log({goldenIds})
-
                         const groupUserIds = [id, ...goldenIds];
 
-                        console.log({groupUserIds})
-
                         const groupKey = groupUserIds.sort().join(",");
-
-                        console.log({groupKey})
 
                         const filteredData = summaries.filter(doc =>
                             groupUserIds.includes(doc.user.id)
                         );
-
-                        console.log({filteredData})
 
                         if (!groupDataMap[groupKey]) {
                             groupDataMap[groupKey] = {
@@ -2831,24 +2900,22 @@ class CommissionService {
                     }
                 });
 
-                const netCommissions = grossCommissionSum
-
-                console.log(
-                    {directChildrenSummaryIds},
-                    {grossCommissionSum}
-                )
-
                 if (!directChildrenSummaryIds.length && grossCommissionSum == 0) {
                     return []
                 }
+
+                const totalOwnCommission = Object.values(ownCommission).reduce((acc, curr) => acc += Math.max(0, curr), 0)
+
+                const grossCommission = grossCommissionSum + totalOwnCommission
+
+                const netCommissions = grossCommission - totalOwnCommission
 
                 return {
                     ids: directChildrenSummaryIds,
                     network: username,
                     restCommissionIds: restCommissionIds,
-                    grossCommissions: grossCommissionSum,
-                    // paymentGatewayFees: pendingPaymentGatewayFees,
-                    ownCommission: ownCommission,
+                    grossCommissions: grossCommission,
+                    ownCommission: totalOwnCommission,
                     netCommissions: netCommissions,
                     transferableAmount: netCommissions < 0 ? 0 : netCommissions,
                     breakdownAction: "view",
