@@ -2370,6 +2370,7 @@ class CommissionService {
                 return sum + (Math.max(0, ownCommissionData[category]?.pending) || 0);
             }, 0);
 
+
             const totalPendingCommission = totalPendingGrossCommission == 0 ? 0 :
                 totalPendingGrossCommission +
                 ownCommission;
@@ -2381,7 +2382,7 @@ class CommissionService {
             //     pendingOwnCommission
 
             const finalPendingAmountWithoutPGFeeDeduction = totalPendingCommission == 0 ? 0 : totalPendingCommission -
-                pendingOwnCommission
+                ownCommission
 
             // console.log({totalPendingCommission, finalPendingAmount, ownCommission, pendingPaymentGatewayFeeSum})
 
@@ -2444,7 +2445,7 @@ class CommissionService {
                         ? [
                             {
                                 label: "Less: Own Commission",
-                                pendingSettlement: pendingOwnCommission,
+                                pendingSettlement: ownCommission,
                                 settledAllTime: 0,
                                 note: "(Gross Commission less Payment Gateway Fees)",
                             },

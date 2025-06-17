@@ -13,7 +13,9 @@ model User {
   bankName      String?
   accountNumber String?
 
-  approved Int 
+  settlementHistories SettlementHistory[]
+
+  approved Int
 
   userSites UserSite[]
 

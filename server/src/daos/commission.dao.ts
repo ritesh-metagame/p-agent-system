@@ -741,7 +741,7 @@ class CommissionDao {
         }
     }
 
-    public async markCommissionAsSettled(ids: string[], roleName: UserRole, childrenCommissionIds: string[]) {
+    public async markCommissionAsSettled(ids: string[], roleName: UserRole, childrenCommissionIds: string[], transferableAmount: number) {
 
         try {
             // First get the current records with their user roles
@@ -754,6 +754,7 @@ class CommissionDao {
                     pendingSettleCommission: true,
                     netCommissionAvailablePayout: true,
                     paymentGatewayFee: true,
+                    categoryName: true,
                     userId: true,
                     createdAt: true,
                     user: {
@@ -767,6 +768,34 @@ class CommissionDao {
                     }
                 },
             });
+
+            const categoryGroupedRecords: Record<string, typeof currentRecords> = {};
+
+            for (const record of currentRecords) {
+                const category = record.categoryName;
+
+                if (!categoryGroupedRecords[category]) {
+                    categoryGroupedRecords[category] = [];
+                }
+
+                categoryGroupedRecords[category].push(record);
+            }
+
+            for (const [categoryName, records] of Object.entries(categoryGroupedRecords)) {
+                const totalAmount = records.reduce((sum, rec) => sum + (rec.pendingSettleCommission || 0), 0);
+
+                const userId = records[0].userId
+
+                if (totalAmount > 0) {
+                    await prisma.settlementHistory.create({
+                        data: {
+                            categoryName,
+                            userId: userId, // Replace with appropriate user ID
+                            amount: totalAmount,
+                        },
+                    });
+                }
+            }
 
             // Extract date from the first record
             const recordDate = currentRecords[0]?.createdAt;
@@ -848,13 +877,13 @@ class CommissionDao {
                         },
                     });
 
-                  const settleData = {
-                      settledBySuperadmin: roleName === UserRole.SUPER_ADMIN ? true : previousFlags?.settledBySuperadmin ?? false,
-                            settledByOperator: roleName === UserRole.OPERATOR ? true : previousFlags?.settledByOperator ?? false,
-                            settledByPlatinum: roleName === UserRole.PLATINUM ? true : previousFlags?.settledByPlatinum ?? false,
-                  }
-                  
-                  console.log("Settle Data:------------------123", settleData);
+                    const settleData = {
+                        settledBySuperadmin: roleName === UserRole.SUPER_ADMIN ? true : previousFlags?.settledBySuperadmin ?? false,
+                        settledByOperator: roleName === UserRole.OPERATOR ? true : previousFlags?.settledByOperator ?? false,
+                        settledByPlatinum: roleName === UserRole.PLATINUM ? true : previousFlags?.settledByPlatinum ?? false,
+                    }
+
+                    console.log("Settle Data:------------------123", settleData);
 
                     return prisma.commissionSummary.update({
                         where: {id: record.id},
@@ -880,14 +909,14 @@ class CommissionDao {
                             settledByPlatinum: true,
                         },
                     });
-                  
-                  const settleData = {
-                      settledBySuperadmin: roleName === UserRole.SUPER_ADMIN ? true : previousFlags?.settledBySuperadmin ?? false,
-                            settledByOperator: roleName === UserRole.OPERATOR ? true : previousFlags?.settledByOperator ?? false,
-                            settledByPlatinum: roleName === UserRole.PLATINUM ? true : previousFlags?.settledByPlatinum ?? false,
-                  }
-                  
-                  console.log("Settle Data:------------------124", settleData);
+
+                    const settleData = {
+                        settledBySuperadmin: roleName === UserRole.SUPER_ADMIN ? true : previousFlags?.settledBySuperadmin ?? false,
+                        settledByOperator: roleName === UserRole.OPERATOR ? true : previousFlags?.settledByOperator ?? false,
+                        settledByPlatinum: roleName === UserRole.PLATINUM ? true : previousFlags?.settledByPlatinum ?? false,
+                    }
+
+                    console.log("Settle Data:------------------124", settleData);
 
                     return prisma.commissionSummary.update({
                         where: {id: record.id},
@@ -1003,14 +1032,14 @@ class CommissionDao {
                             settledByPlatinum: true,
                         },
                     });
-                  
-                  const settleData = {
-                      settledBySuperadmin: roleName === UserRole.SUPER_ADMIN ? true : previousFlags?.settledBySuperadmin ?? false,
-                            settledByOperator: roleName === UserRole.OPERATOR ? true : previousFlags?.settledByOperator ?? false,
-                            settledByPlatinum: roleName === UserRole.PLATINUM ? true : previousFlags?.settledByPlatinum ?? false,
-                  }
-                  
-                  console.log("Settle Data:------------------125", settleData);
+
+                    const settleData = {
+                        settledBySuperadmin: roleName === UserRole.SUPER_ADMIN ? true : previousFlags?.settledBySuperadmin ?? false,
+                        settledByOperator: roleName === UserRole.OPERATOR ? true : previousFlags?.settledByOperator ?? false,
+                        settledByPlatinum: roleName === UserRole.PLATINUM ? true : previousFlags?.settledByPlatinum ?? false,
+                    }
+
+                    console.log("Settle Data:------------------125", settleData);
 
                     return prisma.commissionSummary.update({
                         where: {id: record.id},
@@ -1030,14 +1059,14 @@ class CommissionDao {
                             settledByPlatinum: true,
                         },
                     });
-                  
-                  const settleData = {
-                      settledBySuperadmin: roleName === UserRole.SUPER_ADMIN ? true : previousFlags?.settledBySuperadmin ?? false,
-                            settledByOperator: roleName === UserRole.OPERATOR ? true : previousFlags?.settledByOperator ?? false,
-                            settledByPlatinum: roleName === UserRole.PLATINUM ? true : previousFlags?.settledByPlatinum ?? false,
-                  }
-                  
-                  console.log("Settle Data:------------------126", settleData);
+
+                    const settleData = {
+                        settledBySuperadmin: roleName === UserRole.SUPER_ADMIN ? true : previousFlags?.settledBySuperadmin ?? false,
+                        settledByOperator: roleName === UserRole.OPERATOR ? true : previousFlags?.settledByOperator ?? false,
+                        settledByPlatinum: roleName === UserRole.PLATINUM ? true : previousFlags?.settledByPlatinum ?? false,
+                    }
+
+                    console.log("Settle Data:------------------126", settleData);
 
                     return prisma.commissionSummary.update({
                         where: {id: record.id},

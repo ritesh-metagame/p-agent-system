@@ -120,3 +120,11 @@ model SiteLog {
   @@index([createdById])
   @@index([updatedById])
 }
+
+model SettlementHistory {
+  id           String @id @default(cuid())
+  categoryName String
+  userId       String @map("user_id")
+  user         User   @relation(fields: [userId], references: [id])
+  amount       Float  @default(0)
+}
