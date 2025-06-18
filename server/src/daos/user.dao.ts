@@ -111,7 +111,20 @@ class UserDao {
                 });
 
 
-            }
+          }
+          
+           // Step 1: Fetch all commission summary records for this user
+          const walletSummaries = await prisma.settlementHistory.findMany({
+                where: {
+                    userId,
+                    categoryName: {
+                        in: ['E-Games', 'Sports Betting']
+                    },
+                    amount: { // replace 'amount' with your actual numeric field
+                        gt: 0 // "greater than 0" means only positive numbers
+                    }
+                }
+            });
 
             // Step 1: Fetch all commission summary records for this user
             const summaries = await prisma.commissionSummary.findMany({
@@ -195,11 +208,11 @@ class UserDao {
             let wallet = 0;
             let totalPayout = 0;
 
-            for (const summary of summaries) {
+            for (const summary of walletSummaries) {
                 if (summary.categoryName === "E-Games") {
-                    totalCommissionByUser += Number(summary.netCommissionAvailablePayout || 0);
+                    totalCommissionByUser += Number(summary.amount || 0);
                 } else if (summary.categoryName === "Sports Betting") {
-                    totalCommissionByUser += Number(summary.netCommissionAvailablePayout || 0);
+                    totalCommissionByUser += Number(summary.amount || 0);
                 }
 
 
