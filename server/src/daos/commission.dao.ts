@@ -769,6 +769,8 @@ class CommissionDao {
                 },
             });
 
+            console.log({currentRecords})
+
             const categoryGroupedRecords: Record<string, typeof currentRecords> = {};
 
             for (const record of currentRecords) {
@@ -782,7 +784,7 @@ class CommissionDao {
             }
 
             for (const [categoryName, records] of Object.entries(categoryGroupedRecords)) {
-                const totalAmount = records.reduce((sum, rec) => sum + (rec.pendingSettleCommission || 0), 0);
+                const totalAmount = records.reduce((sum, rec) => sum + (rec.netCommissionAvailablePayout || 0), 0);
 
                 const userId = records[0].userId
 
