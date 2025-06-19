@@ -126,6 +126,7 @@ class UserDao {
                     }
                 }
             });
+          
 
             // Step 1: Fetch all commission summary records for this user
             const summaries = await prisma.commissionSummary.findMany({
@@ -191,12 +192,7 @@ class UserDao {
             console.log(
                 `Role0000000000000ooooooooooooooooookkkkkkkkkkkkkkkkkkkkkkknnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn: ${roleName}, Settled: ${isSettled}, Summaries Count: ${summaries.length}`)
 
-            if (!isSettled) {
-                console.warn(
-                    `⚠️ Settlement not completed for role ${roleName}. Returning payout and wallet as 0.`
-                );
-                return {payout: 0, wallet: 0};
-            }
+           
 
 
             // Step 5: Initialize sums
@@ -204,7 +200,9 @@ class UserDao {
             let totalCommissionByUser = 0;
 
             let wallet = 0;
-            let totalPayout = 0;
+          let totalPayout = 0;
+          
+          console.log(`Total Payout for User------ ${userId}: ${walletSummaries}`);
 
             for (const summary of walletSummaries) {
                 if (summary.categoryName === "E-Games") {
@@ -267,7 +265,9 @@ class UserDao {
             //   }
 
 
-            // }
+          // }
+          
+
 
 
             const payout =
@@ -279,7 +279,14 @@ class UserDao {
                 // wallet = totalCommissionByUser - totalPaymentGatewayFee;
             } else {
                 wallet = totalCommissionByUser;
+          }
+           if (!isSettled) {
+                console.warn(
+                    `⚠️ Settlement not completed for role ${roleName}. Returning payout and wallet as 0.`
+                );
+                return {payout: 0 , wallet};
             }
+          
 
             return {
                 payout,
