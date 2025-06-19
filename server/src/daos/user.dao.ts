@@ -126,6 +126,7 @@ class UserDao {
                     }
                 }
             });
+          
 
             // Step 1: Fetch all commission summary records for this user
             const summaries = await prisma.commissionSummary.findMany({
@@ -224,7 +225,9 @@ class UserDao {
             let totalCommissionByUser = 0;
 
             let wallet = 0;
-            let totalPayout = 0;
+          let totalPayout = 0;
+          
+          console.log(`Total Payout for User------ ${userId}: ${walletSummaries}`);
 
             for (const summary of walletSummaries) {
                 if (summary.categoryName === "E-Games") {
