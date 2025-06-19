@@ -1860,8 +1860,8 @@ class CommissionService {
                         },
                         categoryName: category,
                         createdAt: {
-                            ...(roleName === UserRole.GOLDEN ? {gte: cycleStartDate} : {}),
-                            // gte: cycleStartDate,
+                            // ...(roleName === UserRole.GOLDEN ? {gte: cycleStartDate} : {}),
+                            // // gte: cycleStartDate,
                             lte: cycleEndDate,
                         },
                         ...(roleName === UserRole.SUPER_ADMIN
@@ -1873,8 +1873,7 @@ class CommissionService {
                         ...(roleName === UserRole.PLATINUM
                             ? {settledByPlatinum: false}
                             : {}),
-                        settledStatus:
-                            roleName === UserRole.GOLDEN ? {in: ["Y", "N"]} : "N",
+                        settledStatus: "N",
                     },
                 });
 
@@ -3554,8 +3553,7 @@ class CommissionService {
                 {userId: {in: userIds}},
                 {categoryName: "E-Games"},
                 {
-                    settledStatus:
-                        roleName === UserRole.GOLDEN ? {in: ["Y", "N"]} : "N",
+                    settledStatus: "N",
                     ...(roleName === UserRole.OPERATOR
                         ? {settledByOperator: false}
                         : {}),
@@ -3564,14 +3562,9 @@ class CommissionService {
                         : {}),
                 },
                 {
-                    createdAt: roleName === UserRole.GOLDEN
-                                  ? {
-                                      gte: sportsCycle.cycleStartDate,
-                                      lte: sportsCycle.cycleEndDate,
-                                  }
-                                  : {
-                                      lte: sportsCycle.cycleEndDate,
-                                  },
+                    createdAt: {
+                        lte: sportsCycle.cycleEndDate,
+                    },
                 },
             ]
 
@@ -3579,8 +3572,7 @@ class CommissionService {
                 {userId: {in: userIds}},
                 {categoryName: "Speciality Games - RNG"},
                 {
-                    settledStatus:
-                        roleName === UserRole.GOLDEN ? {in: ["Y", "N"]} : "N",
+                    settledStatus: "N",
                     ...(roleName === UserRole.OPERATOR
                         ? {settledByOperator: false}
                         : {}),
@@ -3589,14 +3581,9 @@ class CommissionService {
                         : {}),
                 },
                 {
-                    createdAt: roleName === UserRole.GOLDEN
-                                  ? {
-                                      gte: sportsCycle.cycleStartDate,
-                                      lte: sportsCycle.cycleEndDate,
-                                  }
-                                  : {
-                                      lte: sportsCycle.cycleEndDate,
-                                  },
+                    createdAt: {
+                        lte: sportsCycle.cycleEndDate,
+                    },
                 },
             ]
 
@@ -3604,8 +3591,7 @@ class CommissionService {
                 {userId: {in: userIds}},
                 {categoryName: "Sports Betting"},
                 {
-                    settledStatus:
-                        roleName === UserRole.GOLDEN ? {in: ["Y", "N"]} : "N",
+                    settledStatus: "N",
                     ...(roleName === UserRole.OPERATOR
                         ? {settledByOperator: false}
                         : {}),
@@ -3614,22 +3600,16 @@ class CommissionService {
                         : {}),
                 },
                 {
-                    createdAt: roleName === UserRole.GOLDEN
-                                  ? {
-                                      gte: sportsCycle.cycleStartDate,
-                                      lte: sportsCycle.cycleEndDate,
-                                  }
-                                  : {
-                                      lte: sportsCycle.cycleEndDate,
-                                  },
+                    createdAt: {
+                        lte: sportsCycle.cycleEndDate,
+                    },
                 },
             ]
             const specialityGamesToteQuery = [
                 {userId: {in: userIds}},
                 {categoryName: "Speciality Games - Tote"},
                 {
-                    settledStatus:
-                        roleName === UserRole.GOLDEN ? {in: ["Y", "N"]} : "N",
+                    settledStatus: "N",
                     ...(roleName === UserRole.OPERATOR
                         ? {settledByOperator: false}
                         : {}),
@@ -3638,14 +3618,9 @@ class CommissionService {
                         : {}),
                 },
                 {
-                    createdAt: roleName === UserRole.GOLDEN
-                                  ? {
-                                      gte: sportsCycle.cycleStartDate,
-                                      lte: sportsCycle.cycleEndDate,
-                                  }
-                                  : {
-                                      lte: sportsCycle.cycleEndDate,
-                                  },
+                    createdAt: {
+                        lte: sportsCycle.cycleEndDate,
+                    },
                 },
             ]
 
@@ -3805,8 +3780,8 @@ class CommissionService {
                 case UserRole.SUPER_ADMIN:
                     eGamesRate = 30;
                     sportsRate = 2;
-                    rngRate = 0.01;
-                    toteRate = 0.01;
+                    rngRate = 30;
+                    toteRate = 2;
                     break;
 
                 case UserRole.OPERATOR:
@@ -4147,6 +4122,7 @@ class CommissionService {
                                     ? format(latest.settledAt, "dd-MM-yyyy")
                                     : "-",
                                 refId: referenceId,
+                                license: CATEGORY_GROUPS[group.summaries[0]?.categoryName]?.license ?? "-",
                                 action: "DOWNLOAD",
                                 _metadata: {
                                     downlineId: group.downlineId,
@@ -4808,7 +4784,7 @@ class CommissionService {
     private getRoleLabelForUser(role: string): string {
         switch (role.toLowerCase()) {
             case UserRole.SUPER_ADMIN:
-                return "ALL OPERATORS";
+                return "ALL NETWORKS";
             default:
                 return "Own Commission";
         }
