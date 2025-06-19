@@ -2645,6 +2645,8 @@ class CommissionService {
                     }
                 }
 
+                console.log({userCategoryCommissionMap})
+
                 let grossCommissionSum = 0;
 
                 userCategoryCommissionMap.forEach((value, key) => {
