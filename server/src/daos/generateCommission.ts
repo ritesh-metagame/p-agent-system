@@ -50,12 +50,12 @@ class GenerateCommission {
                         gaCommission: new Decimal(0)
                     };
 
-                    let totalOwnerCommission = new Decimal(0)
-                    if (txn.maName === "PLA1" && txn.platformType === "E-Games") {
-                        // @ts-ignore
-                        totalOwnerCommission += txn.ownerCommission
-                        console.log(`Total Owner Commission: `, totalOwnerCommission)
-                    }
+                    // let totalOwnerCommission = new Decimal(0)
+                    // if (txn.maName === "PLA1" && txn.platformType === "E-Games") {
+                    //     // @ts-ignore
+                    //     totalOwnerCommission += txn.ownerCommission
+                    //     console.log(`Total Owner Commission: `, totalOwnerCommission)
+                    // }
 
                     grouped.set(key, {
                         deposit: existing.deposit.plus(txn.deposit || 0),
@@ -71,6 +71,9 @@ class GenerateCommission {
                 }
 
                 for (const [key, sum] of grouped.entries()) {
+
+                    console.log(`Inserting summary for ${key} with revenue`, sum.revenue.toNumber());
+
                     const [userId, categoryName] = key.split("|");
                     try {
                         const user = await prisma.user.findUnique({
@@ -157,9 +160,9 @@ class GenerateCommission {
                             },
                         });
 
-                        console.log(`✅ Summary added for ${userId} (${roleKey}) in ${categoryName}`);
+                        // console.log(`✅ Summary added for ${userId} (${roleKey}) in ${categoryName}`);
                     } catch (err) {
-                        console.error(`❌ Error inserting summary for ${key}:`, err);
+                        // console.error(`❌ Error inserting summary for ${key}:`, err);
                     }
                 }
             }
