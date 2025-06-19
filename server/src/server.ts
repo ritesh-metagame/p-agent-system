@@ -89,13 +89,13 @@ class Server {
     const categoryIdMap: Record<string, string> = {
       egames: "8a2ac3c1-202d-11f0-81af-0a951197db91",
       sportsbet: "8a2ac69c-202d-11f0-81af-0a951197db91",
-      specialtyrng  : "8a2ac76c-202d-11f0-81af-0a951197db91",
+      specialtyrng : "8a2ac76c-202d-11f0-81af-0a951197db91",
       specialtytote  :"8a2ac7a0-202d-11f0-81af-0a951197db91",
     };
     async function insertTransactionsFromXLSX(filePath: string) {
   const rawRows: any = await prisma.$queryRawUnsafe(`
     SELECT * FROM bets
-    WHERE time_of_bet BETWEEN '2025-05-26 00:00:00' AND '2025-06-01 23:59:59'
+    WHERE time_of_bet BETWEEN '2025-05-26 00:00:00' AND '2025-06-19 23:59:59'
   `);
 
   for (const row of rawRows) {
@@ -124,7 +124,7 @@ class Server {
     }
 
     const baseAmount = new Decimal(
-      platformType === "egames" || platformType === "specialtyrng "
+      platformType === "egames" || platformType === "specialtyrng"
         ? revenue || 0
         : platformType === "sports" || platformType === "sportsbet" || platformType === "specialtytote"
         ? betAmount.minus(refundAmount)

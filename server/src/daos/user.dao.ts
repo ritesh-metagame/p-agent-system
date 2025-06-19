@@ -118,7 +118,7 @@ class UserDao {
                 where: {
                     userId,
                     categoryName: {
-                        in: ['E-Games', 'Sports Betting']
+                        in: ['E-Games', 'Sports Betting', 'Speciality Games - RNG', 'Speciality Games - Tote']
                     },
                     isPartiallySettled: false,
                     amount: { // replace 'amount' with your actual numeric field
@@ -133,14 +133,14 @@ class UserDao {
                     userId,
                     OR: [
                         {
-                            categoryName: 'E-Games',
+                            categoryName: { in: ['E-Games', 'Speciality Games - RNG'] },
                             createdAt: {
                                 gte: eGamesCycle.cycleStartDate,
                                 lte: eGamesCycle.cycleEndDate,
                             },
                         },
                         {
-                            categoryName: 'Sports Betting',
+                            categoryName: { in: ['Sports Betting', 'Speciality Games - Tote'] },
                             createdAt: {
                                 gte: sportsCycle.cycleStartDate,
                                 lte: sportsCycle.cycleEndDate,
@@ -163,14 +163,14 @@ class UserDao {
                     ...(roleName === UserRole.OPERATOR ? {settledByOperator: false} : {}),
                     OR: [
                         {
-                            categoryName: 'E-Games',
+                            categoryName: { in: ['E-Games', 'Speciality Games - RNG'] },
                             createdAt: {
                                 gte: eGamesCycle.cycleStartDate,
                                 lte: eGamesCycle.cycleEndDate,
                             },
                         },
                         {
-                            categoryName: 'Sports Betting',
+                            categoryName: { in: ['Sports Betting', 'Speciality Games - Tote'] },
                             createdAt: {
                                 gte: sportsCycle.cycleStartDate,
                                 lte: sportsCycle.cycleEndDate,
@@ -214,6 +214,10 @@ class UserDao {
                     totalCommissionByUser += Number(summary.amount || 0);
                 } else if (summary.categoryName === "Sports Betting") {
                     totalCommissionByUser += Number(summary.amount || 0);
+                } else if (summary.categoryName === "Speciality Games - RNG") {
+                    totalCommissionByUser += Number(summary.amount || 0);
+                } else if (summary.categoryName === "Speciality Games - Tote") {
+                    totalCommissionByUser += Number(summary.amount || 0);
                 }
 
 
@@ -223,8 +227,10 @@ class UserDao {
                     group.downlineIds.includes(summary.userId)
                 );
 
-                let eGamesSum = 0;
-                let sportsSum = 0;
+              let eGamesSum = 0;
+              let specialityGamesRNGSum = 0;
+              let sportsSum = 0;
+              let specialityGamesToteSum = 0;
 
                 for (const summary of groupSummaries) {
                     const payout = Number(summary.netCommissionAvailablePayout || 0);
@@ -233,14 +239,20 @@ class UserDao {
                         eGamesSum += payout;
                     } else if (summary.categoryName === 'Sports Betting') {
                         sportsSum += payout;
+                    } else if (summary.categoryName === 'Speciality Games - RNG') {
+                        specialityGamesRNGSum += payout;
+                    } else if (summary.categoryName === 'Speciality Games - Tote') {
+                        specialityGamesToteSum += payout;
                     }
                 }
                 // If category sums are negative, treat them as 0 individually
                 if (eGamesSum < 0) eGamesSum = 0;
-                if (sportsSum < 0) sportsSum = 0;
+              if (sportsSum < 0) sportsSum = 0;
+              if (specialityGamesRNGSum < 0) specialityGamesRNGSum = 0;
+              if (specialityGamesToteSum < 0) specialityGamesToteSum = 0;
 
                 // Now add corrected values
-                const groupTotal = eGamesSum + sportsSum;
+                const groupTotal = eGamesSum + sportsSum + specialityGamesRNGSum + specialityGamesToteSum;
 
                 console.log(`Platinum ${group.platinumId}: E-Games = ${eGamesSum}, Sports = ${sportsSum}`);
 
