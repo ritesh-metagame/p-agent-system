@@ -3393,7 +3393,7 @@ class CommissionService {
                                     {settledBySuperadmin: false},
                                     {
                                         createdAt: {
-                                            gte: eGamesCycle.cycleStartDate,
+                                            // gte: eGamesCycle.cycleStartDate,
                                             lte: eGamesCycle.cycleEndDate,
                                         },
                                     },
@@ -3407,7 +3407,7 @@ class CommissionService {
                                     {settledBySuperadmin: false},
                                     {
                                         createdAt: {
-                                            gte: eGamesCycle.cycleStartDate,
+                                            // gte: eGamesCycle.cycleStartDate,
                                             lte: eGamesCycle.cycleEndDate,
                                         },
                                     },
@@ -3421,7 +3421,7 @@ class CommissionService {
                                     {settledBySuperadmin: false},
                                     {
                                         createdAt: {
-                                            gte: sportsCycle.cycleStartDate,
+                                            // gte: sportsCycle.cycleStartDate,
                                             lte: sportsCycle.cycleEndDate,
                                         },
                                     },
@@ -3435,7 +3435,7 @@ class CommissionService {
                                     {settledBySuperadmin: false},
                                     {
                                         createdAt: {
-                                            gte: sportsCycle.cycleStartDate,
+                                            // gte: sportsCycle.cycleStartDate,
                                             lte: sportsCycle.cycleEndDate,
                                         },
                                     },
@@ -3564,10 +3564,14 @@ class CommissionService {
                         : {}),
                 },
                 {
-                    createdAt: {
-                        gte: eGamesCycle.cycleStartDate,
-                        lte: eGamesCycle.cycleEndDate,
-                    },
+                    createdAt: roleName === UserRole.GOLDEN
+                                  ? {
+                                      gte: sportsCycle.cycleStartDate,
+                                      lte: sportsCycle.cycleEndDate,
+                                  }
+                                  : {
+                                      lte: sportsCycle.cycleEndDate,
+                                  },
                 },
             ]
 
@@ -3585,10 +3589,14 @@ class CommissionService {
                         : {}),
                 },
                 {
-                    createdAt: {
-                        gte: eGamesCycle.cycleStartDate,
-                        lte: eGamesCycle.cycleEndDate,
-                    },
+                    createdAt: roleName === UserRole.GOLDEN
+                                  ? {
+                                      gte: sportsCycle.cycleStartDate,
+                                      lte: sportsCycle.cycleEndDate,
+                                  }
+                                  : {
+                                      lte: sportsCycle.cycleEndDate,
+                                  },
                 },
             ]
 
@@ -3606,10 +3614,14 @@ class CommissionService {
                         : {}),
                 },
                 {
-                    createdAt: {
-                        gte: sportsCycle.cycleStartDate,
-                        lte: sportsCycle.cycleEndDate,
-                    },
+                    createdAt: roleName === UserRole.GOLDEN
+                                  ? {
+                                      gte: sportsCycle.cycleStartDate,
+                                      lte: sportsCycle.cycleEndDate,
+                                  }
+                                  : {
+                                      lte: sportsCycle.cycleEndDate,
+                                  },
                 },
             ]
             const specialityGamesToteQuery = [
@@ -3626,10 +3638,14 @@ class CommissionService {
                         : {}),
                 },
                 {
-                    createdAt: {
-                        gte: sportsCycle.cycleStartDate,
-                        lte: sportsCycle.cycleEndDate,
-                    },
+                    createdAt: roleName === UserRole.GOLDEN
+                                  ? {
+                                      gte: sportsCycle.cycleStartDate,
+                                      lte: sportsCycle.cycleEndDate,
+                                  }
+                                  : {
+                                      lte: sportsCycle.cycleEndDate,
+                                  },
                 },
             ]
 

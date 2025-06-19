@@ -129,26 +129,35 @@ class UserDao {
 
             // Step 1: Fetch all commission summary records for this user
             const summaries = await prisma.commissionSummary.findMany({
-                where: {
-                    userId,
-                    OR: [
-                        {
-                            categoryName: { in: ['E-Games', 'Speciality Games - RNG'] },
-                            createdAt: {
-                                gte: eGamesCycle.cycleStartDate,
-                                lte: eGamesCycle.cycleEndDate,
-                            },
-                        },
-                        {
-                            categoryName: { in: ['Sports Betting', 'Speciality Games - Tote'] },
-                            createdAt: {
-                                gte: sportsCycle.cycleStartDate,
-                                lte: sportsCycle.cycleEndDate,
-                            },
-                        },
-                    ],
-                },
-            });
+                  where: {
+                      userId,
+                      OR: [
+                          {
+                              categoryName: { in: ['E-Games', 'Speciality Games - RNG'] },
+                              createdAt: roleName === UserRole.GOLDEN
+                                  ? {
+                                      gte: eGamesCycle.cycleStartDate,
+                                      lte: eGamesCycle.cycleEndDate,
+                                  }
+                                  : {
+                                      lte: eGamesCycle.cycleEndDate,
+                                  },
+                          },
+                          {
+                              categoryName: { in: ['Sports Betting', 'Speciality Games - Tote'] },
+                              createdAt: roleName === UserRole.GOLDEN
+                                  ? {
+                                      gte: sportsCycle.cycleStartDate,
+                                      lte: sportsCycle.cycleEndDate,
+                                  }
+                                  : {
+                                      lte: sportsCycle.cycleEndDate,
+                                  },
+                          },
+                      ],
+                  },
+              });
+
 
 
             if (!summaries.length) {
@@ -164,17 +173,25 @@ class UserDao {
                     OR: [
                         {
                             categoryName: { in: ['E-Games', 'Speciality Games - RNG'] },
-                            createdAt: {
-                                gte: eGamesCycle.cycleStartDate,
-                                lte: eGamesCycle.cycleEndDate,
-                            },
+                            createdAt: roleName === UserRole.GOLDEN
+                                  ? {
+                                      gte: sportsCycle.cycleStartDate,
+                                      lte: sportsCycle.cycleEndDate,
+                                  }
+                                  : {
+                                      lte: sportsCycle.cycleEndDate,
+                                  },
                         },
                         {
                             categoryName: { in: ['Sports Betting', 'Speciality Games - Tote'] },
-                            createdAt: {
-                                gte: sportsCycle.cycleStartDate,
-                                lte: sportsCycle.cycleEndDate,
-                            },
+                            createdAt: roleName === UserRole.GOLDEN
+                                  ? {
+                                      gte: sportsCycle.cycleStartDate,
+                                      lte: sportsCycle.cycleEndDate,
+                                  }
+                                  : {
+                                      lte: sportsCycle.cycleEndDate,
+                                  },
                         },
                     ],
                 },
