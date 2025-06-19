@@ -3495,8 +3495,6 @@ class CommissionService {
             const sportsCycle =
                 await this.getPreviousCompletedCycleDates("Sports Betting");
 
-            // console.log("eGamesCycle----------------------", eGamesCycle);
-            // console.log("sportsCycle----------------------", sportsCycle);
             roleName = roleName.toLowerCase();
             const result = {
                 code: "2010",
@@ -3563,19 +3561,27 @@ class CommissionService {
                 ],
             });
 
-            const pending = {
+          const pending = {
                 eGamesGGR: 0,
                 eGamesCommission: 0,
+                rngGGR: 0,
+                rngCommission: 0,
                 sportsBet: 0,
                 sportsCommission: 0,
+                toteBet: 0,
+                toteCommission: 0,
                 ownerCommission: 0,
             };
 
-            const settled = {
+           const settled = {
                 eGamesGGR: 0,
                 eGamesCommission: 0,
+                rngGGR: 0,
+                rngCommission: 0,
                 sportsBet: 0,
                 sportsCommission: 0,
+                toteBet: 0,
+                toteCommission: 0,
             };
 
             let pIds = []
@@ -3640,7 +3646,35 @@ class CommissionService {
                             {
                                 AND: [
                                     {userId: {in: userIds}},
+                                    {categoryName: "Speciality Games - RNG"},
+                                    {settledStatus: "N"},
+                                    {settledBySuperadmin: false},
+                                    {
+                                        createdAt: {
+                                            gte: eGamesCycle.cycleStartDate,
+                                            lte: eGamesCycle.cycleEndDate,
+                                        },
+                                    },
+                                ],
+                            },
+                            {
+                                AND: [
+                                    {userId: {in: userIds}},
                                     {categoryName: "Sports Betting"},
+                                    {settledStatus: "N"},
+                                    {settledBySuperadmin: false},
+                                    {
+                                        createdAt: {
+                                            gte: sportsCycle.cycleStartDate,
+                                            lte: sportsCycle.cycleEndDate,
+                                        },
+                                    },
+                                ],
+                            },
+                            {
+                                AND: [
+                                    {userId: {in: userIds}},
+                                    {categoryName: "Speciality Games - Tote"},
                                     {settledStatus: "N"},
                                     {settledBySuperadmin: false},
                                     {
@@ -3666,13 +3700,13 @@ class CommissionService {
 
                 let egamesGGR = 0;
                 let sportsGGR = 0;
+                let rngGGR = 0;
+                let toteGGR = 0;
                 let egamesCommission = 0;
                 let sportsCommission = 0;
-                let settledEGamesGGR = 0;
-                let settledSportsGGR = 0;
-
-                let settledEGamesCommission = 0;
-                let settledSportsCommission = 0;
+                let rngCommission = 0;
+                let toteCommission = 0;
+                
 
                 for (const summary of operatorSummaries) {
                     if (summary.categoryName === "E-Games") {
@@ -3688,11 +3722,6 @@ class CommissionService {
                         console.log("total commission", ggr)
                         egamesCommission += summary.netCommissionAvailablePayout;
 
-                        // if (summary.settledStatus === "Y") {
-                        //     egamesCommission = comm - comm;
-                        //     settledEGamesGGR += ggr;
-                        //     settledEGamesCommission += comm;
-                        // }
                     } else if (summary.categoryName === "Sports Betting") {
                         const bet = summary.totalBetAmount;
                         const comm = summary.pendingSettleCommission;
@@ -3703,14 +3732,18 @@ class CommissionService {
 
                         sportsCommission += summary.netCommissionAvailablePayout;
 
-                        // console.log("pending commission-----------------", sportsCommission)
-
-                        // if (summary.settledStatus === "Y") {
-                        //     sportsCommission = comm - comm;
-
-                        //     settledSportsGGR += bet;
-                        //     settledSportsCommission += comm;
-                        // }
+                    } else if (summary.categoryName === "Speciality Games - RNG") {
+                                    const ggr = summary.netGGR;
+                                    if (operatorIds.includes(summary.userId)) {
+                                        rngGGR += ggr;
+                                    }
+                                    rngCommission += summary.netCommissionAvailablePayout;
+                    }  else if (summary.categoryName === "Speciality Games - Tote") {
+                            const bet = summary.totalBetAmount;
+                            if (operatorIds.includes(summary.userId)) {
+                                toteGGR += bet;
+                            }
+                            toteCommission += summary.netCommissionAvailablePayout;
                     }
                 }
 
@@ -3719,12 +3752,12 @@ class CommissionService {
                 pending.eGamesCommission = egamesCommission;
                 pending.sportsBet = sportsGGR;
                 pending.sportsCommission = sportsCommission;
+                pending.rngGGR = rngGGR;
+                pending.rngCommission = rngCommission;
+                pending.toteBet = toteGGR;
+                pending.toteCommission = toteCommission;
 
-                // settled.eGamesGGR = settledEGamesGGR; // as per your requirement
-                // settled.eGamesCommission = settledEGamesCommission;
-                // settled.sportsBet = settledSportsGGR; // as per your requirement
-                // settled.sportsCommission = settledSportsCommission;
-
+                
                 // console.log("pending commission", pending.eGamesCommission, "comm", pending.sportsCommission, "grossCommission", pending.eGamesGGR)
             }
             if (roleName === UserRole.OPERATOR) {
@@ -3782,9 +3815,50 @@ class CommissionService {
                 },
             ]
 
+            const specialityGamesRNGQuery = [
+                {userId: {in: userIds}},
+                {categoryName: "Speciality Games - RNG"},
+                {
+                    settledStatus:
+                        roleName === UserRole.GOLDEN ? {in: ["Y", "N"]} : "N",
+                    ...(roleName === UserRole.OPERATOR
+                        ? {settledByOperator: false}
+                        : {}),
+                    ...(roleName === UserRole.PLATINUM
+                        ? {settledByPlatinum: false}
+                        : {}),
+                },
+                {
+                    createdAt: {
+                        gte: eGamesCycle.cycleStartDate,
+                        lte: eGamesCycle.cycleEndDate,
+                    },
+                },
+            ]
+
             const sportsBettingQuery = [
                 {userId: {in: userIds}},
                 {categoryName: "Sports Betting"},
+                {
+                    settledStatus:
+                        roleName === UserRole.GOLDEN ? {in: ["Y", "N"]} : "N",
+                    ...(roleName === UserRole.OPERATOR
+                        ? {settledByOperator: false}
+                        : {}),
+                    ...(roleName === UserRole.PLATINUM
+                        ? {settledByPlatinum: false}
+                        : {}),
+                },
+                {
+                    createdAt: {
+                        gte: sportsCycle.cycleStartDate,
+                        lte: sportsCycle.cycleEndDate,
+                    },
+                },
+            ]
+             const specialityGamesToteQuery = [
+                {userId: {in: userIds}},
+                {categoryName: "Speciality Games - Tote"},
                 {
                     settledStatus:
                         roleName === UserRole.GOLDEN ? {in: ["Y", "N"]} : "N",
@@ -3815,6 +3889,12 @@ class CommissionService {
                         {
                             AND: sportsBettingQuery,
                         },
+                        {
+                            AND: specialityGamesRNGQuery,
+                        },
+                        {
+                            AND: specialityGamesToteQuery,
+                        }
                     ],
                 },
                 select: {
@@ -3838,6 +3918,8 @@ class CommissionService {
 
             // console.log(`License Breakdown table summaries: `, summaries)
             let ownEGamesCommission = 0
+            let ownRNGCommission = 0
+            let ownToteCommission = 0
             let ownSportsBettingCommission = 0
 
             for (const summary of summaries) {
@@ -3888,23 +3970,55 @@ class CommissionService {
                         pending.sportsBet += bet;
                         pending.sportsCommission += comm + parentCommission;
                     }
-                }
+                } else if (category === "Speciality Games - RNG") {
+        // NEW handling for RNG
+                        if (roleName === UserRole.OPERATOR) {
+                            if (pIds.includes(summary.userId)) {
+                                pending.rngGGR += ggr;
+                                ownRNGCommission += parentCommission;
+                            }
+                            pending.rngCommission += comm;
+                        }
+                        if (roleName === UserRole.GOLDEN) {
+                            pending.rngGGR += ggr;
+                            pending.rngCommission += comm;
+                        } else if (roleName === UserRole.PLATINUM) {
+                            pending.rngGGR += ggr;
+                            pending.rngCommission += comm + parentCommission;
+                        }
+                    }  else if (category === "Speciality Games - Tote") {
+        // NEW handling for Tote
+                        if (roleName === UserRole.OPERATOR) {
+                            if (pIds.includes(summary.userId)) {
+                                pending.toteBet += bet;
+                                ownToteCommission += parentCommission;
+                            }
+                            pending.toteCommission += comm;
+                        }
+                        if (roleName === UserRole.GOLDEN) {
+                            pending.toteBet += bet;
+                            pending.toteCommission += comm;
+                        } else if (roleName === UserRole.PLATINUM) {
+                            pending.toteBet += bet;
+                            pending.toteCommission += comm + parentCommission;
+                        }
+    }
 
             }
 
-            const commissionData = await prisma.commission.findMany({
-                where: {
-                    userId: userId, // Replace `user.id` with your logged-in user's ID
-                },
-                select: {
-                    totalAssignedCommissionPercentage: true,
-                    category: {
-                        select: {
-                            name: true,
-                        },
-                    },
-                },
-            });
+            // const commissionData = await prisma.commission.findMany({
+            //     where: {
+            //         userId: userId, // Replace `user.id` with your logged-in user's ID
+            //     },
+            //     select: {
+            //         totalAssignedCommissionPercentage: true,
+            //         category: {
+            //             select: {
+            //                 name: true,
+            //             },
+            //         },
+            //     },
+            // });
 
             console.log({ownEGamesCommission, ownSportsBettingCommission})
 
@@ -3994,12 +4108,26 @@ class CommissionService {
                     settled.sportsCommission,
                     ownSportsBettingCommission
                 ),
-                buildDefaultLicenseData(
-                    "Speciality Games - Tote",
+                buildLicenseData(
+                            "Speciality Games - Tote",
                     "Total Bet Amount",
-                    "1.8%"
+                    pending.toteBet,
+                    settled.toteBet,
+                    toteRate,
+                    pending.toteCommission,
+                    settled.toteCommission,
+                    ownToteCommission // or ownToteCommission if separate
                 ),
-                buildDefaultLicenseData("Speciality Games - RNG", "GGR", "25%")
+                buildLicenseData(
+                     "Speciality Games - RNG",
+                    "GGR",
+                    pending.rngGGR,
+                    settled.rngGGR,
+                    rngRate,
+                    pending.rngCommission,
+                    settled.rngCommission,
+                    ownRNGCommission // or ownRNGCommission if you track separately
+                )
             );
 
             return result;

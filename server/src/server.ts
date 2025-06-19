@@ -89,7 +89,7 @@ class Server {
     const categoryIdMap: Record<string, string> = {
       egames: "8a2ac3c1-202d-11f0-81af-0a951197db91",
       sportsbet: "8a2ac69c-202d-11f0-81af-0a951197db91",
-      specialtyrng  : "8a2ac76c-202d-11f0-81af-0a951197db91",
+      specialtyrng : "8a2ac76c-202d-11f0-81af-0a951197db91",
       specialtytote  :"8a2ac7a0-202d-11f0-81af-0a951197db91",
     };
     async function insertTransactionsFromXLSX(filePath: string) {
@@ -124,7 +124,7 @@ class Server {
     }
 
     const baseAmount = new Decimal(
-      platformType === "egames" || platformType === "specialtyrng "
+      platformType === "egames" || platformType === "specialtyrng"
         ? revenue || 0
         : platformType === "sports" || platformType === "sportsbet" || platformType === "specialtytote"
         ? betAmount.minus(refundAmount)
@@ -239,13 +239,13 @@ class Server {
   console.log("✅ All transactions inserted successfully");
     }
     
-    // insertTransactionsFromXLSX(filePath)
-    //   .then(() => {
-    //     console.log("Import complete.");
-    //   })
-    //   .catch((err) => {
-    //     console.error("Import failed:", err);
-    //   });
+    insertTransactionsFromXLSX(filePath)
+      .then(() => {
+        console.log("Import complete.");
+      })
+      .catch((err) => {
+        console.error("Import failed:", err);
+      });
 
 
 //     async function insertTransactionsFromXLSX(filePath: string) {
