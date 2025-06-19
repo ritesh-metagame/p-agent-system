@@ -998,27 +998,14 @@ class CommissionService {
 
                 userIds = [...userIds, ...gChildrensIds];
 
-                const settledData = await prisma.commissionSummary.findMany({
+                const settledData = await prisma.settlementHistory.findMany({
                     where: {
                         userId: {in: oChildensIds},
-                        settledStatus: "Y",
+                        isPartiallySettled: false,
                     },
                     select: {
                         userId: true,
-                        user: {
-                            include: {
-                                role: true,
-                            },
-                        },
-                        settledBySuperadmin: true,
-                        settledByOperator: true,
-                        settledByPlatinum: true,
-                        categoryName: true,
-                        totalBetAmount: true,
-                        netGGR: true,
-                        grossCommission: true,
-                        paymentGatewayFee: true,
-                        netCommissionAvailablePayout: true,
+                        amount: true
                     },
                 });
 
@@ -1053,32 +1040,19 @@ class CommissionService {
 
                 if (settledData.length !== 0) {
                     const settledDataForNonSettled =
-                        await prisma.commissionSummary.findMany({
+                        await prisma.settlementHistory.findMany({
                             where: {
                                 userId: {
                                     in: [
                                         ...nonSettledPlatinumChildren.map((ch) => ch.id),
-                                        ...nonSettledGoldenChildren.map((ch) => ch.id),
+                                        // ...nonSettledGoldenChildren.map((ch) => ch.id),
                                     ],
                                 },
-                                settledBySuperadmin: true,
+                                isPartiallySettled: true
                             },
                             select: {
                                 userId: true,
-                                user: {
-                                    include: {
-                                        role: true,
-                                    },
-                                },
-                                categoryName: true,
-                                totalBetAmount: true,
-                                settledBySuperadmin: true,
-                                settledByOperator: true,
-                                settledByPlatinum: true,
-                                netGGR: true,
-                                grossCommission: true,
-                                paymentGatewayFee: true,
-                                netCommissionAvailablePayout: true,
+                                amount: true
                             },
                         });
 
@@ -1088,80 +1062,6 @@ class CommissionService {
 
                     settledSummaries = settledData;
                 }
-
-                // Step 1: Build Operator-wise group map
-                const operatorGroupsMap = new Map<string, Set<string>>();
-
-                for (const opr of oChildens) {
-                    const oprId = opr.id;
-
-                    const platinums = pChildrens
-                        .filter(p => p.parentId === oprId)
-                        .map(p => p.id);
-
-                    const platIdsSet = new Set(platinums);
-
-                    const goldens = gChildrens
-                        .filter(g => platIdsSet.has(g.parentId))
-                        .map(g => g.id);
-
-                    const groupUserIds = new Set([oprId, ...platinums, ...goldens]);
-                    operatorGroupsMap.set(oprId, groupUserIds);
-                }
-
-                // Step 2: Group settledSummaries by operator
-                const groupedSettledSummaries = new Map<string, any[]>();
-
-                for (const summary of settledData) {
-                    const summaryUserId = summary.userId;
-
-                    let operatorId = null;
-                    for (const [oprId, groupSet] of operatorGroupsMap.entries()) {
-                        if (groupSet.has(summaryUserId)) {
-                            operatorId = oprId;
-                            break;
-                        }
-                    }
-
-                    if (!operatorId) continue;
-
-                    if (!groupedSettledSummaries.has(operatorId)) {
-                        groupedSettledSummaries.set(operatorId, []);
-                    }
-
-                    groupedSettledSummaries.get(operatorId)!.push(summary);
-                }
-
-                // Step 3: Filter out groups with negative total netCommissionAvailablePayout
-                let filteredSettledSummaries: any[] = [];
-
-                for (const [_, groupSummaries] of groupedSettledSummaries.entries()) {
-                    const categoryGroupMap: Record<string, any[]> = {};
-
-                    // Group summaries by category
-                    for (const summary of groupSummaries) {
-                        const category = summary.categoryName;
-                        if (!categoryGroupMap[category]) {
-                            categoryGroupMap[category] = [];
-                        }
-                        categoryGroupMap[category].push(summary);
-                    }
-
-                    // Filter by category totals
-                    for (const [category, summaries] of Object.entries(categoryGroupMap)) {
-                        const categoryTotal = summaries.reduce(
-                            (acc, s) => acc + (s.netCommissionAvailablePayout || 0),
-                            0
-                        );
-
-                        if (categoryTotal >= 0) {
-                            filteredSettledSummaries = filteredSettledSummaries.concat(summaries);
-                        }
-                    }
-                }
-
-// Finally, update your settledSummaries
-                settledSummaries = filteredSettledSummaries;
             }
             if (roleName === UserRole.OPERATOR) {
                 const platinums = await prisma.user.findMany({
@@ -1189,29 +1089,18 @@ class CommissionService {
 
                 gIds = goldens.map((golden) => golden.id)
                 // Fetch settled data for platinums and their hierarchy
-                const settledData = await prisma.commissionSummary.findMany({
+                const settledData = await prisma.settlementHistory.findMany({
                     where: {
                         userId: {in: platinums.map((platinum) => platinum.id)},
-                        settledStatus: "Y",
+                        isPartiallySettled: false,
                     },
                     select: {
                         userId: true,
-                        user: {
-                            include: {
-                                role: true,
-                            },
-                        },
-                        categoryName: true,
-                        totalBetAmount: true,
-                        settledBySuperadmin: true,
-                        settledByOperator: true,
-                        settledByPlatinum: true,
-                        netGGR: true,
-                        grossCommission: true,
-                        paymentGatewayFee: true,
-                        netCommissionAvailablePayout: true,
+                        amount: true,
                     },
                 });
+
+                console.log({settledData})
 
                 const settledUserIds = settledData.map((data) => data.userId);
 
@@ -1232,106 +1121,27 @@ class CommissionService {
 
                 settledGids = nonSettledGoldenChildren.map((golden) => golden.id);
 
-                console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-                console.log({settledGids});
-                console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-
 
                 if (settledData.length !== 0) {
                     const settledDataForNonSettled =
-                        await prisma.commissionSummary.findMany({
+                        await prisma.settlementHistory.findMany({
                             where: {
                                 userId: {
                                     in: [...nonSettledGoldenChildren.map((ch) => ch.id)],
                                 },
-                                settledByOperator: true,
+                                isPartiallySettled: true,
                                 // settledStatus: "N",
                             },
                             select: {
                                 userId: true,
-                                user: {
-                                    include: {
-                                        role: true,
-                                    },
-                                },
-                                categoryName: true,
-                                totalBetAmount: true,
-                                settledBySuperadmin: true,
-                                settledByOperator: true,
-                                settledByPlatinum: true,
-                                netGGR: true,
-                                grossCommission: true,
-                                paymentGatewayFee: true,
-                                netCommissionAvailablePayout: true,
+                                amount: true
                             },
                         });
 
                     settledData.push(...settledDataForNonSettled);
                 }
 
-
-// Step 1: Build Platinum-wise group map
-                const platinumGroupsMap = new Map<string, Set<string>>();
-
-                for (const platinum of platinums) {
-                    const platinumId = platinum.id;
-
-                    const gChildren = goldens
-                        .filter(g => g.parentId === platinumId)
-                        .map(g => g.id);
-
-                    const groupUserIds = new Set([platinumId, ...gChildren]);
-                    platinumGroupsMap.set(platinumId, groupUserIds);
-                }
-
-// Step 2: Group settledData by platinum
-                const groupedByPlatinum = new Map<string, typeof settledData>();
-
-                for (const summary of settledData) {
-                    const summaryUserId = summary.userId;
-
-                    for (const [platinumId, groupSet] of platinumGroupsMap.entries()) {
-                        if (groupSet.has(summaryUserId)) {
-                            if (!groupedByPlatinum.has(platinumId)) {
-                                groupedByPlatinum.set(platinumId, []);
-                            }
-                            groupedByPlatinum.get(platinumId)!.push(summary);
-                            break; // stop after first match
-                        }
-                    }
-                }
-
-// Step 3: Filter groups with positive total netCommissionAvailablePayout
-                let filteredPlatinumSummaries: typeof settledData = [];
-
-                for (const [platinumId, groupSummaries] of groupedByPlatinum.entries()) {
-                    const categoryGroupMap: Record<string, any[]> = {};
-
-                    // Group summaries by category
-                    for (const summary of groupSummaries) {
-                        const category = summary.categoryName;
-                        if (!categoryGroupMap[category]) {
-                            categoryGroupMap[category] = [];
-                        }
-                        categoryGroupMap[category].push(summary);
-                    }
-
-                    // Filter by category totals
-                    for (const [category, summaries] of Object.entries(categoryGroupMap)) {
-                        const categoryTotal = summaries.reduce(
-                            (acc, s) => acc + (s.netCommissionAvailablePayout || 0),
-                            0
-                        );
-
-                        if (categoryTotal >= 0) {
-                            filteredPlatinumSummaries = filteredPlatinumSummaries.concat(summaries);
-                        }
-                    }
-                }
-
-// Final filtered list
-                settledSummaries = filteredPlatinumSummaries;
-
+                settledSummaries = settledData;
 
             }
             if (roleName === UserRole.PLATINUM) {
@@ -1348,77 +1158,18 @@ class CommissionService {
                 gIds = goldens.map((golden) => golden.id);
 
                 // Fetch settled data for goldens
-                const settledData = await prisma.commissionSummary.findMany({
+                const settledData = await prisma.settlementHistory.findMany({
                     where: {
                         userId: {in: userIds},
-                        settledStatus: "Y",
+                        isPartiallySettled: false
                     },
                     select: {
                         userId: true,
-                        categoryName: true,
-                        totalBetAmount: true,
-                        settledBySuperadmin: true,
-                        settledByOperator: true,
-                        settledByPlatinum: true,
-                        netGGR: true,
-                        grossCommission: true,
-                        paymentGatewayFee: true,
-                        netCommissionAvailablePayout: true,
+                        amount: true
                     },
                 });
 
-                // Step 3: Group settled summaries by golden userId
-                const groupedByGolden = new Map<string, typeof settledData>();
-
-                for (const summary of settledData) {
-                    const goldenId = summary.userId;
-                    if (!groupedByGolden.has(goldenId)) {
-                        groupedByGolden.set(goldenId, []);
-                    }
-                    groupedByGolden.get(goldenId)!.push(summary);
-                }
-
-// Now, `groupedByGolden` has keys as golden userIds and values as array of their summaries.
-
-// Optional: Filter out groups with negative total netCommissionAvailablePayout
-                let filteredSummaries: typeof settledData = [];
-
-                for (const [goldenId, summaries] of groupedByGolden.entries()) {
-                    const categoryGroupMap: Record<string, any[]> = {};
-
-                    // Group summaries by category
-                    for (const summary of summaries) {
-                        const category = summary.categoryName;
-                        if (!categoryGroupMap[category]) {
-                            categoryGroupMap[category] = [];
-                        }
-                        categoryGroupMap[category].push(summary);
-                    }
-
-                    // Filter by category totals
-                    for (const [category, summaries] of Object.entries(categoryGroupMap)) {
-                        const categoryTotal = summaries.reduce(
-                            (acc, s) => acc + (s.netCommissionAvailablePayout || 0),
-                            0
-                        );
-
-                        if (categoryTotal >= 0) {
-                            filteredSummaries = filteredSummaries.concat(summaries);
-                        }
-                    }
-                }
-
-// Final settled summaries after filtering
-                settledSummaries = filteredSummaries;
-
-// Also update settledGids if you want to reflect filtered users only
-                const filteredGoldenIds = Array.from(groupedByGolden.entries())
-                    .filter(([_, summaries]) =>
-                        summaries.reduce((acc, s) => acc + (s.netCommissionAvailablePayout || 0), 0) >= 0
-                    )
-                    .map(([goldenId]) => goldenId);
-
-                settledGids = filteredGoldenIds;
+                settledSummaries = settledData;
             }
 
             let settledIds = new Set([
@@ -1596,7 +1347,7 @@ class CommissionService {
 
                 console.log(`--------------------------------------------------Net commission available payout: `, summary.netCommissionAvailablePayout)
                 // if (summary.netCommissionAvailablePayout >= 0) {
-                totalSettled += summary.netCommissionAvailablePayout;
+                totalSettled += Math.max(0, summary.amount);
                 // }
             }
 
@@ -4150,14 +3901,16 @@ class CommissionService {
     public async markCommissionSummaryStatus(
         ids: string[],
         childrenCommissionIds: string[],
-        roleName: UserRole
+        roleName: UserRole,
+        referenceId: string
     ) {
         try {
             // Using the instance variable instead of creating a new instance
             const commissionData = await this.commissionDao.markCommissionAsSettled(
                 ids,
                 roleName,
-                childrenCommissionIds
+                childrenCommissionIds,
+                referenceId
             );
             return commissionData;
         } catch (error) {
@@ -4173,7 +3926,6 @@ class CommissionService {
         downlineId?: string
     ) {
         try {
-            // Determine the immediate downline role based on the logged-in user's role
             let downlineRole: string;
             roleName = roleName.toLowerCase();
 
@@ -4188,105 +3940,61 @@ class CommissionService {
                     downlineRole = UserRole.GOLDEN;
                     break;
                 default:
-                    throw new Error(
-                        "Unauthorized. Only superadmin, operator, and platinum users can access settled commission reports."
-                    );
+                    throw new Error("Unauthorized access.");
             }
 
-            // Get immediate downlines of the user
-            let downlineUsers;
-            if (downlineId) {
-                // If downlineId is provided, verify that it's a valid immediate downline
-                downlineUsers = await prisma.user.findMany({
+            // Fetch downline users
+            let downlineUsers = downlineId
+                ? await prisma.user.findMany({
                     where: {
                         id: downlineId,
                         parentId: userId,
-                        role: {
-                            name: downlineRole,
-                        },
+                        role: {name: downlineRole},
                     },
-                    select: {
-                        id: true,
-                        username: true,
-                    },
-                });
-
-                if (downlineUsers.length === 0) {
-                    throw new Error(
-                        `Invalid downline ID or not an immediate downline of the current user.`
-                    );
-                }
-            } else {
-                // Get all immediate downlines
-                downlineUsers = await prisma.user.findMany({
+                    select: {id: true, username: true},
+                })
+                : await prisma.user.findMany({
                     where: {
                         parentId: userId,
-                        role: {
-                            name: downlineRole,
-                        },
+                        role: {name: downlineRole},
                     },
-                    select: {
-                        id: true,
-                        username: true,
-                    },
+                    select: {id: true, username: true},
                 });
-            }
 
             if (downlineUsers.length === 0) {
-                return {
-                    reports: [],
-                    message: "No downline users found.",
-                };
+                return {reports: [], message: "No downline users found."};
             }
 
-            // Get the current date to cap report end dates
             const currentDate = new Date();
 
-            // If startDate and endDate are not provided, find the earliest and latest settled commission dates
+            // Auto-calculate start and end dates if not provided
             if (!startDate || !endDate) {
-                // Get the earliest and latest settled dates for the downline users
-                const downlineIds = downlineUsers.map((user) => user.id);
+                const downlineIds = downlineUsers.map((u) => u.id);
 
-                const earliestSettlementRecord =
-                    await prisma.commissionSummary.findFirst({
-                        where: {
-                            userId: {in: downlineIds},
-                            settledStatus: "Y",
-                            settledAt: {not: null},
-                        },
-                        orderBy: {
-                            settledAt: "asc",
-                        },
-                        select: {
-                            settledAt: true,
-                        },
-                    });
+                const earliest = await prisma.commissionSummary.findFirst({
+                    where: {
+                        userId: {in: downlineIds},
+                        settledStatus: "Y",
+                        settledAt: {not: null},
+                    },
+                    orderBy: {settledAt: "asc"},
+                    select: {settledAt: true},
+                });
 
-                const latestSettlementRecord = await prisma.commissionSummary.findFirst(
-                    {
-                        where: {
-                            userId: {in: downlineIds},
-                            settledStatus: "Y",
-                            settledAt: {not: null},
-                        },
-                        orderBy: {
-                            settledAt: "desc",
-                        },
-                        select: {
-                            settledAt: true,
-                        },
-                    }
-                );
+                const latest = await prisma.commissionSummary.findFirst({
+                    where: {
+                        userId: {in: downlineIds},
+                        settledStatus: "Y",
+                        settledAt: {not: null},
+                    },
+                    orderBy: {settledAt: "desc"},
+                    select: {settledAt: true},
+                });
 
-                // If no settled commissions found, use current cycle dates
-                if (!earliestSettlementRecord || !latestSettlementRecord) {
-                    const {cycleStartDate, cycleEndDate} =
-                        await this.getCurrentCycleDates();
+                if (!earliest || !latest) {
+                    const {cycleStartDate, cycleEndDate} = await this.getCurrentCycleDates();
                     startDate = cycleStartDate;
-                    // Cap the end date to the current date
-                    endDate = new Date(
-                        Math.min(cycleEndDate.getTime(), currentDate.getTime())
-                    );
+                    endDate = new Date(Math.min(cycleEndDate.getTime(), currentDate.getTime()));
 
                     return {
                         reports: [],
@@ -4294,112 +4002,107 @@ class CommissionService {
                     };
                 }
 
-                // Use earliest and latest settlement dates
-                startDate = earliestSettlementRecord.settledAt;
-                endDate = latestSettlementRecord.settledAt;
+                startDate = earliest.settledAt;
+                endDate = latest.settledAt;
             }
 
-            // Validate date inputs (should be already validated in controller, but double-check)
             if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-                throw new Error("Invalid date format. Please use YYYY-MM-DD format.");
+                throw new Error("Invalid date format.");
             }
 
-            // For each downline, get their settled commission summaries grouped by date periods
-            const reportsPromises = downlineUsers.map(async (downline) => {
-                const summaries = await prisma.commissionSummary.findMany({
-                    where: {
-                        userId: downline.id,
-                        settledStatus: "Y",
-                        settledAt: {
-                            gte: startDate,
-                            lte: endDate,
+            // Get reports per user
+            const reportsArrays = await Promise.all(
+                downlineUsers.map(async (downline) => {
+                    const summaries = await prisma.commissionSummary.findMany({
+                        where: {
+                            userId: downline.id,
+                            settledStatus: "Y",
+                            settledAt: {gte: startDate, lte: endDate},
                         },
-                    },
-                    orderBy: {
-                        settledAt: "asc",
-                    },
-                });
+                        orderBy: {settledAt: "asc"},
+                    });
 
-                if (summaries.length === 0) {
-                    return [];
-                }
+                    if (summaries.length === 0) return [];
 
-                // Group by period (fromDate, toDate)
-                const groupedByPeriod = new Map();
+                    const groupedByPeriod = new Map();
 
-                for (const summary of summaries) {
-                    // Determine the period based on bi-monthly or monthly cycle
-                    let fromDate, toDate;
-                    const settledAt = summary.settledAt || summary.createdAt;
+                    for (const summary of summaries) {
+                        const createdAt = summary.createdAt;
+                        let fromDate: Date, toDate: Date;
 
-                    // For bi-monthly periods
-                    if (DEFAULT_COMMISSION_COMPUTATION_PERIOD === "BI_MONTHLY") {
-                        const day = settledAt.getDate();
+                        const day = createdAt.getDate();
+                        const year = createdAt.getFullYear();
+                        const month = createdAt.getMonth();
+
                         if (day <= 15) {
-                            // First half of the month
-                            fromDate = new Date(
-                                settledAt.getFullYear(),
-                                settledAt.getMonth(),
-                                1
-                            );
-                            toDate = new Date(
-                                settledAt.getFullYear(),
-                                settledAt.getMonth(),
-                                15
-                            );
+                            fromDate = new Date(year, month, 1);
+                            toDate = new Date(year, month, 15);
                         } else {
-                            // Second half of the month
-                            fromDate = new Date(
-                                settledAt.getFullYear(),
-                                settledAt.getMonth(),
-                                16
-                            );
-                            toDate = lastDayOfMonth(settledAt);
+                            fromDate = new Date(year, month, 16);
+                            toDate = new Date(year, month + 1, 0); // last day of month
                         }
-                    } else {
-                        // For monthly periods
-                        fromDate = startOfMonth(settledAt);
-                        toDate = lastDayOfMonth(settledAt);
+
+                        if (toDate > currentDate) toDate = new Date(currentDate);
+
+                        const periodKey = `${fromDate.toISOString()}-${toDate.toISOString()}`;
+
+                        if (!groupedByPeriod.has(periodKey)) {
+                            groupedByPeriod.set(periodKey, {
+                                fromDate,
+                                toDate,
+                                downlineId: downline.id,
+                                downlineName: downline.username,
+                                summaries: [],
+                            });
+                        }
+
+                        groupedByPeriod.get(periodKey).summaries.push(summary);
                     }
 
-                    // Cap end date to current date for incomplete cycles
-                    if (toDate > currentDate) {
-                        toDate = new Date(currentDate);
-                    }
+                    const reportItems = await Promise.all(
+                        Array.from(groupedByPeriod.values()).map(async (group, index) => {
+                            const latest = group.summaries[group.summaries.length - 1];
 
-                    const periodKey = `${fromDate.toISOString()}-${toDate.toISOString()}`;
+                            let referenceId = "-";
+                            if (latest?.settledAt) {
+                                const match = await prisma.settlementHistory.findFirst({
+                                    where: {
+                                        userId: group.downlineId,
+                                        isPartiallySettled: false,
+                                        createdAt: {
+                                            gte: new Date(latest.settledAt.setHours(0, 0, 0, 0)),
+                                            lte: new Date(latest.settledAt.setHours(23, 59, 59, 999)),
+                                        },
+                                    },
+                                    select: {referenceId: true},
+                                });
+                                referenceId = match?.referenceId ?? "-";
+                            }
 
-                    if (!groupedByPeriod.has(periodKey)) {
-                        groupedByPeriod.set(periodKey, {
-                            fromDate,
-                            toDate,
-                            downlineId: downline.id,
-                            downlineName: downline.username,
-                            summaries: [],
-                        });
-                    }
+                            return {
+                                id: index + 1,
+                                fromDate: format(group.fromDate, "M-dd-yyyy"),
+                                toDate: format(group.toDate, "M-dd-yyyy"),
+                                downlineName: group.downlineName,
+                                status: "COMPLETED",
+                                dateSettled: latest?.settledAt
+                                    ? format(latest.settledAt, "dd-MM-yyyy")
+                                    : "-",
+                                refId: referenceId,
+                                action: "DOWNLOAD",
+                                _metadata: {
+                                    downlineId: group.downlineId,
+                                    fromDateISO: group.fromDate.toISOString(),
+                                    toDateISO: group.toDate.toISOString(),
+                                },
+                            };
+                        })
+                    );
 
-                    groupedByPeriod.get(periodKey).summaries.push(summary);
-                }
+                    return reportItems;
+                })
+            );
 
-                // Convert grouped data to the required report format
-                return Array.from(groupedByPeriod.values()).map((group, index) => ({
-                    id: index + 1, // Generate a unique ID for each group
-                    fromDate: format(group.fromDate, "M-dd-yyyy"),
-                    toDate: format(group.toDate, "M-dd-yyyy"),
-                    downlineName: group.downlineName,
-                    status: "COMPLETED",
-                    action: "DOWNLOAD",
-                    // Store additional data for download
-                    _metadata: {
-                        downlineId: group.downlineId,
-                        fromDateISO: group.fromDate.toISOString(),
-                        toDateISO: group.toDate.toISOString(),
-                    },
-                }));
-            });
-
-            const reportsArrays = await Promise.all(reportsPromises);
             const reports = reportsArrays.flat();
 
             return {
@@ -4410,9 +4113,7 @@ class CommissionService {
                         : "No settled commission reports found for the specified criteria.",
             };
         } catch (error) {
-            throw new Error(
-                `Error fetching settled commission reports: ${error.message}`
-            );
+            throw new Error(`Error fetching settled commission reports: ${error.message}`);
         }
     }
 

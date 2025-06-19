@@ -31,6 +31,9 @@ class GenerateCommission {
                 const grouped = new Map<string, Record<string, Decimal>>();
 
                 for (const txn of transactions) {
+
+                    // if (txn.platformType !== "E-Games") continue
+
                     const userId = txn[roleKey as keyof typeof txn] as string;
                     const category = txn.platformType || "Unknown";
                     if (!userId) continue;

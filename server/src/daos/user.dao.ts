@@ -111,15 +111,16 @@ class UserDao {
                 });
 
 
-          }
-          
-           // Step 1: Fetch all commission summary records for this user
-          const walletSummaries = await prisma.settlementHistory.findMany({
+            }
+
+            // Step 1: Fetch all commission summary records for this user
+            const walletSummaries = await prisma.settlementHistory.findMany({
                 where: {
                     userId,
                     categoryName: {
                         in: ['E-Games', 'Sports Betting', 'Speciality Games - RNG', 'Speciality Games - Tote']
                     },
+                    isPartiallySettled: false,
                     amount: { // replace 'amount' with your actual numeric field
                         gt: 0 // "greater than 0" means only positive numbers
                     }
