@@ -13,12 +13,12 @@ import {
 import {
     addDays,
     differenceInDays,
-    endOfMonth,
+    endOfMonth, endOfWeek,
     format,
     getDaysInMonth,
     lastDayOfMonth,
     setDate,
-    startOfMonth,
+    startOfMonth, startOfWeek,
     subMonths,
 } from "date-fns";
 import {ResponseCodes} from "../common/config/responseCodes";
@@ -2101,6 +2101,8 @@ class CommissionService {
 
             let grossCommissionSum = 0;
 
+            console.log({userCategoryCommissionMap})
+
             userCategoryCommissionMap.forEach((value, key) => {
                 if (value > 0) {
                     grossCommissionSum += value;
@@ -2571,9 +2573,9 @@ class CommissionService {
                         const groupUserIds = [id, ...operatorPlas, ...goldenIds];
                         const groupKey = groupUserIds.sort().join(",");
 
-                        const filteredData = summaries.filter(doc =>
-                            groupUserIds.includes(doc.user.id)
-                        );
+                        // const filteredData = summaries.filter(doc =>
+                        //     groupUserIds.includes(doc.user.id)
+                        // );
 
                         if (!groupDataMap[groupKey]) {
                             groupDataMap[groupKey] = {
@@ -2582,7 +2584,7 @@ class CommissionService {
                             };
                         }
 
-                        groupDataMap[groupKey].dataByCategory[category] = filteredData;
+                        groupDataMap[groupKey].dataByCategory[category] = summaries;
 
                     }
 
@@ -2638,7 +2640,7 @@ class CommissionService {
                         const summaries = groupInfo.dataByCategory[cat];
 
                         summaries.forEach(summary => {
-                            const key = `${summary.userId}-${cat}`;
+                            const key = `${summary?.user?.id}-${cat}`;
                             const current = userCategoryCommissionMap.get(key) || 0;
                             userCategoryCommissionMap.set(key, current + (summary.netCommissionAvailablePayout || 0));
                         });
@@ -3315,7 +3317,7 @@ class CommissionService {
                 ],
             });
 
-          const pending = {
+            const pending = {
                 eGamesGGR: 0,
                 eGamesCommission: 0,
                 rngGGR: 0,
@@ -3327,7 +3329,7 @@ class CommissionService {
                 ownerCommission: 0,
             };
 
-           const settled = {
+            const settled = {
                 eGamesGGR: 0,
                 eGamesCommission: 0,
                 rngGGR: 0,
@@ -3460,7 +3462,7 @@ class CommissionService {
                 let sportsCommission = 0;
                 let rngCommission = 0;
                 let toteCommission = 0;
-                
+
 
                 for (const summary of operatorSummaries) {
                     if (summary.categoryName === "E-Games") {
@@ -3487,17 +3489,17 @@ class CommissionService {
                         sportsCommission += summary.netCommissionAvailablePayout;
 
                     } else if (summary.categoryName === "Speciality Games - RNG") {
-                                    const ggr = summary.netGGR;
-                                    if (operatorIds.includes(summary.userId)) {
-                                        rngGGR += ggr;
-                                    }
-                                    rngCommission += summary.netCommissionAvailablePayout;
-                    }  else if (summary.categoryName === "Speciality Games - Tote") {
-                            const bet = summary.totalBetAmount;
-                            if (operatorIds.includes(summary.userId)) {
-                                toteGGR += bet;
-                            }
-                            toteCommission += summary.netCommissionAvailablePayout;
+                        const ggr = summary.netGGR;
+                        if (operatorIds.includes(summary.userId)) {
+                            rngGGR += ggr;
+                        }
+                        rngCommission += summary.netCommissionAvailablePayout;
+                    } else if (summary.categoryName === "Speciality Games - Tote") {
+                        const bet = summary.totalBetAmount;
+                        if (operatorIds.includes(summary.userId)) {
+                            toteGGR += bet;
+                        }
+                        toteCommission += summary.netCommissionAvailablePayout;
                     }
                 }
 
@@ -3511,7 +3513,7 @@ class CommissionService {
                 pending.toteBet = toteGGR;
                 pending.toteCommission = toteCommission;
 
-                
+
                 // console.log("pending commission", pending.eGamesCommission, "comm", pending.sportsCommission, "grossCommission", pending.eGamesGGR)
             }
             if (roleName === UserRole.OPERATOR) {
@@ -3610,7 +3612,7 @@ class CommissionService {
                     },
                 },
             ]
-             const specialityGamesToteQuery = [
+            const specialityGamesToteQuery = [
                 {userId: {in: userIds}},
                 {categoryName: "Speciality Games - Tote"},
                 {
@@ -3725,38 +3727,38 @@ class CommissionService {
                         pending.sportsCommission += comm + parentCommission;
                     }
                 } else if (category === "Speciality Games - RNG") {
-        // NEW handling for RNG
-                        if (roleName === UserRole.OPERATOR) {
-                            if (pIds.includes(summary.userId)) {
-                                pending.rngGGR += ggr;
-                                ownRNGCommission += parentCommission;
-                            }
-                            pending.rngCommission += comm;
-                        }
-                        if (roleName === UserRole.GOLDEN) {
+                    // NEW handling for RNG
+                    if (roleName === UserRole.OPERATOR) {
+                        if (pIds.includes(summary.userId)) {
                             pending.rngGGR += ggr;
-                            pending.rngCommission += comm;
-                        } else if (roleName === UserRole.PLATINUM) {
-                            pending.rngGGR += ggr;
-                            pending.rngCommission += comm + parentCommission;
+                            ownRNGCommission += parentCommission;
                         }
-                    }  else if (category === "Speciality Games - Tote") {
-        // NEW handling for Tote
-                        if (roleName === UserRole.OPERATOR) {
-                            if (pIds.includes(summary.userId)) {
-                                pending.toteBet += bet;
-                                ownToteCommission += parentCommission;
-                            }
-                            pending.toteCommission += comm;
-                        }
-                        if (roleName === UserRole.GOLDEN) {
+                        pending.rngCommission += comm;
+                    }
+                    if (roleName === UserRole.GOLDEN) {
+                        pending.rngGGR += ggr;
+                        pending.rngCommission += comm;
+                    } else if (roleName === UserRole.PLATINUM) {
+                        pending.rngGGR += ggr;
+                        pending.rngCommission += comm + parentCommission;
+                    }
+                } else if (category === "Speciality Games - Tote") {
+                    // NEW handling for Tote
+                    if (roleName === UserRole.OPERATOR) {
+                        if (pIds.includes(summary.userId)) {
                             pending.toteBet += bet;
-                            pending.toteCommission += comm;
-                        } else if (roleName === UserRole.PLATINUM) {
-                            pending.toteBet += bet;
-                            pending.toteCommission += comm + parentCommission;
+                            ownToteCommission += parentCommission;
                         }
-    }
+                        pending.toteCommission += comm;
+                    }
+                    if (roleName === UserRole.GOLDEN) {
+                        pending.toteBet += bet;
+                        pending.toteCommission += comm;
+                    } else if (roleName === UserRole.PLATINUM) {
+                        pending.toteBet += bet;
+                        pending.toteCommission += comm + parentCommission;
+                    }
+                }
 
             }
 
@@ -3863,7 +3865,7 @@ class CommissionService {
                     ownSportsBettingCommission
                 ),
                 buildLicenseData(
-                            "Speciality Games - Tote",
+                    "Speciality Games - Tote",
                     "Total Bet Amount",
                     pending.toteBet,
                     settled.toteBet,
@@ -3873,7 +3875,7 @@ class CommissionService {
                     ownToteCommission // or ownToteCommission if separate
                 ),
                 buildLicenseData(
-                     "Speciality Games - RNG",
+                    "Speciality Games - RNG",
                     "GGR",
                     pending.rngGGR,
                     settled.rngGGR,
@@ -3928,6 +3930,30 @@ class CommissionService {
         endDate?: Date,
         downlineId?: string
     ) {
+
+        const CATEGORY_GROUPS: Record<string, { groupName: string; type: "BI_MONTHLY" | "WEEKLY"; license: string }> = {
+            "E-Games": {
+                groupName: "Casino Report",
+                type: "BI_MONTHLY",
+                license: "EGames/Specialty RNG",
+            },
+            "Speciality Games - RNG": {
+                groupName: "Casino Report",
+                type: "BI_MONTHLY",
+                license: "EGames/Specialty RNG",
+            },
+            "Sports Betting": {
+                groupName: "Sports Report",
+                type: "WEEKLY",
+                license: "Sports Betting/Specialty Tote",
+            },
+            "Speciality Games - Tote": {
+                groupName: "Sports Report",
+                type: "WEEKLY",
+                license: "Sports Betting/Specialty Tote",
+            },
+        };
+
         try {
             let downlineRole: string;
             roleName = roleName.toLowerCase();
@@ -4030,6 +4056,12 @@ class CommissionService {
                     const groupedByPeriod = new Map();
 
                     for (const summary of summaries) {
+
+                        const category = summary.categoryName;
+                        const categoryGroup = CATEGORY_GROUPS[category];
+
+                        if (!categoryGroup) continue;
+
                         const createdAt = summary.createdAt;
                         let fromDate: Date, toDate: Date;
 
@@ -4037,20 +4069,26 @@ class CommissionService {
                         const year = createdAt.getFullYear();
                         const month = createdAt.getMonth();
 
-                        if (day <= 15) {
-                            fromDate = new Date(year, month, 1);
-                            toDate = new Date(year, month, 15);
+                        if (categoryGroup.type === "BI_MONTHLY") {
+                            const day = createdAt.getDate();
+                            const year = createdAt.getFullYear();
+                            const month = createdAt.getMonth();
+                            fromDate = new Date(year, month, day <= 15 ? 1 : 16);
+                            toDate = day <= 15
+                                ? new Date(year, month, 15)
+                                : new Date(year, month + 1, 0);
                         } else {
-                            fromDate = new Date(year, month, 16);
-                            toDate = new Date(year, month + 1, 0); // last day of month
+                            fromDate = startOfWeek(createdAt, {weekStartsOn: 1}); // Monday
+                            toDate = endOfWeek(createdAt, {weekStartsOn: 1});     // Sunday
                         }
 
                         if (toDate > currentDate) toDate = new Date(currentDate);
 
-                        const periodKey = `${fromDate.toISOString()}-${toDate.toISOString()}`;
+                        const periodKey = `${categoryGroup.groupName}-${fromDate.toISOString()}-${toDate.toISOString()}`;
 
                         if (!groupedByPeriod.has(periodKey)) {
                             groupedByPeriod.set(periodKey, {
+                                groupName: categoryGroup.groupName,
                                 fromDate,
                                 toDate,
                                 downlineId: downline.id,
@@ -4084,6 +4122,7 @@ class CommissionService {
 
                             return {
                                 id: index + 1,
+                                reportType: group.groupName,
                                 fromDate: format(group.fromDate, "M-dd-yyyy"),
                                 toDate: format(group.toDate, "M-dd-yyyy"),
                                 downlineName: group.downlineName,
