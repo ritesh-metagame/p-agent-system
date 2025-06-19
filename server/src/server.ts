@@ -95,7 +95,7 @@ class Server {
     async function insertTransactionsFromXLSX(filePath: string) {
   const rawRows: any = await prisma.$queryRawUnsafe(`
     SELECT * FROM bets
-    WHERE time_of_bet BETWEEN '2025-05-26 00:00:00' AND '2025-06-01 23:59:59'
+    WHERE time_of_bet BETWEEN '2025-05-26 00:00:00' AND '2025-06-19 23:59:59'
   `);
 
   for (const row of rawRows) {
@@ -239,13 +239,13 @@ class Server {
   console.log("✅ All transactions inserted successfully");
     }
     
-    insertTransactionsFromXLSX(filePath)
-      .then(() => {
-        console.log("Import complete.");
-      })
-      .catch((err) => {
-        console.error("Import failed:", err);
-      });
+    // insertTransactionsFromXLSX(filePath)
+    //   .then(() => {
+    //     console.log("Import complete.");
+    //   })
+    //   .catch((err) => {
+    //     console.error("Import failed:", err);
+    //   });
 
 
 //     async function insertTransactionsFromXLSX(filePath: string) {
