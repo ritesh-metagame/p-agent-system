@@ -134,23 +134,13 @@ class UserDao {
                       OR: [
                           {
                               categoryName: { in: ['E-Games', 'Speciality Games - RNG'] },
-                              createdAt: roleName === UserRole.GOLDEN
-                                  ? {
-                                      gte: eGamesCycle.cycleStartDate,
-                                      lte: eGamesCycle.cycleEndDate,
-                                  }
-                                  : {
+                              createdAt: {
                                       lte: eGamesCycle.cycleEndDate,
                                   },
                           },
                           {
                               categoryName: { in: ['Sports Betting', 'Speciality Games - Tote'] },
-                              createdAt: roleName === UserRole.GOLDEN
-                                  ? {
-                                      gte: sportsCycle.cycleStartDate,
-                                      lte: sportsCycle.cycleEndDate,
-                                  }
-                                  : {
+                              createdAt: {
                                       lte: sportsCycle.cycleEndDate,
                                   },
                           },
@@ -173,23 +163,13 @@ class UserDao {
                     OR: [
                         {
                             categoryName: { in: ['E-Games', 'Speciality Games - RNG'] },
-                            createdAt: roleName === UserRole.GOLDEN
-                                  ? {
-                                      gte: sportsCycle.cycleStartDate,
-                                      lte: sportsCycle.cycleEndDate,
-                                  }
-                                  : {
+                            createdAt: {
                                       lte: sportsCycle.cycleEndDate,
                                   },
                         },
                         {
                             categoryName: { in: ['Sports Betting', 'Speciality Games - Tote'] },
-                            createdAt: roleName === UserRole.GOLDEN
-                                  ? {
-                                      gte: sportsCycle.cycleStartDate,
-                                      lte: sportsCycle.cycleEndDate,
-                                  }
-                                  : {
+                            createdAt: {
                                       lte: sportsCycle.cycleEndDate,
                                   },
                         },
