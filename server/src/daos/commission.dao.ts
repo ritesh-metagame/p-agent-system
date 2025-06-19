@@ -741,7 +741,7 @@ class CommissionDao {
         }
     }
 
-    public async markCommissionAsSettled(ids: string[], roleName: UserRole, childrenCommissionIds: string[], transferableAmount: number) {
+    public async markCommissionAsSettled(ids: string[], roleName: UserRole, childrenCommissionIds: string[], referenceId: string) {
 
         try {
             // First get the current records with their user roles
@@ -769,7 +769,32 @@ class CommissionDao {
                 },
             });
 
-            console.log({currentRecords})
+            const otherChildrenRecords = await prisma.commissionSummary.findMany({
+                where: {
+                    id: {in: childrenCommissionIds},
+                    categoryName: {
+                        not: "Unknown"
+                    }
+                },
+                select: {
+                    id: true,
+                    pendingSettleCommission: true,
+                    netCommissionAvailablePayout: true,
+                    paymentGatewayFee: true,
+                    categoryName: true,
+                    userId: true,
+                    createdAt: true,
+                    user: {
+                        select: {
+                            role: {
+                                select: {
+                                    name: true
+                                }
+                            }
+                        }
+                    }
+                },
+            });
 
             const categoryGroupedRecords: Record<string, typeof currentRecords> = {};
 
@@ -794,6 +819,37 @@ class CommissionDao {
                             categoryName,
                             userId: userId, // Replace with appropriate user ID
                             amount: totalAmount,
+                            referenceId: referenceId
+                        },
+                    });
+                }
+            }
+
+            const categoryGroupedChildrenRecords: Record<string, typeof currentRecords> = {};
+
+            for (const record of otherChildrenRecords) {
+                const category = record.categoryName;
+
+                if (!categoryGroupedChildrenRecords[category]) {
+                    categoryGroupedChildrenRecords[category] = [];
+                }
+
+                categoryGroupedChildrenRecords[category].push(record);
+            }
+
+            for (const [categoryName, records] of Object.entries(categoryGroupedChildrenRecords)) {
+                const totalAmount = records.reduce((sum, rec) => sum + (rec.netCommissionAvailablePayout || 0), 0);
+
+                const userId = records[0].userId
+
+                if (totalAmount > 0) {
+                    await prisma.settlementHistory.create({
+                        data: {
+                            categoryName,
+                            userId: userId, // Replace with appropriate user ID
+                            amount: totalAmount,
+                            isPartiallySettled: true,
+                            referenceId: referenceId
                         },
                     });
                 }
