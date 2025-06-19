@@ -1205,7 +1205,7 @@ class CommissionService {
                             ? {settledByPlatinum: false}
                             : {}),
                         createdAt: {
-                            gte: cycleStartDate,
+                            // gte: cycleStartDate,
                             lte: cycleEndDate,
                         },
                     },
@@ -1860,7 +1860,8 @@ class CommissionService {
                         },
                         categoryName: category,
                         createdAt: {
-                            gte: cycleStartDate,
+                            ...(roleName === UserRole.GOLDEN ? {gte: cycleStartDate} : {}),
+                            // gte: cycleStartDate,
                             lte: cycleEndDate,
                         },
                         ...(roleName === UserRole.SUPER_ADMIN
@@ -2507,7 +2508,7 @@ class CommissionService {
                         where: {
                             userId: {in: [...oIds, ...pIds, ...gIds]},
                             createdAt: {
-                                gte: cycleStartDate,
+                                // gte: cycleStartDate,
                                 lte: cycleEndDate,
                             },
                             settledStatus: "N",
