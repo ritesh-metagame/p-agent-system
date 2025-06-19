@@ -212,12 +212,7 @@ class UserDao {
             console.log(
                 `Role0000000000000ooooooooooooooooookkkkkkkkkkkkkkkkkkkkkkknnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn: ${roleName}, Settled: ${isSettled}, Summaries Count: ${summaries.length}`)
 
-            if (!isSettled) {
-                console.warn(
-                    `⚠️ Settlement not completed for role ${roleName}. Returning payout and wallet as 0.`
-                );
-                return {payout: 0, wallet: 0};
-            }
+           
 
 
             // Step 5: Initialize sums
@@ -290,7 +285,9 @@ class UserDao {
             //   }
 
 
-            // }
+          // }
+          
+
 
 
             const payout =
@@ -302,7 +299,14 @@ class UserDao {
                 // wallet = totalCommissionByUser - totalPaymentGatewayFee;
             } else {
                 wallet = totalCommissionByUser;
+          }
+           if (!isSettled) {
+                console.warn(
+                    `⚠️ Settlement not completed for role ${roleName}. Returning payout and wallet as 0.`
+                );
+                return {payout: 0 , wallet};
             }
+          
 
             return {
                 payout,
