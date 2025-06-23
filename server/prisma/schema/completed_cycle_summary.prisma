@@ -1,0 +1,19 @@
+model CompletedCycleSummaries {
+  id                           String   @id @default(cuid())
+  userId                       String
+  categoryName                 String
+  cycleStart                   DateTime
+  cycleEnd                     DateTime
+  netGGR                       Decimal  @default(0) @db.Decimal(20, 5)
+  netCommissionAvailablePayout Decimal  @default(0) @db.Decimal(20, 5)
+  totalBetAmount               Decimal  @default(0) @db.Decimal(20, 5)
+  pendingSettleCommission      Decimal  @default(0) @db.Decimal(20, 5)
+  parentCommission             Decimal  @default(0) @db.Decimal(20, 5)
+  settledStatus                String   @default("N")
+  settledByOperator            Boolean  @default(false)
+  settledByPlatinum            Boolean  @default(false)
+  settledBySuperadmin          Boolean  @default(false)
+  createdAt                    DateTime @default(now())
+
+  @@map("completed_cycle_summaries")
+}

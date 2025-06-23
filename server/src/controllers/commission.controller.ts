@@ -74,6 +74,26 @@ class CommissionController {
         }
     }
 
+    public static async generateCompletedCyclesSummary(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
+        try {
+            const {startDate, endDate, category} = req.query as any;
+            const commissionService = Container.get(CommissionService);
+            const result = await commissionService.generateCompletedCyclesSummary(startDate, endDate, category);
+
+            return new ApiResponse(
+                ResponseCodes.COMMISSION_CREATED_SUCCESSFULLY.code,
+                ResponseCodes.COMMISSION_CREATED_SUCCESSFULLY.message,
+                result
+            );
+        } catch (error) {
+            next(error);
+        }
+    }
+
     public static async getCommissionSummaries(
         req: Request,
         res: Response,
