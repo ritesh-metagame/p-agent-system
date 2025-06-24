@@ -2,12 +2,13 @@ import {prisma} from "../server";
 import {startOfDay, endOfDay} from "date-fns";
 import {UserRole} from "../common/config/constants";
 import {moveJobFromActiveToWait} from "bullmq/dist/esm/scripts";
+import Decimal from "decimal.js";
 
 interface SummData {
-    netGGR: number;
-    netCommissionAvailablePayout: number;
-    totalBetAmount: number;
-    parentCommission?: number;
+    netGGR: Decimal;
+    netCommissionAvailablePayout: Decimal;
+    totalBetAmount: Decimal;
+    parentCommission?: Decimal;
 }
 
 class GenerateCompletedCycleCommission {
@@ -39,10 +40,10 @@ class GenerateCompletedCycleCommission {
 
         // helper zero-init
         const zero: SummData = {
-            netGGR: 0,
-            netCommissionAvailablePayout: 0,
-            totalBetAmount: 0,
-            parentCommission: 0
+            netGGR: new Decimal(0),
+            netCommissionAvailablePayout: new Decimal(0),
+            totalBetAmount: new Decimal(0),
+            parentCommission: new Decimal(0)
         };
 
         // 2. fetch only GOLDEN summaries in range & category
@@ -70,9 +71,9 @@ class GenerateCompletedCycleCommission {
         for (const doc of raw) {
             const cur = goldenAgg.get(doc.userId) ?? {...zero};
             goldenAgg.set(doc.userId, {
-                netGGR: cur.netGGR + doc.netGGR,
-                netCommissionAvailablePayout: cur.netCommissionAvailablePayout + doc.netCommissionAvailablePayout,
-                totalBetAmount: cur.totalBetAmount + doc.totalBetAmount,
+                netGGR: cur.netGGR.plus(doc.netGGR),
+                netCommissionAvailablePayout: cur.netCommissionAvailablePayout.plus(doc.netCommissionAvailablePayout),
+                totalBetAmount: cur.totalBetAmount.plus(doc.totalBetAmount),
             });
         }
 
@@ -83,9 +84,9 @@ class GenerateCompletedCycleCommission {
             if (!parentPlat) continue;
             const cur = platinumAgg.get(parentPlat) ?? {...zero};
             platinumAgg.set(parentPlat, {
-                netGGR: cur.netGGR + sum.netGGR,
-                netCommissionAvailablePayout: cur.netCommissionAvailablePayout + sum.netCommissionAvailablePayout,
-                totalBetAmount: cur.totalBetAmount + sum.totalBetAmount,
+                netGGR: cur.netGGR.plus(Math.max(0, sum.netGGR.toNumber())),
+                netCommissionAvailablePayout: cur.netCommissionAvailablePayout.plus(sum.netCommissionAvailablePayout),
+                totalBetAmount: cur.totalBetAmount.plus(sum.totalBetAmount),
             });
         }
 
@@ -97,9 +98,9 @@ class GenerateCompletedCycleCommission {
             const cur = operatorAgg.get(parentOp) ?? {...zero};
             console.log({sum, parentOp, platId})
             operatorAgg.set(parentOp, {
-                netGGR: cur.netGGR + Math.max(0, sum.netGGR), // clamp to zero
-                netCommissionAvailablePayout: cur.netCommissionAvailablePayout + sum.netCommissionAvailablePayout,
-                totalBetAmount: cur.totalBetAmount + sum.totalBetAmount,
+                netGGR: cur.netGGR.plus(Math.max(0, sum.netGGR.toNumber())),
+                netCommissionAvailablePayout: cur.netCommissionAvailablePayout.plus(sum.netCommissionAvailablePayout),
+                totalBetAmount: cur.totalBetAmount.plus(sum.totalBetAmount),
             });
         }
 
@@ -120,25 +121,34 @@ class GenerateCompletedCycleCommission {
             });
 
             const baseValue = isGGRCategory
-                ? Math.max(0, sums.netGGR)
+                ? Math.max(0, sums.netGGR.toNumber())
                 : sums.totalBetAmount;
 
-            console.log(`Commission for ${userId} in ${categoryName}: ${commissionPercentage}% which makes the net payout ${baseValue * commissionPercentage / 100}`);
+            console.log(`Commission for ${userId} in ${categoryName}: ${commissionPercentage}% which makes the net payout ${baseValue.toString() * commissionPercentage / 100}`);
 
             rows.push({
                 userId,
                 categoryName,
                 cycleStart,
                 cycleEnd,
-                netGGR: Math.max(0, sums.netGGR),
-                netCommissionAvailablePayout: baseValue * commissionPercentage / 100,
-                totalBetAmount: sums.totalBetAmount,
+                netGGR: Math.max(0, sums.netGGR.toDecimalPlaces(5).toNumber()),
+                netCommissionAvailablePayout: new Decimal(baseValue)
+                    .mul(commissionPercentage)
+                    .div(100)
+                    .toDecimalPlaces(5)
+                    .toNumber(),
+                totalBetAmount: sums.totalBetAmount.toDecimalPlaces(5).toNumber(),
+                parentCommission: new Decimal(baseValue)
+                    .mul(parentCommissionPercentage || 0)
+                    .div(100)
+                    .toDecimalPlaces(5)
+                    .toNumber(),
                 pendingSettleCommission: 0,
-                parentCommission: baseValue * parentCommissionPercentage / 100,
                 settledByOperator: false,
                 settledByPlatinum: false,
-                settledBySuperadmin: false
+                settledBySuperadmin: false,
             });
+
         }
 
         // PLATINUM-level
@@ -156,25 +166,34 @@ class GenerateCompletedCycleCommission {
             });
 
             const baseValue = isGGRCategory
-                ? Math.max(0, sums.netGGR)
+                ? Math.max(0, sums.netGGR.toNumber())
                 : sums.totalBetAmount;
 
-            console.log(`Commission for ${userId} in ${categoryName}: ${commissionPercentage}% which makes the net payout ${baseValue * commissionPercentage / 100}`);
+            // console.log(`Commission for ${userId} in ${categoryName}: ${commissionPercentage}% which makes the net payout ${baseValue * commissionPercentage / 100}`);
 
             rows.push({
                 userId,
                 categoryName,
                 cycleStart,
                 cycleEnd,
-                netGGR: Math.max(0, sums.netGGR),
-                netCommissionAvailablePayout: baseValue * commissionPercentage / 100,
-                totalBetAmount: sums.totalBetAmount,
-                parentCommission: baseValue * parentCommissionPercentage / 100,
+                netGGR: sums.netGGR.toDecimalPlaces(5).toNumber(),
+                netCommissionAvailablePayout: new Decimal(baseValue)
+                    .mul(commissionPercentage)
+                    .div(100)
+                    .toDecimalPlaces(5)
+                    .toNumber(),
+                totalBetAmount: sums.totalBetAmount.toDecimalPlaces(5).toNumber(),
+                parentCommission: new Decimal(baseValue)
+                    .mul(parentCommissionPercentage || 0)
+                    .div(100)
+                    .toDecimalPlaces(5)
+                    .toNumber(),
                 pendingSettleCommission: 0,
                 settledByOperator: false,
                 settledByPlatinum: false,
-                settledBySuperadmin: false
+                settledBySuperadmin: false,
             });
+
         }
 
         // OPERATOR-level
@@ -185,24 +204,28 @@ class GenerateCompletedCycleCommission {
             })!;
 
             const baseValue = isGGRCategory
-                ? Math.max(0, sums.netGGR)
+                ? Math.max(0, sums.netGGR.toNumber())
                 : sums.totalBetAmount;
 
-            console.log(`Commission for ${userId} in ${categoryName}: ${commissionPercentage}% which makes the net payout ${baseValue * commissionPercentage / 100}`);
+            // console.log(`Commission for ${userId} in ${categoryName}: ${commissionPercentage}% which makes the net payout ${baseValue * commissionPercentage / 100}`);
 
             rows.push({
                 userId,
                 categoryName,
                 cycleStart,
                 cycleEnd,
-                netGGR: Math.max(0, sums.netGGR),
-                netCommissionAvailablePayout: baseValue * commissionPercentage / 100,
-                totalBetAmount: sums.totalBetAmount,
+                netGGR: sums.netGGR.toDecimalPlaces(5).toNumber(),
+                netCommissionAvailablePayout: new Decimal(baseValue)
+                    .mul(commissionPercentage)
+                    .div(100)
+                    .toDecimalPlaces(5)
+                    .toNumber(),
+                totalBetAmount: sums.totalBetAmount.toDecimalPlaces(5).toNumber(),
+                parentCommission: 0,
                 pendingSettleCommission: 0,
-                parentCommission: 0, // no parent for operator
                 settledByOperator: false,
                 settledByPlatinum: false,
-                settledBySuperadmin: false
+                settledBySuperadmin: false,
             });
         }
 

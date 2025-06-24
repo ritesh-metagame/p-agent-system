@@ -1078,10 +1078,11 @@ class CommissionService {
                                 userId: {
                                     in: [
                                         ...nonSettledPlatinumChildren.map((ch) => ch.id),
-                                        // ...nonSettledGoldenChildren.map((ch) => ch.id),
+                                        ...nonSettledGoldenChildren.map((ch) => ch.id),
                                     ],
                                 },
-                                isPartiallySettled: true
+                                isPartiallySettled: true,
+                                isPartiallySettledBySuperAdmin: true
                             },
                             select: {
                                 userId: true,
@@ -1163,6 +1164,7 @@ class CommissionService {
                                     in: [...nonSettledGoldenChildren.map((ch) => ch.id)],
                                 },
                                 isPartiallySettled: true,
+                                isPartiallySettledByOperator: true,
                                 // settledStatus: "N",
                             },
                             select: {
@@ -1174,8 +1176,9 @@ class CommissionService {
                     settledData.push(...settledDataForNonSettled);
                 }
 
-                settledSummaries = settledData;
+                console.log("Settled Data:", settledData);
 
+                settledSummaries = settledData;
             }
             if (roleName === UserRole.PLATINUM) {
                 const goldens = await prisma.user.findMany({
@@ -1215,13 +1218,11 @@ class CommissionService {
 
             let commissionSummaries: any[] = [];
 
-            const groupDataMap: Record<string, { userIds: string[], dataByCategory: Record<string, any[]> }> = {};
-
             for (const [category, cycleType] of Object.entries(categoryCycles)) {
                 const {cycleStartDate, cycleEndDate} =
                     await this.getPreviousCompletedCycleDates(category);
 
-                const summaries = await prisma.commissionSummary.findMany({
+                const summaries = await prisma.completedCycleSummaries.findMany({
                     where: {
                         userId: {
                             in: userIds,
@@ -1237,128 +1238,39 @@ class CommissionService {
                         ...(roleName === UserRole.PLATINUM
                             ? {settledByPlatinum: false}
                             : {}),
-                        createdAt: {
+                        cycleEnd: {
                             // gte: cycleStartDate,
                             lte: cycleEndDate,
                         },
                     },
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                username: true,
-                                firstName: true,
-                                lastName: true,
-                                role: true,
-                            },
-                        },
-                        role: true,
-                        Site: {
-                            select: {
-                                id: true,
-                                name: true,
-                            },
-                        },
-                    },
                 });
 
-                const allUserIds = [...oIds, ...pIds, ...gIds];
-                const allUsers = await prisma.user.findMany({
-                    where: {id: {in: allUserIds}},
-                    select: {id: true, parentId: true},
-                });
-
-                const userMap = Object.fromEntries(allUsers.map(u => [u.id, u]));
-
-                if (roleName === UserRole.SUPER_ADMIN) {
-                    for (const oprId of oIds) {
-                        const operatorPlas = pIds.filter(pid => userMap[pid]?.parentId === oprId);
-                        const goldenIds = gIds.filter(gid =>
-                            operatorPlas.includes(userMap[gid]?.parentId)
-                        );
-
-                        const groupUserIds = [oprId, ...operatorPlas, ...goldenIds];
-                        const groupKey = groupUserIds.sort().join(",");
-
-                        const filteredData = summaries.filter(doc =>
-                            groupUserIds.includes(doc.userId)
-                        );
-
-                        if (!groupDataMap[groupKey]) {
-                            groupDataMap[groupKey] = {
-                                userIds: groupUserIds,
-                                dataByCategory: {},
-                            };
-                        }
-
-                        groupDataMap[groupKey].dataByCategory[category] = filteredData;
-                    }
-                }
-
-                if (roleName === UserRole.OPERATOR) {
-                    for (const platId of pIds) {
-                        const goldenIds = gIds.filter(gid => userMap[gid]?.parentId === platId);
-                        const groupUserIds = [platId, ...goldenIds];
-                        const groupKey = groupUserIds.sort().join(",");
-
-                        const filteredData = summaries.filter(doc => groupUserIds.includes(doc.userId));
-
-                        if (!groupDataMap[groupKey]) {
-                            groupDataMap[groupKey] = {
-                                userIds: groupUserIds,
-                                dataByCategory: {},
-                            };
-                        }
-                        groupDataMap[groupKey].dataByCategory[category] = filteredData;
-                    }
-                }
-
-                if (roleName === UserRole.PLATINUM) {
-                    const goldenIds = gIds.filter(gid => userMap[gid]?.parentId === userId);
-                    const groupUserIds = [userId, ...goldenIds];
-                    const groupKey = groupUserIds.sort().join(",");
-
-                    const filteredData = summaries.filter(doc => groupUserIds.includes(doc.userId));
-
-                    if (!groupDataMap[groupKey]) {
-                        groupDataMap[groupKey] = {
-                            userIds: groupUserIds,
-                            dataByCategory: {},
-                        };
-                    }
-                    groupDataMap[groupKey].dataByCategory[category] = filteredData;
-
-                }
-
-                // commissionSummaries = commissionSummaries.concat(summaries);
-
+                commissionSummaries.push(...summaries);
             }
 
-            const userCategoryCommissionMap = new Map<string, number>();
+            // 3️⃣ Aggregate totals  – keep high-precision until the very end
+            const resultByCategory = {
+                "E-Games": new Decimal(0),
+                "Sports Betting": new Decimal(0),
+                "Speciality Games - RNG": new Decimal(0),
+                "Speciality Games - Tote": new Decimal(0),
+            };
 
-            for (const [groupKey, groupInfo] of Object.entries(groupDataMap)) {
-                for (const cat of Object.keys(groupInfo.dataByCategory)) {
-                    const summaries = groupInfo.dataByCategory[cat];
-
-                    summaries.forEach(summary => {
-                        const key = `${summary.userId}-${cat}`;
-                        const current = userCategoryCommissionMap.get(key) || 0;
-                        userCategoryCommissionMap.set(key, current + (summary.netCommissionAvailablePayout || 0));
-                    });
-                }
+            // Walk every summary once
+            for (const s of commissionSummaries) {
+                // Add this summary’s payout (or whatever metric you need) to its category bucket
+                resultByCategory[s.categoryName] =
+                    resultByCategory[s.categoryName].plus(s.netCommissionAvailablePayout ?? 0);
             }
 
-            let grossCommissionSum = 0;
+            const gross = Object.values(resultByCategory).reduce(
+                (a, v) => a.plus(v),
+                new Decimal(0)
+            )
 
-            userCategoryCommissionMap.forEach((value, key) => {
-                if (value > 0) {
-                    grossCommissionSum += value;
-                }
-            });
+            const finalPayout = gross
 
-
-            const totalCommission = commissionSummaries.reduce((acc, curr) => curr.netCommissionAvailablePayout += acc, 0)
-            console.log(`Commission summaries from ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++`, totalCommission)
+            console.log(`Gross pending commission available payout: `, finalPayout.toNumber())
 
             // console.log("--------------------------------------------2")
 
@@ -1371,7 +1283,7 @@ class CommissionService {
                 netCommissionAvailablePayout: 0,
             };
 
-            let totalPending = grossCommissionSum;
+            let totalPending = finalPayout;
             let totalSettled = 0;
 
             // console.log("Settled Summaries:", settledSummaries);
@@ -1384,20 +1296,6 @@ class CommissionService {
                 // }
             }
 
-            // console.log("Total Settled:", totalSettled);
-
-            // for (const summary of commissionSummaries) {
-            //     if (summary.settledStatus === "N") {
-            // totalPending = commissionSummaries.reduce((acc, curr) => curr.netCommissionAvailablePayout += acc, 0)
-            //     }
-            // }
-
-            // console.log("--------------------------------------------2");
-
-            // console.log({settledPaymentGatewayFeeFiltered});
-
-            // console.log({ totalPending, totalSettled })
-
             console.log(`--------------------------------------------------Pending commission available payout: `, totalPending)
 
             return {
@@ -1405,7 +1303,7 @@ class CommissionService {
                 allTotal: totals,
                 // totalPending: totalPending - pendingPaymentGatewayFeeSum,
                 // totalSettled: totalSettled - settledPaymentGatewayFeeSum,
-                totalPending: totalPending < 0 ? 0 : totalPending,
+                totalPending: totalPending.lt(0) ? 0 : totalPending.toNumber(),
                 totalSettled: totalSettled,
             };
         } catch (error) {
@@ -1864,6 +1762,9 @@ class CommissionService {
                                 // gte: cycleStartDate,
                                 lte: cycleEndDate,
                             },
+                            ...(roleName === UserRole.SUPER_ADMIN && {settledBySuperadmin: false}),
+                            ...(roleName === UserRole.OPERATOR && {settledByOperator: false}),
+                            ...(roleName === UserRole.PLATINUM && {settledByPlatinum: false}),
                             settledStatus: "N",
                             categoryName: category,
                         },
