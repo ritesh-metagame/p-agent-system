@@ -27,6 +27,7 @@ import UserDao from "../daos/user.dao";
 import logger from "../common/logger";
 import {publicEncrypt} from "crypto";
 import {GenerateCompletedCycleCommission} from "../daos/generateCompletedCycleSummary";
+import Decimal from "decimal.js";
 
 interface SummaryTotal {
     totalDeposit: number;
@@ -79,6 +80,10 @@ const SUPER_ADMIN_DEFAULT_COMMISSION_RATES = {
     "Speciality Games - Tote": 2,
     "Speciality Games - RNG": 30,
 };
+
+// always HALF-UP to 5 places, return a plain number
+const fmt = (val: Decimal | number) =>
+    new Decimal(val).toDecimalPlaces(5, Decimal.ROUND_HALF_UP).toNumber();
 
 @Service()
 class CommissionService {
@@ -1420,11 +1425,11 @@ class CommissionService {
             let userIds: string[] = [userId];
 
             // Commission containers
-            const ownCommissionData: Record<string, number> = {
-                "E-Games": 0,
-                "Sports Betting": 0,
-                "Speciality Games - Tote": 0,
-                "Speciality Games - RNG": 0,
+            const ownCommissionData: Record<string, Decimal> = {
+                "E-Games": new Decimal(0),
+                "Sports Betting": new Decimal(0),
+                "Speciality Games - Tote": new Decimal(0),
+                "Speciality Games - RNG": new Decimal(0),
             };
 
             // 1️⃣ Role-based hierarchy (no settled logic)
@@ -1475,19 +1480,19 @@ class CommissionService {
                 gIds = goldens.map(g => g.id);
                 userIds = [...gIds];
             }
-            // GOLDEN has only self
 
-            // 2️⃣ Pending data and grouping
-            const groupDataMap: Record<string, { userIds: string[]; dataByCategory: Record<string, any[]> }> = {};
+
             const categories = ["E-Games", "Sports Betting", "Speciality Games - Tote", "Speciality Games - RNG"];
+
+            const pendingSummaries = []
 
             for (const category of categories) {
                 const {cycleStartDate, cycleEndDate} = await this.getPreviousCompletedCycleDates(category);
-                const pendingData = await prisma.commissionSummary.findMany({
+                const pendingData = await prisma.completedCycleSummaries.findMany({
                     where: {
                         userId: {in: roleName === UserRole.GOLDEN ? [userId] : userIds},
                         categoryName: category,
-                        createdAt: {lte: cycleEndDate},
+                        cycleEnd: {lte: cycleEndDate},
                         settledStatus: 'N',
                         ...(roleName === UserRole.SUPER_ADMIN && {settledBySuperadmin: false}),
                         ...(roleName === UserRole.OPERATOR && {settledByOperator: false}),
@@ -1495,130 +1500,82 @@ class CommissionService {
                     }
                 });
 
+                pendingSummaries.push(...pendingData);
+
                 // Own commission
                 if (roleName === UserRole.OPERATOR || roleName === UserRole.PLATINUM) {
                     const relevantIds = roleName === UserRole.OPERATOR ? pIds : gIds;
                     ownCommissionData[category] = pendingData
                         .filter(d => relevantIds.includes(d.userId))
-                        .reduce((sum, d) => sum + (d.parentCommission || 0), 0);
-                }
-
-                // Build pendingByUserCategory map
-                // const       // Build pendingByUserCategory map using parentCommission for accurate commission sums
-                const pendingByUserCategory = pendingData.reduce((map, doc) => {
-                    const key = `${doc.userId}|${category}`;
-                    map.set(key, (map.get(key) || 0) + (doc.parentCommission || 0));
-                    return map;
-                }, new Map<string, number>());
-
-                // Group and exclude negatives
-                if (roleName === UserRole.SUPER_ADMIN) {
-                    const allUsers = await prisma.user.findMany({
-                        where: {id: {in: [...oIds, ...pIds, ...gIds]}},
-                        select: {id: true, parentId: true}
-                    });
-                    const userMap = Object.fromEntries(allUsers.map(u => [u.id, u]));
-                    for (const oprId of oIds) {
-                        const plats = pIds.filter(pid => userMap[pid].parentId === oprId)
-                            .filter(pid => (pendingByUserCategory.get(`${pid}|${category}`) || 0) > 0);
-                        const golds = gIds.filter(gid => plats.includes(userMap[gid].parentId))
-                            .filter(gid => (pendingByUserCategory.get(`${gid}|${category}`) || 0) > 0);
-                        const total =
-                            (pendingByUserCategory.get(`${oprId}|${category}`) || 0) +
-                            plats.reduce((s, pid) => s + (pendingByUserCategory.get(`${pid}|${category}`) || 0), 0) +
-                            golds.reduce((s, gid) => s + (pendingByUserCategory.get(`${gid}|${category}`) || 0), 0);
-                        if (total > 0) {
-                            const grp = [oprId, ...plats, ...golds].sort();
-                            const key = grp.join(',');
-                            groupDataMap[key] = {userIds: grp, dataByCategory: {}};
-                            groupDataMap[key].dataByCategory = {[category]: pendingData.filter(d => grp.includes(d.userId))};
-                        }
-                    }
-                } else if (roleName === UserRole.OPERATOR) {
-                    const allUsers = await prisma.user.findMany({
-                        where: {id: {in: [...pIds, ...gIds]}},
-                        select: {id: true, parentId: true}
-                    });
-                    const userMap = Object.fromEntries(allUsers.map(u => [u.id, u]));
-                    for (const platId of pIds) {
-                        const golds = gIds.filter(gid => userMap[gid].parentId === platId)
-                            .filter(gid => (pendingByUserCategory.get(`${gid}|${category}`) || 0) > 0);
-                        const total =
-                            (pendingByUserCategory.get(`${platId}|${category}`) || 0) +
-                            golds.reduce((s, gid) => s + (pendingByUserCategory.get(`${gid}|${category}`) || 0), 0);
-                        if (total > 0) {
-                            const grp = [platId, ...golds].sort();
-                            const key = grp.join(',');
-                            groupDataMap[key] = {userIds: grp, dataByCategory: {}};
-                            groupDataMap[key].dataByCategory = {[category]: pendingData.filter(d => grp.includes(d.userId))};
-                        }
-                    }
-                } else if (roleName === UserRole.PLATINUM) {
-                    const golds = gIds.filter(gid => true)
-                        .filter(gid => (pendingByUserCategory.get(`${gid}|${category}`) || 0) > 0);
-                    const total = golds.reduce((s, gid) => s + (pendingByUserCategory.get(`${gid}|${category}`) || 0), 0);
-                    if (total > 0) {
-                        const grp = golds.sort();
-                        const key = grp.join(',');
-                        groupDataMap[key] = {userIds: grp, dataByCategory: {}};
-                        groupDataMap[key].dataByCategory = {[category]: pendingData.filter(d => grp.includes(d.userId))};
-                    }
-                } else if (roleName === UserRole.GOLDEN) {
-                    const own = pendingByUserCategory.get(`${userId}|${category}`) || 0;
-                    if (own > 0) {
-                        const key = userId;
-                        groupDataMap[key] = {userIds: [userId], dataByCategory: {}};
-                        groupDataMap[key].dataByCategory = {[category]: pendingData.filter(d => d.userId === userId)};
-                    }
+                        .reduce(
+                            (sum: Decimal, d) => sum.plus(d.parentCommission ?? 0),
+                            new Decimal(0)
+                        );
                 }
             }
 
-            // 3️⃣ Aggregate totals
-            const resultByCategory: Record<string, number> = {
-                "E-Games": 0,
-                "Sports Betting": 0,
-                "Speciality Games - RNG": 0,
-                "Speciality Games - Tote": 0,
+            // 3️⃣ Aggregate totals  – keep high-precision until the very end
+            const resultByCategory = {
+                "E-Games": new Decimal(0),
+                "Sports Betting": new Decimal(0),
+                "Speciality Games - RNG": new Decimal(0),
+                "Speciality Games - Tote": new Decimal(0),
             };
-            Object.values(groupDataMap).forEach(group => {
-                Object.entries(group.dataByCategory).forEach(([cat, arr]) => {
-                    const sum = arr.reduce((acc, d) => {
-                        // golden-level commission use netCommissionAvailablePayout, else use parentCommission
-                        if (gIds.includes(d.userId)) {
-                            return acc + (d.netCommissionAvailablePayout || 0);
-                        }
-                        return acc + (d.parentCommission || 0);
-                    }, 0);
-                    if (sum > 0) resultByCategory[cat] += sum;
-                });
-            });
 
-            // 4️⃣ Compute gross, own, final
-            const gross = Object.values(resultByCategory).reduce((a, v) => a + v, 0);
-            const own = Object.values(ownCommissionData).reduce((a, v) => a + Math.max(0, v), 0);
-            const finalPayout = gross; // ownCommissionData now internal
+            // Walk every summary once
+            for (const s of pendingSummaries) {
+                // Add this summary’s payout (or whatever metric you need) to its category bucket
+                resultByCategory[s.categoryName] =
+                    resultByCategory[s.categoryName].plus(s.netCommissionAvailablePayout ?? 0);
+            }
+
+            const own = Object.values(ownCommissionData).reduce((a: Decimal, v: Decimal) => {
+                return a.plus(Decimal.max(new Decimal(0), v));
+            }, new Decimal(0));
+
+            const gross = Object.values(resultByCategory).reduce(
+                (a, v) => a.plus(v),
+                new Decimal(0)
+            ).plus(own)
+            const finalPayout = gross // ownCommissionData now internal
 
             // Response
             return {
                 columns: ["", "Amount based on latest completed commission periods pending settlement"],
                 periodInfo: {pendingPeriod: {start: '', end: ''}},
                 rows: [
-                    {label: 'Total EGames', pendingSettlement: resultByCategory['E-Games']},
-                    {label: 'Total Sports Betting', pendingSettlement: resultByCategory['Sports Betting']},
+                    {
+                        label: 'Total EGames',
+                        pendingSettlement: fmt(resultByCategory['E-Games'].plus(ownCommissionData['E-Games']))
+                    },
+                    {
+                        label: 'Total Sports Betting',
+                        pendingSettlement: fmt(resultByCategory['Sports Betting'].plus(ownCommissionData['Sports Betting']))
+                    },
                     {
                         label: 'Total Speciality Games - RNG',
-                        pendingSettlement: resultByCategory['Speciality Games - RNG']
+                        pendingSettlement: fmt(resultByCategory['Speciality Games - RNG'].plus(ownCommissionData['Speciality Games - RNG']))
                     },
                     {
                         label: 'Total Speciality Games - Tote',
-                        pendingSettlement: resultByCategory['Speciality Games - Tote']
+                        pendingSettlement: fmt(resultByCategory['Speciality Games - Tote'].plus(ownCommissionData['Speciality Games - Tote']))
                     },
-                    {label: 'Gross Commissions', pendingSettlement: gross},
-                    ...(roleName !== UserRole.GOLDEN ? [
-                        {label: 'Less: Own Commission', pendingSettlement: own, note: '(Deducted internally)'},
-                        {label: 'Commission Available for Payout', pendingSettlement: finalPayout - own},
-                    ] : []),
-                ],
+                    {label: 'Gross Commissions', pendingSettlement: fmt(gross)},
+
+                    ...(roleName !== UserRole.GOLDEN
+                        ? [
+                            {label: 'Less: Own Commission', pendingSettlement: fmt(own), note: '(Deducted internally)'},
+                            {label: 'Commission Available for Payout', pendingSettlement: fmt(finalPayout.minus(own))},
+                            {label: 'Transferable Amount', pendingSettlement: fmt(finalPayout.minus(own))}
+                        ]
+                        : [
+                            {
+                                label: 'Net Commissions',
+                                pendingSettlement: fmt(finalPayout),
+                                note: '(No own commission deduction for Golden)'
+                            }
+                        ])
+                ]
             };
         } catch (error) {
             throw new Error(`Error generating total commission breakdown: ${error}`);
@@ -1764,12 +1721,11 @@ class CommissionService {
             for (const category of Object.keys(ownCommissionData)) {
                 const {cycleStartDate, cycleEndDate} = await this.getPreviousCompletedCycleDates(category);
 
-                const commissionSummaries = await prisma.commissionSummary.findMany({
+                const commissionSummaries = await prisma.completedCycleSummaries.findMany({
                     where: {
                         userId: userId,
                         categoryName: category,
-                        createdAt: {
-                            gte: cycleStartDate,
+                        cycleEnd: {
                             lte: cycleEndDate,
                         },
                     },
@@ -1780,12 +1736,12 @@ class CommissionService {
                 let settledByOperator = false;
                 let settledByPlatinum = false;
 
-                for (const summary of commissionSummaries) {
-                    totalCommission += summary.netCommissionAvailablePayout || 0;
-                    settledBySuperAdmin ||= summary.settledBySuperadmin || false;
-                    settledByOperator ||= summary.settledByOperator || false;
-                    settledByPlatinum ||= summary.settledByPlatinum || false;
-                }
+                // for (const summary of commissionSummaries) {
+                //     totalCommission += summary.netCommissionAvailablePayout || 0;
+                //     settledBySuperAdmin ||= summary.settledBySuperadmin || false;
+                //     settledByOperator ||= summary.settledByOperator || false;
+                //     settledByPlatinum ||= summary.settledByPlatinum || false;
+                // }
 
                 ownCommissionData[category] = {
                     amount: totalCommission,
@@ -1884,27 +1840,27 @@ class CommissionService {
                     "Speciality Games - RNG": 0,
                 };
 
-                const groupDataMap: Record<string, { userIds: string[], dataByCategory: Record<string, any[]> }> = {};
-
                 const directChildrenSummaryIds = []
 
                 const restCommissionIds = []
 
                 const ownCommission = {
-                    "E-Games": 0,
-                    "Sports Betting": 0,
-                    "Speciality Games - RNG": 0,
-                    "Speciality Games - Tote": 0,
-                }
+                    "E-Games": new Decimal(0),
+                    "Sports Betting": new Decimal(0),
+                    "Speciality Games - RNG": new Decimal(0),
+                    "Speciality Games - Tote": new Decimal(0),
+                };
+
+                const pendingSummaries = []
 
                 for (const category of categories) {
                     const {cycleStartDate, cycleEndDate} =
                         await this.getPreviousCompletedCycleDates(category);
 
-                    const summaries = await prisma.commissionSummary.findMany({
+                    const summaries = await prisma.completedCycleSummaries.findMany({
                         where: {
                             userId: {in: [...oIds, ...pIds, ...gIds]},
-                            createdAt: {
+                            cycleEnd: {
                                 // gte: cycleStartDate,
                                 lte: cycleEndDate,
                             },
@@ -1913,29 +1869,28 @@ class CommissionService {
                         },
                         select: {
                             id: true,
-                            user: true,
-                            totalDeposit: true,
-                            totalWithdrawals: true,
+                            userId: true,
                             totalBetAmount: true,
                             createdAt: true,
                             netGGR: true,
-                            paymentGatewayFee: true,
                             netCommissionAvailablePayout: true,
                             categoryName: true,
                             parentCommission: true
                         },
                     });
 
-                    directChildrenSummaryIds.push(...summaries.filter(s => s.user.id == id).map(d => d.id))
+                    pendingSummaries.push(...summaries)
 
-                    restCommissionIds.push(...summaries.filter(s => s.user.id !== id).map(d => d.id))
+                    directChildrenSummaryIds.push(...summaries.filter(s => s.userId == id).map(d => d.id))
 
-                    const selfSummaries = summaries.filter(s => s.user.id == id)
+                    restCommissionIds.push(...summaries.filter(s => s.userId !== id).map(d => d.id))
+
+                    const selfSummaries = summaries.filter(s => s.userId == id)
 
                     if (!selfSummaries.length) continue;
 
 
-                    const commissionUserIds = summaries.map(s => s.user.id)
+                    const commissionUserIds = summaries.map(s => s.userId)
 
                     selfSummaries.reduce((acc, curr) => ownCommission[category] += (curr.parentCommission || 0), 0)
 
@@ -1950,126 +1905,34 @@ class CommissionService {
 
                     // commissionSummaries = shouldConcat ? commissionSummaries.concat(summaries) : commissionSummaries.concat([]);
                     // restCommissionSummaries = shouldConcat ? restCommissionSummaries.concat(restSummaries) : restCommissionSummaries.concat([]);
-
-                    const allUserIds = [...oIds, ...pIds, ...gIds];
-                    const allUsers = await prisma.user.findMany({
-                        where: {id: {in: allUserIds}},
-                        select: {id: true, parentId: true},
-                    });
-
-                    const userMap = Object.fromEntries(allUsers.map(u => [u.id, u]));
-
-                    if (roleName === UserRole.SUPER_ADMIN) {
-                        const operatorPlas = pIds.filter(pid => userMap[pid]?.parentId === id);
-                        const goldenIds = gIds.filter(gid =>
-                            operatorPlas.includes(userMap[gid]?.parentId)
-                        );
-
-                        const groupUserIds = [id, ...operatorPlas, ...goldenIds];
-                        const groupKey = groupUserIds.sort().join(",");
-
-                        // const filteredData = summaries.filter(doc =>
-                        //     groupUserIds.includes(doc.user.id)
-                        // );
-
-                        if (!groupDataMap[groupKey]) {
-                            groupDataMap[groupKey] = {
-                                userIds: groupUserIds,
-                                dataByCategory: {},
-                            };
-                        }
-
-                        groupDataMap[groupKey].dataByCategory[category] = summaries;
-
-                    }
-
-                    if (roleName === UserRole.OPERATOR) {
-                        const goldenIds = gIds.filter(gid =>
-                            pIds.includes(userMap[gid]?.parentId)
-                        );
-
-                        const groupUserIds = [id, ...goldenIds];
-
-                        const groupKey = groupUserIds.sort().join(",");
-
-                        const filteredData = summaries.filter(doc =>
-                            groupUserIds.includes(doc.user.id)
-                        );
-
-                        if (!groupDataMap[groupKey]) {
-                            groupDataMap[groupKey] = {
-                                userIds: groupUserIds,
-                                dataByCategory: {},
-                            };
-                        }
-
-                        groupDataMap[groupKey].dataByCategory[category] = filteredData;
-
-                    }
-
-                    if (roleName === UserRole.PLATINUM) {
-
-                        const groupUserIds = [...gIds];
-                        const groupKey = groupUserIds.sort().join(",");
-
-                        const filteredData = summaries.filter(doc =>
-                            groupUserIds.includes(doc.user.id)
-                        );
-
-                        if (!groupDataMap[groupKey]) {
-                            groupDataMap[groupKey] = {
-                                userIds: groupUserIds,
-                                dataByCategory: {},
-                            };
-                        }
-
-                        groupDataMap[groupKey].dataByCategory[category] = filteredData;
-
-                    }
                 }
 
-                const userCategoryCommissionMap = new Map<string, number>();
+                const grossCommissionSum: Decimal = pendingSummaries.reduce((sum, summary) => {
+                    const value = summary.netCommissionAvailablePayout || 0;
+                    return sum.plus(new Decimal(value));
+                }, new Decimal(0));
 
-                for (const [groupKey, groupInfo] of Object.entries(groupDataMap)) {
-                    for (const cat of Object.keys(groupInfo.dataByCategory)) {
-                        const summaries = groupInfo.dataByCategory[cat];
-
-                        summaries.forEach(summary => {
-                            const key = `${summary?.user?.id}-${cat}`;
-                            const current = userCategoryCommissionMap.get(key) || 0;
-                            userCategoryCommissionMap.set(key, current + (summary.netCommissionAvailablePayout || 0));
-                        });
-                    }
-                }
-
-                console.log({userCategoryCommissionMap})
-
-                let grossCommissionSum = 0;
-
-                userCategoryCommissionMap.forEach((value, key) => {
-                    if (value > 0) {
-                        grossCommissionSum += value;
-                    }
-                });
-
-                if (!directChildrenSummaryIds.length && grossCommissionSum == 0) {
+                if (!directChildrenSummaryIds.length && grossCommissionSum.equals(0)) {
                     return []
                 }
 
-                const totalOwnCommission = Object.values(ownCommission).reduce((acc, curr) => acc += Math.max(0, curr), 0)
+                const totalOwnCommission = Object.values(ownCommission).reduce(
+                    (acc, curr) => acc.plus(Decimal.max(new Decimal(0), curr)),
+                    new Decimal(0)
+                );
 
-                const grossCommission = grossCommissionSum + totalOwnCommission
+                const grossCommission = new Decimal(grossCommissionSum).plus(totalOwnCommission);
 
-                const netCommissions = grossCommission - totalOwnCommission
+                const netCommissions = grossCommission.minus(totalOwnCommission);
 
                 return {
                     ids: directChildrenSummaryIds,
                     network: username,
                     restCommissionIds: restCommissionIds,
-                    grossCommissions: grossCommission,
-                    ownCommission: totalOwnCommission,
-                    netCommissions: netCommissions,
-                    transferableAmount: netCommissions < 0 ? 0 : netCommissions,
+                    grossCommissions: grossCommission.toNumber(),
+                    ownCommission: totalOwnCommission.toNumber(),
+                    netCommissions: netCommissions.toNumber(),
+                    transferableAmount: netCommissions.lt(0) ? 0 : netCommissions.toNumber(),
                     breakdownAction: "view",
                     releaseAction: "release_comms",
                 };
