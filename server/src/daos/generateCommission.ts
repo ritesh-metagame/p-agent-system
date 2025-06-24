@@ -20,7 +20,10 @@ class GenerateCommission {
             // console.log("date from", from, "date to", to);
 
             const transactions = await prisma.transaction.findMany({
-                where: {betTime: {gte: from, lte: to}},
+                where: {
+                    // platformType:"E-Games",
+                    betTime: { gte: from, lte: to }
+                },
             });
 
             // console.log(`📦 Found ${transactions.length} transactions on ${date.toDateString()}`);
@@ -144,14 +147,14 @@ class GenerateCommission {
                                 userId,
                                 roleId: user.roleId,
                                 categoryName,
-                                totalDeposit: new Decimal(sum.deposit).toDecimalPlaces(2, Decimal.ROUND_UP).toNumber(),
-                                totalWithdrawals: new Decimal(sum.withdrawal).toDecimalPlaces(2, Decimal.ROUND_UP).toNumber(),
-                                totalBetAmount: new Decimal(sum.betAmount).toDecimalPlaces(2, Decimal.ROUND_UP).toNumber(),
-                                netGGR: new Decimal(sum.revenue).toDecimalPlaces(2, Decimal.ROUND_UP).toNumber(),
+                                totalDeposit: new Decimal(sum.deposit).toDecimalPlaces(5, Decimal.ROUND_UP).toNumber(),
+                                totalWithdrawals: new Decimal(sum.withdrawal).toDecimalPlaces(5, Decimal.ROUND_UP).toNumber(),
+                                totalBetAmount: new Decimal(sum.betAmount).toDecimalPlaces(5, Decimal.ROUND_UP).toNumber(),
+                                netGGR: new Decimal(sum.revenue).toDecimalPlaces(5, Decimal.ROUND_UP).toNumber(),
                                 grossCommission: 0,
-                                paymentGatewayFee: new Decimal(sum.pgFeeCommission).toDecimalPlaces(2, Decimal.ROUND_UP).toNumber(),
-                                netCommissionAvailablePayout: new Decimal(netCommission).toDecimalPlaces(2, Decimal.ROUND_UP).toNumber(),
-                                pendingSettleCommission: new Decimal(pendingSettleCommission).toDecimalPlaces(2, Decimal.ROUND_UP).toNumber(),
+                                paymentGatewayFee: new Decimal(sum.pgFeeCommission).toDecimalPlaces(5, Decimal.ROUND_UP).toNumber(),
+                                netCommissionAvailablePayout: new Decimal(netCommission).toDecimalPlaces(5, Decimal.ROUND_UP).toNumber(),
+                                pendingSettleCommission: new Decimal(pendingSettleCommission).toDecimalPlaces(5, Decimal.ROUND_UP).toNumber(),
                                 parentCommission: user.role.name === UserRole.PLATINUM ? sum.ownerCommission.toNumber() : user.role.name === UserRole.GOLDEN ? sum.maCommission.toNumber() : Number(0),
                                 settledStatus: "N",
                                 siteId: null,

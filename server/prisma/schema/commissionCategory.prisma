@@ -3,19 +3,19 @@ model CommissionSummary {
   userId                       String
   roleId                       String
   categoryName                 String
-  totalDeposit                 Float    @default(0)
-  totalWithdrawals             Float    @default(0)
-  totalBetAmount               Float    @default(0)
-  netGGR                       Float    @default(0)
-  grossCommission              Float    @default(0)
-  paymentGatewayFee            Float    @default(0)
-  netCommissionAvailablePayout Float    @default(0)
+  totalDeposit                 Decimal  @default(0) @db.Decimal(20, 5)
+  totalWithdrawals             Decimal  @default(0) @db.Decimal(20, 5)
+  totalBetAmount               Decimal  @default(0) @db.Decimal(20, 5)
+  netGGR                       Decimal  @default(0) @db.Decimal(20, 5)
+  grossCommission              Decimal  @default(0) @db.Decimal(20, 5)
+  paymentGatewayFee            Decimal  @default(0) @db.Decimal(20, 5)
+  netCommissionAvailablePayout Decimal  @default(0) @db.Decimal(20, 5)
   settledStatus                String?
-  pendingSettleCommission      Float    @default(0) // ← New field
+  pendingSettleCommission      Decimal  @default(0) @db.Decimal(20, 5) // ← New field
   settledBySuperadmin          Boolean? @default(false) // ← New field
   settledByOperator            Boolean? @default(false) // ← New field
   settledByPlatinum            Boolean? @default(false) // ← New field
-  parentCommission             Float    @default(0)
+  parentCommission             Decimal  @default(0) @db.Decimal(20, 5)
 
   // Relations
   user User @relation(fields: [userId], references: [id])

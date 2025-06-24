@@ -6,31 +6,32 @@ model Transaction {
   playerName    String?
   platformType  String?
   transactionType TransactionType?
-  deposit         Decimal  @default(0.00)
-  withdrawal      Decimal  @default(0.00)
-  betAmount       Decimal?
-  payoutAmount    Decimal?
-  refundAmount    Decimal?
-  revenue         Decimal?
-  pgFeeCommission Decimal?
+
+  deposit         Decimal  @default(0.00) @db.Decimal(20, 5)
+  withdrawal      Decimal  @default(0.00) @db.Decimal(20, 5)
+  betAmount       Decimal? @db.Decimal(20, 5)
+  payoutAmount    Decimal? @db.Decimal(20, 5)
+  refundAmount    Decimal? @db.Decimal(20, 5)
+  revenue         Decimal? @db.Decimal(20, 5)
+  pgFeeCommission Decimal? @db.Decimal(20, 5)
 
   status  String?
   settled String? @default("N")
 
   ownerId         String?
   ownerName       String?
-  ownerPercentage Decimal?
-  ownerCommission Decimal?
+  ownerPercentage Decimal? @db.Decimal(5, 2)
+  ownerCommission Decimal? @db.Decimal(20, 5)
 
   maId         String?
   maName       String?
-  maPercentage Decimal?
-  maCommission Decimal?
+  maPercentage Decimal? @db.Decimal(5, 2)
+  maCommission Decimal? @db.Decimal(20, 5)
 
   gaId         String?
   gaName       String?
-  gaPercentage Decimal?
-  gaCommission Decimal?
+  gaPercentage Decimal? @db.Decimal(5, 2)
+  gaCommission Decimal? @db.Decimal(20, 5)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
