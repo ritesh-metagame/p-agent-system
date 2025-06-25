@@ -2541,7 +2541,7 @@ class CommissionService {
 
                 const userIds = [...operatorIds, ...platinumIds, ...goldenIds]
 
-                const operatorSummaries = await prisma.commissionSummary.findMany({
+                const operatorSummaries = await prisma.completedCycleSummaries.findMany({
                     where: {
                         OR: [
                             {
@@ -2551,7 +2551,7 @@ class CommissionService {
                                     {settledStatus: "N"},
                                     {settledBySuperadmin: false},
                                     {
-                                        createdAt: {
+                                        cycleEnd: {
                                             // gte: eGamesCycle.cycleStartDate,
                                             lte: eGamesCycle.cycleEndDate,
                                         },
@@ -2565,7 +2565,7 @@ class CommissionService {
                                     {settledStatus: "N"},
                                     {settledBySuperadmin: false},
                                     {
-                                        createdAt: {
+                                        cycleEnd: {
                                             // gte: eGamesCycle.cycleStartDate,
                                             lte: eGamesCycle.cycleEndDate,
                                         },
@@ -2579,7 +2579,7 @@ class CommissionService {
                                     {settledStatus: "N"},
                                     {settledBySuperadmin: false},
                                     {
-                                        createdAt: {
+                                        cycleEnd: {
                                             // gte: sportsCycle.cycleStartDate,
                                             lte: sportsCycle.cycleEndDate,
                                         },
@@ -2593,7 +2593,7 @@ class CommissionService {
                                     {settledStatus: "N"},
                                     {settledBySuperadmin: false},
                                     {
-                                        createdAt: {
+                                        cycleEnd: {
                                             // gte: sportsCycle.cycleStartDate,
                                             lte: sportsCycle.cycleEndDate,
                                         },
@@ -2631,34 +2631,34 @@ class CommissionService {
                         // console.log("pending commission", comm, "ggr", ggr)
 
                         if (operatorIds.includes(summary.userId)) {
-                            egamesGGR += ggr;
+                            egamesGGR += new Decimal(ggr).toNumber();;
                         }
 
                         console.log("total commission", ggr)
-                        egamesCommission += summary.netCommissionAvailablePayout;
+                        egamesCommission += new Decimal(summary.netCommissionAvailablePayout).toNumber();
 
                     } else if (summary.categoryName === "Sports Betting") {
                         const bet = summary.totalBetAmount;
                         const comm = summary.pendingSettleCommission;
 
                         if (operatorIds.includes(summary.userId)) {
-                            sportsGGR += bet;
+                            sportsGGR += new Decimal(bet).toNumber();
                         }
 
-                        sportsCommission += summary.netCommissionAvailablePayout;
+                        sportsCommission += new Decimal(summary.netCommissionAvailablePayout).toNumber();
 
                     } else if (summary.categoryName === "Speciality Games - RNG") {
                         const ggr = summary.netGGR;
                         if (operatorIds.includes(summary.userId)) {
-                            rngGGR += ggr;
+                            rngGGR += new Decimal(ggr).toNumber();
                         }
-                        rngCommission += summary.netCommissionAvailablePayout;
+                        rngCommission += new Decimal(summary.netCommissionAvailablePayout).toNumber();
                     } else if (summary.categoryName === "Speciality Games - Tote") {
                         const bet = summary.totalBetAmount;
                         if (operatorIds.includes(summary.userId)) {
-                            toteGGR += bet;
+                            toteGGR += new Decimal(bet).toNumber();;
                         }
-                        toteCommission += summary.netCommissionAvailablePayout;
+                        toteCommission += new Decimal(summary.netCommissionAvailablePayout).toNumber();
                     }
                 }
 
@@ -2722,7 +2722,7 @@ class CommissionService {
                         : {}),
                 },
                 {
-                    createdAt: {
+                    cycleEnd: {
                         lte: sportsCycle.cycleEndDate,
                     },
                 },
@@ -2741,7 +2741,7 @@ class CommissionService {
                         : {}),
                 },
                 {
-                    createdAt: {
+                    cycleEnd: {
                         lte: sportsCycle.cycleEndDate,
                     },
                 },
@@ -2760,7 +2760,7 @@ class CommissionService {
                         : {}),
                 },
                 {
-                    createdAt: {
+                    cycleEnd: {
                         lte: sportsCycle.cycleEndDate,
                     },
                 },
@@ -2778,7 +2778,7 @@ class CommissionService {
                         : {}),
                 },
                 {
-                    createdAt: {
+                    cycleEnd: {
                         lte: sportsCycle.cycleEndDate,
                     },
                 },
@@ -2787,7 +2787,7 @@ class CommissionService {
             console.log(`E games query: `, eGamesQuery)
             console.log(`Sports betting query: `, sportsBettingQuery)
 
-            const summaries = await prisma.commissionSummary.findMany({
+            const summaries = await prisma.completedCycleSummaries.findMany({
                 where: {
                     OR: [
                         {
@@ -2809,10 +2809,8 @@ class CommissionService {
                     settledStatus: true,
                     netGGR: true,
                     totalBetAmount: true,
-                    grossCommission: true,
                     userId: true,
                     netCommissionAvailablePayout: true,
-                    paymentGatewayFee: true,
                     pendingSettleCommission: true,
                     settledBySuperadmin: true,
                     settledByOperator: true,
@@ -2843,89 +2841,77 @@ class CommissionService {
 
 
                         if (pIds.includes(summary.userId)) {
-                            pending.eGamesGGR += ggr;
+                            pending.eGamesGGR += new Decimal(ggr).toNumber();
                             // console.log(`ParentCommission: `, parentCommission)
-                            ownEGamesCommission += parentCommission
+                            ownEGamesCommission += new Decimal(parentCommission).toNumber()
                         }
 
-                        pending.eGamesCommission += comm;
+                        pending.eGamesCommission += new Decimal(comm).toNumber();
                     }
                     if (roleName === UserRole.GOLDEN) {
-                        pending.eGamesGGR += ggr;
-                        pending.eGamesCommission += comm;
+                        pending.eGamesGGR += new Decimal(ggr).toNumber();
+                        pending.eGamesCommission += new Decimal(comm).toNumber();
                     } else if (roleName === UserRole.PLATINUM) {
                         // if (gIds.includes(summary.userId)) {
                         // }
-                        pending.eGamesGGR += ggr;
-                        pending.eGamesCommission += comm + parentCommission;
+                        pending.eGamesGGR += new Decimal(ggr).toNumber();
+                        pending.eGamesCommission += comm.toNumber() + parentCommission.toNumber();
                     }
                 } else if (category === "Sports Betting") {
                     if (roleName === UserRole.OPERATOR) {
 
                         if (pIds.includes(summary.userId)) {
-                            pending.sportsBet += bet;
-                            ownSportsBettingCommission += parentCommission
+                            pending.sportsBet += new Decimal(bet).toNumber();
+                            ownSportsBettingCommission += new Decimal(parentCommission).toNumber();
                         }
-                        pending.sportsCommission += comm;
+                        pending.sportsCommission += new Decimal(comm).toNumber();
                     }
                     if (roleName === UserRole.GOLDEN) {
-                        pending.sportsBet += bet;
-                        pending.sportsCommission += comm;
+                        pending.sportsBet += new Decimal(bet).toNumber();
+                        pending.sportsCommission += new Decimal(comm).toNumber();
                     } else if (roleName === UserRole.PLATINUM) {
                         if (gIds.includes(summary.userId)) {
                         }
-                        pending.sportsBet += bet;
-                        pending.sportsCommission += comm + parentCommission;
+                        pending.sportsBet += new Decimal(bet).toNumber();
+                        pending.sportsCommission += comm.toNumber() + parentCommission.toNumber();
                     }
                 } else if (category === "Speciality Games - RNG") {
                     // NEW handling for RNG
                     if (roleName === UserRole.OPERATOR) {
                         if (pIds.includes(summary.userId)) {
-                            pending.rngGGR += ggr;
-                            ownRNGCommission += parentCommission;
+                            pending.rngGGR += new Decimal(ggr).toNumber();
+                            ownRNGCommission += new Decimal(parentCommission).toNumber();
                         }
-                        pending.rngCommission += comm;
+                        pending.rngCommission += new Decimal(comm).toNumber();
                     }
                     if (roleName === UserRole.GOLDEN) {
-                        pending.rngGGR += ggr;
-                        pending.rngCommission += comm;
+                        pending.rngGGR += new Decimal(ggr).toNumber();
+                        pending.rngCommission += new Decimal(comm).toNumber();
                     } else if (roleName === UserRole.PLATINUM) {
-                        pending.rngGGR += ggr;
-                        pending.rngCommission += comm + parentCommission;
+                        pending.rngGGR += new Decimal(ggr).toNumber();
+                        pending.rngCommission += comm.toNumber() + parentCommission.toNumber();
                     }
                 } else if (category === "Speciality Games - Tote") {
                     // NEW handling for Tote
                     if (roleName === UserRole.OPERATOR) {
                         if (pIds.includes(summary.userId)) {
-                            pending.toteBet += bet;
-                            ownToteCommission += parentCommission;
+                            pending.toteBet += new Decimal(bet).toNumber();
+                            ownToteCommission += new Decimal(parentCommission).toNumber();
                         }
-                        pending.toteCommission += comm;
+                        pending.toteCommission += new Decimal(comm).toNumber();
                     }
                     if (roleName === UserRole.GOLDEN) {
-                        pending.toteBet += bet;
-                        pending.toteCommission += comm;
+                        pending.toteBet += new Decimal(bet).toNumber();
+                        pending.toteCommission += new Decimal(comm).toNumber();
                     } else if (roleName === UserRole.PLATINUM) {
-                        pending.toteBet += bet;
-                        pending.toteCommission += comm + parentCommission;
+                        pending.toteBet += new Decimal(bet).toNumber();
+                        pending.toteCommission += comm.toNumber() + parentCommission.toNumber();
                     }
                 }
 
             }
 
-            // const commissionData = await prisma.commission.findMany({
-            //     where: {
-            //         userId: userId, // Replace `user.id` with your logged-in user's ID
-            //     },
-            //     select: {
-            //         totalAssignedCommissionPercentage: true,
-            //         category: {
-            //             select: {
-            //                 name: true,
-            //             },
-            //         },
-            //     },
-            // });
+         
 
             console.log({ownEGamesCommission, ownSportsBettingCommission})
 

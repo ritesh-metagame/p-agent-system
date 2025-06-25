@@ -129,19 +129,19 @@ class UserDao {
           
 
             // Step 1: Fetch all commission summary records for this user
-            const summaries = await prisma.commissionSummary.findMany({
+            const summaries = await prisma.completedCycleSummaries.findMany({
                   where: {
                       userId,
                       OR: [
                           {
                               categoryName: { in: ['E-Games', 'Speciality Games - RNG'] },
-                              createdAt: {
+                              cycleEnd: {
                                       lte: eGamesCycle.cycleEndDate,
                                   },
                           },
                           {
                               categoryName: { in: ['Sports Betting', 'Speciality Games - Tote'] },
-                              createdAt: {
+                              cycleEnd: {
                                       lte: sportsCycle.cycleEndDate,
                                   },
                           },
@@ -156,7 +156,7 @@ class UserDao {
                 return {payout: 0, wallet: 0};
             }
 
-            const payoutSummaries = await prisma.commissionSummary.findMany({
+            const payoutSummaries = await prisma.completedCycleSummaries.findMany({
                 where: {
                     settledStatus: 'N',
                     userId: {in: targetUserIds},
@@ -164,13 +164,13 @@ class UserDao {
                     OR: [
                         {
                             categoryName: { in: ['E-Games', 'Speciality Games - RNG'] },
-                            createdAt: {
+                            cycleEnd: {
                                       lte: sportsCycle.cycleEndDate,
                                   },
                         },
                         {
                             categoryName: { in: ['Sports Betting', 'Speciality Games - Tote'] },
-                            createdAt: {
+                            cycleEnd: {
                                       lte: sportsCycle.cycleEndDate,
                                   },
                         },
