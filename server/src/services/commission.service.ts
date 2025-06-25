@@ -1429,12 +1429,13 @@ class CommissionService {
 
             const own = Object.values(ownCommissionData).reduce((a: Decimal, v: Decimal) => {
                 return a.plus(Decimal.max(new Decimal(0), v));
-            }, new Decimal(0));
+            }, new Decimal(0)).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toNumber();
 
             const gross = Object.values(resultByCategory).reduce(
                 (a, v) => a.plus(v),
                 new Decimal(0)
-            ).plus(own)
+            ).plus(own).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toNumber();
+
             const finalPayout = gross // ownCommissionData now internal
 
             // Response
@@ -1458,18 +1459,18 @@ class CommissionService {
                         label: 'Total Speciality Games - Tote',
                         pendingSettlement: fmt(resultByCategory['Speciality Games - Tote'].plus(ownCommissionData['Speciality Games - Tote']))
                     },
-                    {label: 'Gross Commissions', pendingSettlement: fmt(gross)},
+                    {label: 'Gross Commissions', pendingSettlement: gross},
 
                     ...(roleName !== UserRole.GOLDEN
                         ? [
-                            {label: 'Less: Own Commission', pendingSettlement: fmt(own), note: '(Deducted internally)'},
-                            {label: 'Commission Available for Payout', pendingSettlement: fmt(finalPayout.minus(own))},
-                            {label: 'Transferable Amount', pendingSettlement: fmt(finalPayout.minus(own))}
+                            {label: 'Less: Own Commission', pendingSettlement: own, note: '(Deducted internally)'},
+                            {label: 'Commission Available for Payout', pendingSettlement: finalPayout - own},
+                            {label: 'Transferable Amount', pendingSettlement: finalPayout - own}
                         ]
                         : [
                             {
                                 label: 'Net Commissions',
-                                pendingSettlement: fmt(finalPayout),
+                                pendingSettlement: finalPayout,
                                 note: '(No own commission deduction for Golden)'
                             }
                         ])
@@ -1820,11 +1821,11 @@ class CommissionService {
                 const totalOwnCommission = Object.values(ownCommission).reduce(
                     (acc, curr) => acc.plus(Decimal.max(new Decimal(0), curr)),
                     new Decimal(0)
-                );
+                ).toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
 
-                const grossCommission = new Decimal(grossCommissionSum).plus(totalOwnCommission);
+                const grossCommission = new Decimal(grossCommissionSum).plus(totalOwnCommission).toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
 
-                const netCommissions = grossCommission.minus(totalOwnCommission);
+                const netCommissions = grossCommission.minus(totalOwnCommission).toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
 
                 return {
                     ids: directChildrenSummaryIds,
