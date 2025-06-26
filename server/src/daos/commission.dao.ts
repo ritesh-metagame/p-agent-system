@@ -6,6 +6,7 @@ import {
 import {UserRole} from "../common/config/constants";
 import {prisma} from "../server";
 import Decimal from "decimal.js";
+import {fmt} from "../services/commission.service";
 
 class CommissionDao {
     public async createCommission(commission: any): Promise<Commission> {
@@ -790,19 +791,19 @@ class CommissionDao {
             }
 
             for (const [categoryName, records] of Object.entries(categoryGroupedRecords)) {
-                const totalAmount = records.reduce(
-                    (sum, rec) => sum.plus(new Decimal(rec.netCommissionAvailablePayout || 0)),
+                const totalAmount = fmt(records.reduce(
+                    (sum, rec) => sum.plus((fmt(rec.netCommissionAvailablePayout) || 0)),
                     new Decimal(0)
-                );
+                ));
 
                 const userId = records[0].userId
 
-                if (totalAmount.gt(0)) {
+                if (totalAmount > 0) {
                     await prisma.settlementHistory.create({
                         data: {
                             categoryName,
                             userId: userId, // Replace with appropriate user ID
-                            amount: totalAmount.toNumber(),
+                            amount: totalAmount,
                             referenceId: referenceId
                         },
                     });
@@ -822,21 +823,21 @@ class CommissionDao {
             }
 
             for (const [categoryName, records] of Object.entries(categoryGroupedChildrenRecords)) {
-                const totalAmount = records.reduce(
-                    (sum, rec) => sum.plus(new Decimal(rec.netCommissionAvailablePayout || 0)),
+                const totalAmount = fmt(records.reduce(
+                    (sum, rec) => sum.plus((fmt(rec.netCommissionAvailablePayout) || 0)),
                     new Decimal(0)
-                );
+                ));
 
                 const userId = records[0].userId
 
-                if (totalAmount.gt(0)) {
+                if (totalAmount > 0) {
                     await prisma.settlementHistory.create({
                         data: {
                             categoryName,
                             userId: userId, // Replace with appropriate user ID
-                            amount: totalAmount.toNumber(),
+                            amount: totalAmount,
                             isPartiallySettled: true,
-                            ...(roleName === UserRole.SUPER_ADMIN ? {isPartiallySettledBySuperAdmin: true} : roleName === UserRole.OPERATOR ? {isPartiallySettledByOperator: true}: {}),
+                            ...(roleName === UserRole.SUPER_ADMIN ? {isPartiallySettledBySuperAdmin: true} : roleName === UserRole.OPERATOR ? {isPartiallySettledByOperator: true} : {}),
                             referenceId: referenceId
                         },
                     });
@@ -880,6 +881,7 @@ class CommissionDao {
                         where: {id: record.id},
                         data: {
                             settledStatus: "Y",
+                            settledAt: new Date(Date.now()),
                             ...settleData,
                             pendingSettleCommission: 0,
                         },

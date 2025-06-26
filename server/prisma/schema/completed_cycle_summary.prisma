@@ -10,6 +10,7 @@ model CompletedCycleSummaries {
   pendingSettleCommission      Decimal  @default(0) @db.Decimal(20, 5)
   parentCommission             Decimal  @default(0) @db.Decimal(20, 5)
   settledStatus                String   @default("N")
+  settledAt                    DateTime
   settledByOperator            Boolean  @default(false)
   settledByPlatinum            Boolean  @default(false)
   settledBySuperadmin          Boolean  @default(false)

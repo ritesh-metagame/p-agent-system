@@ -145,6 +145,7 @@ class GenerateCompletedCycleCommission {
                     .toNumber(),
                 pendingSettleCommission: 0,
                 settledByOperator: false,
+                settledAt: new Date(),
                 settledByPlatinum: false,
                 settledBySuperadmin: false,
             });
@@ -190,6 +191,7 @@ class GenerateCompletedCycleCommission {
                     .toNumber(),
                 pendingSettleCommission: 0,
                 settledByOperator: false,
+                settledAt: new Date(),
                 settledByPlatinum: false,
                 settledBySuperadmin: false,
             });
@@ -225,6 +227,7 @@ class GenerateCompletedCycleCommission {
                 pendingSettleCommission: 0,
                 settledByOperator: false,
                 settledByPlatinum: false,
+                settledAt: new Date(),
                 settledBySuperadmin: false,
             });
         }

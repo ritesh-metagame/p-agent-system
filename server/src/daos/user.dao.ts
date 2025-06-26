@@ -1,7 +1,7 @@
 import {prisma} from "../server";
 import type {User} from "../../prisma/generated/prisma";
 import {DEFAULT_COMMISSION_COMPUTATION_PERIOD, UserRole} from "../common/config/constants";
-import {CommissionService} from "../services/commission.service";
+import {CommissionService, fmt} from "../services/commission.service";
 import {endOfMonth} from "date-fns";
 
 class UserDao {
@@ -228,7 +228,7 @@ class UserDao {
               let specialityGamesToteSum = 0;
 
                 for (const summary of groupSummaries) {
-                    const payout = Number(summary.netCommissionAvailablePayout || 0);
+                    const payout = fmt(summary.netCommissionAvailablePayout || 0);
 
                     if (summary.categoryName === 'E-Games') {
                         eGamesSum += payout;

@@ -82,8 +82,8 @@ const SUPER_ADMIN_DEFAULT_COMMISSION_RATES = {
 };
 
 // always HALF-UP to 5 places, return a plain number
-const fmt = (val: Decimal | number) =>
-    new Decimal(val).toDecimalPlaces(5, Decimal.ROUND_HALF_UP).toNumber();
+export const fmt = (val: Decimal | number) =>
+    new Decimal(val).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toNumber();
 
 @Service()
 class CommissionService {
@@ -1260,7 +1260,7 @@ class CommissionService {
             for (const s of commissionSummaries) {
                 // Add this summary’s payout (or whatever metric you need) to its category bucket
                 resultByCategory[s.categoryName] =
-                    resultByCategory[s.categoryName].plus(s.netCommissionAvailablePayout ?? 0);
+                    resultByCategory[s.categoryName].plus(fmt(s.netCommissionAvailablePayout) ?? 0);
             }
 
             const gross = Object.values(resultByCategory).reduce(
@@ -1284,19 +1284,26 @@ class CommissionService {
             };
 
             let totalPending = finalPayout;
-            let totalSettled = 0;
+            let totalSettled = new Decimal(0);
 
             // console.log("Settled Summaries:", settledSummaries);
 
             for (const summary of settledSummaries) {
+                const amt = new Decimal(summary.amount).toDecimalPlaces(2, Decimal.ROUND_DOWN);
 
-                console.log(`--------------------------------------------------Net commission available payout: `, summary.netCommissionAvailablePayout)
-                // if (summary.netCommissionAvailablePayout >= 0) {
-                totalSettled += Math.max(0, summary.amount);
-                // }
+                console.log('-------------------------------Net commission available payout:', amt);
+
+                // clamp negatives to zero with Decimal.max
+                const add = Decimal.max(new Decimal(0), amt);
+
+                // IMPORTANT: re-assign
+                totalSettled = totalSettled.plus(add);
+
+                console.log('[getTotalCommissionByUser] Total Settled:', totalSettled);
             }
 
-            console.log(`--------------------------------------------------Pending commission available payout: `, totalPending)
+            // console.log(`--------------------------------------------------Pending commission available payout: `, totalPending)
+
 
             return {
                 summaries: commissionSummaries,
@@ -1304,7 +1311,7 @@ class CommissionService {
                 // totalPending: totalPending - pendingPaymentGatewayFeeSum,
                 // totalSettled: totalSettled - settledPaymentGatewayFeeSum,
                 totalPending: totalPending.lt(0) ? 0 : totalPending.toNumber(),
-                totalSettled: totalSettled,
+                totalSettled: totalSettled.toNumber(),
             };
         } catch (error) {
             throw new Error(`Error creating commission: ${error}`);
@@ -1406,7 +1413,7 @@ class CommissionService {
                     ownCommissionData[category] = pendingData
                         .filter(d => relevantIds.includes(d.userId))
                         .reduce(
-                            (sum: Decimal, d) => sum.plus(d.parentCommission ?? 0),
+                            (sum: Decimal, d) => sum.plus(d.parentCommission ?? 0).toDecimalPlaces(2, Decimal.ROUND_HALF_UP),
                             new Decimal(0)
                         );
                 }
@@ -1420,12 +1427,16 @@ class CommissionService {
                 "Speciality Games - Tote": new Decimal(0),
             };
 
+
             // Walk every summary once
             for (const s of pendingSummaries) {
                 // Add this summary’s payout (or whatever metric you need) to its category bucket
                 resultByCategory[s.categoryName] =
-                    resultByCategory[s.categoryName].plus(s.netCommissionAvailablePayout ?? 0);
+                    resultByCategory[s.categoryName].plus(s.netCommissionAvailablePayout ?? 0).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
             }
+
+            console.log(`Result by category before aggregation: `, resultByCategory);
+            console.log(`Own commission data: `, ownCommissionData);
 
             const own = Object.values(ownCommissionData).reduce((a: Decimal, v: Decimal) => {
                 return a.plus(Decimal.max(new Decimal(0), v));
@@ -1438,10 +1449,12 @@ class CommissionService {
 
             const finalPayout = gross // ownCommissionData now internal
 
+            const {cycleStartDate, cycleEndDate} = await this.getPreviousCompletedCycleDates();
+
             // Response
             return {
                 columns: ["", "Amount based on latest completed commission periods pending settlement"],
-                periodInfo: {pendingPeriod: {start: '', end: ''}},
+                periodInfo: {pendingPeriod: {start: cycleStartDate.toISOString(), end: cycleEndDate.toISOString()}},
                 rows: [
                     {
                         label: 'Total EGames',
@@ -1635,12 +1648,12 @@ class CommissionService {
                 let settledByOperator = false;
                 let settledByPlatinum = false;
 
-                // for (const summary of commissionSummaries) {
-                //     totalCommission += summary.netCommissionAvailablePayout || 0;
-                //     settledBySuperAdmin ||= summary.settledBySuperadmin || false;
-                //     settledByOperator ||= summary.settledByOperator || false;
-                //     settledByPlatinum ||= summary.settledByPlatinum || false;
-                // }
+                for (const summary of commissionSummaries) {
+                    totalCommission += summary.netCommissionAvailablePayout.toNumber() || 0;
+                    settledBySuperAdmin ||= summary.settledBySuperadmin || false;
+                    settledByOperator ||= summary.settledByOperator || false;
+                    settledByPlatinum ||= summary.settledByPlatinum || false;
+                }
 
                 ownCommissionData[category] = {
                     amount: totalCommission,
@@ -1732,12 +1745,12 @@ class CommissionService {
                     "Speciality Games - Tote",
                 ];
 
-                const ownCommissionData = {
-                    "E-Games": 0,
-                    "Sports Betting": 0,
-                    "Speciality Games - Tote": 0,
-                    "Speciality Games - RNG": 0,
-                };
+                // const ownCommissionData = {
+                //     "E-Games": 0,
+                //     "Sports Betting": 0,
+                //     "Speciality Games - Tote": 0,
+                //     "Speciality Games - RNG": 0,
+                // };
 
                 const directChildrenSummaryIds = []
 
@@ -1750,7 +1763,7 @@ class CommissionService {
                     "Speciality Games - Tote": new Decimal(0),
                 };
 
-                const pendingSummaries = []
+                let pendingSummaries = []
 
                 for (const category of categories) {
                     const {cycleStartDate, cycleEndDate} =
@@ -1781,21 +1794,6 @@ class CommissionService {
                         },
                     });
 
-                    pendingSummaries.push(...summaries)
-
-                    directChildrenSummaryIds.push(...summaries.filter(s => s.userId == id).map(d => d.id))
-
-                    restCommissionIds.push(...summaries.filter(s => s.userId !== id).map(d => d.id))
-
-                    const selfSummaries = summaries.filter(s => s.userId == id)
-
-                    if (!selfSummaries.length) continue;
-
-
-                    const commissionUserIds = summaries.map(s => s.userId)
-
-                    selfSummaries.reduce((acc, curr) => ownCommission[category] += (curr.parentCommission || 0), 0)
-
                     const isSettledBySuperAdmin = ownCommissionData[category].settledBySuperAdmin;
                     const isSettledByOperator = ownCommissionData[category].settledByOperator;
                     const isSettledByPlatinum = ownCommissionData[category].settledByPlatinum;
@@ -1805,36 +1803,60 @@ class CommissionService {
                         (roleName === UserRole.OPERATOR && isSettledBySuperAdmin) ||
                         (roleName === UserRole.PLATINUM && isSettledByOperator);
 
+                    console.log()
+
+                    if (shouldConcat) {
+                        pendingSummaries.push(...summaries)
+
+                        directChildrenSummaryIds.push(...summaries.filter(s => s.userId == id).map(d => d.id))
+
+                        restCommissionIds.push(...summaries.filter(s => s.userId !== id).map(d => d.id))
+
+                        const selfSummaries = summaries.filter(s => s.userId == id)
+
+                        if (!selfSummaries.length) continue;
+
+
+                        const commissionUserIds = summaries.map(s => s.userId)
+
+                        selfSummaries.reduce((acc, curr) => ownCommission[category] += (fmt(curr.parentCommission) || 0), 0)
+
+                    } else {
+                        pendingSummaries.push(...[])
+                    }
+
+
                     // commissionSummaries = shouldConcat ? commissionSummaries.concat(summaries) : commissionSummaries.concat([]);
                     // restCommissionSummaries = shouldConcat ? restCommissionSummaries.concat(restSummaries) : restCommissionSummaries.concat([]);
+
                 }
 
-                const grossCommissionSum: Decimal = pendingSummaries.reduce((sum, summary) => {
-                    const value = summary.netCommissionAvailablePayout || 0;
-                    return sum.plus(new Decimal(value));
-                }, new Decimal(0));
+                const grossCommissionSum = fmt(pendingSummaries.reduce((sum, summary) => {
+                    const value = fmt(summary.netCommissionAvailablePayout || 0);
+                    return sum.plus(value);
+                }, new Decimal(0)))
 
-                if (!directChildrenSummaryIds.length && grossCommissionSum.equals(0)) {
+                if (!directChildrenSummaryIds.length && grossCommissionSum == 0) {
                     return []
                 }
 
-                const totalOwnCommission = Object.values(ownCommission).reduce(
-                    (acc, curr) => acc.plus(Decimal.max(new Decimal(0), curr)),
+                const totalOwnCommission = fmt(Object.values(ownCommission).reduce(
+                    (acc, curr) => acc.plus(Decimal.max(new Decimal(0), fmt(curr))),
                     new Decimal(0)
-                ).toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
+                ))
 
-                const grossCommission = new Decimal(grossCommissionSum).plus(totalOwnCommission).toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
+                const grossCommission = fmt(new Decimal(grossCommissionSum).plus(totalOwnCommission))
 
-                const netCommissions = grossCommission.minus(totalOwnCommission).toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
+                const netCommissions = fmt(grossCommission - totalOwnCommission)
 
                 return {
                     ids: directChildrenSummaryIds,
                     network: username,
                     restCommissionIds: restCommissionIds,
-                    grossCommissions: grossCommission.toNumber(),
-                    ownCommission: totalOwnCommission.toNumber(),
-                    netCommissions: netCommissions.toNumber(),
-                    transferableAmount: netCommissions.lt(0) ? 0 : netCommissions.toNumber(),
+                    grossCommissions: grossCommission,
+                    ownCommission: totalOwnCommission,
+                    netCommissions: netCommissions,
+                    transferableAmount: netCommissions < 0 ? 0 : netCommissions,
                     breakdownAction: "view",
                     releaseAction: "release_comms",
                 };
@@ -2632,34 +2654,36 @@ class CommissionService {
                         // console.log("pending commission", comm, "ggr", ggr)
 
                         if (operatorIds.includes(summary.userId)) {
-                            egamesGGR += new Decimal(ggr).toNumber();;
+                            egamesGGR += fmt(ggr);
+                            ;
                         }
 
                         console.log("total commission", ggr)
-                        egamesCommission += new Decimal(summary.netCommissionAvailablePayout).toNumber();
+                        egamesCommission += fmt(summary.netCommissionAvailablePayout);
 
                     } else if (summary.categoryName === "Sports Betting") {
                         const bet = summary.totalBetAmount;
                         const comm = summary.pendingSettleCommission;
 
                         if (operatorIds.includes(summary.userId)) {
-                            sportsGGR += new Decimal(bet).toNumber();
+                            sportsGGR += fmt(bet);
                         }
 
-                        sportsCommission += new Decimal(summary.netCommissionAvailablePayout).toNumber();
+                        sportsCommission += fmt(summary.netCommissionAvailablePayout);
 
                     } else if (summary.categoryName === "Speciality Games - RNG") {
                         const ggr = summary.netGGR;
                         if (operatorIds.includes(summary.userId)) {
-                            rngGGR += new Decimal(ggr).toNumber();
+                            rngGGR += fmt(ggr);
                         }
-                        rngCommission += new Decimal(summary.netCommissionAvailablePayout).toNumber();
+                        rngCommission += fmt(summary.netCommissionAvailablePayout);
                     } else if (summary.categoryName === "Speciality Games - Tote") {
                         const bet = summary.totalBetAmount;
                         if (operatorIds.includes(summary.userId)) {
-                            toteGGR += new Decimal(bet).toNumber();;
+                            toteGGR += fmt(bet);
+                            ;
                         }
-                        toteCommission += new Decimal(summary.netCommissionAvailablePayout).toNumber();
+                        toteCommission += fmt(summary.netCommissionAvailablePayout);
                     }
                 }
 
@@ -2832,8 +2856,8 @@ class CommissionService {
                 const category = summary.categoryName;
                 const ggr = summary.netGGR;
                 const bet = summary.totalBetAmount;
-                const comm = summary.netCommissionAvailablePayout;
-                const parentCommission = summary.parentCommission
+                const comm = fmt(summary.netCommissionAvailablePayout);
+                const parentCommission = fmt(summary.parentCommission)
 
 
                 if (category === "E-Games") {
@@ -2842,77 +2866,76 @@ class CommissionService {
 
 
                         if (pIds.includes(summary.userId)) {
-                            pending.eGamesGGR += new Decimal(ggr).toNumber();
+                            pending.eGamesGGR += fmt(ggr);
                             // console.log(`ParentCommission: `, parentCommission)
-                            ownEGamesCommission += new Decimal(parentCommission).toNumber()
+                            ownEGamesCommission += fmt(parentCommission)
                         }
 
-                        pending.eGamesCommission += new Decimal(comm).toNumber();
+                        pending.eGamesCommission += fmt(comm);
                     }
                     if (roleName === UserRole.GOLDEN) {
-                        pending.eGamesGGR += new Decimal(ggr).toNumber();
-                        pending.eGamesCommission += new Decimal(comm).toNumber();
+                        pending.eGamesGGR += fmt(ggr);
+                        pending.eGamesCommission += fmt(comm);
                     } else if (roleName === UserRole.PLATINUM) {
                         // if (gIds.includes(summary.userId)) {
                         // }
-                        pending.eGamesGGR += new Decimal(ggr).toNumber();
-                        pending.eGamesCommission += comm.toNumber() + parentCommission.toNumber();
+                        pending.eGamesGGR += fmt(ggr);
+                        pending.eGamesCommission += comm + parentCommission;
                     }
                 } else if (category === "Sports Betting") {
                     if (roleName === UserRole.OPERATOR) {
 
                         if (pIds.includes(summary.userId)) {
-                            pending.sportsBet += new Decimal(bet).toNumber();
-                            ownSportsBettingCommission += new Decimal(parentCommission).toNumber();
+                            pending.sportsBet += fmt(bet);
+                            ownSportsBettingCommission += fmt(parentCommission);
                         }
-                        pending.sportsCommission += new Decimal(comm).toNumber();
+                        pending.sportsCommission += fmt(comm);
                     }
                     if (roleName === UserRole.GOLDEN) {
-                        pending.sportsBet += new Decimal(bet).toNumber();
-                        pending.sportsCommission += new Decimal(comm).toNumber();
+                        pending.sportsBet += fmt(bet);
+                        pending.sportsCommission += fmt(comm);
                     } else if (roleName === UserRole.PLATINUM) {
                         if (gIds.includes(summary.userId)) {
                         }
-                        pending.sportsBet += new Decimal(bet).toNumber();
-                        pending.sportsCommission += comm.toNumber() + parentCommission.toNumber();
+                        pending.sportsBet += fmt(bet);
+                        pending.sportsCommission += comm + parentCommission;
                     }
                 } else if (category === "Speciality Games - RNG") {
                     // NEW handling for RNG
                     if (roleName === UserRole.OPERATOR) {
                         if (pIds.includes(summary.userId)) {
-                            pending.rngGGR += new Decimal(ggr).toNumber();
-                            ownRNGCommission += new Decimal(parentCommission).toNumber();
+                            pending.rngGGR += fmt(ggr);
+                            ownRNGCommission += fmt(parentCommission);
                         }
-                        pending.rngCommission += new Decimal(comm).toNumber();
+                        pending.rngCommission += fmt(comm);
                     }
                     if (roleName === UserRole.GOLDEN) {
-                        pending.rngGGR += new Decimal(ggr).toNumber();
-                        pending.rngCommission += new Decimal(comm).toNumber();
+                        pending.rngGGR += fmt(ggr);
+                        pending.rngCommission += fmt(comm);
                     } else if (roleName === UserRole.PLATINUM) {
-                        pending.rngGGR += new Decimal(ggr).toNumber();
-                        pending.rngCommission += comm.toNumber() + parentCommission.toNumber();
+                        pending.rngGGR += fmt(ggr);
+                        pending.rngCommission += comm + parentCommission;
                     }
                 } else if (category === "Speciality Games - Tote") {
                     // NEW handling for Tote
                     if (roleName === UserRole.OPERATOR) {
                         if (pIds.includes(summary.userId)) {
-                            pending.toteBet += new Decimal(bet).toNumber();
-                            ownToteCommission += new Decimal(parentCommission).toNumber();
+                            pending.toteBet += fmt(bet);
+                            ownToteCommission += fmt(parentCommission);
                         }
-                        pending.toteCommission += new Decimal(comm).toNumber();
+                        pending.toteCommission += fmt(comm);
                     }
                     if (roleName === UserRole.GOLDEN) {
-                        pending.toteBet += new Decimal(bet).toNumber();
-                        pending.toteCommission += new Decimal(comm).toNumber();
+                        pending.toteBet += fmt(bet);
+                        pending.toteCommission += fmt(comm);
                     } else if (roleName === UserRole.PLATINUM) {
-                        pending.toteBet += new Decimal(bet).toNumber();
-                        pending.toteCommission += comm.toNumber() + parentCommission.toNumber();
+                        pending.toteBet += fmt(bet);
+                        pending.toteCommission += comm + parentCommission;
                     }
                 }
 
             }
 
-         
 
             console.log({ownEGamesCommission, ownSportsBettingCommission})
 
@@ -3138,21 +3161,19 @@ class CommissionService {
             if (!startDate || !endDate) {
                 const downlineIds = downlineUsers.map((u) => u.id);
 
-                const earliest = await prisma.commissionSummary.findFirst({
+                const earliest = await prisma.completedCycleSummaries.findFirst({
                     where: {
                         userId: {in: downlineIds},
                         settledStatus: "Y",
-                        settledAt: {not: null},
                     },
                     orderBy: {settledAt: "asc"},
                     select: {settledAt: true},
                 });
 
-                const latest = await prisma.commissionSummary.findFirst({
+                const latest = await prisma.completedCycleSummaries.findFirst({
                     where: {
                         userId: {in: downlineIds},
                         settledStatus: "Y",
-                        settledAt: {not: null},
                     },
                     orderBy: {settledAt: "desc"},
                     select: {settledAt: true},
@@ -3180,7 +3201,7 @@ class CommissionService {
             // Get reports per user
             const reportsArrays = await Promise.all(
                 downlineUsers.map(async (downline) => {
-                    const summaries = await prisma.commissionSummary.findMany({
+                    const summaries = await prisma.completedCycleSummaries.findMany({
                         where: {
                             userId: downline.id,
                             settledStatus: "Y",
