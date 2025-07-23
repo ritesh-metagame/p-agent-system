@@ -4094,12 +4094,12 @@ class CommissionService {
         }
 
         // For weekly computation categories (Sports Betting and Speciality Games - Tote)
-        if (
-            categoryName === "Sports Betting" ||
-            categoryName === "Speciality Games - Tote"
-        ) {
-            return this.getWeeklyCompletedCycleDates(currentDate);
-        }
+        // if (
+        //     categoryName === "Sports Betting" ||
+        //     categoryName === "Speciality Games - Tote"
+        // ) {
+        //     return this.getWeeklyCompletedCycleDates(currentDate);
+        // }
 
         // For bi-monthly computation categories (default, E-Sports and Speciality Games - RNG)
         // Production mode - use cycle-based dates
@@ -4182,23 +4182,23 @@ class CommissionService {
         const currentDate = new Date();
 
         // Weekly categories
-        if (
-            categoryName === "Sports Betting" ||
-            categoryName === "Speciality Games - Tote"
-        ) {
-            const day = currentDate.getDay(); // 0 = Sunday
-            const offset = day === 0 ? 6 : day - 1; // Make Monday = 0
-            const startOfWeek = new Date(currentDate);
-            startOfWeek.setDate(currentDate.getDate() - offset);
-            startOfWeek.setHours(0, 0, 0, 0);
-
-            // console.log(`Showing running tally from start of week: ${startOfWeek.toISOString()} till today: ${currentDate.toISOString()} for category: ${categoryName}`);
-
-            return {
-                cycleStartDate: startOfWeek,
-                cycleEndDate: currentDate,
-            };
-        }
+        // if (
+        //     categoryName === "Sports Betting" ||
+        //     categoryName === "Speciality Games - Tote"
+        // ) {
+        //     const day = currentDate.getDay(); // 0 = Sunday
+        //     const offset = day === 0 ? 6 : day - 1; // Make Monday = 0
+        //     const startOfWeek = new Date(currentDate);
+        //     startOfWeek.setDate(currentDate.getDate() - offset);
+        //     startOfWeek.setHours(0, 0, 0, 0);
+        //
+        //     // console.log(`Showing running tally from start of week: ${startOfWeek.toISOString()} till today: ${currentDate.toISOString()} for category: ${categoryName}`);
+        //
+        //     return {
+        //         cycleStartDate: startOfWeek,
+        //         cycleEndDate: currentDate,
+        //     };
+        // }
 
         // Bi-Monthly categories: E-Games & RNG
         const year = currentDate.getFullYear();
