@@ -126,29 +126,28 @@ class UserDao {
                     }
                 }
             });
-          
+
 
             // Step 1: Fetch all commission summary records for this user
             const summaries = await prisma.completedCycleSummaries.findMany({
-                  where: {
-                      userId,
-                      OR: [
-                          {
-                              categoryName: { in: ['E-Games', 'Speciality Games - RNG'] },
-                              cycleEnd: {
-                                      lte: eGamesCycle.cycleEndDate,
-                                  },
-                          },
-                          {
-                              categoryName: { in: ['Sports Betting', 'Speciality Games - Tote'] },
-                              cycleEnd: {
-                                      lte: sportsCycle.cycleEndDate,
-                                  },
-                          },
-                      ],
-                  },
-              });
-
+                where: {
+                    userId,
+                    OR: [
+                        {
+                            categoryName: {in: ['E-Games', 'Speciality Games - RNG']},
+                            cycleEnd: {
+                                lte: eGamesCycle.cycleEndDate,
+                            },
+                        },
+                        {
+                            categoryName: {in: ['Sports Betting', 'Speciality Games - Tote']},
+                            cycleEnd: {
+                                lte: sportsCycle.cycleEndDate,
+                            },
+                        },
+                    ],
+                },
+            });
 
 
             if (!summaries.length) {
@@ -163,16 +162,16 @@ class UserDao {
                     ...(roleName === UserRole.OPERATOR ? {settledByOperator: false} : {}),
                     OR: [
                         {
-                            categoryName: { in: ['E-Games', 'Speciality Games - RNG'] },
+                            categoryName: {in: ['E-Games', 'Speciality Games - RNG']},
                             cycleEnd: {
-                                      lte: sportsCycle.cycleEndDate,
-                                  },
+                                lte: sportsCycle.cycleEndDate,
+                            },
                         },
                         {
-                            categoryName: { in: ['Sports Betting', 'Speciality Games - Tote'] },
+                            categoryName: {in: ['Sports Betting', 'Speciality Games - Tote']},
                             cycleEnd: {
-                                      lte: sportsCycle.cycleEndDate,
-                                  },
+                                lte: sportsCycle.cycleEndDate,
+                            },
                         },
                     ],
                 },
@@ -192,17 +191,15 @@ class UserDao {
             console.log(
                 `Role0000000000000ooooooooooooooooookkkkkkkkkkkkkkkkkkkkkkknnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn: ${roleName}, Settled: ${isSettled}, Summaries Count: ${summaries.length}`)
 
-           
-
 
             // Step 5: Initialize sums
 
             let totalCommissionByUser = 0;
 
             let wallet = 0;
-          let totalPayout = 0;
-          
-          console.log(`Total Payout for User------ ${userId}: ${walletSummaries}`);
+            let totalPayout = 0;
+
+            console.log(`Total Payout for User------ ${userId}: ${walletSummaries}`);
 
             for (const summary of walletSummaries) {
                 if (summary.categoryName === "E-Games") {
@@ -222,10 +219,10 @@ class UserDao {
                     group.downlineIds.includes(summary.userId)
                 );
 
-              let eGamesSum = 0;
-              let specialityGamesRNGSum = 0;
-              let sportsSum = 0;
-              let specialityGamesToteSum = 0;
+                let eGamesSum = 0;
+                let specialityGamesRNGSum = 0;
+                let sportsSum = 0;
+                let specialityGamesToteSum = 0;
 
                 for (const summary of groupSummaries) {
                     const payout = fmt(summary.netCommissionAvailablePayout || 0);
@@ -242,9 +239,9 @@ class UserDao {
                 }
                 // If category sums are negative, treat them as 0 individually
                 if (eGamesSum < 0) eGamesSum = 0;
-              if (sportsSum < 0) sportsSum = 0;
-              if (specialityGamesRNGSum < 0) specialityGamesRNGSum = 0;
-              if (specialityGamesToteSum < 0) specialityGamesToteSum = 0;
+                if (sportsSum < 0) sportsSum = 0;
+                if (specialityGamesRNGSum < 0) specialityGamesRNGSum = 0;
+                if (specialityGamesToteSum < 0) specialityGamesToteSum = 0;
 
                 // Now add corrected values
                 const groupTotal = eGamesSum + sportsSum + specialityGamesRNGSum + specialityGamesToteSum;
@@ -265,9 +262,7 @@ class UserDao {
             //   }
 
 
-          // }
-          
-
+            // }
 
 
             const payout =
@@ -279,14 +274,14 @@ class UserDao {
                 // wallet = totalCommissionByUser - totalPaymentGatewayFee;
             } else {
                 wallet = totalCommissionByUser;
-          }
-           if (!isSettled) {
+            }
+            if (!isSettled) {
                 console.warn(
                     `⚠️ Settlement not completed for role ${roleName}. Returning payout and wallet as 0.`
                 );
-                return {payout: 0 , wallet};
+                return {payout: 0, wallet};
             }
-          
+
 
             return {
                 payout,
@@ -944,13 +939,13 @@ class UserDao {
             };
         }
 
-        // For weekly computation categories (Sports Betting and Speciality Games - Tote)
-        if (
-            categoryName === "Sports Betting" ||
-            categoryName === "Speciality Games - Tote"
-        ) {
-            return this.getWeeklyCompletedCycleDates(currentDate);
-        }
+        // // For weekly computation categories (Sports Betting and Speciality Games - Tote)
+        // if (
+        //     categoryName === "Sports Betting" ||
+        //     categoryName === "Speciality Games - Tote"
+        // ) {
+        //     return this.getWeeklyCompletedCycleDates(currentDate);
+        // }
 
         // For bi-monthly computation categories (default, E-Sports and Speciality Games - RNG)
         // Production mode - use cycle-based dates
